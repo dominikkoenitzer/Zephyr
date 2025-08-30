@@ -1,232 +1,129 @@
-import React, { useState } from 'react';
-import {
-  VStack,
-  HStack,
-  Box,
-  Text,
-  IconButton,
-  Input,
-  Checkbox,
-  useToast,
-  Badge,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Button,
-} from '@chakra-ui/react';
-import { FaTrash, FaEdit, FaEllipsisV, FaClock, FaTag } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { Plus, Trash2, CheckCircle, Circle } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { localStorageService } from '../../services/localStorage';
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState('');
-  const [editingId, setEditingId] = useState(null);
-  const toast = useToast();
+
+  // Load tasks on mount
+  useEffect(() => {
+    const savedTasks = localStorageService.getTasks();
+    setTasks(savedTasks);
+  }, []);
 
   const addTask = (e) => {
     e.preventDefault();
     if (!newTask.trim()) return;
     
-    setTasks([
-      ...tasks,
-      {
-        id: Date.now(),
-        text: newTask,
-        completed: false,
-        priority: 'medium',
-        dueDate: null,
-        tags: [],
-      },
-    ]);
+    const task = localStorageService.addTask({
+      title: newTask,
+      description: '',
+      priority: 'medium'
+    });
+    
+    setTasks(prev => [...prev, task]);
     setNewTask('');
-    toast({
-      title: 'Task added',
-      status: 'success',
-      duration: 2000,
-      isClosable: true,
-    });
   };
 
-  const toggleTask = (id) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+  const toggleTask = (taskId) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      const updatedTask = localStorageService.updateTask(taskId, {
+        completed: !task.completed
+      });
+      
+      if (updatedTask) {
+        setTasks(prev => prev.map(t => 
+          t.id === taskId ? updatedTask : t
+        ));
+      }
+    }
   };
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
-    toast({
-      title: 'Task deleted',
-      status: 'info',
-      duration: 2000,
-      isClosable: true,
-    });
+  const deleteTask = (taskId) => {
+    localStorageService.deleteTask(taskId);
+    setTasks(prev => prev.filter(t => t.id !== taskId));
   };
 
-  const updateTask = (id, newText) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, text: newText } : task
-      )
-    );
-    setEditingId(null);
-  };
-
-  const setPriority = (id, priority) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, priority } : task
-      )
-    );
-  };
-
-  const setDueDate = (id, dueDate) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, dueDate } : task
-      )
-    );
-  };
-
-  const addTag = (id, tag) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id && !task.tags.includes(tag)
-          ? { ...task, tags: [...task.tags, tag] }
-          : task
-      )
-    );
-  };
-
-  const getPriorityColor = (priority) => {
-    const colors = {
-      low: 'green',
-      medium: 'yellow',
-      high: 'red',
-    };
-    return colors[priority] || 'gray';
-  };
+  const completedCount = tasks.filter(task => task.completed).length;
+  const totalCount = tasks.length;
 
   return (
-    <VStack spacing={4} width="100%" align="stretch">
-      <form onSubmit={addTask}>
-        <HStack>
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span>Tasks</span>
+          <span className="text-sm text-muted-foreground">
+            {completedCount}/{totalCount} completed
+          </span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Add new task form */}
+        <form onSubmit={addTask} className="flex gap-2">
           <Input
+            placeholder="Add a new task..."
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
-            placeholder="Add a new task..."
-            size="lg"
+            className="flex-1"
           />
-          <Button colorScheme="blue" px={8} type="submit">
-            Add
+          <Button type="submit" size="sm">
+            <Plus className="h-4 w-4" />
           </Button>
-        </HStack>
-      </form>
+        </form>
 
-      <VStack spacing={2} align="stretch">
-        {tasks.map((task) => (
-          <Box
-            key={task.id}
-            p={4}
-            borderWidth="1px"
-            borderRadius="lg"
-            borderColor={task.completed ? 'gray.200' : 'blue.200'}
-            bg={task.completed ? 'gray.50' : 'white'}
-            _hover={{ shadow: 'md' }}
-            transition="all 0.2s"
-          >
-            <HStack justify="space-between">
-              <HStack flex={1}>
-                <Checkbox
-                  isChecked={task.completed}
-                  onChange={() => toggleTask(task.id)}
-                  size="lg"
-                />
-                {editingId === task.id ? (
-                  <Input
-                    defaultValue={task.text}
-                    onBlur={(e) => updateTask(task.id, e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        updateTask(task.id, e.target.value);
-                      }
-                    }}
-                    autoFocus
-                  />
-                ) : (
-                  <Text
-                    textDecoration={task.completed ? 'line-through' : 'none'}
-                    color={task.completed ? 'gray.500' : 'black'}
-                  >
-                    {task.text}
-                  </Text>
-                )}
-              </HStack>
-
-              <HStack spacing={2}>
-                {task.dueDate && (
-                  <Badge colorScheme="purple" variant="subtle">
-                    <HStack spacing={1}>
-                      <FaClock />
-                      <Text>{new Date(task.dueDate).toLocaleDateString()}</Text>
-                    </HStack>
-                  </Badge>
-                )}
-                <Badge colorScheme={getPriorityColor(task.priority)}>
-                  {task.priority}
-                </Badge>
-                {task.tags.map((tag) => (
-                  <Badge key={tag} colorScheme="cyan" variant="subtle">
-                    <HStack spacing={1}>
-                      <FaTag />
-                      <Text>{tag}</Text>
-                    </HStack>
-                  </Badge>
-                ))}
-                <Menu>
-                  <MenuButton
-                    as={IconButton}
-                    icon={<FaEllipsisV />}
-                    variant="ghost"
-                    size="sm"
-                  />
-                  <MenuList>
-                    <MenuItem onClick={() => setEditingId(task.id)}>
-                      <HStack>
-                        <FaEdit />
-                        <Text>Edit</Text>
-                      </HStack>
-                    </MenuItem>
-                    <MenuItem onClick={() => deleteTask(task.id)}>
-                      <HStack>
-                        <FaTrash />
-                        <Text>Delete</Text>
-                      </HStack>
-                    </MenuItem>
-                    <MenuItem onClick={() => setPriority(task.id, 'high')}>
-                      Set High Priority
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() =>
-                        setDueDate(task.id, new Date().toISOString())
-                      }
-                    >
-                      Set Due Date
-                    </MenuItem>
-                    <MenuItem onClick={() => addTag(task.id, 'important')}>
-                      Add Tag
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
-              </HStack>
-            </HStack>
-          </Box>
-        ))}
-      </VStack>
-    </VStack>
+        {/* Task list */}
+        <div className="space-y-2">
+          {tasks.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No tasks yet. Add one above to get started!
+            </div>
+          ) : (
+            tasks.map((task) => (
+              <div
+                key={task.id}
+                className={`flex items-center gap-3 p-3 border rounded-lg transition-colors ${
+                  task.completed 
+                    ? 'bg-muted/50 border-muted text-muted-foreground' 
+                    : 'bg-background border-border hover:bg-muted/30'
+                }`}
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-0 h-auto"
+                  onClick={() => toggleTask(task.id)}
+                >
+                  {task.completed ? (
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                  ) : (
+                    <Circle className="h-5 w-5 text-muted-foreground" />
+                  )}
+                </Button>
+                
+                <span className={`flex-1 ${task.completed ? 'line-through' : ''}`}>
+                  {task.title}
+                </span>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-0 h-auto text-destructive hover:text-destructive/80"
+                  onClick={() => deleteTask(task.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
-export default TaskList; 
+export default TaskList;
