@@ -39,7 +39,7 @@ import {
 } from 'react-icons/fa';
 import { api } from '../../services/api';
 
-const LOCAL_STORAGE_KEY = 'breezeFlowSettings';
+const LOCAL_STORAGE_KEY = 'zephyrSettings';
 
 const SettingsPage = () => {
   // --- State for all settings sections ---

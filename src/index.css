@@ -7,48 +7,74 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Zephyr Light Theme - Calm, Modern Palette */
+    --background: 210 30% 98%;
+    --foreground: 215 25% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 215 25% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+    --popover-foreground: 215 25% 15%;
+    
+    /* Primary: Serene Blue */
+    --primary: 213 94% 58%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary: Soft Purple */
+    --secondary: 250 70% 96%;
+    --secondary-foreground: 250 70% 30%;
+    
+    --muted: 210 30% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 213 94% 96%;
+    --accent-foreground: 213 94% 28%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 215 20% 90%;
+    --input: 215 20% 94%;
+    --ring: 213 94% 58%;
+    --radius: 0.75rem;
+    
+    /* Glassmorphism variables */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: rgba(0, 0, 0, 0.1);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    /* Zephyr Dark Theme - Deep, Elegant */
+    --background: 222 47% 6%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222 47% 10%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 47% 10%;
     --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    
+    /* Primary: Vibrant Blue */
+    --primary: 213 94% 65%;
+    --primary-foreground: 222 47% 6%;
+    
+    /* Secondary: Subtle Purple */
+    --secondary: 250 70% 20%;
+    --secondary-foreground: 250 70% 90%;
+    
+    --muted: 217 32% 18%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 32% 18%;
+    --accent-foreground: 213 94% 65%;
+    
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    
+    --border: 217 32% 18%;
+    --input: 217 32% 18%;
+    --ring: 213 94% 65%;
+    
+    /* Glassmorphism variables for dark mode */
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -65,6 +91,36 @@
 }
 
 @layer utilities {
+  /* Glassmorphism effect */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 var(--glass-shadow);
+  }
+  
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    box-shadow: 
+      0 8px 32px 0 var(--glass-shadow),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Smooth hover transitions */
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px 0 var(--glass-shadow);
+  }
+  
+  /* Scrollbar styling */
   .scrollbar-thin {
     scrollbar-width: thin;
   }
@@ -84,5 +140,14 @@
   
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background-color: hsl(var(--muted-foreground) / 0.5);
+  }
+  
+  /* Gradient backgrounds */
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(250 70% 60%) 100%);
+  }
+  
+  .gradient-accent {
+    background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--primary) / 0.1) 100%);
   }
 }

@@ -72,9 +72,12 @@ function Sidebar({ isMobile = false, onClose }) {
     return (
       <div className="fixed inset-0 z-50 lg:hidden">
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
-        <div className="fixed left-0 top-0 h-full w-64 bg-card border-r border-gray-200 dark:border-gray-700 p-6 animate-slide-in-from-left">
+        <div className="fixed left-0 top-0 h-full w-64 glass-card border-r border-border/50 p-6 animate-slide-in-from-left">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-xl font-bold text-foreground">Breeze Flow</h1>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">Zephyr</h1>
+              <p className="text-xs text-muted-foreground mt-0.5">Flow Through Focus</p>
+            </div>
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="h-5 w-5" />
             </Button>
@@ -93,10 +96,13 @@ function Sidebar({ isMobile = false, onClose }) {
   }
 
   return (
-    <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-card border-r border-gray-200 dark:border-gray-700">
+    <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 glass-card border-r border-border/50">
       <div className="flex flex-col flex-grow p-6">
         <div className="flex items-center mb-8">
-          <h1 className="text-xl font-bold text-foreground">Breeze Flow</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">Zephyr</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">Flow Through Focus</p>
+          </div>
         </div>
         <SidebarContent 
           navigation={navigation} 
@@ -124,10 +130,10 @@ function SidebarContent({ navigation, location, onItemClick, theme, cycleTheme, 
               to={item.href}
               onClick={onItemClick}
               className={cn(
-                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200",
                 isActive 
-                  ? "bg-primary text-primary-foreground" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                  ? "bg-gradient-to-r from-primary to-purple-600 text-white shadow-lg shadow-primary/30 scale-105" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50 hover:scale-102"
               )}
             >
               <Icon className="mr-3 h-5 w-5" />
@@ -137,11 +143,11 @@ function SidebarContent({ navigation, location, onItemClick, theme, cycleTheme, 
         })}
       </nav>
       
-      <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="mt-auto pt-4 border-t border-border/50">
         <Button
           variant="ghost"
           onClick={cycleTheme}
-          className="w-full justify-start text-muted-foreground hover:text-foreground"
+          className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-xl transition-all"
         >
           <ThemeIcon className="mr-3 h-5 w-5" />
           {theme.charAt(0).toUpperCase() + theme.slice(1)} theme
