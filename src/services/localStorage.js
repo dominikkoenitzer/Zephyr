@@ -1,11 +1,11 @@
 // localStorage service for data persistence
 const STORAGE_KEYS = {
-  TIMER_STATE: 'breeze_flow_timer_state',
-  TASKS: 'breeze_flow_tasks',
-  FOCUS_SESSIONS: 'breeze_flow_focus_sessions',
-  SETTINGS: 'breeze_flow_settings',
-  WELLNESS: 'breeze_flow_wellness',
-  CALENDAR_EVENTS: 'breeze_flow_calendar_events',
+  TIMER_STATE: 'zephyr_timer_state',
+  TASKS: 'zephyr_tasks',
+  FOCUS_SESSIONS: 'zephyr_focus_sessions',
+  SETTINGS: 'zephyr_settings',
+  WELLNESS: 'zephyr_wellness',
+  CALENDAR_EVENTS: 'zephyr_calendar_events',
 };
 
 class LocalStorageService {
@@ -135,6 +135,16 @@ class LocalStorageService {
     } catch (error) {
       console.error('Failed to get focus sessions:', error);
       return [];
+    }
+  }
+
+  saveFocusSessions(sessions) {
+    try {
+      localStorage.setItem(STORAGE_KEYS.FOCUS_SESSIONS, JSON.stringify(sessions));
+      return true;
+    } catch (error) {
+      console.error('Failed to save focus sessions:', error);
+      return false;
     }
   }
 
