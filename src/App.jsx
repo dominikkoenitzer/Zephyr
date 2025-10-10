@@ -10,7 +10,7 @@ function App() {
   const handleSidebarClose = () => setSidebarOpen(false);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
       {/* Desktop Sidebar */}
       <Sidebar isMobile={false} />
       
