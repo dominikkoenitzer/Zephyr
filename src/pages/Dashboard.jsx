@@ -8,11 +8,46 @@ import {
   Plus,
   Clock,
   Target,
-  Coffee
+  Coffee,
+  Sparkles,
+  TrendingUp
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { localStorageService } from '../services/localStorage';
+
+// Motivational quotes that change daily
+const motivationalQuotes = [
+  { text: "Every accomplishment starts with the decision to try.", author: "John F. Kennedy" },
+  { text: "The future depends on what you do today.", author: "Mahatma Gandhi" },
+  { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+  { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
+  { text: "Small steps every day lead to big results.", author: "Anonymous" },
+  { text: "Focus on being productive instead of busy.", author: "Tim Ferriss" },
+  { text: "Your limitation—it's only your imagination.", author: "Anonymous" },
+  { text: "Great things never come from comfort zones.", author: "Anonymous" },
+];
+
+// Get daily quote based on the day of year
+const getDailyQuote = () => {
+  const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+  return motivationalQuotes[dayOfYear % motivationalQuotes.length];
+};
+
+// Dynamic greeting based on time of day
+const getTimeBasedGreeting = () => {
+  const hour = new Date().getHours();
+  
+  if (hour >= 5 && hour < 12) {
+    return { text: "Good morning! ☀️", subtext: "Ready to own your day?" };
+  } else if (hour >= 12 && hour < 17) {
+    return { text: "Good afternoon! 🌤️", subtext: "Keep that momentum going!" };
+  } else if (hour >= 17 && hour < 22) {
+    return { text: "Good evening! 🌙", subtext: "Time to wind down and reflect." };
+  } else {
+    return { text: "Burning the midnight oil? 🌜", subtext: "Don't forget to rest!" };
+  }
+};
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -23,8 +58,16 @@ function Dashboard() {
     totalPomodoros: 0
   });
 
+  const [greeting, setGreeting] = useState(getTimeBasedGreeting());
+  const [dailyQuote, setDailyQuote] = useState(getDailyQuote());
+
   useEffect(() => {
     loadDashboardData();
+    // Update greeting every minute
+    const interval = setInterval(() => {
+      setGreeting(getTimeBasedGreeting());
+    }, 60000);
+    return () => clearInterval(interval);
   }, []);
 
   const loadDashboardData = () => {
@@ -64,130 +107,168 @@ function Dashboard() {
     return `${hours}h ${mins}m`;
   };
 
+  const getMotivationalMessage = () => {
+    if (stats.totalPomodoros === 0) {
+      return "Start your first focus session!";
+    } else if (stats.totalPomodoros < 5) {
+      return "You're building momentum! 💪";
+    } else if (stats.totalPomodoros < 20) {
+      return "Keep crushing it! 🚀";
+    } else {
+      return "You're a productivity master! 🏆";
+    }
+  };
+
+  const getTasksMessage = () => {
+    if (stats.activeTasks === 0) {
+      return "All caught up! 🎉";
+    } else if (stats.activeTasks < 5) {
+      return `${stats.activeTasks} to tackle`;
+    } else {
+      return `${stats.activeTasks} on your plate`;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background py-8">
+    <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Good morning! 👋</h1>
-          <p className="text-muted-foreground text-lg">
-            Ready to make today productive?
+        {/* Hero Greeting Section */}
+        <div className="mb-12 animate-fade-in-up">
+          <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent">
+            {greeting.text}
+          </h1>
+          <p className="text-muted-foreground text-xl mb-6">
+            {greeting.subtext}
           </p>
+          
+          {/* Daily Quote Card */}
+          <Card className="glass-card hover-lift border-none max-w-2xl">
+            <CardContent className="py-6">
+              <div className="flex items-start gap-3">
+                <Sparkles className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
+                <div>
+                  <p className="text-lg font-medium text-foreground mb-2 italic">
+                    "{dailyQuote.text}"
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    — {dailyQuote.author}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+          <Card className="glass-card hover-lift border-none">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Focus Time Today</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Focus Time Today</CardTitle>
+              <Clock className="h-5 w-5 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatTime(stats.todayFocusTime)}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-3xl font-bold text-foreground">{formatTime(stats.todayFocusTime)}</div>
+              <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                <TrendingUp className="h-3 w-3" />
                 {stats.todaySessions} sessions completed
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="glass-card hover-lift border-none">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Pomodoros</CardTitle>
-              <Coffee className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Pomodoros</CardTitle>
+              <Coffee className="h-5 w-5 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalPomodoros}</div>
-              <p className="text-xs text-muted-foreground">
-                Keep the momentum going!
+              <div className="text-3xl font-bold text-foreground">{stats.totalPomodoros}</div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {getMotivationalMessage()}
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="glass-card hover-lift border-none">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
-              <CheckSquare className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Active Tasks</CardTitle>
+              <CheckSquare className="h-5 w-5 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.activeTasks}</div>
-              <p className="text-xs text-muted-foreground">
-                Tasks to complete
+              <div className="text-3xl font-bold text-foreground">{stats.activeTasks}</div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {getTasksMessage()}
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="glass-card hover-lift border-none">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completed Tasks</CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Completed Tasks</CardTitle>
+              <Target className="h-5 w-5 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.completedTasks}</div>
-              <p className="text-xs text-muted-foreground">
-                Great job! 🎉
+              <div className="text-3xl font-bold text-foreground">{stats.completedTasks}</div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {stats.completedTasks > 0 ? "You're crushing it! 💪" : "Let's get started!"}
               </p>
             </CardContent>
           </Card>
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="border-2 border-dashed hover:border-primary transition-colors">
-            <CardContent className="flex flex-col items-center justify-center py-8">
-              <Timer className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Start Focus Session</h3>
-              <p className="text-muted-foreground text-center mb-4">
-                Begin a 25-minute focused work session
+        <h2 className="text-2xl font-semibold mb-6 text-foreground">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <Card className="glass-card hover-lift border-none group cursor-pointer transition-all duration-300">
+            <CardContent className="flex flex-col items-center justify-center py-10">
+              <div className="rounded-full bg-gradient-to-r from-primary to-purple-600 p-4 mb-4 group-hover:scale-110 transition-transform">
+                <Timer className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Dive Into Deep Work</h3>
+              <p className="text-muted-foreground text-center mb-6 text-sm">
+                Begin a focused 25-minute session
               </p>
-              <Button asChild>
+              <Button asChild className="rounded-full px-6">
                 <Link to="/focus">
                   <Play className="h-4 w-4 mr-2" />
-                  Start Timer
+                  Start Session
                 </Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-dashed hover:border-primary transition-colors">
-            <CardContent className="flex flex-col items-center justify-center py-8">
-              <CheckSquare className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Manage Tasks</h3>
-              <p className="text-muted-foreground text-center mb-4">
-                Add, edit, and organize your tasks
+          <Card className="glass-card hover-lift border-none group cursor-pointer transition-all duration-300">
+            <CardContent className="flex flex-col items-center justify-center py-10">
+              <div className="rounded-full bg-gradient-to-r from-purple-600 to-pink-600 p-4 mb-4 group-hover:scale-110 transition-transform">
+                <CheckSquare className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Review Your Priorities</h3>
+              <p className="text-muted-foreground text-center mb-6 text-sm">
+                Organize and manage your tasks
               </p>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="rounded-full px-6">
                 <Link to="/tasks">
                   <Plus className="h-4 w-4 mr-2" />
-                  View Tasks
+                  Manage Tasks
                 </Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-dashed hover:border-primary transition-colors">
-            <CardContent className="flex flex-col items-center justify-center py-8">
-              <Calendar className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Plan Your Day</h3>
-              <p className="text-muted-foreground text-center mb-4">
-                Schedule and track your events
+          <Card className="glass-card hover-lift border-none group cursor-pointer transition-all duration-300">
+            <CardContent className="flex flex-col items-center justify-center py-10">
+              <div className="rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 p-4 mb-4 group-hover:scale-110 transition-transform">
+                <Calendar className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Map Out Your Day</h3>
+              <p className="text-muted-foreground text-center mb-6 text-sm">
+                Schedule and plan your activities
               </p>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="rounded-full px-6">
                 <Link to="/calendar">
                   <Calendar className="h-4 w-4 mr-2" />
-                  Open Calendar
+                  View Calendar
                 </Link>
               </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Motivation */}
-        <div className="mt-12 text-center">
-          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-            <CardContent className="py-8">
-              <h2 className="text-2xl font-bold mb-2">💪 Stay Focused, Stay Productive</h2>
-              <p className="text-muted-foreground">
-                Every small step counts towards your bigger goals. Keep going!
-              </p>
             </CardContent>
           </Card>
         </div>

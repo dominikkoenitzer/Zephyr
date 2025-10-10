@@ -98,14 +98,14 @@ const SupportPage = () => {
 
   const faqItems = [
     {
-      question: 'How do I get started with Breeze Flow?',
+      question: 'How do I get started with Zephyr?',
       answer:
         'Getting started is easy! First, create an account and log in. Then, explore our main features: Task Management, Focus Timer, Daily Planner, and Wellness Tracking. Each tool is designed to help you stay productive and organized.',
     },
     {
       question: 'Can I sync my data across devices?',
       answer:
-        'Yes! Breeze Flow automatically syncs your data across all your devices when you are signed in to your account. This ensures you have access to your tasks, schedule, and progress wherever you go.',
+        'Yes! Zephyr automatically syncs your data across all your devices when you are signed in to your account. This ensures you have access to your tasks, schedule, and progress wherever you go.',
     },
     {
       question: 'How does the Focus Timer work?',
