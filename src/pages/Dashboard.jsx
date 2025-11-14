@@ -384,7 +384,7 @@ function Dashboard() {
                   <Bar 
                     dataKey="pomodoros" 
                     fill="hsl(var(--primary))" 
-                    name="Pomodoros"
+                    name="Pomodoros Completed"
                     radius={[6, 6, 0, 0]}
                   />
                   <Bar 
