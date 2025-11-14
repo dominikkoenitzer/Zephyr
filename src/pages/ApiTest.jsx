@@ -18,7 +18,6 @@ import {
   HStack,
   Input,
   FormControl,
-  FormLabel,
 } from '@chakra-ui/react';
 import { getTasks, createTask } from '../services/api';
 
