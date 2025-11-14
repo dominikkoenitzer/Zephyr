@@ -12,44 +12,23 @@ const DEFAULT_WORK_TIME = 25 * 60; // 25 minutes in seconds
 const DEFAULT_BREAK_TIME = 5 * 60; // 5 minutes in seconds
 const DEFAULT_LONG_BREAK_TIME = 15 * 60; // 15 minutes in seconds;
 
-// Enhanced completion indicator
+// Subtle completion indicator in bottom left
 const CompletionIndicator = ({ show, pomodorosCompleted, sessionStreak }) => {
   if (!show) return null;
   
   return (
-    <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
-      {/* Animated background overlay */}
-      <div className="absolute inset-0 bg-primary/10 animate-fade-in" />
-      
-      {/* Main celebration card */}
-      <div className="relative z-10 animate-scale-in">
-        <div className="bg-gradient-to-br from-primary/20 via-primary/10 to-background backdrop-blur-xl rounded-3xl p-8 shadow-2xl border-2 border-primary/30">
-          {/* Animated rings */}
-          <div className="absolute inset-0 rounded-3xl border-2 border-primary/20 animate-ping" />
-          <div className="absolute inset-0 rounded-3xl border-2 border-primary/10 animate-ping" style={{ animationDelay: '0.2s' }} />
-          
-          {/* Content */}
-          <div className="relative z-10 flex flex-col items-center gap-4">
-            {/* Award icon with glow */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-primary/30 rounded-full blur-xl animate-pulse" />
-              <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg">
-                <Award className="h-10 w-10 text-white animate-bounce" />
-              </div>
-            </div>
-            
-            {/* Success message */}
-            <div className="text-center space-y-1">
-              <h3 className="text-2xl font-bold text-foreground">Session Complete!</h3>
-              <p className="text-sm text-muted-foreground">
-                {pomodorosCompleted} pomodoro{pomodorosCompleted !== 1 ? 's' : ''} completed
-              </p>
-              {sessionStreak > 1 && (
-                <p className="text-xs text-primary font-semibold mt-2">
-                  {sessionStreak} session streak! 🔥
-                </p>
-              )}
-            </div>
+    <div className="fixed bottom-6 left-6 z-50 pointer-events-none">
+      <div className="bg-background/95 backdrop-blur-md rounded-xl p-4 shadow-lg border-2 border-primary/30 animate-fade-in-up">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+            <Award className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">Session Complete!</p>
+            <p className="text-xs text-muted-foreground">
+              {pomodorosCompleted} pomodoro{pomodorosCompleted !== 1 ? 's' : ''}
+              {sessionStreak > 1 && ` • ${sessionStreak} streak`}
+            </p>
           </div>
         </div>
       </div>
