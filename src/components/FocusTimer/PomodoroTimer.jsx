@@ -641,66 +641,66 @@ const PomodoroTimer = () => {
               Customize Timer
             </Button>
           </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Timer Settings</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6 py-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground block">
+                  Focus Duration (minutes)
+                </label>
+                <NumberInput
+                  min={1}
+                  max={60}
+                  value={Math.floor(workTime / 60)}
+                  onChange={(e) => setWorkTime(parseInt(e.target.value) * 60 || DEFAULT_WORK_TIME)}
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground block">
+                  Short Break (minutes)
+                </label>
+                <NumberInput
+                  min={1}
+                  max={30}
+                  value={Math.floor(breakTime / 60)}
+                  onChange={(e) => setBreakTime(parseInt(e.target.value) * 60 || DEFAULT_BREAK_TIME)}
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground block">
+                  Long Break (minutes)
+                </label>
+                <NumberInput
+                  min={1}
+                  max={60}
+                  value={Math.floor(longBreakTime / 60)}
+                  onChange={(e) => setLongBreakTime(parseInt(e.target.value) * 60 || DEFAULT_LONG_BREAK_TIME)}
+                  className="w-full"
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <Button 
+                  onClick={() => setIsSettingsOpen(false)} 
+                  className="flex-1"
+                >
+                  Save Settings
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => setIsSettingsOpen(false)} 
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
         </Dialog>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Timer Settings</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-6 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground block">
-                Focus Duration (minutes)
-              </label>
-              <NumberInput
-                min={1}
-                max={60}
-                value={Math.floor(workTime / 60)}
-                onChange={(e) => setWorkTime(parseInt(e.target.value) * 60 || DEFAULT_WORK_TIME)}
-                className="w-full"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground block">
-                Short Break (minutes)
-              </label>
-              <NumberInput
-                min={1}
-                max={30}
-                value={Math.floor(breakTime / 60)}
-                onChange={(e) => setBreakTime(parseInt(e.target.value) * 60 || DEFAULT_BREAK_TIME)}
-                className="w-full"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground block">
-                Long Break (minutes)
-              </label>
-              <NumberInput
-                min={1}
-                max={60}
-                value={Math.floor(longBreakTime / 60)}
-                onChange={(e) => setLongBreakTime(parseInt(e.target.value) * 60 || DEFAULT_LONG_BREAK_TIME)}
-                className="w-full"
-              />
-            </div>
-            <div className="flex gap-3 pt-2">
-              <Button 
-                onClick={() => setIsSettingsOpen(false)} 
-                className="flex-1"
-              >
-                Save Settings
-              </Button>
-              <Button 
-                variant="outline"
-                onClick={() => setIsSettingsOpen(false)} 
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      </div>
     </div>
   );
 };
