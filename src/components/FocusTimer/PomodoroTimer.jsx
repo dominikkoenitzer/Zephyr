@@ -10,8 +10,6 @@ const DEFAULT_WORK_TIME = 25 * 60; // 25 minutes in seconds
 const DEFAULT_BREAK_TIME = 5 * 60; // 5 minutes in seconds
 const DEFAULT_LONG_BREAK_TIME = 15 * 60; // 15 minutes in seconds
 
-const STORAGE_KEY = 'zephyr_timer_state';
-
 // Subtle completion indicator
 const CompletionIndicator = ({ show }) => {
   if (!show) return null;
@@ -38,6 +36,7 @@ const PomodoroTimer = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [sessionStreak, setSessionStreak] = useState(0);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const showNotification = (title, message) => {
     if ('Notification' in window && Notification.permission === 'granted') {
@@ -85,11 +84,9 @@ const PomodoroTimer = () => {
 
   // Load state from localStorage on mount
   useEffect(() => {
-    const savedState = localStorage.getItem(STORAGE_KEY);
-    if (savedState) {
+    const state = localStorageService.getTimerState();
+    if (state) {
       try {
-        const state = JSON.parse(savedState);
-        
         // Calculate time elapsed since last save if timer was running
         if (state.isRunning && state.lastSaved) {
           const timeElapsed = Math.floor((Date.now() - state.lastSaved) / 1000);
@@ -105,7 +102,7 @@ const PomodoroTimer = () => {
             setIsRunning(state.isRunning);
           }
         } else {
-          setTimeLeft(state.timeLeft);
+          setTimeLeft(state.timeLeft || DEFAULT_WORK_TIME);
           setIsRunning(false);
         }
         
@@ -119,24 +116,26 @@ const PomodoroTimer = () => {
         console.error('Failed to load timer state:', error);
       }
     }
+    setIsInitialized(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Save state to localStorage whenever relevant state changes
+  // Save state to localStorage whenever relevant state changes (but not on initial load)
   useEffect(() => {
-    const state = {
-      timeLeft,
-      isRunning,
-      isBreak,
-      pomodorosCompleted,
-      workTime,
-      breakTime,
-      longBreakTime,
-      sessionStreak,
-      lastSaved: Date.now()
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [timeLeft, isRunning, isBreak, pomodorosCompleted, workTime, breakTime, longBreakTime, sessionStreak]);
+    if (isInitialized) {
+      const state = {
+        timeLeft,
+        isRunning,
+        isBreak,
+        pomodorosCompleted,
+        workTime,
+        breakTime,
+        longBreakTime,
+        sessionStreak
+      };
+      localStorageService.saveTimerState(state);
+    }
+  }, [timeLeft, isRunning, isBreak, pomodorosCompleted, workTime, breakTime, longBreakTime, sessionStreak, isInitialized]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);

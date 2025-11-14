@@ -7,6 +7,23 @@ import ErrorFallback from './components/ErrorBoundary/ErrorFallback'
 import PageLoader from './components/ui/PageLoader'
 import './index.css'
 
+// Initialize theme before React renders
+const initializeTheme = () => {
+  const savedTheme = localStorage.getItem('theme') || 'system';
+  const root = document.documentElement;
+  root.classList.remove('dark', 'light');
+  
+  if (savedTheme === 'system') {
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    root.classList.add(systemTheme);
+  } else {
+    root.classList.add(savedTheme);
+  }
+};
+
+// Apply theme immediately
+initializeTheme();
+
 // Lazy load pages for code-splitting
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const TasksPage = lazy(() => import('./pages/TasksPage'))

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Bell, Moon, Sun, Monitor, Sparkles, Zap, Volume2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -6,6 +6,54 @@ import { Button } from '../components/ui/button';
 function Settings() {
   const [notifications, setNotifications] = useState(true);
   const [sounds, setSounds] = useState(true);
+  const [theme, setTheme] = useState('system');
+
+  const applyTheme = (newTheme) => {
+    const root = window.document.documentElement;
+    root.classList.remove('dark', 'light');
+    
+    if (newTheme === 'system') {
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      root.classList.add(systemTheme);
+    } else {
+      root.classList.add(newTheme);
+    }
+  };
+
+  useEffect(() => {
+    // Load current theme
+    const savedTheme = localStorage.getItem('theme') || 'system';
+    setTheme(savedTheme);
+    
+    // Listen for theme changes from sidebar
+    const handleStorageChange = () => {
+      const currentTheme = localStorage.getItem('theme') || 'system';
+      setTheme(currentTheme);
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for custom event in case theme changes in same window
+    const handleThemeChange = (e) => {
+      setTheme(e.detail.theme);
+    };
+    
+    window.addEventListener('themechange', handleThemeChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('themechange', handleThemeChange);
+    };
+  }, []);
+
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    applyTheme(newTheme);
+    
+    // Dispatch custom event so sidebar can update
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: newTheme } }));
+  };
 
   return (
     <div className="container mx-auto max-w-4xl space-y-8 py-8">
@@ -70,24 +118,45 @@ function Settings() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-6 border-2 border-primary bg-primary/5 rounded-xl cursor-pointer hover:scale-105 transition-transform">
+            <div 
+              onClick={() => handleThemeChange('light')}
+              className={`p-6 border-2 rounded-xl cursor-pointer hover:scale-105 transition-transform ${
+                theme === 'light' 
+                  ? 'border-primary bg-primary/5' 
+                  : 'border-border hover:border-primary/50'
+              }`}
+            >
               <div className="flex flex-col items-center gap-3">
-                <Sun className="h-8 w-8 text-primary" />
-                <span className="font-medium">Light</span>
+                <Sun className={`h-8 w-8 ${theme === 'light' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <span className={`font-medium ${theme === 'light' ? 'text-foreground' : 'text-muted-foreground'}`}>Light</span>
               </div>
             </div>
             
-            <div className="p-6 border-2 border-border rounded-xl cursor-pointer hover:scale-105 transition-transform">
+            <div 
+              onClick={() => handleThemeChange('dark')}
+              className={`p-6 border-2 rounded-xl cursor-pointer hover:scale-105 transition-transform ${
+                theme === 'dark' 
+                  ? 'border-primary bg-primary/5' 
+                  : 'border-border hover:border-primary/50'
+              }`}
+            >
               <div className="flex flex-col items-center gap-3">
-                <Moon className="h-8 w-8 text-muted-foreground" />
-                <span className="font-medium">Dark</span>
+                <Moon className={`h-8 w-8 ${theme === 'dark' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <span className={`font-medium ${theme === 'dark' ? 'text-foreground' : 'text-muted-foreground'}`}>Dark</span>
               </div>
             </div>
             
-            <div className="p-6 border-2 border-border rounded-xl cursor-pointer hover:scale-105 transition-transform">
+            <div 
+              onClick={() => handleThemeChange('system')}
+              className={`p-6 border-2 rounded-xl cursor-pointer hover:scale-105 transition-transform ${
+                theme === 'system' 
+                  ? 'border-primary bg-primary/5' 
+                  : 'border-border hover:border-primary/50'
+              }`}
+            >
               <div className="flex flex-col items-center gap-3">
-                <Monitor className="h-8 w-8 text-muted-foreground" />
-                <span className="font-medium">Auto</span>
+                <Monitor className={`h-8 w-8 ${theme === 'system' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <span className={`font-medium ${theme === 'system' ? 'text-foreground' : 'text-muted-foreground'}`}>Auto</span>
               </div>
             </div>
           </div>
