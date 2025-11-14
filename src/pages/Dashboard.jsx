@@ -203,13 +203,52 @@ function Dashboard() {
                 Track your productivity and stay focused
               </p>
             </div>
-            <Button asChild size="lg" className="gap-2">
-              <Link to="/focus">
-                <Play className="h-4 w-4" />
-                Start Session
-              </Link>
-            </Button>
           </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card className="glass-card border-none hover-lift group cursor-pointer transition-all">
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Timer className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1">Start Focus Session</h3>
+                <p className="text-sm text-muted-foreground">Begin a focused work session</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            </CardContent>
+            <Link to="/focus" className="absolute inset-0" />
+          </Card>
+
+          <Card className="glass-card border-none hover-lift group cursor-pointer transition-all">
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                <CheckSquare className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1">Manage Tasks</h3>
+                <p className="text-sm text-muted-foreground">Organize your to-do list</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            </CardContent>
+            <Link to="/tasks" className="absolute inset-0" />
+          </Card>
+
+          <Card className="glass-card border-none hover-lift group cursor-pointer transition-all">
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Calendar className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1">View Calendar</h3>
+                <p className="text-sm text-muted-foreground">Plan your schedule</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            </CardContent>
+            <Link to="/calendar" className="absolute inset-0" />
+          </Card>
         </div>
 
         {/* Main Stats Grid */}
