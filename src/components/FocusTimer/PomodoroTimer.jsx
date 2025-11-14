@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Play, Pause, SkipForward, Settings, Award, Flame, Clock, Target, Maximize2, Minimize2, X } from 'lucide-react';
+import { Play, Pause, SkipForward, Settings, Award, Flame, Clock, Target, Maximize2, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
