@@ -20,7 +20,6 @@ import {
   FormControl,
   FormLabel,
   IconButton,
-  Badge,
   Menu,
   MenuButton,
   MenuList,
@@ -29,7 +28,6 @@ import {
 import {
   FaChevronLeft,
   FaChevronRight,
-  FaPlus,
   FaEllipsisV,
   FaTrash,
   FaEdit,
