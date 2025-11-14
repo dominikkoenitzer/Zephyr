@@ -654,15 +654,20 @@ const PomodoroTimer = () => {
                   <div className="grid grid-cols-2 gap-3">
                     {SOUND_OPTIONS.map((sound) => {
                       const IconComponent = sound.icon;
+                      const isSelected = selectedSound === sound.id;
                       return (
                         <button
                           key={sound.id}
                           onClick={() => handleSoundChange(sound.id)}
                           className={`p-4 rounded-xl border-2 transition-all text-left ${
-                            selectedSound === sound.id
-                              ? 'border-primary bg-primary/10 shadow-md'
-                              : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                            isSelected
+                              ? 'shadow-md'
+                              : 'border-border hover:opacity-80'
                           }`}
+                          style={{
+                            borderColor: isSelected ? sound.color : undefined,
+                            backgroundColor: isSelected ? `${sound.color}15` : undefined,
+                          }}
                         >
                           <div className="mb-2">
                             <IconComponent 
@@ -672,8 +677,10 @@ const PomodoroTimer = () => {
                           </div>
                           <div className="font-medium text-sm text-foreground">{sound.name}</div>
                           <div className="text-xs text-muted-foreground mt-1">{sound.description}</div>
-                          {selectedSound === sound.id && sound.id !== 'silence' && (
-                            <div className="mt-2 text-xs text-primary font-medium">Playing...</div>
+                          {isSelected && sound.id !== 'silence' && (
+                            <div className="mt-2 text-xs font-medium" style={{ color: sound.color }}>
+                              Playing...
+                            </div>
                           )}
                         </button>
                       );
