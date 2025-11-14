@@ -1,4 +1,3 @@
-import React from 'react';
 import PomodoroTimer from '../components/FocusTimer/PomodoroTimer';
 
 function FocusTimer() {
