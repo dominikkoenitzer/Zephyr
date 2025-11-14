@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
+import { TimePicker } from '../ui/time-picker';
 import { localStorageService } from '../../services/localStorage';
 
 const CalendarView = () => {
@@ -276,10 +277,8 @@ const CalendarView = () => {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Time (optional)</label>
-              <Input
-                type="time"
-                placeholder="HH:MM"
+              <label className="text-sm font-medium mb-2 block text-foreground">Time (optional)</label>
+              <TimePicker
                 value={eventForm.time}
                 onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })}
                 className="w-full"
