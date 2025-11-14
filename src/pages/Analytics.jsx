@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import {
   LineChart,
@@ -18,7 +16,6 @@ import {
 } from 'recharts';
 
 function Analytics() {
-  const [timeRange, setTimeRange] = useState('7days');
 
   // Mock data for charts
   const focusData = [

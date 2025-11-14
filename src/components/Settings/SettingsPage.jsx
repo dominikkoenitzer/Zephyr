@@ -26,7 +26,6 @@ import {
   TabPanel,
   Divider,
   FormErrorMessage,
-  Badge,
 } from '@chakra-ui/react';
 import {
   FaUser,
@@ -35,7 +34,6 @@ import {
   FaCamera,
   FaLock,
   FaTrash,
-  FaSignOutAlt,
 } from 'react-icons/fa';
 import { api } from '../../services/api';
 

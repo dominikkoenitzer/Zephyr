@@ -9,7 +9,6 @@ import {
   useColorModeValue,
   SimpleGrid,
   Progress,
-  Heading,
   Textarea,
   IconButton,
   Slider,
@@ -17,8 +16,6 @@ import {
   SliderFilledTrack,
   SliderThumb,
   SliderMark,
-  Tooltip,
-  Badge,
   Stat,
   StatLabel,
   StatNumber,
@@ -40,7 +37,6 @@ import {
   FaWalking,
   FaBed,
   FaPlus,
-  FaChartLine,
 } from 'react-icons/fa';
 import { api } from '../../services/api';
 
@@ -51,12 +47,10 @@ const WellnessTracker = () => {
   const [waterIntake, setWaterIntake] = useState(0);
   const [sleepHours, setSleepHours] = useState(7);
   const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
   const bgColor = useColorModeValue('lightMode.card', 'darkMode.card');
-  const borderColor = useColorModeValue('lightMode.border', 'darkMode.border');
 
   useEffect(() => {
     fetchStats();
@@ -66,7 +60,6 @@ const WellnessTracker = () => {
     try {
       const data = await api.getWellnessStats();
       setStats(data);
-      setLoading(false);
     } catch (error) {
       toast({
         title: 'Error fetching wellness stats',
