@@ -76,6 +76,57 @@
     --glass-border: rgba(255, 255, 255, 0.1);
     --glass-shadow: rgba(0, 0, 0, 0.3);
   }
+
+  /* Sound Theme Overrides */
+  [data-sound-theme="rain"] {
+    --primary: 200 90% 55%;
+    --accent: 200 70% 95%;
+  }
+
+  [data-sound-theme="forest"] {
+    --primary: 140 60% 40%;
+    --accent: 140 50% 95%;
+  }
+
+  [data-sound-theme="ocean"] {
+    --primary: 195 90% 55%;
+    --accent: 195 70% 95%;
+  }
+
+  [data-sound-theme="coffee"] {
+    --primary: 25 50% 45%;
+    --accent: 25 40% 95%;
+  }
+
+  [data-sound-theme="fireplace"] {
+    --primary: 15 90% 55%;
+    --accent: 15 70% 95%;
+  }
+
+  .dark [data-sound-theme="rain"] {
+    --primary: 200 90% 65%;
+    --accent: 200 50% 15%;
+  }
+
+  .dark [data-sound-theme="forest"] {
+    --primary: 140 60% 50%;
+    --accent: 140 40% 15%;
+  }
+
+  .dark [data-sound-theme="ocean"] {
+    --primary: 195 90% 65%;
+    --accent: 195 50% 15%;
+  }
+
+  .dark [data-sound-theme="coffee"] {
+    --primary: 25 50% 55%;
+    --accent: 25 30% 15%;
+  }
+
+  .dark [data-sound-theme="fireplace"] {
+    --primary: 15 90% 65%;
+    --accent: 15 50% 15%;
+  }
 }
 
 @layer base {
