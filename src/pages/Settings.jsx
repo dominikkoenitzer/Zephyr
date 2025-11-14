@@ -10,7 +10,7 @@ function Settings() {
   return (
     <div className="container mx-auto max-w-4xl space-y-8 py-8">
       <div className="space-y-4 animate-fade-in-up">
-        <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+        <h1 className="text-5xl font-bold text-foreground">
           Settings
         </h1>
         <p className="text-muted-foreground text-lg">
@@ -36,7 +36,6 @@ function Settings() {
               variant={notifications ? "default" : "outline"}
               size="sm"
               onClick={() => setNotifications(!notifications)}
-              className="rounded-full"
             >
               {notifications ? 'Enabled' : 'Disabled'}
             </Button>
@@ -54,7 +53,6 @@ function Settings() {
               variant={sounds ? "default" : "outline"}
               size="sm"
               onClick={() => setSounds(!sounds)}
-              className="rounded-full"
             >
               {sounds ? 'On' : 'Off'}
             </Button>
@@ -123,15 +121,6 @@ function Settings() {
         </CardContent>
       </Card>
 
-      {/* Pro Tip */}
-      <div className="glass-card border-none p-6 text-center animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-        <Sparkles className="h-8 w-8 text-primary mx-auto mb-3" />
-        <h3 className="font-semibold text-lg mb-2">Pro Tip</h3>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Enable notifications to stay on track with your focus sessions. 
-          Zephyr will gently remind you when it&apos;s time to work or take a break.
-        </p>
-      </div>
     </div>
   );
 }

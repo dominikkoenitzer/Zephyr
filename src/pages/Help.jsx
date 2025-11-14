@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { HelpCircle, Lightbulb, Book, MessageCircle, Zap } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { HelpCircle, Lightbulb, Zap } from 'lucide-react';
 
 function Help() {
   const faqs = [
@@ -33,7 +32,7 @@ function Help() {
   return (
     <div className="container mx-auto max-w-4xl space-y-8 py-8">
       <div className="space-y-4 animate-fade-in-up">
-        <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+        <h1 className="text-5xl font-bold text-foreground">
           Help & Support
         </h1>
         <p className="text-muted-foreground text-lg">
@@ -60,7 +59,7 @@ function Help() {
             </div>
             
             <div className="flex gap-3 items-start">
-              <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">2</div>
+              <div className="bg-primary text-white rounded w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">2</div>
               <div>
                 <h4 className="font-semibold text-foreground">Start a Focus Session</h4>
                 <p className="text-sm text-muted-foreground">Click the Focus Timer and press play to begin your first 25-minute session.</p>
@@ -68,7 +67,7 @@ function Help() {
             </div>
             
             <div className="flex gap-3 items-start">
-              <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">3</div>
+              <div className="bg-primary text-white rounded w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">3</div>
               <div>
                 <h4 className="font-semibold text-foreground">Take Breaks</h4>
                 <p className="text-sm text-muted-foreground">When the timer completes, enjoy your well-earned break. Stretch, hydrate, breathe!</p>
@@ -76,7 +75,7 @@ function Help() {
             </div>
             
             <div className="flex gap-3 items-start">
-              <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">4</div>
+              <div className="bg-primary text-white rounded w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">4</div>
               <div>
                 <h4 className="font-semibold text-foreground">Track Your Progress</h4>
                 <p className="text-sm text-muted-foreground">Check your Dashboard to see your growing streak and productivity stats.</p>
@@ -124,42 +123,6 @@ function Help() {
         </CardContent>
       </Card>
 
-      {/* Contact Card */}
-      <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5 text-primary" />
-            Need More Help?
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground mb-4">
-            We&apos;re here to help you get the most out of Zephyr. Feel free to reach out!
-          </p>
-          <div className="flex gap-3">
-            <Button className="rounded-full px-6">
-              <MessageCircle className="h-4 w-4 mr-2" />
-              Contact Support
-            </Button>
-            <Button variant="outline" className="rounded-full px-6">
-              <Book className="h-4 w-4 mr-2" />
-              Documentation
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Inspirational Footer */}
-      <div className="glass-card border-none p-8 text-center animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-        <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-          &ldquo;Flow Through Focus&rdquo;
-        </h3>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Zephyr is designed to help you find your flow state - that magical zone where 
-          productivity feels effortless and time flies by. Every feature is crafted to 
-          support your journey to peak performance.
-        </p>
-      </div>
     </div>
   );
 }
