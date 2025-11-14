@@ -59,6 +59,7 @@ class AmbientSoundService {
     this.currentSound = null;
     this.isPlaying = false;
     this.volume = 0.5;
+    this.intervals = []; // Store intervals for cleanup
   }
 
   async init() {
@@ -78,36 +79,50 @@ class AmbientSoundService {
     return this.audioContext;
   }
 
+  // Generate white noise buffer
+  generateNoiseBuffer(audioContext, duration = 2) {
+    const sampleRate = audioContext.sampleRate;
+    const buffer = audioContext.createBuffer(1, sampleRate * duration, sampleRate);
+    const data = buffer.getChannelData(0);
+    
+    for (let i = 0; i < buffer.length; i++) {
+      data[i] = Math.random() * 2 - 1; // White noise
+    }
+    
+    return buffer;
+  }
+
   generateRainSound(audioContext) {
     const sources = [];
     const masterGain = audioContext.createGain();
-    masterGain.gain.value = this.volume * 0.4;
+    masterGain.gain.value = this.volume * 0.3;
     
-    // Multiple oscillators for rain-like sound
-    for (let i = 0; i < 8; i++) {
-      const osc = audioContext.createOscillator();
-      const gain = audioContext.createGain();
+    // Create multiple rain layers using filtered noise
+    for (let i = 0; i < 6; i++) {
+      const noiseBuffer = this.generateNoiseBuffer(audioContext, 2);
+      const noiseSource = audioContext.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+      noiseSource.loop = true;
+      
+      // Low-pass filter for rain-like sound
       const filter = audioContext.createBiquadFilter();
-      
-      // Random frequencies in the rain range
-      osc.frequency.value = 200 + Math.random() * 300;
-      osc.type = 'sawtooth';
-      
       filter.type = 'lowpass';
-      filter.frequency.value = 2000 + Math.random() * 1000;
+      filter.frequency.value = 800 + Math.random() * 400; // 800-1200 Hz
       filter.Q.value = 1;
       
-      // Envelope for natural variation
+      // Gain with gentle envelope
+      const gain = audioContext.createGain();
       gain.gain.setValueAtTime(0, audioContext.currentTime);
-      gain.gain.linearRampToValueAtTime(0.1 + Math.random() * 0.1, audioContext.currentTime + 0.1);
-      gain.gain.linearRampToValueAtTime(0.05 + Math.random() * 0.05, audioContext.currentTime + 0.5);
+      gain.gain.linearRampToValueAtTime(0.08 + Math.random() * 0.04, audioContext.currentTime + 0.5);
       
-      osc.connect(filter);
+      // Slight variation in timing
+      noiseSource.start(audioContext.currentTime + Math.random() * 0.3);
+      
+      noiseSource.connect(filter);
       filter.connect(gain);
       gain.connect(masterGain);
       
-      osc.start(audioContext.currentTime + Math.random() * 0.5);
-      sources.push({ osc, gain });
+      sources.push({ osc: noiseSource, gain, filter });
     }
     
     return { sources, masterGain };
@@ -116,29 +131,43 @@ class AmbientSoundService {
   generateForestSound(audioContext) {
     const sources = [];
     const masterGain = audioContext.createGain();
-    masterGain.gain.value = this.volume * 0.3;
+    masterGain.gain.value = this.volume * 0.25;
     
-    // Low frequency nature tones
-    for (let i = 0; i < 4; i++) {
+    // Very low, soft tones for forest ambience
+    for (let i = 0; i < 3; i++) {
       const osc = audioContext.createOscillator();
       const gain = audioContext.createGain();
       const filter = audioContext.createBiquadFilter();
       
-      osc.frequency.value = 80 + Math.random() * 40;
-      osc.type = 'sine';
+      // Very low frequencies (40-80 Hz) for deep forest sound
+      osc.frequency.value = 40 + i * 15 + Math.random() * 10;
+      osc.type = 'sine'; // Pure sine for smooth sound
       
+      // Gentle low-pass filter
       filter.type = 'lowpass';
-      filter.frequency.value = 500;
+      filter.frequency.value = 200;
       filter.Q.value = 0.5;
       
-      gain.gain.value = 0.15;
+      // Very soft gain
+      gain.gain.value = 0.08 + Math.random() * 0.04;
       
+      // Slow, gentle LFO for natural variation
+      const lfo = audioContext.createOscillator();
+      const lfoGain = audioContext.createGain();
+      lfo.frequency.value = 0.05 + Math.random() * 0.05; // Very slow
+      lfo.type = 'sine';
+      lfoGain.gain.value = 5; // Small frequency variation
+      
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc.frequency);
       osc.connect(filter);
       filter.connect(gain);
       gain.connect(masterGain);
       
-      osc.start(audioContext.currentTime);
-      sources.push({ osc, gain });
+      osc.start(audioContext.currentTime + Math.random() * 0.5);
+      lfo.start(audioContext.currentTime);
+      
+      sources.push({ osc, lfo, gain, filter });
     }
     
     return { sources, masterGain };
@@ -147,38 +176,42 @@ class AmbientSoundService {
   generateOceanSound(audioContext) {
     const sources = [];
     const masterGain = audioContext.createGain();
-    masterGain.gain.value = this.volume * 0.35;
+    masterGain.gain.value = this.volume * 0.3;
     
-    // Wave-like oscillating tones
-    for (let i = 0; i < 3; i++) {
-      const osc = audioContext.createOscillator();
-      const lfo = audioContext.createOscillator();
-      const lfoGain = audioContext.createGain();
-      const gain = audioContext.createGain();
+    // Ocean waves using filtered noise with slow modulation
+    for (let i = 0; i < 4; i++) {
+      const noiseBuffer = this.generateNoiseBuffer(audioContext, 2);
+      const noiseSource = audioContext.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+      noiseSource.loop = true;
+      
+      // Low-pass filter
       const filter = audioContext.createBiquadFilter();
-      
-      osc.frequency.value = 100 + i * 50;
-      osc.type = 'sine';
-      
-      lfo.frequency.value = 0.1 + i * 0.05; // Slow wave modulation
-      lfo.type = 'sine';
-      lfoGain.gain.value = 20; // Frequency modulation amount
-      
       filter.type = 'lowpass';
-      filter.frequency.value = 800;
+      filter.frequency.value = 600 + Math.random() * 200;
       filter.Q.value = 1;
       
-      gain.gain.value = 0.2;
+      // LFO for wave-like modulation
+      const lfo = audioContext.createOscillator();
+      const lfoGain = audioContext.createGain();
+      lfo.frequency.value = 0.08 + i * 0.03; // Slow wave frequency
+      lfo.type = 'sine';
+      lfoGain.gain.value = 200; // Modulate filter frequency
+      
+      // Gain with wave envelope
+      const gain = audioContext.createGain();
+      gain.gain.value = 0.1 + Math.random() * 0.05;
       
       lfo.connect(lfoGain);
-      lfoGain.connect(osc.frequency);
-      osc.connect(filter);
+      lfoGain.connect(filter.frequency);
+      noiseSource.connect(filter);
       filter.connect(gain);
       gain.connect(masterGain);
       
-      osc.start(audioContext.currentTime);
+      noiseSource.start(audioContext.currentTime + Math.random() * 0.2);
       lfo.start(audioContext.currentTime);
-      sources.push({ osc, lfo, gain });
+      
+      sources.push({ osc: noiseSource, lfo, gain, filter });
     }
     
     return { sources, masterGain };
@@ -187,29 +220,43 @@ class AmbientSoundService {
   generateCoffeeSound(audioContext) {
     const sources = [];
     const masterGain = audioContext.createGain();
-    masterGain.gain.value = this.volume * 0.25;
+    masterGain.gain.value = this.volume * 0.2;
     
-    // Soft ambient tones
-    for (let i = 0; i < 5; i++) {
+    // Warm, soft tones for coffee shop ambience
+    for (let i = 0; i < 4; i++) {
       const osc = audioContext.createOscillator();
       const gain = audioContext.createGain();
       const filter = audioContext.createBiquadFilter();
       
-      osc.frequency.value = 200 + Math.random() * 200;
-      osc.type = 'triangle';
+      // Mid-range frequencies (150-300 Hz) for warmth
+      osc.frequency.value = 150 + i * 30 + Math.random() * 20;
+      osc.type = 'triangle'; // Softer than square
       
+      // Gentle low-pass for warmth
       filter.type = 'lowpass';
-      filter.frequency.value = 2000;
+      filter.frequency.value = 1500 + Math.random() * 500;
       filter.Q.value = 0.7;
       
-      gain.gain.value = 0.1;
+      // Very soft gain
+      gain.gain.value = 0.06 + Math.random() * 0.03;
       
+      // Slow, gentle modulation
+      const lfo = audioContext.createOscillator();
+      const lfoGain = audioContext.createGain();
+      lfo.frequency.value = 0.1 + Math.random() * 0.1;
+      lfo.type = 'sine';
+      lfoGain.gain.value = 10; // Small variation
+      
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc.frequency);
       osc.connect(filter);
       filter.connect(gain);
       gain.connect(masterGain);
       
-      osc.start(audioContext.currentTime + Math.random() * 0.3);
-      sources.push({ osc, gain });
+      osc.start(audioContext.currentTime + Math.random() * 0.4);
+      lfo.start(audioContext.currentTime);
+      
+      sources.push({ osc, lfo, gain, filter });
     }
     
     return { sources, masterGain };
@@ -218,39 +265,76 @@ class AmbientSoundService {
   generateFireplaceSound(audioContext) {
     const sources = [];
     const masterGain = audioContext.createGain();
-    masterGain.gain.value = this.volume * 0.3;
+    masterGain.gain.value = this.volume * 0.25;
     
-    // Crackling-like sounds with rapid variations
-    for (let i = 0; i < 6; i++) {
-      const osc = audioContext.createOscillator();
-      const lfo = audioContext.createOscillator();
-      const lfoGain = audioContext.createGain();
-      const gain = audioContext.createGain();
-      const filter = audioContext.createBiquadFilter();
+    // Base crackling using filtered noise
+    const noiseBuffer = this.generateNoiseBuffer(audioContext, 2);
+    const baseNoise = audioContext.createBufferSource();
+    baseNoise.buffer = noiseBuffer;
+    baseNoise.loop = true;
+    
+    const baseFilter = audioContext.createBiquadFilter();
+    baseFilter.type = 'highpass';
+    baseFilter.frequency.value = 2000; // High frequencies for crackling
+    baseFilter.Q.value = 1;
+    
+    const baseGain = audioContext.createGain();
+    baseGain.gain.value = 0.08;
+    
+    baseNoise.connect(baseFilter);
+    baseFilter.connect(baseGain);
+    baseGain.connect(masterGain);
+    baseNoise.start(audioContext.currentTime);
+    
+    sources.push({ osc: baseNoise, gain: baseGain, filter: baseFilter });
+    
+    // Low rumble for fire warmth
+    const rumble = audioContext.createOscillator();
+    const rumbleGain = audioContext.createGain();
+    const rumbleFilter = audioContext.createBiquadFilter();
+    
+    rumble.frequency.value = 50 + Math.random() * 20;
+    rumble.type = 'sine';
+    
+    rumbleFilter.type = 'lowpass';
+    rumbleFilter.frequency.value = 150;
+    rumbleFilter.Q.value = 0.5;
+    
+    rumbleGain.gain.value = 0.12;
+    
+    rumble.connect(rumbleFilter);
+    rumbleFilter.connect(rumbleGain);
+    rumbleGain.connect(masterGain);
+    rumble.start(audioContext.currentTime);
+    
+    sources.push({ osc: rumble, gain: rumbleGain, filter: rumbleFilter });
+    
+    // Periodic crackle bursts
+    const createCrackle = () => {
+      const crackleBuffer = this.generateNoiseBuffer(audioContext, 0.1);
+      const crackle = audioContext.createBufferSource();
+      crackle.buffer = crackleBuffer;
       
-      osc.frequency.value = 400 + Math.random() * 300;
-      osc.type = 'square';
+      const crackleFilter = audioContext.createBiquadFilter();
+      crackleFilter.type = 'bandpass';
+      crackleFilter.frequency.value = 3000 + Math.random() * 2000;
+      crackleFilter.Q.value = 2;
       
-      lfo.frequency.value = 5 + Math.random() * 10; // Fast modulation for crackling
-      lfo.type = 'sawtooth';
-      lfoGain.gain.value = 100;
+      const crackleGain = audioContext.createGain();
+      crackleGain.gain.setValueAtTime(0.15 + Math.random() * 0.1, audioContext.currentTime);
+      crackleGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
       
-      filter.type = 'bandpass';
-      filter.frequency.value = 1000 + Math.random() * 500;
-      filter.Q.value = 2;
+      crackle.connect(crackleFilter);
+      crackleFilter.connect(crackleGain);
+      crackleGain.connect(masterGain);
       
-      gain.gain.value = 0.12;
-      
-      lfo.connect(lfoGain);
-      lfoGain.connect(osc.frequency);
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(masterGain);
-      
-      osc.start(audioContext.currentTime + Math.random() * 0.2);
-      lfo.start(audioContext.currentTime);
-      sources.push({ osc, lfo, gain });
-    }
+      crackle.start(audioContext.currentTime);
+      crackle.stop(audioContext.currentTime + 0.1);
+    };
+    
+    // Create crackles periodically
+    const crackleInterval = setInterval(createCrackle, 300 + Math.random() * 500);
+    this.intervals.push(crackleInterval);
     
     return { sources, masterGain };
   }
@@ -307,11 +391,27 @@ class AmbientSoundService {
   }
 
   stop() {
+    // Clear all intervals
+    this.intervals.forEach(interval => clearInterval(interval));
+    this.intervals = [];
+    
     if (this.currentSources && this.currentSources.length > 0) {
       this.currentSources.forEach(({ osc, lfo }) => {
         try {
-          if (osc) osc.stop();
-          if (lfo) lfo.stop();
+          if (osc) {
+            if (osc.stop) {
+              osc.stop();
+            } else if (osc.stopNode) {
+              osc.stopNode(0);
+            }
+          }
+          if (lfo) {
+            if (lfo.stop) {
+              lfo.stop();
+            } else if (lfo.stopNode) {
+              lfo.stopNode(0);
+            }
+          }
         } catch (error) {
           // Already stopped
         }
@@ -334,10 +434,16 @@ class AmbientSoundService {
   setVolume(volume) {
     this.volume = Math.max(0, Math.min(1, volume));
     if (this.currentGain) {
-      this.currentGain.gain.value = this.volume * (this.currentSound?.id === 'rain' ? 0.4 : 
-                                                    this.currentSound?.id === 'forest' ? 0.3 :
-                                                    this.currentSound?.id === 'ocean' ? 0.35 :
-                                                    this.currentSound?.id === 'coffee' ? 0.25 : 0.3);
+      // Apply volume multipliers based on sound type
+      const multipliers = {
+        'rain': 0.3,
+        'forest': 0.25,
+        'ocean': 0.3,
+        'coffee': 0.2,
+        'fireplace': 0.25
+      };
+      const multiplier = multipliers[this.currentSound?.id] || 0.3;
+      this.currentGain.gain.value = this.volume * multiplier;
     }
   }
 
