@@ -665,7 +665,10 @@ const PomodoroTimer = () => {
                           }`}
                         >
                           <div className="mb-2">
-                            <IconComponent className="h-6 w-6 text-primary" />
+                            <IconComponent 
+                              className="h-6 w-6" 
+                              style={{ color: sound.color }}
+                            />
                           </div>
                           <div className="font-medium text-sm text-foreground">{sound.name}</div>
                           <div className="text-xs text-muted-foreground mt-1">{sound.description}</div>
