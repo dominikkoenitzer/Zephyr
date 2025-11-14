@@ -1,11 +1,12 @@
 // Ambient sound service using Web Audio API for generating pleasant ambient sounds
+import { CloudRain, Trees, Waves, Coffee, Flame, VolumeX } from 'lucide-react';
 
 export const SOUND_OPTIONS = [
   {
     id: 'rain',
     name: 'Rain',
     description: 'Gentle rain sounds',
-    icon: '🌧️',
+    icon: CloudRain,
     color: '#4A90E2',
     theme: 'rain',
   },
@@ -13,7 +14,7 @@ export const SOUND_OPTIONS = [
     id: 'forest',
     name: 'Forest',
     description: 'Nature sounds',
-    icon: '🌲',
+    icon: Trees,
     color: '#2D5016',
     theme: 'forest',
   },
@@ -21,7 +22,7 @@ export const SOUND_OPTIONS = [
     id: 'ocean',
     name: 'Ocean',
     description: 'Waves and water',
-    icon: '🌊',
+    icon: Waves,
     color: '#1E88E5',
     theme: 'ocean',
   },
@@ -29,7 +30,7 @@ export const SOUND_OPTIONS = [
     id: 'coffee',
     name: 'Coffee Shop',
     description: 'Ambient cafe sounds',
-    icon: '☕',
+    icon: Coffee,
     color: '#6F4E37',
     theme: 'coffee',
   },
@@ -37,7 +38,7 @@ export const SOUND_OPTIONS = [
     id: 'fireplace',
     name: 'Fireplace',
     description: 'Crackling fire',
-    icon: '🔥',
+    icon: Flame,
     color: '#FF6B35',
     theme: 'fireplace',
   },
@@ -45,7 +46,7 @@ export const SOUND_OPTIONS = [
     id: 'silence',
     name: 'Silence',
     description: 'No ambient sound',
-    icon: '🔇',
+    icon: VolumeX,
     color: '#9E9E9E',
     theme: 'default',
   }
