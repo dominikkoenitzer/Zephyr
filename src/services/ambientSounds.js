@@ -308,7 +308,7 @@ class AmbientSoundService {
 
   stop() {
     if (this.currentSources && this.currentSources.length > 0) {
-      this.currentSources.forEach(({ osc, lfo, gain }) => {
+      this.currentSources.forEach(({ osc, lfo }) => {
         try {
           if (osc) osc.stop();
           if (lfo) lfo.stop();
