@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Timer, 
@@ -10,11 +10,24 @@ import {
   Target,
   Coffee,
   Sparkles,
-  TrendingUp
+  TrendingUp,
+  BarChart3
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { localStorageService } from '../services/localStorage';
+import {
+  BarChart,
+  Bar,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend
+} from 'recharts';
 
 // Motivational quotes that change daily
 const motivationalQuotes = [
@@ -100,6 +113,73 @@ function Dashboard() {
     });
   };
 
+  // Generate chart data for last 7 days
+  const chartData = useMemo(() => {
+    const sessions = localStorageService.getFocusSessions();
+    const tasks = localStorageService.getTasks();
+    const days = [];
+    
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toDateString();
+      
+      const daySessions = sessions.filter(session => 
+        new Date(session.date).toDateString() === dateStr
+      );
+      
+      const dayTasks = tasks.filter(task => {
+        const taskDate = task.completedAt ? new Date(task.completedAt) : null;
+        return taskDate && taskDate.toDateString() === dateStr;
+      });
+      
+      const focusTime = daySessions.reduce((total, session) => 
+        total + (session.duration || 0), 0
+      ) / 60; // Convert to minutes
+      
+      days.push({
+        name: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        focusTime: Math.round(focusTime),
+        pomodoros: daySessions.length,
+        tasksCompleted: dayTasks.length
+      });
+    }
+    
+    return days;
+  }, []);
+
+  // Weekly summary data
+  const weeklyStats = useMemo(() => {
+    const sessions = localStorageService.getFocusSessions();
+    const tasks = localStorageService.getTasks();
+    const today = new Date();
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - 6);
+    
+    const weekSessions = sessions.filter(session => {
+      const sessionDate = new Date(session.date);
+      return sessionDate >= weekStart;
+    });
+    
+    const weekTasks = tasks.filter(task => {
+      if (!task.completed) return false;
+      const completedDate = task.completedAt ? new Date(task.completedAt) : null;
+      return completedDate && completedDate >= weekStart;
+    });
+    
+    const totalFocusTime = weekSessions.reduce((total, session) => 
+      total + (session.duration || 0), 0
+    ) / 60;
+    
+    return {
+      totalFocusTime: Math.round(totalFocusTime),
+      totalSessions: weekSessions.length,
+      totalTasks: weekTasks.length,
+      avgDailyFocus: Math.round(totalFocusTime / 7)
+    };
+  }, []);
+
   const formatTime = (minutes) => {
     if (minutes < 60) return `${minutes}m`;
     const hours = Math.floor(minutes / 60);
@@ -127,6 +207,23 @@ function Dashboard() {
     } else {
       return `${stats.activeTasks} on your plate`;
     }
+  };
+
+  // Custom tooltip for charts
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+          <p className="text-sm font-medium text-foreground mb-2">{label}</p>
+          {payload.map((entry, index) => (
+            <p key={index} className="text-sm" style={{ color: entry.color }}>
+              {entry.name}: {entry.name === 'Focus Time' ? `${entry.value} min` : entry.value}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -215,9 +312,131 @@ function Dashboard() {
           </Card>
         </div>
 
+        {/* Analytics Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          {/* Focus Time Trend */}
+          <Card className="glass-card border-none">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                Focus Time Trend (Last 7 Days)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorFocusTime" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis 
+                    dataKey="name" 
+                    className="text-xs text-muted-foreground"
+                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  />
+                  <YAxis 
+                    className="text-xs text-muted-foreground"
+                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area 
+                    type="monotone" 
+                    dataKey="focusTime" 
+                    stroke="hsl(var(--primary))" 
+                    fillOpacity={1}
+                    fill="url(#colorFocusTime)"
+                    name="Focus Time"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Pomodoros & Tasks */}
+          <Card className="glass-card border-none">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                Daily Activity (Last 7 Days)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis 
+                    dataKey="name" 
+                    className="text-xs text-muted-foreground"
+                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  />
+                  <YAxis 
+                    className="text-xs text-muted-foreground"
+                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Bar 
+                    dataKey="pomodoros" 
+                    fill="hsl(var(--primary))" 
+                    name="Pomodoros"
+                    radius={[8, 8, 0, 0]}
+                  />
+                  <Bar 
+                    dataKey="tasksCompleted" 
+                    fill="hsl(var(--accent-foreground))" 
+                    name="Tasks Completed"
+                    radius={[8, 8, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Weekly Summary */}
+        <Card className="glass-card border-none mb-12 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Weekly Summary
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary mb-1">
+                  {formatTime(weeklyStats.totalFocusTime)}
+                </div>
+                <div className="text-sm text-muted-foreground">Total Focus Time</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary mb-1">
+                  {weeklyStats.totalSessions}
+                </div>
+                <div className="text-sm text-muted-foreground">Total Sessions</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary mb-1">
+                  {formatTime(weeklyStats.avgDailyFocus)}
+                </div>
+                <div className="text-sm text-muted-foreground">Avg Daily Focus</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary mb-1">
+                  {weeklyStats.totalTasks}
+                </div>
+                <div className="text-sm text-muted-foreground">Tasks Completed</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Quick Actions */}
         <h2 className="text-2xl font-semibold mb-6 text-foreground">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
           <Card className="glass-card hover-lift border-none group cursor-pointer transition-all duration-300">
             <CardContent className="flex flex-col items-center justify-center py-10">
               <div className="rounded-lg bg-primary p-4 mb-4 group-hover:scale-105 transition-transform">
