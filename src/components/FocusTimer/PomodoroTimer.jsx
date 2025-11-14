@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Play, Pause, SkipForward, Settings, Award, Flame, Clock, Target, Maximize2, X } from 'lucide-react';
+import { Play, Pause, SkipForward, Settings, Award, Flame, Clock, Target, Maximize2, X, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { NumberInput } from '../ui/number-input';
 import { localStorageService } from '../../services/localStorage';
+import { ambientSoundService, SOUND_OPTIONS } from '../../services/ambientSounds';
 
 const DEFAULT_WORK_TIME = 25 * 60; // 25 minutes in seconds
 const DEFAULT_BREAK_TIME = 5 * 60; // 5 minutes in seconds
@@ -164,6 +165,9 @@ const PomodoroTimer = () => {
   const [sessionStreak, setSessionStreak] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [selectedSound, setSelectedSound] = useState('silence');
+  const [soundVolume, setSoundVolume] = useState(0.5);
+  const [isSoundDialogOpen, setIsSoundDialogOpen] = useState(false);
 
   const showNotification = (title, message) => {
     if ('Notification' in window && Notification.permission === 'granted') {
@@ -292,6 +296,71 @@ const PomodoroTimer = () => {
       Notification.requestPermission();
     }
   }, []);
+
+  // Load sound preference
+  useEffect(() => {
+    const savedSound = localStorage.getItem('focusSound') || 'silence';
+    const savedVolume = parseFloat(localStorage.getItem('focusSoundVolume') || '0.5');
+    setSelectedSound(savedSound);
+    setSoundVolume(savedVolume);
+    ambientSoundService.setVolume(savedVolume);
+  }, []);
+
+  // Play/stop sound based on selection and timer state
+  useEffect(() => {
+    if (isRunning && !isBreak && selectedSound !== 'silence') {
+      ambientSoundService.playSound(selectedSound);
+    } else {
+      ambientSoundService.stop();
+    }
+
+    return () => {
+      ambientSoundService.stop();
+    };
+  }, [isRunning, isBreak, selectedSound]);
+
+  // Apply theme based on selected sound
+  useEffect(() => {
+    const sound = SOUND_OPTIONS.find(s => s.id === selectedSound);
+    if (sound && sound.theme) {
+      const root = document.documentElement;
+      root.setAttribute('data-sound-theme', sound.theme);
+      
+      // Apply theme colors
+      if (sound.color) {
+        const rgb = hexToRgb(sound.color);
+        if (rgb) {
+          root.style.setProperty('--sound-accent', `${rgb.r} ${rgb.g} ${rgb.b}`);
+        }
+      }
+    } else {
+      document.documentElement.removeAttribute('data-sound-theme');
+      document.documentElement.style.removeProperty('--sound-accent');
+    }
+  }, [selectedSound]);
+
+  const hexToRgb = (hex) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  };
+
+  const handleSoundChange = (soundId) => {
+    setSelectedSound(soundId);
+    localStorage.setItem('focusSound', soundId);
+    if (isRunning && !isBreak) {
+      ambientSoundService.playSound(soundId);
+    }
+  };
+
+  const handleVolumeChange = (volume) => {
+    setSoundVolume(volume);
+    localStorage.setItem('focusSoundVolume', volume.toString());
+    ambientSoundService.setVolume(volume);
+  };
 
   // Prevent body scroll when in full screen
   useEffect(() => {
@@ -510,16 +579,69 @@ const PomodoroTimer = () => {
         </Card>
       </div>
 
-      {/* Settings Dialog */}
-      <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-        <div className="flex justify-center">
+      {/* Sound & Settings Controls */}
+      <div className="flex justify-center gap-3">
+        <Dialog open={isSoundDialogOpen} onOpenChange={setIsSoundDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="gap-2 px-6">
+              {selectedSound !== 'silence' ? (
+                <Volume2 className="h-4 w-4" />
+              ) : (
+                <VolumeX className="h-4 w-4" />
+              )}
+              Ambient Sound
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Ambient Sounds</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-3">
+                {SOUND_OPTIONS.map((sound) => (
+                  <button
+                    key={sound.id}
+                    onClick={() => handleSoundChange(sound.id)}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      selectedSound === sound.id
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                    }`}
+                  >
+                    <div className="text-2xl mb-2">{sound.icon}</div>
+                    <div className="font-medium text-sm text-foreground">{sound.name}</div>
+                    <div className="text-xs text-muted-foreground">{sound.description}</div>
+                  </button>
+                ))}
+              </div>
+              {selectedSound !== 'silence' && (
+                <div className="space-y-2 pt-2 border-t">
+                  <label className="text-sm font-medium text-foreground block">
+                    Volume: {Math.round(soundVolume * 100)}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={soundVolume}
+                    onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                    className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                  />
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" className="gap-2 px-6">
               <Settings className="h-4 w-4" />
               Customize Timer
             </Button>
           </DialogTrigger>
-        </div>
+        </Dialog>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Timer Settings</DialogTitle>
