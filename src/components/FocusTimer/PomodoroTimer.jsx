@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Play, Pause, SkipForward, Settings, Award, Flame } from 'lucide-react';
+import { Play, Pause, SkipForward, Settings, Award, Flame, Clock, Target } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -12,30 +12,17 @@ const DEFAULT_LONG_BREAK_TIME = 15 * 60; // 15 minutes in seconds
 
 const STORAGE_KEY = 'zephyr_timer_state';
 
-// Celebration confetti component
-const Confetti = ({ show }) => {
+// Subtle completion indicator
+const CompletionIndicator = ({ show }) => {
   if (!show) return null;
   
-  const confettiPieces = Array.from({ length: 50 }, (_, i) => ({
-    id: i,
-    left: Math.random() * 100,
-    delay: Math.random() * 0.5,
-    color: ['bg-primary', 'bg-purple-500', 'bg-pink-500', 'bg-yellow-500', 'bg-green-500'][Math.floor(Math.random() * 5)]
-  }));
-
   return (
-    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
-      {confettiPieces.map(piece => (
-        <div
-          key={piece.id}
-          className={`absolute w-3 h-3 ${piece.color} animate-confetti`}
-          style={{
-            left: `${piece.left}%`,
-            top: '-20px',
-            animationDelay: `${piece.delay}s`
-          }}
-        />
-      ))}
+    <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
+      <div className="bg-primary/10 backdrop-blur-sm rounded-full p-8 animate-scale-in">
+        <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+          <Award className="h-8 w-8 text-primary" />
+        </div>
+      </div>
     </div>
   );
 };
@@ -60,7 +47,7 @@ const PomodoroTimer = () => {
 
   const celebrate = () => {
     setShowCelebration(true);
-    setTimeout(() => setShowCelebration(false), 3000);
+    setTimeout(() => setShowCelebration(false), 1500);
   };
 
   const handleComplete = useCallback((currentIsBreak = isBreak, currentPomodoros = pomodorosCompleted) => {
@@ -87,11 +74,11 @@ const PomodoroTimer = () => {
       
       // Celebrate!
       celebrate();
-      showNotification('🎉 Work Session Complete!', `Amazing! ${newStreak} in a row. Time for a well-deserved break!`);
+      showNotification('Work Session Complete', `${newStreak} session${newStreak > 1 ? 's' : ''} completed. Time for a break.`);
     } else {
       setIsBreak(false);
       setTimeLeft(workTime);
-      showNotification('✨ Break Complete!', 'Recharged and ready to focus again!');
+      showNotification('Break Complete', 'Recharged and ready to focus again');
     }
     setIsRunning(false);
   }, [isBreak, pomodorosCompleted, breakTime, longBreakTime, workTime, sessionStreak]);
@@ -200,33 +187,35 @@ const PomodoroTimer = () => {
   const strokeDashoffset = circumference - (progress / 100) * circumference;
   const totalFocusTime = Math.floor((pomodorosCompleted * workTime) / 60);
 
-  // Session type with emoji
+  // Session type
   const getSessionType = () => {
     if (isBreak) {
-      return pomodorosCompleted % 4 === 0 ? { text: 'Long Break', emoji: '🌙', color: 'text-purple-500' } : { text: 'Short Break', emoji: '☕', color: 'text-green-500' };
+      return pomodorosCompleted % 4 === 0 
+        ? { text: 'Long Break', icon: Clock, color: 'text-purple-500' } 
+        : { text: 'Short Break', icon: Clock, color: 'text-green-500' };
     }
-    return { text: 'Focus Time', emoji: '🎯', color: 'text-primary' };
+    return { text: 'Focus Time', icon: Target, color: 'text-primary' };
   };
 
   const sessionType = getSessionType();
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
-      {/* Celebration Confetti */}
-      <Confetti show={showCelebration} />
+      {/* Completion Indicator */}
+      <CompletionIndicator show={showCelebration} />
 
       {/* Main Timer Card with Circular Progress */}
       <Card className="glass-card border-none animate-fade-in-up">
         <CardHeader className="text-center pb-4">
           <CardTitle className="text-3xl font-bold flex items-center justify-center gap-3">
-            <span className="text-4xl">{sessionType.emoji}</span>
+            {sessionType.icon && <sessionType.icon className={`h-8 w-8 ${sessionType.color}`} />}
             <span className={sessionType.color}>{sessionType.text}</span>
           </CardTitle>
           {!isBreak && sessionStreak > 0 && (
             <div className="flex items-center justify-center gap-2 mt-2">
               <Flame className="h-5 w-5 text-orange-500" />
               <span className="text-sm text-muted-foreground">
-                {sessionStreak} session streak! 🔥
+                {sessionStreak} session streak
               </span>
             </div>
           )}
@@ -280,8 +269,8 @@ const PomodoroTimer = () => {
             <Button
               onClick={toggleTimer}
               size="lg"
-              className={`rounded-full w-20 h-20 shadow-lg transition-all ${
-                isRunning ? 'animate-pulse-glow' : 'hover:scale-110'
+              className={`w-20 h-20 shadow-lg transition-all ${
+                isRunning ? '' : 'hover:scale-105'
               }`}
               variant={isRunning ? "secondary" : "default"}
             >
@@ -292,7 +281,7 @@ const PomodoroTimer = () => {
               onClick={resetTimer}
               size="lg"
               variant="outline"
-              className="rounded-full px-6 hover:scale-105 transition-transform"
+              className="px-6 hover:scale-105 transition-transform"
             >
               Reset
             </Button>
@@ -301,7 +290,7 @@ const PomodoroTimer = () => {
               onClick={skipSession}
               size="lg"
               variant="ghost"
-              className="rounded-full px-6 hover:scale-105 transition-transform"
+              className="px-6 hover:scale-105 transition-transform"
               disabled={timeLeft === currentSessionTime}
             >
               <SkipForward className="h-5 w-5 mr-2" />
@@ -309,12 +298,12 @@ const PomodoroTimer = () => {
             </Button>
           </div>
 
-          {/* Motivational Message */}
+          {/* Status Message */}
           <div className="text-center">
-            <p className="text-muted-foreground italic">
+            <p className="text-muted-foreground text-sm">
               {isRunning 
-                ? (isBreak ? "Recharge your energy ✨" : "You're in the zone! Keep going 💪")
-                : "Ready when you are"}
+                ? (isBreak ? "Take a moment to recharge" : "Stay focused and maintain your flow")
+                : "Ready to begin"}
             </p>
           </div>
         </CardContent>
@@ -345,7 +334,7 @@ const PomodoroTimer = () => {
         <Card className="glass-card border-none hover-lift">
           <CardContent className="pt-6 text-center">
             <div className="flex items-center justify-center mb-2">
-              <span className="text-4xl">⏱️</span>
+              <Clock className="h-8 w-8 text-primary" />
             </div>
             <div className="text-4xl font-bold text-primary mb-1">{totalFocusTime}</div>
             <div className="text-sm text-muted-foreground">Minutes Focused</div>
@@ -357,7 +346,7 @@ const PomodoroTimer = () => {
       <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
         <div className="flex justify-center">
           <DialogTrigger asChild>
-            <Button variant="outline" className="gap-2 rounded-full px-6">
+            <Button variant="outline" className="gap-2 px-6">
               <Settings className="h-4 w-4" />
               Customize Timer
             </Button>
