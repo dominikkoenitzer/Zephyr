@@ -28,25 +28,6 @@ function Sidebar({ isMobile = false, onClose }) {
   const location = useLocation();
   const [theme, setTheme] = useState('system');
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'system';
-    setTheme(savedTheme);
-    applyTheme(savedTheme);
-
-    // Listen for system theme changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = (e) => {
-      if (savedTheme === 'system') {
-        const root = window.document.documentElement;
-        root.classList.remove('dark', 'light');
-        root.classList.add(e.matches ? 'dark' : 'light');
-      }
-    };
-
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
-    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
-  }, []);
-
   const applyTheme = (newTheme) => {
     const root = window.document.documentElement;
     root.classList.remove('dark', 'light');
@@ -59,10 +40,45 @@ function Sidebar({ isMobile = false, onClose }) {
     }
   };
 
+  useEffect(() => {
+    // Initialize theme on mount
+    const savedTheme = localStorage.getItem('theme') || 'system';
+    setTheme(savedTheme);
+    applyTheme(savedTheme);
+
+    // Listen for theme changes from Settings page
+    const handleThemeChange = (e) => {
+      setTheme(e.detail.theme);
+    };
+    
+    window.addEventListener('themechange', handleThemeChange);
+
+    // Listen for system theme changes when theme is set to 'system'
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemThemeChange = (e) => {
+      const currentTheme = localStorage.getItem('theme') || 'system';
+      if (currentTheme === 'system') {
+        const root = window.document.documentElement;
+        root.classList.remove('dark', 'light');
+        root.classList.add(e.matches ? 'dark' : 'light');
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
+    
+    return () => {
+      window.removeEventListener('themechange', handleThemeChange);
+      mediaQuery.removeEventListener('change', handleSystemThemeChange);
+    };
+  }, []);
+
   const handleThemeChange = (newTheme) => {
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     applyTheme(newTheme);
+    
+    // Dispatch custom event so Settings page can update
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: newTheme } }));
   };
 
   const getThemeIcon = () => {

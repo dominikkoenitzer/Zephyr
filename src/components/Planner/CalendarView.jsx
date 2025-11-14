@@ -14,16 +14,21 @@ const CalendarView = () => {
   const [editingEvent, setEditingEvent] = useState(null);
   const [eventForm, setEventForm] = useState({ title: '', description: '', time: '' });
 
+  const [isInitialized, setIsInitialized] = useState(false);
+
   // Load events from localStorage
   useEffect(() => {
     const savedEvents = localStorageService.getCalendarEvents();
     setEvents(savedEvents);
+    setIsInitialized(true);
   }, []);
 
-  // Save events to localStorage whenever they change
+  // Save events to localStorage whenever they change (but not on initial load)
   useEffect(() => {
-    localStorageService.saveCalendarEvents(events);
-  }, [events]);
+    if (isInitialized) {
+      localStorageService.saveCalendarEvents(events);
+    }
+  }, [events, isInitialized]);
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
