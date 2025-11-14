@@ -352,10 +352,10 @@ const TaskList = () => {
                 Filters & Sort
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5">
               {/* Sort */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium block text-foreground">Sort By</label>
+              <div className="space-y-2.5">
+                <label className="text-sm font-semibold block text-foreground">Sort By</label>
                 <Select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
@@ -373,15 +373,15 @@ const TaskList = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="w-full"
+                className="w-full h-11 rounded-lg border-2 hover:border-primary/50 hover:bg-accent/50 transition-all"
               >
                 <ArrowUpDown className="h-4 w-4 mr-2" />
                 {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
               </Button>
 
               {/* Priority Filter */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium block text-foreground">Priority</label>
+              <div className="space-y-2.5">
+                <label className="text-sm font-semibold block text-foreground">Priority</label>
                 <Select
                   value={filterPriority}
                   onChange={(e) => setFilterPriority(e.target.value)}
@@ -395,17 +395,17 @@ const TaskList = () => {
               </div>
 
               {/* Show Completed */}
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium">Show Completed</label>
+              <div className="flex items-center justify-between pt-2 border-t border-border">
+                <label className="text-sm font-semibold text-foreground">Show Completed</label>
                 <button
                   onClick={() => setShowCompleted(!showCompleted)}
-                  className={`relative w-11 h-6 rounded-full transition-colors ${
-                    showCompleted ? 'bg-primary' : 'bg-muted'
+                  className={`relative w-12 h-6 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 ${
+                    showCompleted ? 'bg-primary' : 'bg-muted-foreground/30'
                   }`}
                 >
                   <span
-                    className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                      showCompleted ? 'translate-x-5' : ''
+                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${
+                      showCompleted ? 'translate-x-6' : 'translate-x-0'
                     }`}
                   />
                 </button>
