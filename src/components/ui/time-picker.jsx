@@ -69,7 +69,9 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
 
   const formatDisplayTime = () => {
     if (!value) return 'Select time'
-    return `${hours}:${String(minutes).padStart(2, '0')} ${period}`
+    const hoursDisplay = hours || 12
+    const minutesDisplay = minutes ? String(minutes).padStart(2, '0') : '00'
+    return `${hoursDisplay}:${minutesDisplay} ${period}`
   }
 
   return (
@@ -91,7 +93,7 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
         <div 
           className="absolute left-11 top-1/2 -translate-y-1/2 text-foreground pointer-events-none z-10 text-base font-medium"
         >
-          {formatDisplayTime()}
+          {hours || 12}:{minutes ? String(minutes).padStart(2, '0') : '00'} {period}
         </div>
       )}
       
@@ -115,16 +117,22 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
         {isFocused || !value ? (
           <div className="flex items-center gap-2 flex-1">
             {/* Hours */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 relative">
               <input
                 type="number"
-                value={hours}
+                value={hours || ''}
                 onChange={(e) => handleHoursChange(parseInt(e.target.value) || 1)}
                 min={1}
                 max={12}
-                className="w-10 text-center bg-transparent border-none outline-none focus:outline-none font-medium text-foreground [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                placeholder="12"
+                className="w-10 text-center bg-transparent border-none outline-none focus:outline-none font-medium text-foreground [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none placeholder:text-muted-foreground/40"
                 onFocus={() => setIsFocused(true)}
               />
+              {!hours && (
+                <span className="absolute left-1/2 -translate-x-1/2 text-muted-foreground/30 pointer-events-none font-medium">
+                  12
+                </span>
+              )}
               <div className="flex flex-col">
                 <Button
                   type="button"
@@ -152,16 +160,22 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
             <span className="text-muted-foreground text-lg font-medium">:</span>
             
             {/* Minutes */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 relative">
               <input
                 type="number"
-                value={minutes}
+                value={minutes || ''}
                 onChange={(e) => handleMinutesChange(parseInt(e.target.value) || 0)}
                 min={0}
                 max={59}
-                className="w-10 text-center bg-transparent border-none outline-none focus:outline-none font-medium text-foreground [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                placeholder="00"
+                className="w-10 text-center bg-transparent border-none outline-none focus:outline-none font-medium text-foreground [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none placeholder:text-muted-foreground/40"
                 onFocus={() => setIsFocused(true)}
               />
+              {!minutes && (
+                <span className="absolute left-1/2 -translate-x-1/2 text-muted-foreground/30 pointer-events-none font-medium">
+                  00
+                </span>
+              )}
               <div className="flex flex-col">
                 <Button
                   type="button"
