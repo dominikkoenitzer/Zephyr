@@ -422,6 +422,16 @@ const PomodoroTimer = () => {
     setTimeLeft(isBreak ? (pomodorosCompleted % 4 === 0 ? longBreakTime : breakTime) : workTime);
   };
 
+  const resetToDefaults = () => {
+    setWorkTime(DEFAULT_WORK_TIME);
+    setBreakTime(DEFAULT_BREAK_TIME);
+    setLongBreakTime(DEFAULT_LONG_BREAK_TIME);
+    setTimeLeft(DEFAULT_WORK_TIME);
+    setIsBreak(false);
+    setIsRunning(false);
+    setIsSettingsOpen(false);
+  };
+
   const skipSession = () => {
     setIsRunning(false);
     handleComplete();
@@ -732,19 +742,29 @@ const PomodoroTimer = () => {
                       className="w-full"
                     />
                   </div>
-                  <div className="flex gap-3 pt-2">
-                    <Button 
-                      onClick={() => setIsSettingsOpen(false)} 
-                      className="flex-1"
-                    >
-                      Save Settings
-                    </Button>
+                  <div className="space-y-3 pt-2">
+                    <div className="flex gap-3">
+                      <Button 
+                        onClick={() => setIsSettingsOpen(false)} 
+                        className="flex-1"
+                      >
+                        Save Settings
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        onClick={() => setIsSettingsOpen(false)} 
+                        className="flex-1"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                     <Button 
                       variant="outline"
-                      onClick={() => setIsSettingsOpen(false)} 
-                      className="flex-1"
+                      onClick={resetToDefaults}
+                      className="w-full"
                     >
-                      Cancel
+                      <RotateCcw className="h-4 w-4 mr-2" />
+                      Reset to Defaults
                     </Button>
                   </div>
                 </div>
