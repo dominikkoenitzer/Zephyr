@@ -265,7 +265,7 @@ class AmbientSoundService {
   generateFireplaceSound(audioContext) {
     const sources = [];
     const masterGain = audioContext.createGain();
-    masterGain.gain.value = this.volume * 0.15; // Much lower base volume
+    masterGain.gain.value = this.volume * 0.3; // Increased but still pleasant
     
     // Soft low rumble for fire warmth (main sound)
     for (let i = 0; i < 3; i++) {
@@ -278,11 +278,11 @@ class AmbientSoundService {
       rumble.type = 'sine'; // Pure sine for smoothness
       
       rumbleFilter.type = 'lowpass';
-      rumbleFilter.frequency.value = 100; // Very low pass
+      rumbleFilter.frequency.value = 120; // Slightly higher for more presence
       rumbleFilter.Q.value = 0.3; // Gentle filter
       
-      // Very soft gain
-      rumbleGain.gain.value = 0.08 + Math.random() * 0.02;
+      // Increased but still soft gain
+      rumbleGain.gain.value = 0.15 + Math.random() * 0.05;
       
       // Gentle slow modulation
       const lfo = audioContext.createOscillator();
@@ -303,21 +303,21 @@ class AmbientSoundService {
       sources.push({ osc: rumble, lfo, gain: rumbleGain, filter: rumbleFilter });
     }
     
-    // Very soft, distant crackling using heavily filtered noise
+    // Soft crackling using heavily filtered noise
     const noiseBuffer = this.generateNoiseBuffer(audioContext, 2);
     const crackleNoise = audioContext.createBufferSource();
     crackleNoise.buffer = noiseBuffer;
     crackleNoise.loop = true;
     
-    // Heavy low-pass filter to remove harsh high frequencies
+    // Low-pass filter to remove harsh high frequencies but keep some texture
     const crackleFilter = audioContext.createBiquadFilter();
     crackleFilter.type = 'lowpass';
-    crackleFilter.frequency.value = 800; // Much lower than before
+    crackleFilter.frequency.value = 1200; // Higher than before but still filtered
     crackleFilter.Q.value = 0.5; // Gentle
     
-    // Very soft gain
+    // Increased gain but still soft
     const crackleGain = audioContext.createGain();
-    crackleGain.gain.value = 0.03; // Much quieter
+    crackleGain.gain.value = 0.08; // Louder but still pleasant
     
     crackleNoise.connect(crackleFilter);
     crackleFilter.connect(crackleGain);
@@ -430,7 +430,7 @@ class AmbientSoundService {
         'forest': 0.25,
         'ocean': 0.3,
         'coffee': 0.2,
-        'fireplace': 0.15
+        'fireplace': 0.3
       };
       const multiplier = multipliers[this.currentSound?.id] || 0.3;
       this.currentGain.gain.value = this.volume * multiplier;
