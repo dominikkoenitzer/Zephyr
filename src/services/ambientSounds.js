@@ -7,7 +7,7 @@ export const SOUND_OPTIONS = [
     name: 'Rain',
     description: 'Gentle rain sounds',
     icon: CloudRain,
-    color: '#7C8FA1',
+    color: '#93C5FD',
     theme: 'rain',
   },
   {
@@ -15,7 +15,7 @@ export const SOUND_OPTIONS = [
     name: 'Forest',
     description: 'Nature sounds',
     icon: Trees,
-    color: '#2D5016',
+    color: '#4ADE80',
     theme: 'forest',
   },
   {
@@ -23,7 +23,7 @@ export const SOUND_OPTIONS = [
     name: 'Ocean',
     description: 'Waves and water',
     icon: Waves,
-    color: '#0284C7',
+    color: '#38BDF8',
     theme: 'ocean',
   },
   {
@@ -31,7 +31,7 @@ export const SOUND_OPTIONS = [
     name: 'Coffee Shop',
     description: 'Ambient cafe sounds',
     icon: Coffee,
-    color: '#6F4E37',
+    color: '#A78B5B',
     theme: 'coffee',
   },
   {
@@ -39,7 +39,7 @@ export const SOUND_OPTIONS = [
     name: 'Fireplace',
     description: 'Crackling fire',
     icon: Flame,
-    color: '#FF6B35',
+    color: '#FB923C',
     theme: 'fireplace',
   },
   {
