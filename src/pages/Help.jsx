@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { HelpCircle, Lightbulb, Zap } from 'lucide-react';
+import { HelpCircle, Zap } from 'lucide-react';
 
 function Help() {
   const faqs = [
@@ -19,14 +19,6 @@ function Help() {
       question: "Does Zephyr work offline?",
       answer: "Yes! Zephyr is a Progressive Web App (PWA) that works completely offline. All your data is stored securely on your device."
     }
-  ];
-
-  const tips = [
-    "Start your day by reviewing your priorities on the Dashboard",
-    "Use the Focus Timer to tackle your most important task first",
-    "Take breaks seriously - they're essential for sustained productivity",
-    "Celebrate small wins - every completed task counts!",
-    "Enable notifications to stay on track with your sessions"
   ];
 
   return (
@@ -100,26 +92,6 @@ function Help() {
               <p className="text-sm text-muted-foreground">{faq.answer}</p>
             </div>
           ))}
-        </CardContent>
-      </Card>
-
-      {/* Productivity Tips Card */}
-      <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-primary" />
-            Productivity Tips
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            {tips.map((tip, index) => (
-              <li key={index} className="flex items-start gap-3">
-                <span className="text-primary mt-0.5">✓</span>
-                <span className="text-muted-foreground">{tip}</span>
-              </li>
-            ))}
-          </ul>
         </CardContent>
       </Card>
 
