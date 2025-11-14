@@ -17,7 +17,7 @@ const CompletionIndicator = ({ show, pomodorosCompleted, sessionStreak }) => {
   if (!show) return null;
   
   return (
-    <div className="fixed bottom-6 left-6 z-50 pointer-events-none">
+    <div className="fixed bottom-6 right-6 z-50 pointer-events-none">
       <div className="bg-background/95 backdrop-blur-md rounded-xl p-4 shadow-lg border-2 border-primary/30 animate-fade-in-up">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
