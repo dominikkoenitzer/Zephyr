@@ -5,13 +5,16 @@ import {
   CheckSquare, 
   Calendar,
   Play,
-  Plus,
   Clock,
   Target,
   Coffee,
   Sparkles,
   TrendingUp,
-  BarChart3
+  BarChart3,
+  Flame,
+  Award,
+  ArrowRight,
+  Activity
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -26,7 +29,10 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend
+  Legend,
+  PieChart,
+  Pie,
+  Cell
 } from 'recharts';
 
 // Motivational quotes that change daily
@@ -47,39 +53,22 @@ const getDailyQuote = () => {
   return motivationalQuotes[dayOfYear % motivationalQuotes.length];
 };
 
-// Dynamic greeting based on time of day
-const getTimeBasedGreeting = () => {
-  const hour = new Date().getHours();
-  
-  if (hour >= 5 && hour < 12) {
-    return { text: "Good morning", subtext: "Ready to start your day" };
-  } else if (hour >= 12 && hour < 17) {
-    return { text: "Good afternoon", subtext: "Keep that momentum going" };
-  } else if (hour >= 17 && hour < 22) {
-    return { text: "Good evening", subtext: "Time to wind down and reflect" };
-  } else {
-    return { text: "Late night session", subtext: "Remember to rest" };
-  }
-};
-
 function Dashboard() {
   const [stats, setStats] = useState({
     todayFocusTime: 0,
     todaySessions: 0,
     activeTasks: 0,
     completedTasks: 0,
-    totalPomodoros: 0
+    totalPomodoros: 0,
+    currentStreak: 0
   });
 
-  const [greeting, setGreeting] = useState(getTimeBasedGreeting());
   const [dailyQuote] = useState(getDailyQuote());
 
   useEffect(() => {
     loadDashboardData();
-    // Update greeting every minute
-    const interval = setInterval(() => {
-      setGreeting(getTimeBasedGreeting());
-    }, 60000);
+    // Refresh data every minute
+    const interval = setInterval(loadDashboardData, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -99,6 +88,7 @@ function Dashboard() {
     // Load timer state
     const timerState = localStorageService.getTimerState();
     const totalPomodoros = timerState ? timerState.pomodorosCompleted || 0 : 0;
+    const currentStreak = timerState ? timerState.sessionStreak || 0 : 0;
 
     const todayFocusTime = todaySessions.reduce((total, session) => 
       total + (session.duration || 0), 0
@@ -109,7 +99,8 @@ function Dashboard() {
       todaySessions: todaySessions.length,
       activeTasks: activeTasks.length,
       completedTasks: completedTasks.length,
-      totalPomodoros
+      totalPomodoros,
+      currentStreak
     });
   };
 
@@ -180,33 +171,24 @@ function Dashboard() {
     };
   }, []);
 
+  // Task completion breakdown
+  const taskBreakdown = useMemo(() => {
+    const tasks = localStorageService.getTasks();
+    const total = tasks.length;
+    const completed = tasks.filter(t => t.completed).length;
+    const active = total - completed;
+    
+    return [
+      { name: 'Completed', value: completed, color: 'hsl(var(--primary))' },
+      { name: 'Active', value: active, color: 'hsl(var(--muted-foreground))' }
+    ];
+  }, []);
+
   const formatTime = (minutes) => {
     if (minutes < 60) return `${minutes}m`;
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return `${hours}h ${mins}m`;
-  };
-
-  const getMotivationalMessage = () => {
-    if (stats.totalPomodoros === 0) {
-      return "Start your first focus session";
-    } else if (stats.totalPomodoros < 5) {
-      return "Building momentum";
-    } else if (stats.totalPomodoros < 20) {
-      return "Great progress";
-    } else {
-      return "Excellent consistency";
-    }
-  };
-
-  const getTasksMessage = () => {
-    if (stats.activeTasks === 0) {
-      return "All tasks completed";
-    } else if (stats.activeTasks < 5) {
-      return `${stats.activeTasks} to tackle`;
-    } else {
-      return `${stats.activeTasks} on your plate`;
-    }
   };
 
   // Custom tooltip for charts
@@ -226,155 +208,203 @@ function Dashboard() {
     return null;
   };
 
+  const completionRate = stats.activeTasks + stats.completedTasks > 0 
+    ? Math.round((stats.completedTasks / (stats.activeTasks + stats.completedTasks)) * 100)
+    : 0;
+
   return (
     <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4">
-        {/* Hero Greeting Section */}
-        <div className="mb-12 animate-fade-in-up">
-          <h1 className="text-5xl font-bold mb-3 text-foreground">
-            {greeting.text}
-          </h1>
-          <p className="text-muted-foreground text-xl mb-6">
-            {greeting.subtext}
-          </p>
-          
-          {/* Daily Quote Card */}
-          <Card className="glass-card hover-lift border-none max-w-2xl">
-            <CardContent className="py-6">
-              <div className="flex items-start gap-3">
-                <Sparkles className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
-                <div>
-                  <p className="text-lg font-medium text-foreground mb-2 italic">
-                    &ldquo;{dailyQuote.text}&rdquo;
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    — {dailyQuote.author}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="container mx-auto px-4 max-w-7xl">
+        {/* Header Section */}
+        <div className="mb-8 animate-fade-in-up">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-4xl font-bold text-foreground mb-2">
+                Dashboard
+              </h1>
+              <p className="text-muted-foreground text-lg">
+                Track your productivity and stay focused
+              </p>
+            </div>
+            <Button asChild size="lg" className="gap-2">
+              <Link to="/focus">
+                <Play className="h-4 w-4" />
+                Start Session
+              </Link>
+            </Button>
+          </div>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-          <Card className="glass-card hover-lift border-none">
+        {/* Main Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="glass-card border-none hover-lift">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Focus Time Today</CardTitle>
-              <Clock className="h-5 w-5 text-primary" />
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Clock className="h-5 w-5 text-primary" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-foreground">{formatTime(stats.todayFocusTime)}</div>
-              <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
-                <TrendingUp className="h-3 w-3" />
-                {stats.todaySessions} sessions completed
+              <div className="text-3xl font-bold text-foreground mb-1">{formatTime(stats.todayFocusTime)}</div>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Activity className="h-3 w-3" />
+                {stats.todaySessions} sessions
               </p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card hover-lift border-none">
+          <Card className="glass-card border-none hover-lift">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Total Pomodoros</CardTitle>
-              <Coffee className="h-5 w-5 text-primary" />
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Coffee className="h-5 w-5 text-primary" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-foreground">{stats.totalPomodoros}</div>
-              <p className="text-xs text-muted-foreground mt-2">
-                {getMotivationalMessage()}
+              <div className="text-3xl font-bold text-foreground mb-1">{stats.totalPomodoros}</div>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Flame className="h-3 w-3 text-orange-500" />
+                {stats.currentStreak} day streak
               </p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card hover-lift border-none">
+          <Card className="glass-card border-none hover-lift">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Active Tasks</CardTitle>
-              <CheckSquare className="h-5 w-5 text-primary" />
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <CheckSquare className="h-5 w-5 text-primary" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-foreground">{stats.activeTasks}</div>
-              <p className="text-xs text-muted-foreground mt-2">
-                {getTasksMessage()}
+              <div className="text-3xl font-bold text-foreground mb-1">{stats.activeTasks}</div>
+              <p className="text-xs text-muted-foreground">
+                {stats.activeTasks > 0 ? `${completionRate}% completed` : 'All done'}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card hover-lift border-none">
+          <Card className="glass-card border-none hover-lift">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Completed Tasks</CardTitle>
-              <Target className="h-5 w-5 text-primary" />
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Target className="h-5 w-5 text-primary" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-foreground">{stats.completedTasks}</div>
-              <p className="text-xs text-muted-foreground mt-2">
-                {stats.completedTasks > 0 ? "Great work" : "Let's get started"}
+              <div className="text-3xl font-bold text-foreground mb-1">{stats.completedTasks}</div>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Award className="h-3 w-3" />
+                Great progress
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Analytics Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Focus Time Trend */}
-          <Card className="glass-card border-none">
+          <Card className="glass-card border-none lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-primary" />
-                Focus Time Trend (Last 7 Days)
+                Focus Time Trend
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={280}>
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorFocusTime" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/>
                       <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
                   <XAxis 
                     dataKey="name" 
-                    className="text-xs text-muted-foreground"
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
                   />
                   <YAxis 
-                    className="text-xs text-muted-foreground"
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Area 
                     type="monotone" 
                     dataKey="focusTime" 
                     stroke="hsl(var(--primary))" 
+                    strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#colorFocusTime)"
-                    name="Focus Time"
+                    name="Focus Time (min)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
-          {/* Pomodoros & Tasks */}
+          {/* Task Breakdown */}
           <Card className="glass-card border-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
+                <Target className="h-5 w-5 text-primary" />
+                Task Overview
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={280}>
+                <PieChart>
+                  <Pie
+                    data={taskBreakdown}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {taskBreakdown.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="mt-4 space-y-2 text-center">
+                <div className="text-2xl font-bold text-foreground">
+                  {stats.completedTasks + stats.activeTasks}
+                </div>
+                <div className="text-sm text-muted-foreground">Total Tasks</div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Activity & Weekly Summary */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Daily Activity */}
+          <Card className="glass-card border-none">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
                 Daily Activity (Last 7 Days)
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
                   <XAxis 
                     dataKey="name" 
-                    className="text-xs text-muted-foreground"
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
                   />
                   <YAxis 
-                    className="text-xs text-muted-foreground"
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
@@ -382,113 +412,117 @@ function Dashboard() {
                     dataKey="pomodoros" 
                     fill="hsl(var(--primary))" 
                     name="Pomodoros"
-                    radius={[8, 8, 0, 0]}
+                    radius={[6, 6, 0, 0]}
                   />
                   <Bar 
                     dataKey="tasksCompleted" 
                     fill="hsl(var(--accent-foreground))" 
-                    name="Tasks Completed"
-                    radius={[8, 8, 0, 0]}
+                    name="Tasks"
+                    radius={[6, 6, 0, 0]}
                   />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
+
+          {/* Weekly Summary */}
+          <Card className="glass-card border-none">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                Weekly Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                    <div className="text-2xl font-bold text-primary mb-1">
+                      {formatTime(weeklyStats.totalFocusTime)}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Total Focus Time</div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                    <div className="text-2xl font-bold text-primary mb-1">
+                      {weeklyStats.totalSessions}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Total Sessions</div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                    <div className="text-2xl font-bold text-primary mb-1">
+                      {formatTime(weeklyStats.avgDailyFocus)}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Avg Daily Focus</div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                    <div className="text-2xl font-bold text-primary mb-1">
+                      {weeklyStats.totalTasks}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Tasks Completed</div>
+                  </div>
+                </div>
+                
+                {/* Daily Quote */}
+                <div className="pt-4 border-t border-border">
+                  <div className="flex items-start gap-3">
+                    <Sparkles className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground mb-1 italic">
+                        &ldquo;{dailyQuote.text}&rdquo;
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        — {dailyQuote.author}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Weekly Summary */}
-        <Card className="glass-card border-none mb-12 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-primary" />
-              Weekly Summary
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary mb-1">
-                  {formatTime(weeklyStats.totalFocusTime)}
-                </div>
-                <div className="text-sm text-muted-foreground">Total Focus Time</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary mb-1">
-                  {weeklyStats.totalSessions}
-                </div>
-                <div className="text-sm text-muted-foreground">Total Sessions</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary mb-1">
-                  {formatTime(weeklyStats.avgDailyFocus)}
-                </div>
-                <div className="text-sm text-muted-foreground">Avg Daily Focus</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary mb-1">
-                  {weeklyStats.totalTasks}
-                </div>
-                <div className="text-sm text-muted-foreground">Tasks Completed</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Quick Actions */}
-        <h2 className="text-2xl font-semibold mb-6 text-foreground">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-          <Card className="glass-card hover-lift border-none group cursor-pointer transition-all duration-300">
-            <CardContent className="flex flex-col items-center justify-center py-10">
-              <div className="rounded-lg bg-primary p-4 mb-4 group-hover:scale-105 transition-transform">
-                <Timer className="h-8 w-8 text-white" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="glass-card border-none hover-lift group cursor-pointer transition-all">
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Timer className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">Start Focus Session</h3>
-              <p className="text-muted-foreground text-center mb-6 text-sm">
-                Begin a focused 25-minute session
-              </p>
-              <Button asChild className="px-6">
-                <Link to="/focus">
-                  <Play className="h-4 w-4 mr-2" />
-                  Start Session
-                </Link>
-              </Button>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1">Start Focus Session</h3>
+                <p className="text-sm text-muted-foreground">Begin a focused work session</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
             </CardContent>
+            <Link to="/focus" className="absolute inset-0" />
           </Card>
 
-          <Card className="glass-card hover-lift border-none group cursor-pointer transition-all duration-300">
-            <CardContent className="flex flex-col items-center justify-center py-10">
-              <div className="rounded-lg bg-primary p-4 mb-4 group-hover:scale-105 transition-transform">
-                <CheckSquare className="h-8 w-8 text-white" />
+          <Card className="glass-card border-none hover-lift group cursor-pointer transition-all">
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                <CheckSquare className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">Manage Tasks</h3>
-              <p className="text-muted-foreground text-center mb-6 text-sm">
-                Organize and manage your tasks
-              </p>
-              <Button asChild variant="outline" className="px-6">
-                <Link to="/tasks">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Manage Tasks
-                </Link>
-              </Button>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1">Manage Tasks</h3>
+                <p className="text-sm text-muted-foreground">Organize your to-do list</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
             </CardContent>
+            <Link to="/tasks" className="absolute inset-0" />
           </Card>
 
-          <Card className="glass-card hover-lift border-none group cursor-pointer transition-all duration-300">
-            <CardContent className="flex flex-col items-center justify-center py-10">
-              <div className="rounded-lg bg-primary p-4 mb-4 group-hover:scale-105 transition-transform">
-                <Calendar className="h-8 w-8 text-white" />
+          <Card className="glass-card border-none hover-lift group cursor-pointer transition-all">
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Calendar className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">View Calendar</h3>
-              <p className="text-muted-foreground text-center mb-6 text-sm">
-                Schedule and plan your activities
-              </p>
-              <Button asChild variant="outline" className="px-6">
-                <Link to="/calendar">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  View Calendar
-                </Link>
-              </Button>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1">View Calendar</h3>
+                <p className="text-sm text-muted-foreground">Plan your schedule</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
             </CardContent>
+            <Link to="/calendar" className="absolute inset-0" />
           </Card>
         </div>
       </div>
