@@ -67,13 +67,6 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
     onChange?.({ target: { value: newValue } })
   }
 
-  const formatDisplayTime = () => {
-    if (!value) return 'Select time'
-    const hoursDisplay = hours || 12
-    const minutesDisplay = minutes ? String(minutes).padStart(2, '0') : '00'
-    return `${hoursDisplay}:${minutesDisplay} ${period}`
-  }
-
   return (
     <div className="relative">
       <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
