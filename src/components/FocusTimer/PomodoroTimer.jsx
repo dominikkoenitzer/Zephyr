@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Play, Pause, SkipForward, Settings, Award, Flame, Clock, Target } from 'lucide-react';
+import { Play, Pause, SkipForward, Settings, Award, Flame, Clock, Target, Maximize2, Minimize2, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -25,6 +25,132 @@ const CompletionIndicator = ({ show }) => {
   );
 };
 
+// Full Screen Focus Mode
+const FullScreenMode = ({ 
+  timeLeft, 
+  isRunning, 
+  isBreak, 
+  progress, 
+  sessionType, 
+  onToggle, 
+  onReset, 
+  onSkip, 
+  onExit,
+  formatTime 
+}) => {
+  const circumference = 2 * Math.PI * 140;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-background flex items-center justify-center">
+      <div className="absolute top-4 right-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onExit}
+          className="h-10 w-10"
+        >
+          <X className="h-5 w-5" />
+        </Button>
+      </div>
+      
+      <div className="text-center space-y-12 max-w-2xl mx-auto px-8">
+        {/* Session Type */}
+        <div className="space-y-2">
+          {sessionType.icon && (
+            <sessionType.icon className={`h-12 w-12 mx-auto ${sessionType.color}`} />
+          )}
+          <h2 className={`text-3xl font-bold ${sessionType.color}`}>
+            {sessionType.text}
+          </h2>
+        </div>
+
+        {/* Large Circular Timer */}
+        <div className="flex justify-center items-center">
+          <div className="relative w-[500px] h-[500px]">
+            <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+              <circle
+                cx="250"
+                cy="250"
+                r="140"
+                stroke="currentColor"
+                strokeWidth="16"
+                fill="none"
+                className="text-muted/10"
+              />
+              <circle
+                cx="250"
+                cy="250"
+                r="140"
+                stroke="currentColor"
+                strokeWidth="16"
+                fill="none"
+                strokeLinecap="round"
+                className={`transition-all duration-1000 ${isBreak ? 'text-green-500' : 'text-primary'}`}
+                style={{
+                  strokeDasharray: circumference,
+                  strokeDashoffset: strokeDashoffset
+                }}
+              />
+            </svg>
+            
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="text-8xl font-mono font-bold text-foreground mb-4">
+                {formatTime(timeLeft)}
+              </div>
+              <div className="text-xl text-muted-foreground">
+                {Math.round(progress)}% complete
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Controls */}
+        <div className="flex justify-center items-center gap-6">
+          <Button
+            onClick={onToggle}
+            size="lg"
+            className={`w-24 h-24 shadow-xl transition-all ${
+              isRunning ? '' : 'hover:scale-105'
+            }`}
+            variant={isRunning ? "secondary" : "default"}
+          >
+            {isRunning ? <Pause className="h-10 w-10" /> : <Play className="h-10 w-10 ml-1" />}
+          </Button>
+          
+          <Button
+            onClick={onReset}
+            size="lg"
+            variant="outline"
+            className="px-8 py-6 text-lg hover:scale-105 transition-transform"
+          >
+            Reset
+          </Button>
+
+          <Button
+            onClick={onSkip}
+            size="lg"
+            variant="ghost"
+            className="px-8 py-6 text-lg hover:scale-105 transition-transform"
+          >
+            <SkipForward className="h-6 w-6 mr-2" />
+            Skip
+          </Button>
+        </div>
+
+        {/* Status Message */}
+        <div className="text-center">
+          <p className="text-xl text-muted-foreground">
+            {isRunning 
+              ? (isBreak ? "Take a moment to recharge" : "Stay focused and maintain your flow")
+              : "Ready to begin"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const PomodoroTimer = () => {
   const [timeLeft, setTimeLeft] = useState(DEFAULT_WORK_TIME);
   const [isRunning, setIsRunning] = useState(false);
@@ -37,6 +163,7 @@ const PomodoroTimer = () => {
   const [showCelebration, setShowCelebration] = useState(false);
   const [sessionStreak, setSessionStreak] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   const showNotification = (title, message) => {
     if ('Notification' in window && Notification.permission === 'granted') {
@@ -166,6 +293,18 @@ const PomodoroTimer = () => {
     }
   }, []);
 
+  // Prevent body scroll when in full screen
+  useEffect(() => {
+    if (isFullScreen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isFullScreen]);
+
   const toggleTimer = () => {
     setIsRunning(!isRunning);
   };
@@ -198,6 +337,24 @@ const PomodoroTimer = () => {
 
   const sessionType = getSessionType();
 
+  // Full screen mode
+  if (isFullScreen) {
+    return (
+      <FullScreenMode
+        timeLeft={timeLeft}
+        isRunning={isRunning}
+        isBreak={isBreak}
+        progress={progress}
+        sessionType={sessionType}
+        onToggle={toggleTimer}
+        onReset={resetTimer}
+        onSkip={skipSession}
+        onExit={() => setIsFullScreen(false)}
+        formatTime={formatTime}
+      />
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       {/* Completion Indicator */}
@@ -206,10 +363,22 @@ const PomodoroTimer = () => {
       {/* Main Timer Card with Circular Progress */}
       <Card className="glass-card border-none animate-fade-in-up">
         <CardHeader className="text-center pb-4">
-          <CardTitle className="text-3xl font-bold flex items-center justify-center gap-3">
-            {sessionType.icon && <sessionType.icon className={`h-8 w-8 ${sessionType.color}`} />}
-            <span className={sessionType.color}>{sessionType.text}</span>
-          </CardTitle>
+          <div className="flex items-center justify-between mb-4">
+            <div></div>
+            <CardTitle className="text-3xl font-bold flex items-center justify-center gap-3">
+              {sessionType.icon && <sessionType.icon className={`h-8 w-8 ${sessionType.color}`} />}
+              <span className={sessionType.color}>{sessionType.text}</span>
+            </CardTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsFullScreen(true)}
+              className="h-10 w-10"
+              title="Enter Full Screen Mode"
+            >
+              <Maximize2 className="h-5 w-5" />
+            </Button>
+          </div>
           {!isBreak && sessionStreak > 0 && (
             <div className="flex items-center justify-center gap-2 mt-2">
               <Flame className="h-5 w-5 text-orange-500" />
