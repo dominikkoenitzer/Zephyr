@@ -8,7 +8,6 @@ import {
   Clock,
   Target,
   Coffee,
-  Sparkles,
   TrendingUp,
   BarChart3,
   Flame,
@@ -35,23 +34,6 @@ import {
   Cell
 } from 'recharts';
 
-// Motivational quotes that change daily
-const motivationalQuotes = [
-  { text: "Every accomplishment starts with the decision to try.", author: "John F. Kennedy" },
-  { text: "The future depends on what you do today.", author: "Mahatma Gandhi" },
-  { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
-  { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
-  { text: "Small steps every day lead to big results.", author: "Anonymous" },
-  { text: "Focus on being productive instead of busy.", author: "Tim Ferriss" },
-  { text: "Your limitation—it's only your imagination.", author: "Anonymous" },
-  { text: "Great things never come from comfort zones.", author: "Anonymous" },
-];
-
-// Get daily quote based on the day of year
-const getDailyQuote = () => {
-  const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-  return motivationalQuotes[dayOfYear % motivationalQuotes.length];
-};
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -63,7 +45,6 @@ function Dashboard() {
     currentStreak: 0
   });
 
-  const [dailyQuote] = useState(getDailyQuote());
 
   useEffect(() => {
     loadDashboardData();
@@ -459,21 +440,6 @@ function Dashboard() {
                       {weeklyStats.totalTasks}
                     </div>
                     <div className="text-sm text-muted-foreground">Tasks Completed</div>
-                  </div>
-                </div>
-                
-                {/* Daily Quote */}
-                <div className="pt-4 border-t border-border">
-                  <div className="flex items-start gap-3">
-                    <Sparkles className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium text-foreground mb-1 italic">
-                        &ldquo;{dailyQuote.text}&rdquo;
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        — {dailyQuote.author}
-                      </p>
-                    </div>
                   </div>
                 </div>
               </div>
