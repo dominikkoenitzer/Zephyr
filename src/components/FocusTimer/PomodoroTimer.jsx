@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Play, Pause, SkipForward, Settings, Award, Flame, Clock, Target, Maximize2, X, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause, SkipForward, Settings, Award, Flame, Clock, Target, Maximize2, X, Volume2, VolumeX, RotateCcw } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -9,7 +9,7 @@ import { ambientSoundService, SOUND_OPTIONS } from '../../services/ambientSounds
 
 const DEFAULT_WORK_TIME = 25 * 60; // 25 minutes in seconds
 const DEFAULT_BREAK_TIME = 5 * 60; // 5 minutes in seconds
-const DEFAULT_LONG_BREAK_TIME = 15 * 60; // 15 minutes in seconds
+const DEFAULT_LONG_BREAK_TIME = 15 * 60; // 15 minutes in seconds;
 
 // Subtle completion indicator
 const CompletionIndicator = ({ show }) => {
@@ -17,9 +17,9 @@ const CompletionIndicator = ({ show }) => {
   
   return (
     <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
-      <div className="bg-primary/10 backdrop-blur-sm rounded-full p-8 animate-scale-in">
-        <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
-          <Award className="h-8 w-8 text-primary" />
+      <div className="bg-primary/20 backdrop-blur-md rounded-2xl p-12 animate-scale-in shadow-2xl">
+        <div className="w-24 h-24 rounded-full bg-primary/30 flex items-center justify-center border-4 border-primary/50">
+          <Award className="h-12 w-12 text-primary" />
         </div>
       </div>
     </div>
@@ -39,69 +39,72 @@ const FullScreenMode = ({
   onExit,
   formatTime 
 }) => {
-  const circumference = 2 * Math.PI * 140;
+  const circumference = 2 * Math.PI * 180;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-background flex items-center justify-center">
-      <div className="absolute top-4 right-4">
+    <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center p-8">
+      {/* Exit Button */}
+      <div className="absolute top-6 right-6">
         <Button
           variant="ghost"
           size="icon"
           onClick={onExit}
-          className="h-10 w-10"
+          className="h-12 w-12 rounded-full hover:bg-background/80"
         >
-          <X className="h-5 w-5" />
+          <X className="h-6 w-6" />
         </Button>
       </div>
       
-      <div className="text-center space-y-12 max-w-2xl mx-auto px-8">
+      <div className="flex flex-col items-center justify-center space-y-16 max-w-4xl w-full">
         {/* Session Type */}
-        <div className="space-y-2">
+        <div className="text-center space-y-4">
           {sessionType.icon && (
-            <sessionType.icon className={`h-12 w-12 mx-auto ${sessionType.color}`} />
+            <div className="flex justify-center">
+              <div className={`p-4 rounded-2xl ${isBreak ? 'bg-green-500/10' : 'bg-primary/10'}`}>
+                <sessionType.icon className={`h-12 w-12 ${sessionType.color}`} />
+              </div>
+            </div>
           )}
-          <h2 className={`text-3xl font-bold ${sessionType.color}`}>
+          <h2 className={`text-4xl font-bold ${sessionType.color}`}>
             {sessionType.text}
           </h2>
         </div>
 
         {/* Large Circular Timer */}
-        <div className="flex justify-center items-center">
-          <div className="relative w-[500px] h-[500px]">
-            <svg className="absolute inset-0 w-full h-full transform -rotate-90">
-              <circle
-                cx="250"
-                cy="250"
-                r="140"
-                stroke="currentColor"
-                strokeWidth="16"
-                fill="none"
-                className="text-muted/10"
-              />
-              <circle
-                cx="250"
-                cy="250"
-                r="140"
-                stroke="currentColor"
-                strokeWidth="16"
-                fill="none"
-                strokeLinecap="round"
-                className={`transition-all duration-1000 ${isBreak ? 'text-green-500' : 'text-primary'}`}
-                style={{
-                  strokeDasharray: circumference,
-                  strokeDashoffset: strokeDashoffset
-                }}
-              />
-            </svg>
-            
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-8xl font-mono font-bold text-foreground mb-4">
-                {formatTime(timeLeft)}
-              </div>
-              <div className="text-xl text-muted-foreground">
-                {Math.round(progress)}% complete
-              </div>
+        <div className="relative w-[600px] h-[600px]">
+          <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+            <circle
+              cx="300"
+              cy="300"
+              r="180"
+              stroke="currentColor"
+              strokeWidth="20"
+              fill="none"
+              className="text-muted/10"
+            />
+            <circle
+              cx="300"
+              cy="300"
+              r="180"
+              stroke="currentColor"
+              strokeWidth="20"
+              fill="none"
+              strokeLinecap="round"
+              className={`transition-all duration-1000 ${isBreak ? 'text-green-500' : 'text-primary'}`}
+              style={{
+                strokeDasharray: circumference,
+                strokeDashoffset: strokeDashoffset
+              }}
+            />
+          </svg>
+          
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="text-9xl font-mono font-bold text-foreground mb-4 tracking-tight">
+              {formatTime(timeLeft)}
+            </div>
+            <div className="text-2xl text-muted-foreground font-medium">
+              {Math.round(progress)}% complete
             </div>
           </div>
         </div>
@@ -111,20 +114,21 @@ const FullScreenMode = ({
           <Button
             onClick={onToggle}
             size="lg"
-            className={`w-24 h-24 shadow-xl transition-all ${
-              isRunning ? '' : 'hover:scale-105'
+            className={`w-28 h-28 rounded-full shadow-2xl transition-all ${
+              isRunning ? 'bg-primary/90 hover:bg-primary' : 'hover:scale-105'
             }`}
-            variant={isRunning ? "secondary" : "default"}
+            variant={isRunning ? "default" : "default"}
           >
-            {isRunning ? <Pause className="h-10 w-10" /> : <Play className="h-10 w-10 ml-1" />}
+            {isRunning ? <Pause className="h-12 w-12" /> : <Play className="h-12 w-12 ml-1" />}
           </Button>
           
           <Button
             onClick={onReset}
             size="lg"
             variant="outline"
-            className="px-8 py-6 text-lg hover:scale-105 transition-transform"
+            className="h-16 px-8 text-lg rounded-full hover:scale-105 transition-transform border-2"
           >
+            <RotateCcw className="h-5 w-5 mr-2" />
             Reset
           </Button>
 
@@ -132,16 +136,16 @@ const FullScreenMode = ({
             onClick={onSkip}
             size="lg"
             variant="ghost"
-            className="px-8 py-6 text-lg hover:scale-105 transition-transform"
+            className="h-16 px-8 text-lg rounded-full hover:scale-105 transition-transform"
           >
-            <SkipForward className="h-6 w-6 mr-2" />
+            <SkipForward className="h-5 w-5 mr-2" />
             Skip
           </Button>
         </div>
 
         {/* Status Message */}
         <div className="text-center">
-          <p className="text-xl text-muted-foreground">
+          <p className="text-2xl text-muted-foreground font-medium">
             {isRunning 
               ? (isBreak ? "Take a moment to recharge" : "Stay focused and maintain your flow")
               : "Ready to begin"}
@@ -413,7 +417,7 @@ const PomodoroTimer = () => {
 
   const currentSessionTime = isBreak ? (pomodorosCompleted % 4 === 0 ? longBreakTime : breakTime) : workTime;
   const progress = ((currentSessionTime - timeLeft) / currentSessionTime) * 100;
-  const circumference = 2 * Math.PI * 120; // radius of 120
+  const circumference = 2 * Math.PI * 140; // radius of 140
   const strokeDashoffset = circumference - (progress / 100) * circumference;
   const totalFocusTime = Math.floor((pomodorosCompleted * workTime) / 60);
 
@@ -448,287 +452,313 @@ const PomodoroTimer = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="max-w-6xl mx-auto p-6 space-y-8">
       {/* Completion Indicator */}
       <CompletionIndicator show={showCelebration} />
 
-      {/* Main Timer Card with Circular Progress */}
-      <Card className="glass-card border-none animate-fade-in-up">
-        <CardHeader className="text-center pb-4">
-          <div className="flex items-center justify-between mb-4">
-            <div></div>
-            <CardTitle className="text-3xl font-bold flex items-center justify-center gap-3">
-              {sessionType.icon && <sessionType.icon className={`h-8 w-8 ${sessionType.color}`} />}
-              <span className={sessionType.color}>{sessionType.text}</span>
-            </CardTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsFullScreen(true)}
-              className="h-10 w-10"
-              title="Enter Full Screen Mode"
-            >
-              <Maximize2 className="h-5 w-5" />
-            </Button>
-          </div>
-          {!isBreak && sessionStreak > 0 && (
-            <div className="flex items-center justify-center gap-2 mt-2">
-              <Flame className="h-5 w-5 text-orange-500" />
-              <span className="text-sm text-muted-foreground">
-                {sessionStreak} session streak
-              </span>
-            </div>
-          )}
-        </CardHeader>
-        <CardContent className="space-y-8">
-          {/* Circular Timer */}
-          <div className="flex justify-center items-center">
-            <div className="relative w-80 h-80">
-              {/* Background circle */}
-              <svg className="absolute inset-0 w-full h-full transform -rotate-90">
-                <circle
-                  cx="160"
-                  cy="160"
-                  r="120"
-                  stroke="currentColor"
-                  strokeWidth="12"
-                  fill="none"
-                  className="text-muted/20"
-                />
-                {/* Progress circle */}
-                <circle
-                  cx="160"
-                  cy="160"
-                  r="120"
-                  stroke="currentColor"
-                  strokeWidth="12"
-                  fill="none"
-                  strokeLinecap="round"
-                  className={`transition-all duration-1000 ${isBreak ? 'text-green-500' : 'text-primary'}`}
-                  style={{
-                    strokeDasharray: circumference,
-                    strokeDashoffset: strokeDashoffset
-                  }}
-                />
-              </svg>
-              
-              {/* Timer Display */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-7xl font-mono font-bold text-foreground mb-2">
-                  {formatTime(timeLeft)}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {Math.round(progress)}% complete
+      {/* Main Timer Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Timer Card - Takes 2 columns on large screens */}
+        <Card className="glass-card border-none lg:col-span-2 animate-fade-in-up">
+          <CardHeader className="pb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                {sessionType.icon && (
+                  <div className={`p-3 rounded-xl ${isBreak ? 'bg-green-500/10' : 'bg-primary/10'}`}>
+                    <sessionType.icon className={`h-6 w-6 ${sessionType.color}`} />
+                  </div>
+                )}
+                <div>
+                  <CardTitle className={`text-2xl font-bold ${sessionType.color}`}>
+                    {sessionType.text}
+                  </CardTitle>
+                  {!isBreak && sessionStreak > 0 && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <Flame className="h-4 w-4 text-orange-500" />
+                      <span className="text-sm text-muted-foreground">
+                        {sessionStreak} session streak
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsFullScreen(true)}
+                className="h-10 w-10 rounded-lg"
+                title="Enter Full Screen Mode"
+              >
+                <Maximize2 className="h-5 w-5" />
+              </Button>
             </div>
-          </div>
-          
-          {/* Controls */}
-          <div className="flex justify-center items-center gap-4">
-            <Button
-              onClick={toggleTimer}
-              size="lg"
-              className={`w-20 h-20 shadow-lg transition-all ${
-                isRunning ? '' : 'hover:scale-105'
-              }`}
-              variant={isRunning ? "secondary" : "default"}
-            >
-              {isRunning ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8 ml-1" />}
-            </Button>
-            
-            <Button
-              onClick={resetTimer}
-              size="lg"
-              variant="outline"
-              className="px-6 hover:scale-105 transition-transform"
-            >
-              Reset
-            </Button>
-
-            <Button
-              onClick={skipSession}
-              size="lg"
-              variant="ghost"
-              className="px-6 hover:scale-105 transition-transform"
-              disabled={timeLeft === currentSessionTime}
-            >
-              <SkipForward className="h-5 w-5 mr-2" />
-              Skip
-            </Button>
-          </div>
-
-          {/* Status Message */}
-          <div className="text-center">
-            <p className="text-muted-foreground text-sm">
-              {isRunning 
-                ? (isBreak ? "Take a moment to recharge" : "Stay focused and maintain your flow")
-                : "Ready to begin"}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-        <Card className="glass-card border-none hover-lift">
-          <CardContent className="pt-6 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Award className="h-8 w-8 text-primary" />
-            </div>
-            <div className="text-4xl font-bold text-primary mb-1">{pomodorosCompleted}</div>
-            <div className="text-sm text-muted-foreground">Pomodoros Completed</div>
-          </CardContent>
-        </Card>
-
-        <Card className="glass-card border-none hover-lift">
-          <CardContent className="pt-6 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Flame className="h-8 w-8 text-orange-500" />
-            </div>
-            <div className="text-4xl font-bold text-orange-500 mb-1">{sessionStreak}</div>
-            <div className="text-sm text-muted-foreground">Current Streak</div>
-          </CardContent>
-        </Card>
-
-        <Card className="glass-card border-none hover-lift">
-          <CardContent className="pt-6 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Clock className="h-8 w-8 text-primary" />
-            </div>
-            <div className="text-4xl font-bold text-primary mb-1">{totalFocusTime}</div>
-            <div className="text-sm text-muted-foreground">Minutes Focused</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Sound & Settings Controls */}
-      <div className="flex justify-center gap-3">
-        <Dialog open={isSoundDialogOpen} onOpenChange={setIsSoundDialogOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="gap-2 px-6">
-              {selectedSound !== 'silence' ? (
-                <Volume2 className="h-4 w-4" />
-              ) : (
-                <VolumeX className="h-4 w-4" />
-              )}
-              Ambient Sound
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Ambient Sounds</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-3">
-                {SOUND_OPTIONS.map((sound) => (
-                  <button
-                    key={sound.id}
-                    onClick={() => handleSoundChange(sound.id)}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      selectedSound === sound.id
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border hover:border-primary/50 hover:bg-accent/50'
-                    }`}
-                  >
-                    <div className="text-2xl mb-2">{sound.icon}</div>
-                    <div className="font-medium text-sm text-foreground">{sound.name}</div>
-                    <div className="text-xs text-muted-foreground">{sound.description}</div>
-                    {selectedSound === sound.id && sound.id !== 'silence' && (
-                      <div className="mt-2 text-xs text-primary font-medium">Playing...</div>
-                    )}
-                  </button>
-                ))}
-              </div>
-              <div className="text-xs text-muted-foreground text-center pt-2 border-t">
-                Click a sound to test it. Sounds will play automatically during focus sessions.
-              </div>
-              {selectedSound !== 'silence' && (
-                <div className="space-y-2 pt-2 border-t">
-                  <label className="text-sm font-medium text-foreground block">
-                    Volume: {Math.round(soundVolume * 100)}%
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    value={soundVolume}
-                    onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                    className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+          </CardHeader>
+          <CardContent className="space-y-8">
+            {/* Circular Timer */}
+            <div className="flex justify-center items-center py-8">
+              <div className="relative w-[400px] h-[400px]">
+                {/* Background circle */}
+                <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+                  <circle
+                    cx="200"
+                    cy="200"
+                    r="140"
+                    stroke="currentColor"
+                    strokeWidth="16"
+                    fill="none"
+                    className="text-muted/10"
                   />
+                  {/* Progress circle */}
+                  <circle
+                    cx="200"
+                    cy="200"
+                    r="140"
+                    stroke="currentColor"
+                    strokeWidth="16"
+                    fill="none"
+                    strokeLinecap="round"
+                    className={`transition-all duration-1000 ${isBreak ? 'text-green-500' : 'text-primary'}`}
+                    style={{
+                      strokeDasharray: circumference,
+                      strokeDashoffset: strokeDashoffset
+                    }}
+                  />
+                </svg>
+                
+                {/* Timer Display */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="text-8xl font-mono font-bold text-foreground mb-3 tracking-tight">
+                    {formatTime(timeLeft)}
+                  </div>
+                  <div className="text-lg text-muted-foreground font-medium">
+                    {Math.round(progress)}% complete
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
-          </DialogContent>
-        </Dialog>
+            
+            {/* Controls */}
+            <div className="flex justify-center items-center gap-4">
+              <Button
+                onClick={toggleTimer}
+                size="lg"
+                className={`w-24 h-24 rounded-full shadow-xl transition-all ${
+                  isRunning ? '' : 'hover:scale-105'
+                }`}
+                variant={isRunning ? "secondary" : "default"}
+              >
+                {isRunning ? <Pause className="h-10 w-10" /> : <Play className="h-10 w-10 ml-1" />}
+              </Button>
+              
+              <Button
+                onClick={resetTimer}
+                size="lg"
+                variant="outline"
+                className="h-14 px-6 rounded-full hover:scale-105 transition-transform border-2"
+              >
+                <RotateCcw className="h-5 w-5 mr-2" />
+                Reset
+              </Button>
 
-        <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="gap-2 px-6">
-              <Settings className="h-4 w-4" />
-              Customize Timer
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Timer Settings</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-6 py-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground block">
-                  Focus Duration (minutes)
-                </label>
-                <NumberInput
-                  min={1}
-                  max={60}
-                  value={Math.floor(workTime / 60)}
-                  onChange={(e) => setWorkTime(parseInt(e.target.value) * 60 || DEFAULT_WORK_TIME)}
-                  className="w-full"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground block">
-                  Short Break (minutes)
-                </label>
-                <NumberInput
-                  min={1}
-                  max={30}
-                  value={Math.floor(breakTime / 60)}
-                  onChange={(e) => setBreakTime(parseInt(e.target.value) * 60 || DEFAULT_BREAK_TIME)}
-                  className="w-full"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground block">
-                  Long Break (minutes)
-                </label>
-                <NumberInput
-                  min={1}
-                  max={60}
-                  value={Math.floor(longBreakTime / 60)}
-                  onChange={(e) => setLongBreakTime(parseInt(e.target.value) * 60 || DEFAULT_LONG_BREAK_TIME)}
-                  className="w-full"
-                />
-              </div>
-              <div className="flex gap-3 pt-2">
-                <Button 
-                  onClick={() => setIsSettingsOpen(false)} 
-                  className="flex-1"
-                >
-                  Save Settings
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => setIsSettingsOpen(false)} 
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
+              <Button
+                onClick={skipSession}
+                size="lg"
+                variant="ghost"
+                className="h-14 px-6 rounded-full hover:scale-105 transition-transform"
+                disabled={timeLeft === currentSessionTime}
+              >
+                <SkipForward className="h-5 w-5 mr-2" />
+                Skip
+              </Button>
             </div>
-          </DialogContent>
-        </Dialog>
+
+            {/* Status Message */}
+            <div className="text-center">
+              <p className="text-muted-foreground text-base font-medium">
+                {isRunning 
+                  ? (isBreak ? "Take a moment to recharge" : "Stay focused and maintain your flow")
+                  : "Ready to begin"}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Stats & Controls Sidebar */}
+        <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+          {/* Stats Cards */}
+          <div className="space-y-4">
+            <Card className="glass-card border-none hover-lift">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Award className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="text-3xl font-bold text-foreground">{pomodorosCompleted}</div>
+                    <div className="text-xs text-muted-foreground">Pomodoros</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="glass-card border-none hover-lift">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 rounded-lg bg-orange-500/10">
+                    <Flame className="h-5 w-5 text-orange-500" />
+                  </div>
+                  <div>
+                    <div className="text-3xl font-bold text-foreground">{sessionStreak}</div>
+                    <div className="text-xs text-muted-foreground">Current Streak</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="glass-card border-none hover-lift">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Clock className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="text-3xl font-bold text-foreground">{totalFocusTime}</div>
+                    <div className="text-xs text-muted-foreground">Minutes Focused</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Controls */}
+          <div className="space-y-3">
+            <Dialog open={isSoundDialogOpen} onOpenChange={setIsSoundDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full justify-start gap-3 h-12">
+                  {selectedSound !== 'silence' ? (
+                    <Volume2 className="h-4 w-4" />
+                  ) : (
+                    <VolumeX className="h-4 w-4" />
+                  )}
+                  Ambient Sound
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Ambient Sounds</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    {SOUND_OPTIONS.map((sound) => (
+                      <button
+                        key={sound.id}
+                        onClick={() => handleSoundChange(sound.id)}
+                        className={`p-4 rounded-xl border-2 transition-all text-left ${
+                          selectedSound === sound.id
+                            ? 'border-primary bg-primary/10 shadow-md'
+                            : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                        }`}
+                      >
+                        <div className="text-2xl mb-2">{sound.icon}</div>
+                        <div className="font-medium text-sm text-foreground">{sound.name}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{sound.description}</div>
+                        {selectedSound === sound.id && sound.id !== 'silence' && (
+                          <div className="mt-2 text-xs text-primary font-medium">Playing...</div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="text-xs text-muted-foreground text-center pt-2 border-t">
+                    Click a sound to test it. Sounds will play automatically during focus sessions.
+                  </div>
+                  {selectedSound !== 'silence' && (
+                    <div className="space-y-2 pt-2 border-t">
+                      <label className="text-sm font-medium text-foreground block">
+                        Volume: {Math.round(soundVolume * 100)}%
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={soundVolume}
+                        onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                      />
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full justify-start gap-3 h-12">
+                  <Settings className="h-4 w-4" />
+                  Timer Settings
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Timer Settings</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6 py-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground block">
+                      Focus Duration (minutes)
+                    </label>
+                    <NumberInput
+                      min={1}
+                      max={60}
+                      value={Math.floor(workTime / 60)}
+                      onChange={(e) => setWorkTime(parseInt(e.target.value) * 60 || DEFAULT_WORK_TIME)}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground block">
+                      Short Break (minutes)
+                    </label>
+                    <NumberInput
+                      min={1}
+                      max={30}
+                      value={Math.floor(breakTime / 60)}
+                      onChange={(e) => setBreakTime(parseInt(e.target.value) * 60 || DEFAULT_BREAK_TIME)}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground block">
+                      Long Break (minutes)
+                    </label>
+                    <NumberInput
+                      min={1}
+                      max={60}
+                      value={Math.floor(longBreakTime / 60)}
+                      onChange={(e) => setLongBreakTime(parseInt(e.target.value) * 60 || DEFAULT_LONG_BREAK_TIME)}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="flex gap-3 pt-2">
+                    <Button 
+                      onClick={() => setIsSettingsOpen(false)} 
+                      className="flex-1"
+                    >
+                      Save Settings
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => setIsSettingsOpen(false)} 
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
       </div>
     </div>
   );
