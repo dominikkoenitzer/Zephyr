@@ -29,7 +29,7 @@ export const SOUND_OPTIONS = [
       filter.Q.value = 1;
       
       const gainNode = audioContext.createGain();
-      gainNode.gain.value = 0.3;
+      gainNode.gain.value = 0.5;
       
       source.connect(filter);
       filter.connect(gainNode);
@@ -65,7 +65,7 @@ export const SOUND_OPTIONS = [
       filter.Q.value = 0.5;
       
       const gainNode = audioContext.createGain();
-      gainNode.gain.value = 0.25;
+      gainNode.gain.value = 0.4;
       
       source.connect(filter);
       filter.connect(gainNode);
@@ -102,7 +102,7 @@ export const SOUND_OPTIONS = [
       filter.Q.value = 0.8;
       
       const gainNode = audioContext.createGain();
-      gainNode.gain.value = 0.3;
+      gainNode.gain.value = 0.5;
       
       source.connect(filter);
       filter.connect(gainNode);
@@ -138,7 +138,7 @@ export const SOUND_OPTIONS = [
       filter.Q.value = 1;
       
       const gainNode = audioContext.createGain();
-      gainNode.gain.value = 0.2;
+      gainNode.gain.value = 0.35;
       
       source.connect(filter);
       filter.connect(gainNode);
@@ -175,7 +175,7 @@ export const SOUND_OPTIONS = [
       filter.Q.value = 2;
       
       const gainNode = audioContext.createGain();
-      gainNode.gain.value = 0.25;
+      gainNode.gain.value = 0.4;
       
       source.connect(filter);
       filter.connect(gainNode);
@@ -209,37 +209,63 @@ class AmbientSoundService {
     if (!this.audioContext) {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
+    
+    // Resume if suspended (browser autoplay policy)
     if (this.audioContext.state === 'suspended') {
-      await this.audioContext.resume();
+      try {
+        await this.audioContext.resume();
+        console.log('Audio context resumed');
+      } catch (error) {
+        console.error('Failed to resume audio context:', error);
+        throw error;
+      }
     }
+    
+    return this.audioContext;
   }
 
   async playSound(soundId) {
-    await this.init();
-    
-    // Stop current sound
-    this.stop();
-    
-    if (soundId === 'silence') {
-      return;
-    }
-    
-    const sound = SOUND_OPTIONS.find(s => s.id === soundId);
-    if (!sound || !sound.generateSound) {
-      return;
-    }
-    
     try {
+      await this.init();
+      
+      // Stop current sound
+      this.stop();
+      
+      if (soundId === 'silence') {
+        return;
+      }
+      
+      const sound = SOUND_OPTIONS.find(s => s.id === soundId);
+      if (!sound || !sound.generateSound) {
+        console.warn('Sound not found:', soundId);
+        return;
+      }
+      
       const { source, gainNode } = sound.generateSound(this.audioContext);
       this.currentSource = source;
       this.currentGain = gainNode;
       this.currentSound = sound;
       
-      gainNode.gain.value = this.volume;
+      // Set volume before starting
+      gainNode.gain.setValueAtTime(this.volume, this.audioContext.currentTime);
+      
+      // Start the source
       source.start(0);
       this.isPlaying = true;
+      
+      console.log('Playing sound:', soundId, 'Volume:', this.volume);
     } catch (error) {
       console.error('Error playing sound:', error);
+      // Try to resume audio context if it failed
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        try {
+          await this.audioContext.resume();
+          // Retry playing
+          setTimeout(() => this.playSound(soundId), 100);
+        } catch (retryError) {
+          console.error('Failed to resume and retry:', retryError);
+        }
+      }
     }
   }
 
