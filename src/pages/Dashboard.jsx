@@ -190,11 +190,11 @@ function Dashboard() {
     : 0;
 
   return (
-    <div className="min-h-screen py-7">
+    <div className="min-h-screen py-6">
       <div className="container mx-auto px-4 max-w-[99%]">
         {/* Header Section */}
-        <div className="mb-7 animate-fade-in-up">
-          <div className="flex items-center justify-between mb-5">
+        <div className="mb-6 animate-fade-in-up">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-4xl font-bold text-foreground mb-2">
                 Dashboard
@@ -213,7 +213,7 @@ function Dashboard() {
         </div>
 
         {/* Main Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-7">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card className="glass-card border-none hover-lift">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Focus Time Today</CardTitle>
@@ -275,7 +275,7 @@ function Dashboard() {
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-7">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
           {/* Focus Time Trend */}
           <Card className="glass-card border-none lg:col-span-2">
             <CardHeader>
@@ -285,7 +285,7 @@ function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={252}>
+              <ResponsiveContainer width="100%" height={239}>
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorFocusTime" x1="0" y1="0" x2="0" y2="1">
@@ -327,7 +327,7 @@ function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={252}>
+              <ResponsiveContainer width="100%" height={239}>
                 <PieChart>
                   <Pie
                     data={taskBreakdown}
@@ -357,7 +357,7 @@ function Dashboard() {
         </div>
 
         {/* Activity & Weekly Summary */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-7">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
           {/* Daily Activity */}
           <Card className="glass-card border-none">
             <CardHeader>
@@ -367,7 +367,7 @@ function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={225}>
+              <ResponsiveContainer width="100%" height={214}>
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
                   <XAxis 
@@ -440,7 +440,7 @@ function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="glass-card border-none hover-lift group cursor-pointer transition-all">
             <CardContent className="flex items-center gap-4 p-6">
               <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
