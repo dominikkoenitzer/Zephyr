@@ -32,16 +32,30 @@ function Sidebar({ isMobile = false, onClose }) {
     const savedTheme = localStorage.getItem('theme') || 'system';
     setTheme(savedTheme);
     applyTheme(savedTheme);
+
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemThemeChange = (e) => {
+      if (savedTheme === 'system') {
+        const root = window.document.documentElement;
+        root.classList.remove('dark', 'light');
+        root.classList.add(e.matches ? 'dark' : 'light');
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
+    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
   }, []);
 
   const applyTheme = (newTheme) => {
     const root = window.document.documentElement;
+    root.classList.remove('dark', 'light');
     
     if (newTheme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.classList.toggle('dark', systemTheme === 'dark');
+      root.classList.add(systemTheme);
     } else {
-      root.classList.toggle('dark', newTheme === 'dark');
+      root.classList.add(newTheme);
     }
   };
 
