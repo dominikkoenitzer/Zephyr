@@ -7,7 +7,7 @@ export const SOUND_OPTIONS = [
     name: 'Rain',
     description: 'Gentle rain sounds',
     icon: CloudRain,
-    color: '#6B9BD1',
+    color: '#7C8FA1',
     theme: 'rain',
   },
   {
@@ -23,7 +23,7 @@ export const SOUND_OPTIONS = [
     name: 'Ocean',
     description: 'Waves and water',
     icon: Waves,
-    color: '#0EA5E9',
+    color: '#0284C7',
     theme: 'ocean',
   },
   {
