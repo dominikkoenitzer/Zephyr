@@ -42,7 +42,6 @@ function Dashboard() {
     activeTasks: 0,
     completedTasks: 0,
     totalPomodoros: 0,
-    currentStreak: 0
   });
 
 
@@ -69,7 +68,6 @@ function Dashboard() {
     // Load timer state
     const timerState = localStorageService.getTimerState();
     const totalPomodoros = timerState ? timerState.pomodorosCompleted || 0 : 0;
-    const currentStreak = timerState ? timerState.sessionStreak || 0 : 0;
 
     const todayFocusTime = todaySessions.reduce((total, session) => 
       total + (session.duration || 0), 0
@@ -81,7 +79,6 @@ function Dashboard() {
       activeTasks: activeTasks.length,
       completedTasks: completedTasks.length,
       totalPomodoros,
-      currentStreak
     });
   };
 

@@ -70,7 +70,7 @@ function Help() {
               <div className="bg-primary text-white rounded w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">4</div>
               <div>
                 <h4 className="font-semibold text-foreground">Track Your Progress</h4>
-                <p className="text-sm text-muted-foreground">Check your Dashboard to see your growing streak and productivity stats.</p>
+                <p className="text-sm text-muted-foreground">Check your Dashboard to see your productivity stats.</p>
               </div>
             </div>
           </div>
