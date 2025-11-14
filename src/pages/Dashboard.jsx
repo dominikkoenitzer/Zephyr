@@ -59,7 +59,7 @@ function Dashboard() {
   });
 
   const [greeting, setGreeting] = useState(getTimeBasedGreeting());
-  const [dailyQuote, setDailyQuote] = useState(getDailyQuote());
+  const [dailyQuote] = useState(getDailyQuote());
 
   useEffect(() => {
     loadDashboardData();

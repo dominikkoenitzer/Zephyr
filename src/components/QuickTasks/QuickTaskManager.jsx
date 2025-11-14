@@ -15,12 +15,8 @@ import {
   Button,
   Checkbox,
   useColorModeValue,
-  Collapse,
-  Flex,
   Tooltip,
   Progress,
-  Heading,
-  Divider,
   SimpleGrid,
   Stat,
   StatLabel,
@@ -30,12 +26,9 @@ import {
 import {
   FaPlus,
   FaEllipsisV,
-  FaClock,
-  FaTag,
   FaBell,
   FaTrash,
   FaEdit,
-  FaCheck,
   FaRegClock,
   FaFilter,
   FaSort,
@@ -182,12 +175,13 @@ const QuickTaskManager = () => {
           return new Date(a.dueDate) - new Date(b.dueDate);
         });
         break;
-      case 'priority':
+      case 'priority': {
         const priorityOrder = { high: 0, medium: 1, low: 2 };
         filteredTasks.sort(
           (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
         );
         break;
+      }
       case 'created':
         filteredTasks.sort(
           (a, b) => new Date(b.created) - new Date(a.created)
