@@ -134,7 +134,7 @@ function Help() {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground mb-4">
-            We're here to help you get the most out of Zephyr. Feel free to reach out!
+            We&apos;re here to help you get the most out of Zephyr. Feel free to reach out!
           </p>
           <div className="flex gap-3">
             <Button className="rounded-full px-6">
@@ -152,7 +152,7 @@ function Help() {
       {/* Inspirational Footer */}
       <div className="glass-card border-none p-8 text-center animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
         <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-          "Flow Through Focus"
+          &ldquo;Flow Through Focus&rdquo;
         </h3>
         <p className="text-muted-foreground max-w-2xl mx-auto">
           Zephyr is designed to help you find your flow state - that magical zone where 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   VStack,
   HStack,
@@ -52,11 +52,7 @@ const WellnessTracker = () => {
 
   const bgColor = useColorModeValue('lightMode.card', 'darkMode.card');
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const data = await api.getWellnessStats();
       setStats(data);
@@ -67,7 +63,11 @@ const WellnessTracker = () => {
         duration: 3000,
       });
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   const handleCheckin = async () => {
     try {

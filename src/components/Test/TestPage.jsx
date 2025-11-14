@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Button,
@@ -21,11 +21,7 @@ function TestPage() {
   const [editingId, setEditingId] = useState(null);
   const toast = useToast();
 
-  useEffect(() => {
-    fetchTests();
-  }, []);
-
-  const fetchTests = async () => {
+  const fetchTests = useCallback(async () => {
     try {
       const data = await getAllTests();
       setTests(data);
@@ -37,7 +33,11 @@ function TestPage() {
         duration: 3000,
       });
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchTests();
+  }, [fetchTests]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

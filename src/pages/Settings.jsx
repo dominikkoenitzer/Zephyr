@@ -117,7 +117,7 @@ function Settings() {
             </div>
             <div className="flex items-center gap-2 text-sm">
               <span className="text-muted-foreground font-semibold">Tagline:</span>
-              <span className="italic text-primary">"Flow Through Focus"</span>
+              <span className="italic text-primary">&ldquo;Flow Through Focus&rdquo;</span>
             </div>
           </div>
         </CardContent>
@@ -129,7 +129,7 @@ function Settings() {
         <h3 className="font-semibold text-lg mb-2">Pro Tip</h3>
         <p className="text-muted-foreground max-w-2xl mx-auto">
           Enable notifications to stay on track with your focus sessions. 
-          Zephyr will gently remind you when it's time to work or take a break.
+          Zephyr will gently remind you when it&apos;s time to work or take a break.
         </p>
       </div>
     </div>
