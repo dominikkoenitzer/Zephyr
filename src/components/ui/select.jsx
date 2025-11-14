@@ -9,9 +9,16 @@ const Select = React.forwardRef(({ className, children, value, onChange, ...prop
 
   // Get selected option label
   React.useEffect(() => {
-    if (selectRef.current) {
+    if (selectRef.current && selectRef.current.options && selectRef.current.options.length > 0) {
       const selectedOption = selectRef.current.options[selectRef.current.selectedIndex]
       setSelectedLabel(selectedOption ? selectedOption.text : '')
+    } else {
+      // Fallback: find selected option from children
+      React.Children.forEach(children, (child) => {
+        if (React.isValidElement(child) && child.type === 'option' && child.props.value === value) {
+          setSelectedLabel(child.props.children || '')
+        }
+      })
     }
   }, [value, children])
 
