@@ -4,28 +4,28 @@ import { cn } from "../../lib/utils"
 
 const Select = React.forwardRef(({ className, children, value, onChange, ...props }, ref) => {
   const [isOpen, setIsOpen] = React.useState(false)
+  const containerRef = React.useRef(null)
   const selectRef = React.useRef(null)
   const [selectedLabel, setSelectedLabel] = React.useState('')
 
-  // Get selected option label
+  // Get selected option label from children
   React.useEffect(() => {
-    if (selectRef.current && selectRef.current.options && selectRef.current.options.length > 0) {
-      const selectedOption = selectRef.current.options[selectRef.current.selectedIndex]
-      setSelectedLabel(selectedOption ? selectedOption.text : '')
-    } else {
-      // Fallback: find selected option from children
-      React.Children.forEach(children, (child) => {
-        if (React.isValidElement(child) && child.type === 'option' && child.props.value === value) {
-          setSelectedLabel(child.props.children || '')
-        }
-      })
+    let found = false
+    React.Children.forEach(children, (child) => {
+      if (React.isValidElement(child) && child.type === 'option' && child.props.value === value) {
+        setSelectedLabel(child.props.children || String(child.props.value) || '')
+        found = true
+      }
+    })
+    if (!found) {
+      setSelectedLabel('Select...')
     }
   }, [value, children])
 
   // Close on outside click
   React.useEffect(() => {
     const handleClickOutside = (event) => {
-      if (selectRef.current && !selectRef.current.contains(event.target)) {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
         setIsOpen(false)
       }
     }
@@ -43,10 +43,17 @@ const Select = React.forwardRef(({ className, children, value, onChange, ...prop
   }
 
   return (
-    <div className="relative" ref={selectRef}>
+    <div className="relative" ref={containerRef}>
       {/* Hidden native select for form compatibility */}
       <select
-        ref={ref}
+        ref={(node) => {
+          selectRef.current = node
+          if (typeof ref === 'function') {
+            ref(node)
+          } else if (ref) {
+            ref.current = node
+          }
+        }}
         value={value}
         onChange={onChange}
         className="sr-only"
