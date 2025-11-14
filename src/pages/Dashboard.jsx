@@ -10,7 +10,6 @@ import {
   Coffee,
   TrendingUp,
   BarChart3,
-  Flame,
   Award,
   ArrowRight,
   Activity
@@ -240,10 +239,6 @@ function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-foreground mb-1">{stats.totalPomodoros}</div>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Flame className="h-3 w-3 text-orange-500" />
-                {stats.currentStreak} day streak
-              </p>
             </CardContent>
           </Card>
 
