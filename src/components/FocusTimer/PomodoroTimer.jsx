@@ -12,8 +12,8 @@ const DEFAULT_WORK_TIME = 25 * 60; // 25 minutes in seconds
 const DEFAULT_BREAK_TIME = 5 * 60; // 5 minutes in seconds
 const DEFAULT_LONG_BREAK_TIME = 15 * 60; // 15 minutes in seconds;
 
-// Subtle completion indicator in bottom left
-const CompletionIndicator = ({ show, pomodorosCompleted, sessionStreak }) => {
+// Subtle completion indicator in bottom right
+const CompletionIndicator = ({ show, pomodorosCompleted }) => {
   if (!show) return null;
   
   return (
@@ -26,8 +26,7 @@ const CompletionIndicator = ({ show, pomodorosCompleted, sessionStreak }) => {
           <div>
             <p className="text-sm font-semibold text-foreground">Session Complete!</p>
             <p className="text-xs text-muted-foreground">
-              {pomodorosCompleted} pomodoro{pomodorosCompleted !== 1 ? 's' : ''}
-              {sessionStreak > 1 && ` • ${sessionStreak} streak`}
+              {pomodorosCompleted} pomodoro{pomodorosCompleted !== 1 ? 's' : ''} completed
             </p>
           </div>
         </div>
@@ -475,7 +474,6 @@ const PomodoroTimer = () => {
       <CompletionIndicator 
         show={showCelebration} 
         pomodorosCompleted={pomodorosCompleted}
-        sessionStreak={sessionStreak}
       />
 
       {/* Main Timer Section */}
