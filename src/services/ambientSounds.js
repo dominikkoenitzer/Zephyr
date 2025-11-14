@@ -265,76 +265,66 @@ class AmbientSoundService {
   generateFireplaceSound(audioContext) {
     const sources = [];
     const masterGain = audioContext.createGain();
-    masterGain.gain.value = this.volume * 0.25;
+    masterGain.gain.value = this.volume * 0.15; // Much lower base volume
     
-    // Base crackling using filtered noise
+    // Soft low rumble for fire warmth (main sound)
+    for (let i = 0; i < 3; i++) {
+      const rumble = audioContext.createOscillator();
+      const rumbleGain = audioContext.createGain();
+      const rumbleFilter = audioContext.createBiquadFilter();
+      
+      // Very low frequencies for warmth
+      rumble.frequency.value = 40 + i * 10 + Math.random() * 5;
+      rumble.type = 'sine'; // Pure sine for smoothness
+      
+      rumbleFilter.type = 'lowpass';
+      rumbleFilter.frequency.value = 100; // Very low pass
+      rumbleFilter.Q.value = 0.3; // Gentle filter
+      
+      // Very soft gain
+      rumbleGain.gain.value = 0.08 + Math.random() * 0.02;
+      
+      // Gentle slow modulation
+      const lfo = audioContext.createOscillator();
+      const lfoGain = audioContext.createGain();
+      lfo.frequency.value = 0.05 + Math.random() * 0.03; // Very slow
+      lfo.type = 'sine';
+      lfoGain.gain.value = 3; // Tiny frequency variation
+      
+      lfo.connect(lfoGain);
+      lfoGain.connect(rumble.frequency);
+      rumble.connect(rumbleFilter);
+      rumbleFilter.connect(rumbleGain);
+      rumbleGain.connect(masterGain);
+      
+      rumble.start(audioContext.currentTime + Math.random() * 0.3);
+      lfo.start(audioContext.currentTime);
+      
+      sources.push({ osc: rumble, lfo, gain: rumbleGain, filter: rumbleFilter });
+    }
+    
+    // Very soft, distant crackling using heavily filtered noise
     const noiseBuffer = this.generateNoiseBuffer(audioContext, 2);
-    const baseNoise = audioContext.createBufferSource();
-    baseNoise.buffer = noiseBuffer;
-    baseNoise.loop = true;
+    const crackleNoise = audioContext.createBufferSource();
+    crackleNoise.buffer = noiseBuffer;
+    crackleNoise.loop = true;
     
-    const baseFilter = audioContext.createBiquadFilter();
-    baseFilter.type = 'highpass';
-    baseFilter.frequency.value = 2000; // High frequencies for crackling
-    baseFilter.Q.value = 1;
+    // Heavy low-pass filter to remove harsh high frequencies
+    const crackleFilter = audioContext.createBiquadFilter();
+    crackleFilter.type = 'lowpass';
+    crackleFilter.frequency.value = 800; // Much lower than before
+    crackleFilter.Q.value = 0.5; // Gentle
     
-    const baseGain = audioContext.createGain();
-    baseGain.gain.value = 0.08;
+    // Very soft gain
+    const crackleGain = audioContext.createGain();
+    crackleGain.gain.value = 0.03; // Much quieter
     
-    baseNoise.connect(baseFilter);
-    baseFilter.connect(baseGain);
-    baseGain.connect(masterGain);
-    baseNoise.start(audioContext.currentTime);
+    crackleNoise.connect(crackleFilter);
+    crackleFilter.connect(crackleGain);
+    crackleGain.connect(masterGain);
+    crackleNoise.start(audioContext.currentTime);
     
-    sources.push({ osc: baseNoise, gain: baseGain, filter: baseFilter });
-    
-    // Low rumble for fire warmth
-    const rumble = audioContext.createOscillator();
-    const rumbleGain = audioContext.createGain();
-    const rumbleFilter = audioContext.createBiquadFilter();
-    
-    rumble.frequency.value = 50 + Math.random() * 20;
-    rumble.type = 'sine';
-    
-    rumbleFilter.type = 'lowpass';
-    rumbleFilter.frequency.value = 150;
-    rumbleFilter.Q.value = 0.5;
-    
-    rumbleGain.gain.value = 0.12;
-    
-    rumble.connect(rumbleFilter);
-    rumbleFilter.connect(rumbleGain);
-    rumbleGain.connect(masterGain);
-    rumble.start(audioContext.currentTime);
-    
-    sources.push({ osc: rumble, gain: rumbleGain, filter: rumbleFilter });
-    
-    // Periodic crackle bursts
-    const createCrackle = () => {
-      const crackleBuffer = this.generateNoiseBuffer(audioContext, 0.1);
-      const crackle = audioContext.createBufferSource();
-      crackle.buffer = crackleBuffer;
-      
-      const crackleFilter = audioContext.createBiquadFilter();
-      crackleFilter.type = 'bandpass';
-      crackleFilter.frequency.value = 3000 + Math.random() * 2000;
-      crackleFilter.Q.value = 2;
-      
-      const crackleGain = audioContext.createGain();
-      crackleGain.gain.setValueAtTime(0.15 + Math.random() * 0.1, audioContext.currentTime);
-      crackleGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-      
-      crackle.connect(crackleFilter);
-      crackleFilter.connect(crackleGain);
-      crackleGain.connect(masterGain);
-      
-      crackle.start(audioContext.currentTime);
-      crackle.stop(audioContext.currentTime + 0.1);
-    };
-    
-    // Create crackles periodically
-    const crackleInterval = setInterval(createCrackle, 300 + Math.random() * 500);
-    this.intervals.push(crackleInterval);
+    sources.push({ osc: crackleNoise, gain: crackleGain, filter: crackleFilter });
     
     return { sources, masterGain };
   }
@@ -440,7 +430,7 @@ class AmbientSoundService {
         'forest': 0.25,
         'ocean': 0.3,
         'coffee': 0.2,
-        'fireplace': 0.25
+        'fireplace': 0.15
       };
       const multiplier = multipliers[this.currentSound?.id] || 0.3;
       this.currentGain.gain.value = this.volume * multiplier;
