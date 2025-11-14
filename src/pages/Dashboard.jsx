@@ -389,8 +389,8 @@ function Dashboard() {
                   />
                   <Bar 
                     dataKey="tasksCompleted" 
-                    fill="hsl(var(--accent-foreground))" 
-                    name="Tasks"
+                    fill="#10B981" 
+                    name="Tasks Completed"
                     radius={[6, 6, 0, 0]}
                   />
                 </BarChart>
