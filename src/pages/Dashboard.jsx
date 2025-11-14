@@ -39,13 +39,13 @@ const getTimeBasedGreeting = () => {
   const hour = new Date().getHours();
   
   if (hour >= 5 && hour < 12) {
-    return { text: "Good morning! ☀️", subtext: "Ready to own your day?" };
+    return { text: "Good morning", subtext: "Ready to start your day" };
   } else if (hour >= 12 && hour < 17) {
-    return { text: "Good afternoon! 🌤️", subtext: "Keep that momentum going!" };
+    return { text: "Good afternoon", subtext: "Keep that momentum going" };
   } else if (hour >= 17 && hour < 22) {
-    return { text: "Good evening! 🌙", subtext: "Time to wind down and reflect." };
+    return { text: "Good evening", subtext: "Time to wind down and reflect" };
   } else {
-    return { text: "Burning the midnight oil? 🌜", subtext: "Don't forget to rest!" };
+    return { text: "Late night session", subtext: "Remember to rest" };
   }
 };
 
@@ -109,19 +109,19 @@ function Dashboard() {
 
   const getMotivationalMessage = () => {
     if (stats.totalPomodoros === 0) {
-      return "Start your first focus session!";
+      return "Start your first focus session";
     } else if (stats.totalPomodoros < 5) {
-      return "You're building momentum! 💪";
+      return "Building momentum";
     } else if (stats.totalPomodoros < 20) {
-      return "Keep crushing it! 🚀";
+      return "Great progress";
     } else {
-      return "You're a productivity master! 🏆";
+      return "Excellent consistency";
     }
   };
 
   const getTasksMessage = () => {
     if (stats.activeTasks === 0) {
-      return "All caught up! 🎉";
+      return "All tasks completed";
     } else if (stats.activeTasks < 5) {
       return `${stats.activeTasks} to tackle`;
     } else {
@@ -134,7 +134,7 @@ function Dashboard() {
       <div className="container mx-auto px-4">
         {/* Hero Greeting Section */}
         <div className="mb-12 animate-fade-in-up">
-          <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-3 text-foreground">
             {greeting.text}
           </h1>
           <p className="text-muted-foreground text-xl mb-6">
@@ -209,7 +209,7 @@ function Dashboard() {
             <CardContent>
               <div className="text-3xl font-bold text-foreground">{stats.completedTasks}</div>
               <p className="text-xs text-muted-foreground mt-2">
-                {stats.completedTasks > 0 ? "You're crushing it! 💪" : "Let's get started!"}
+                {stats.completedTasks > 0 ? "Great work" : "Let's get started"}
               </p>
             </CardContent>
           </Card>
@@ -220,14 +220,14 @@ function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           <Card className="glass-card hover-lift border-none group cursor-pointer transition-all duration-300">
             <CardContent className="flex flex-col items-center justify-center py-10">
-              <div className="rounded-full bg-gradient-to-r from-primary to-purple-600 p-4 mb-4 group-hover:scale-110 transition-transform">
+              <div className="rounded-lg bg-primary p-4 mb-4 group-hover:scale-105 transition-transform">
                 <Timer className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">Dive Into Deep Work</h3>
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Start Focus Session</h3>
               <p className="text-muted-foreground text-center mb-6 text-sm">
                 Begin a focused 25-minute session
               </p>
-              <Button asChild className="rounded-full px-6">
+              <Button asChild className="px-6">
                 <Link to="/focus">
                   <Play className="h-4 w-4 mr-2" />
                   Start Session
@@ -238,14 +238,14 @@ function Dashboard() {
 
           <Card className="glass-card hover-lift border-none group cursor-pointer transition-all duration-300">
             <CardContent className="flex flex-col items-center justify-center py-10">
-              <div className="rounded-full bg-gradient-to-r from-purple-600 to-pink-600 p-4 mb-4 group-hover:scale-110 transition-transform">
+              <div className="rounded-lg bg-primary p-4 mb-4 group-hover:scale-105 transition-transform">
                 <CheckSquare className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">Review Your Priorities</h3>
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Manage Tasks</h3>
               <p className="text-muted-foreground text-center mb-6 text-sm">
                 Organize and manage your tasks
               </p>
-              <Button asChild variant="outline" className="rounded-full px-6">
+              <Button asChild variant="outline" className="px-6">
                 <Link to="/tasks">
                   <Plus className="h-4 w-4 mr-2" />
                   Manage Tasks
@@ -256,14 +256,14 @@ function Dashboard() {
 
           <Card className="glass-card hover-lift border-none group cursor-pointer transition-all duration-300">
             <CardContent className="flex flex-col items-center justify-center py-10">
-              <div className="rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 p-4 mb-4 group-hover:scale-110 transition-transform">
+              <div className="rounded-lg bg-primary p-4 mb-4 group-hover:scale-105 transition-transform">
                 <Calendar className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">Map Out Your Day</h3>
+              <h3 className="text-xl font-semibold mb-2 text-foreground">View Calendar</h3>
               <p className="text-muted-foreground text-center mb-6 text-sm">
                 Schedule and plan your activities
               </p>
-              <Button asChild variant="outline" className="rounded-full px-6">
+              <Button asChild variant="outline" className="px-6">
                 <Link to="/calendar">
                   <Calendar className="h-4 w-4 mr-2" />
                   View Calendar
