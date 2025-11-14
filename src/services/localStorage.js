@@ -101,7 +101,14 @@ class LocalStorageService {
     const tasks = this.getTasks();
     const taskIndex = tasks.findIndex(task => task.id === taskId);
     if (taskIndex !== -1) {
-      tasks[taskIndex] = { ...tasks[taskIndex], ...updates, updatedAt: new Date().toISOString() };
+      const updatedTask = { ...tasks[taskIndex], ...updates, updatedAt: new Date().toISOString() };
+      // Add completedAt timestamp when task is marked as completed
+      if (updates.completed && !tasks[taskIndex].completed) {
+        updatedTask.completedAt = new Date().toISOString();
+      } else if (updates.completed === false && tasks[taskIndex].completed) {
+        updatedTask.completedAt = null;
+      }
+      tasks[taskIndex] = updatedTask;
       this.saveTasks(tasks);
       return tasks[taskIndex];
     }
