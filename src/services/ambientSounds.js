@@ -281,8 +281,8 @@ class AmbientSoundService {
       rumbleFilter.frequency.value = 120; // Slightly higher for more presence
       rumbleFilter.Q.value = 0.3; // Gentle filter
       
-      // Increased but still soft gain
-      rumbleGain.gain.value = 0.15 + Math.random() * 0.05;
+      // Reduced rumble gain
+      rumbleGain.gain.value = 0.06 + Math.random() * 0.02;
       
       // Gentle slow modulation
       const lfo = audioContext.createOscillator();
