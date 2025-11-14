@@ -1,20 +1,70 @@
-import { useState, useEffect } from 'react';
-import { Plus, Trash2, CheckCircle, Circle, ListTodo, Target, TrendingUp } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { 
+  Plus, Trash2, CheckCircle, Circle, ListTodo, Target, TrendingUp, 
+  Folder, FolderPlus, Edit2, Calendar, Tag, ArrowUpDown, 
+  X, Filter, Flag
+} from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { DatePicker } from '../ui/date-picker';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { localStorageService } from '../../services/localStorage';
+
+const PRIORITY_COLORS = {
+  high: 'text-red-500',
+  medium: 'text-yellow-500',
+  low: 'text-blue-500'
+};
+
+const PRIORITY_LABELS = {
+  high: 'High',
+  medium: 'Medium',
+  low: 'Low'
+};
+
+const SORT_OPTIONS = [
+  { value: 'date', label: 'Date Created' },
+  { value: 'priority', label: 'Priority' },
+  { value: 'dueDate', label: 'Due Date' },
+  { value: 'title', label: 'Title' },
+  { value: 'status', label: 'Status' }
+];
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
+  const [folders, setFolders] = useState([]);
   const [newTask, setNewTask] = useState('');
-  const [justCompleted, setJustCompleted] = useState(null);
+  const [selectedFolder, setSelectedFolder] = useState(null);
+  const [sortBy, setSortBy] = useState('date');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [showCompleted, setShowCompleted] = useState(true);
+  const [editingTask, setEditingTask] = useState(null);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [showFolderDialog, setShowFolderDialog] = useState(false);
+  const [filterPriority, setFilterPriority] = useState('all');
 
-  // Load tasks on mount
+  // Load tasks and folders on mount
   useEffect(() => {
     const savedTasks = localStorageService.getTasks();
+    const savedFolders = localStorageService.getFolders();
     setTasks(savedTasks);
+    setFolders(savedFolders);
   }, []);
+
+  // Save tasks whenever they change
+  useEffect(() => {
+    if (tasks.length > 0 || localStorageService.getTasks().length > 0) {
+      localStorageService.saveTasks(tasks);
+    }
+  }, [tasks]);
+
+  // Save folders whenever they change
+  useEffect(() => {
+    if (folders.length > 0 || localStorageService.getFolders().length > 0) {
+      localStorageService.saveFolders(folders);
+    }
+  }, [folders]);
 
   const addTask = (e) => {
     e.preventDefault();
@@ -23,11 +73,20 @@ const TaskList = () => {
     const task = localStorageService.addTask({
       title: newTask,
       description: '',
-      priority: 'medium'
+      priority: 'medium',
+      folderId: selectedFolder
     });
     
     setTasks(prev => [...prev, task]);
     setNewTask('');
+  };
+
+  const addFolder = () => {
+    if (!newFolderName.trim()) return;
+    const folder = localStorageService.addFolder({ name: newFolderName });
+    setFolders(prev => [...prev, folder]);
+    setNewFolderName('');
+    setShowFolderDialog(false);
   };
 
   const toggleTask = (taskId) => {
@@ -41,12 +100,6 @@ const TaskList = () => {
         setTasks(prev => prev.map(t => 
           t.id === taskId ? updatedTask : t
         ));
-
-        // Show celebration for completion
-        if (updatedTask.completed) {
-          setJustCompleted(taskId);
-          setTimeout(() => setJustCompleted(null), 1000);
-        }
       }
     }
   };
@@ -56,32 +109,127 @@ const TaskList = () => {
     setTasks(prev => prev.filter(t => t.id !== taskId));
   };
 
-  const activeTasks = tasks.filter(task => !task.completed);
-  const completedTasks = tasks.filter(task => task.completed);
-  const completedCount = completedTasks.length;
+  const updateTask = (taskId, updates) => {
+    const updatedTask = localStorageService.updateTask(taskId, updates);
+    if (updatedTask) {
+      setTasks(prev => prev.map(t => 
+        t.id === taskId ? updatedTask : t
+      ));
+    }
+  };
+
+  const deleteFolder = (folderId) => {
+    localStorageService.deleteFolder(folderId);
+    setFolders(prev => prev.filter(f => f.id !== folderId));
+    if (selectedFolder === folderId) {
+      setSelectedFolder(null);
+    }
+    // Reload tasks to update folder references
+    setTasks(localStorageService.getTasks());
+  };
+
+  // Filter and sort tasks
+  const filteredAndSortedTasks = useMemo(() => {
+    let filtered = tasks.filter(task => {
+      // Filter by folder
+      if (selectedFolder !== null) {
+        if (selectedFolder === 'none') {
+          if (task.folderId !== null) return false;
+        } else {
+          if (task.folderId !== selectedFolder) return false;
+        }
+      }
+      
+      // Filter by completion status
+      if (!showCompleted && task.completed) return false;
+      
+      // Filter by priority
+      if (filterPriority !== 'all' && task.priority !== filterPriority) return false;
+      
+      return true;
+    });
+
+    // Sort tasks
+    filtered.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortBy) {
+        case 'priority': {
+          const priorityOrder = { high: 3, medium: 2, low: 1 };
+          comparison = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+          break;
+        }
+        case 'dueDate': {
+          const dateA = a.dueDate ? new Date(a.dueDate) : new Date(0);
+          const dateB = b.dueDate ? new Date(b.dueDate) : new Date(0);
+          comparison = dateA - dateB;
+          break;
+        }
+        case 'title':
+          comparison = a.title.localeCompare(b.title);
+          break;
+        case 'status':
+          comparison = (a.completed ? 1 : 0) - (b.completed ? 1 : 0);
+          break;
+        case 'date':
+        default: {
+          const createdA = new Date(a.createdAt || 0);
+          const createdB = new Date(b.createdAt || 0);
+          comparison = createdA - createdB;
+          break;
+        }
+      }
+      
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    return filtered;
+  }, [tasks, selectedFolder, showCompleted, sortBy, sortOrder, filterPriority]);
+
+  const activeTasks = filteredAndSortedTasks.filter(task => !task.completed);
+  const completedTasks = filteredAndSortedTasks.filter(task => task.completed);
+  const completedCount = tasks.filter(task => task.completed).length;
   const totalCount = tasks.length;
   const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  const getMotivationalMessage = () => {
-    if (totalCount === 0) return "Your journey to productivity starts here";
-    if (completionRate === 100) return "All tasks completed. Excellent work";
-    if (completionRate >= 75) return "Almost there. Keep up the great work";
-    if (completionRate >= 50) return "Great progress. You're on track";
-    if (completionRate >= 25) return "Good start. Keep the momentum going";
-    return "Let's tackle these tasks together";
+  const getFolderName = (folderId) => {
+    if (!folderId) return null;
+    const folder = folders.find(f => f.id === folderId);
+    return folder ? folder.name : null;
+  };
+
+  const getFolderColor = (folderId) => {
+    if (!folderId) return null;
+    const folder = folders.find(f => f.id === folderId);
+    return folder ? folder.color : null;
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined });
+  };
+
+  const isOverdue = (dueDate) => {
+    if (!dueDate) return false;
+    return new Date(dueDate) < new Date() && new Date(dueDate).toDateString() !== new Date().toDateString();
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-6">
+    <div className="w-full max-w-6xl mx-auto space-y-6">
       {/* Header Card */}
       <Card className="glass-card border-none animate-fade-in-up">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-3xl font-bold mb-2 text-foreground">
-                Task Overview
+                Task Manager
               </CardTitle>
-              <p className="text-muted-foreground text-sm">{getMotivationalMessage()}</p>
+              <p className="text-muted-foreground text-sm">
+                {totalCount > 0 
+                  ? `${completedCount} of ${totalCount} tasks completed (${completionRate}%)`
+                  : "Your journey to productivity starts here"}
+              </p>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-primary">{completionRate}%</div>
@@ -90,143 +238,446 @@ const TaskList = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {/* Progress Bar */}
           <div className="w-full h-2.5 bg-muted rounded-full overflow-hidden">
             <div 
               className="h-full bg-primary transition-all duration-500 ease-out"
               style={{ width: `${completionRate}%` }}
             />
           </div>
-          <div className="mt-3 flex justify-between text-sm text-muted-foreground">
-            <span className="font-medium">{completedCount} completed</span>
-            <span className="font-medium">{activeTasks.length} remaining</span>
-          </div>
         </CardContent>
       </Card>
 
-      {/* Add Task Card */}
-      <Card className="glass-card border-none hover-lift animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-        <CardContent className="pt-6">
-          <form onSubmit={addTask} className="flex gap-3">
-            <div className="flex-1 relative">
-              <ListTodo className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                placeholder="What would you like to accomplish?"
-                value={newTask}
-                onChange={(e) => setNewTask(e.target.value)}
-                className="pl-11 h-12 text-base"
-              />
-            </div>
-            <Button type="submit" size="lg" className="px-6">
-              <Plus className="h-5 w-5 mr-2" />
-              Add Task
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      {/* Active Tasks */}
-      {activeTasks.length > 0 && (
-        <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-          <CardHeader>
-              <CardTitle className="text-xl font-semibold flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              Active Tasks
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {activeTasks.map((task, index) => (
-              <div
-                key={task.id}
-                className="flex items-center gap-3 p-4 bg-background/80 backdrop-blur-sm border border-border rounded-lg transition-all duration-200 hover:shadow-sm hover:border-primary/20 animate-fade-in"
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-0 h-auto hover:bg-transparent"
-                  onClick={() => toggleTask(task.id)}
-                >
-                  <Circle className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
-                </Button>
-                
-                <span className="flex-1 text-base font-medium text-foreground">
-                  {task.title}
-                </span>
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-2 h-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
-                  onClick={() => deleteTask(task.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Sidebar - Folders & Filters */}
+        <div className="space-y-4">
+          {/* Folders */}
+          <Card className="glass-card border-none">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                  <Folder className="h-5 w-5" />
+                  Folders
+                </CardTitle>
+                <Dialog open={showFolderDialog} onOpenChange={setShowFolderDialog}>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <FolderPlus className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create New Folder</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <Input
+                        placeholder="Folder name"
+                        value={newFolderName}
+                        onChange={(e) => setNewFolderName(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && addFolder()}
+                        className="w-full h-11 text-base"
+                      />
+                      <div className="flex gap-2">
+                        <Button onClick={addFolder} className="flex-1">Create Folder</Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setShowFolderDialog(false)} 
+                          className="flex-1"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Completed Tasks */}
-      {completedTasks.length > 0 && (
-        <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold flex items-center gap-2 text-green-600 dark:text-green-500">
-              <CheckCircle className="h-5 w-5" />
-              Completed ({completedTasks.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {completedTasks.map((task) => (
-              <div
-                key={task.id}
-                className={`flex items-center gap-3 p-4 bg-muted/30 border border-border rounded-lg transition-all duration-200 ${
-                  justCompleted === task.id ? 'animate-scale-in' : ''
+            </CardHeader>
+            <CardContent className="space-y-1">
+              <button
+                onClick={() => setSelectedFolder(null)}
+                className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                  selectedFolder === null 
+                    ? 'bg-primary/10 text-primary font-medium' 
+                    : 'hover:bg-accent/50 text-muted-foreground'
                 }`}
               >
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-0 h-auto hover:bg-transparent"
-                  onClick={() => toggleTask(task.id)}
-                >
-                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-500" />
-                </Button>
-                
-                <span className="flex-1 text-base text-muted-foreground line-through">
-                  {task.title}
-                </span>
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-2 h-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
-                  onClick={() => deleteTask(task.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
+                All Tasks
+              </button>
+              <button
+                onClick={() => setSelectedFolder('none')}
+                className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                  selectedFolder === 'none' 
+                    ? 'bg-primary/10 text-primary font-medium' 
+                    : 'hover:bg-accent/50 text-muted-foreground'
+                }`}
+              >
+                No Folder
+              </button>
+              {folders.map((folder) => (
+                <div key={folder.id} className="flex items-center group">
+                  <button
+                    onClick={() => setSelectedFolder(folder.id)}
+                    className={`flex-1 text-left px-3 py-2 rounded-lg transition-colors ${
+                      selectedFolder === folder.id 
+                        ? 'bg-primary/10 text-primary font-medium' 
+                        : 'hover:bg-accent/50 text-muted-foreground'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: folder.color }}
+                      />
+                      <span>{folder.name}</span>
+                    </div>
+                  </button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => deleteFolder(folder.id)}
+                  >
+                    <X className="h-4 w-4 text-destructive" />
+                  </Button>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
 
-      {/* Empty State */}
-      {tasks.length === 0 && (
-        <Card className="glass-card border-none text-center py-16 animate-fade-in-up">
-          <CardContent>
-            <div className="flex justify-center mb-4">
-              <div className="p-4 rounded-full bg-primary/10">
-                <Target className="h-12 w-12 text-primary" />
+          {/* Filters & Sort */}
+          <Card className="glass-card border-none">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                <Filter className="h-5 w-5" />
+                Filters & Sort
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Sort */}
+              <div>
+                <label className="text-sm font-medium mb-2 block text-foreground">Sort By</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full h-10 px-3 py-2 bg-background border border-input rounded-md text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  {SORT_OPTIONS.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                className="w-full"
+              >
+                <ArrowUpDown className="h-4 w-4 mr-2" />
+                {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+              </Button>
+
+              {/* Priority Filter */}
+              <div>
+                <label className="text-sm font-medium mb-2 block text-foreground">Priority</label>
+                <select
+                  value={filterPriority}
+                  onChange={(e) => setFilterPriority(e.target.value)}
+                  className="w-full h-10 px-3 py-2 bg-background border border-input rounded-md text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="all">All Priorities</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+
+              {/* Show Completed */}
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Show Completed</label>
+                <button
+                  onClick={() => setShowCompleted(!showCompleted)}
+                  className={`relative w-11 h-6 rounded-full transition-colors ${
+                    showCompleted ? 'bg-primary' : 'bg-muted'
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                      showCompleted ? 'translate-x-5' : ''
+                    }`}
+                  />
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content */}
+        <div className="lg:col-span-3 space-y-6">
+          {/* Add Task Card */}
+          <Card className="glass-card border-none hover-lift">
+            <CardContent className="pt-6">
+              <form onSubmit={addTask} className="flex gap-3">
+                <div className="flex-1 relative">
+                  <ListTodo className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    placeholder="What would you like to accomplish?"
+                    value={newTask}
+                    onChange={(e) => setNewTask(e.target.value)}
+                    className="pl-11 h-12 text-base"
+                  />
+                </div>
+                <Button type="submit" size="lg" className="px-6">
+                  <Plus className="h-5 w-5 mr-2" />
+                  Add Task
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* Active Tasks */}
+          {activeTasks.length > 0 && (
+            <Card className="glass-card border-none">
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Active Tasks ({activeTasks.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {activeTasks.map((task) => {
+                  const folderName = getFolderName(task.folderId);
+                  const folderColor = getFolderColor(task.folderId);
+                  const dueDate = formatDate(task.dueDate);
+                  const overdue = isOverdue(task.dueDate);
+                  
+                  return (
+                    <div
+                      key={task.id}
+                      className="flex items-center gap-3 p-4 bg-background/80 backdrop-blur-sm border border-border rounded-lg transition-all duration-200 hover:shadow-sm hover:border-primary/20 group"
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-0 h-auto hover:bg-transparent"
+                        onClick={() => toggleTask(task.id)}
+                      >
+                        <Circle className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
+                      </Button>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-base font-medium text-foreground">
+                            {task.title}
+                          </span>
+                          {task.priority && (
+                            <span className={`text-xs font-medium ${PRIORITY_COLORS[task.priority]}`}>
+                              <Flag className="h-3 w-3 inline mr-1" />
+                              {PRIORITY_LABELS[task.priority]}
+                            </span>
+                          )}
+                          {folderName && (
+                            <span 
+                              className="text-xs px-2 py-0.5 rounded-full text-white"
+                              style={{ backgroundColor: folderColor || '#3b82f6' }}
+                            >
+                              {folderName}
+                            </span>
+                          )}
+                          {dueDate && (
+                            <span className={`text-xs flex items-center gap-1 ${overdue ? 'text-red-500' : 'text-muted-foreground'}`}>
+                              <Calendar className="h-3 w-3" />
+                              {dueDate}
+                            </span>
+                          )}
+                        </div>
+                        {task.description && (
+                          <p className="text-sm text-muted-foreground mt-1">{task.description}</p>
+                        )}
+                        {task.tags && task.tags.length > 0 && (
+                          <div className="flex items-center gap-1 mt-2 flex-wrap">
+                            {task.tags.map((tag, idx) => (
+                              <span
+                                key={idx}
+                                className="text-xs px-2 py-0.5 bg-muted rounded-full text-muted-foreground flex items-center gap-1"
+                              >
+                                <Tag className="h-3 w-3" />
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-2 h-auto text-muted-foreground hover:text-primary"
+                          onClick={() => setEditingTask(task)}
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-2 h-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => deleteTask(task.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Completed Tasks */}
+          {completedTasks.length > 0 && showCompleted && (
+            <Card className="glass-card border-none">
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-green-600 dark:text-green-500">
+                  <CheckCircle className="h-5 w-5" />
+                  Completed ({completedTasks.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {completedTasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className="flex items-center gap-3 p-4 bg-muted/30 border border-border rounded-lg"
+                  >
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-0 h-auto hover:bg-transparent"
+                      onClick={() => toggleTask(task.id)}
+                    >
+                      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-500" />
+                    </Button>
+                    
+                    <span className="flex-1 text-base text-muted-foreground line-through">
+                      {task.title}
+                    </span>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-2 h-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      onClick={() => deleteTask(task.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Empty State */}
+          {filteredAndSortedTasks.length === 0 && (
+            <Card className="glass-card border-none text-center py-16">
+              <CardContent>
+                <div className="flex justify-center mb-4">
+                  <div className="p-4 rounded-full bg-primary/10">
+                    <Target className="h-12 w-12 text-primary" />
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold mb-2 text-foreground">No Tasks Found</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  {selectedFolder !== null 
+                    ? "No tasks in this folder. Add a new task to get started."
+                    : "Add your first task above and begin your journey to peak productivity"}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      {/* Edit Task Dialog */}
+      {editingTask && (
+        <Dialog open={!!editingTask} onOpenChange={() => setEditingTask(null)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Task</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-5 py-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Title</label>
+                <Input
+                  value={editingTask.title}
+                  onChange={(e) => setEditingTask({ ...editingTask, title: e.target.value })}
+                  className="w-full h-11 text-base"
+                  placeholder="Task title"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Description</label>
+                <Input
+                  value={editingTask.description || ''}
+                  onChange={(e) => setEditingTask({ ...editingTask, description: e.target.value })}
+                  className="w-full h-11 text-base"
+                  placeholder="Task description (optional)"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Priority</label>
+                <select
+                  value={editingTask.priority || 'medium'}
+                  onChange={(e) => setEditingTask({ ...editingTask, priority: e.target.value })}
+                  className="w-full h-11 px-3 py-2 bg-background border border-input rounded-md text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Folder</label>
+                <select
+                  value={editingTask.folderId || ''}
+                  onChange={(e) => setEditingTask({ ...editingTask, folderId: e.target.value || null })}
+                  className="w-full h-11 px-3 py-2 bg-background border border-input rounded-md text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="">No Folder</option>
+                  {folders.map(folder => (
+                    <option key={folder.id} value={folder.id}>{folder.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Due Date</label>
+                <DatePicker
+                  value={editingTask.dueDate ? editingTask.dueDate.split('T')[0] : ''}
+                  onChange={(e) => setEditingTask({ ...editingTask, dueDate: e.target.value || null })}
+                  className="w-full"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={() => {
+                    updateTask(editingTask.id, editingTask);
+                    setEditingTask(null);
+                  }}
+                  className="flex-1"
+                >
+                  Save Changes
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => setEditingTask(null)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
               </div>
             </div>
-            <h3 className="text-2xl font-bold mb-2 text-foreground">Ready to Get Started?</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">
-              Add your first task above and begin your journey to peak productivity
-            </p>
-          </CardContent>
-        </Card>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );
