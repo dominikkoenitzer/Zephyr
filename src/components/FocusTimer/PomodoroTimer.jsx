@@ -3,7 +3,7 @@ import { Play, Pause, SkipForward, Settings, Award, Flame, Clock, Target, Maximi
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Input } from '../ui/input';
+import { NumberInput } from '../ui/number-input';
 import { localStorageService } from '../../services/localStorage';
 
 const DEFAULT_WORK_TIME = 25 * 60; // 25 minutes in seconds
@@ -524,46 +524,58 @@ const PomodoroTimer = () => {
           <DialogHeader>
             <DialogTitle>Timer Settings</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Focus Duration (minutes)</label>
-              <Input
-                type="number"
-                min="1"
-                max="60"
+          <div className="space-y-6 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground block">
+                Focus Duration (minutes)
+              </label>
+              <NumberInput
+                min={1}
+                max={60}
                 value={Math.floor(workTime / 60)}
-                onChange={(e) => setWorkTime(parseInt(e.target.value) * 60)}
-                className="mt-1"
+                onChange={(e) => setWorkTime(parseInt(e.target.value) * 60 || DEFAULT_WORK_TIME)}
+                className="w-full"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium">Short Break (minutes)</label>
-              <Input
-                type="number"
-                min="1"
-                max="30"
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground block">
+                Short Break (minutes)
+              </label>
+              <NumberInput
+                min={1}
+                max={30}
                 value={Math.floor(breakTime / 60)}
-                onChange={(e) => setBreakTime(parseInt(e.target.value) * 60)}
-                className="mt-1"
+                onChange={(e) => setBreakTime(parseInt(e.target.value) * 60 || DEFAULT_BREAK_TIME)}
+                className="w-full"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium">Long Break (minutes)</label>
-              <Input
-                type="number"
-                min="1"
-                max="60"
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground block">
+                Long Break (minutes)
+              </label>
+              <NumberInput
+                min={1}
+                max={60}
                 value={Math.floor(longBreakTime / 60)}
-                onChange={(e) => setLongBreakTime(parseInt(e.target.value) * 60)}
-                className="mt-1"
+                onChange={(e) => setLongBreakTime(parseInt(e.target.value) * 60 || DEFAULT_LONG_BREAK_TIME)}
+                className="w-full"
               />
             </div>
-            <Button 
-              onClick={() => setIsSettingsOpen(false)} 
-              className="w-full"
-            >
-              Save Settings
-            </Button>
+            <div className="flex gap-3 pt-2">
+              <Button 
+                onClick={() => setIsSettingsOpen(false)} 
+                className="flex-1"
+              >
+                Save Settings
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => setIsSettingsOpen(false)} 
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
