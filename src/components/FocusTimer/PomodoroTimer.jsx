@@ -308,11 +308,20 @@ const PomodoroTimer = () => {
 
   // Play/stop sound based on selection and timer state
   useEffect(() => {
-    if (isRunning && !isBreak && selectedSound !== 'silence') {
-      ambientSoundService.playSound(selectedSound);
-    } else {
-      ambientSoundService.stop();
-    }
+    const playSoundWhenReady = async () => {
+      if (isRunning && !isBreak && selectedSound !== 'silence') {
+        try {
+          await ambientSoundService.init();
+          await ambientSoundService.playSound(selectedSound);
+        } catch (error) {
+          console.error('Failed to play sound:', error);
+        }
+      } else {
+        ambientSoundService.stop();
+      }
+    };
+
+    playSoundWhenReady();
 
     return () => {
       ambientSoundService.stop();
@@ -348,10 +357,24 @@ const PomodoroTimer = () => {
     } : null;
   };
 
-  const handleSoundChange = (soundId) => {
+  const handleSoundChange = async (soundId) => {
     setSelectedSound(soundId);
     localStorage.setItem('focusSound', soundId);
-    if (isRunning && !isBreak) {
+    
+    // Always try to play when user selects a sound (for testing)
+    if (soundId !== 'silence') {
+      try {
+        await ambientSoundService.init(); // Ensure audio context is ready
+        await ambientSoundService.playSound(soundId);
+      } catch (error) {
+        console.error('Failed to play sound on selection:', error);
+      }
+    } else {
+      ambientSoundService.stop();
+    }
+    
+    // Also play if timer is running
+    if (isRunning && !isBreak && soundId !== 'silence') {
       ambientSoundService.playSound(soundId);
     }
   };
@@ -611,8 +634,14 @@ const PomodoroTimer = () => {
                     <div className="text-2xl mb-2">{sound.icon}</div>
                     <div className="font-medium text-sm text-foreground">{sound.name}</div>
                     <div className="text-xs text-muted-foreground">{sound.description}</div>
+                    {selectedSound === sound.id && sound.id !== 'silence' && (
+                      <div className="mt-2 text-xs text-primary font-medium">Playing...</div>
+                    )}
                   </button>
                 ))}
+              </div>
+              <div className="text-xs text-muted-foreground text-center pt-2 border-t">
+                Click a sound to test it. Sounds will play automatically during focus sessions.
               </div>
               {selectedSound !== 'silence' && (
                 <div className="space-y-2 pt-2 border-t">
