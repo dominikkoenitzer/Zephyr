@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   VStack,
   HStack,
@@ -47,11 +47,7 @@ const QuickTaskManager = () => {
   const borderColor = useColorModeValue('lightMode.border', 'darkMode.border');
   const hoverBg = useColorModeValue('lightMode.hover', 'darkMode.hover');
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       const data = await api.getTasks();
       setTasks(data);
@@ -63,7 +59,11 @@ const QuickTaskManager = () => {
         duration: 3000,
       });
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
 
   const addTask = async (e) => {
     e.preventDefault();

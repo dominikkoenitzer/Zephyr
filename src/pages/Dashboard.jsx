@@ -148,7 +148,7 @@ function Dashboard() {
                 <Sparkles className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-lg font-medium text-foreground mb-2 italic">
-                    "{dailyQuote.text}"
+                    &ldquo;{dailyQuote.text}&rdquo;
                   </p>
                   <p className="text-sm text-muted-foreground">
                     — {dailyQuote.author}
