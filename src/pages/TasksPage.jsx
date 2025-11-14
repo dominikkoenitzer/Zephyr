@@ -1,4 +1,3 @@
-import React from 'react';
 import TaskList from '../components/TaskManager/TaskList';
 
 function TasksPage() {
