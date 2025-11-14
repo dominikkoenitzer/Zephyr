@@ -487,14 +487,6 @@ const PomodoroTimer = () => {
                   <CardTitle className={`text-2xl font-bold ${sessionType.color}`}>
                     {sessionType.text}
                   </CardTitle>
-                  {!isBreak && sessionStreak > 0 && (
-                    <div className="flex items-center gap-2 mt-1">
-                      <Flame className="h-4 w-4 text-orange-500" />
-                      <span className="text-sm text-muted-foreground">
-                        {sessionStreak} session streak
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
               <Button
@@ -611,20 +603,6 @@ const PomodoroTimer = () => {
                   <div>
                     <div className="text-3xl font-bold text-foreground">{pomodorosCompleted}</div>
                     <div className="text-xs text-muted-foreground">Pomodoros</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="glass-card border-none hover-lift">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 rounded-lg bg-orange-500/10">
-                    <Flame className="h-5 w-5 text-orange-500" />
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold text-foreground">{sessionStreak}</div>
-                    <div className="text-xs text-muted-foreground">Current Streak</div>
                   </div>
                 </div>
               </CardContent>
