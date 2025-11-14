@@ -7,6 +7,7 @@ import {
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { DatePicker } from '../ui/date-picker';
+import { Select } from '../ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { localStorageService } from '../../services/localStorage';
@@ -353,19 +354,19 @@ const TaskList = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Sort */}
-              <div>
-                <label className="text-sm font-medium mb-2 block text-foreground">Sort By</label>
-                <select
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Sort By</label>
+                <Select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full h-10 px-3 py-2 bg-background border border-input rounded-md text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full"
                 >
                   {SORT_OPTIONS.map(option => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
               
               <Button
@@ -379,18 +380,18 @@ const TaskList = () => {
               </Button>
 
               {/* Priority Filter */}
-              <div>
-                <label className="text-sm font-medium mb-2 block text-foreground">Priority</label>
-                <select
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Priority</label>
+                <Select
                   value={filterPriority}
                   onChange={(e) => setFilterPriority(e.target.value)}
-                  className="w-full h-10 px-3 py-2 bg-background border border-input rounded-md text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full"
                 >
                   <option value="all">All Priorities</option>
                   <option value="high">High</option>
                   <option value="medium">Medium</option>
                   <option value="low">Low</option>
-                </select>
+                </Select>
               </div>
 
               {/* Show Completed */}
@@ -626,28 +627,28 @@ const TaskList = () => {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium block text-foreground">Priority</label>
-                <select
+                <Select
                   value={editingTask.priority || 'medium'}
                   onChange={(e) => setEditingTask({ ...editingTask, priority: e.target.value })}
-                  className="w-full h-11 px-3 py-2 bg-background border border-input rounded-md text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
                   <option value="high">High</option>
-                </select>
+                </Select>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium block text-foreground">Folder</label>
-                <select
+                <Select
                   value={editingTask.folderId || ''}
                   onChange={(e) => setEditingTask({ ...editingTask, folderId: e.target.value || null })}
-                  className="w-full h-11 px-3 py-2 bg-background border border-input rounded-md text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="w-full"
                 >
                   <option value="">No Folder</option>
                   {folders.map(folder => (
                     <option key={folder.id} value={folder.id}>{folder.name}</option>
                   ))}
-                </select>
+                </Select>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium block text-foreground">Due Date</label>
