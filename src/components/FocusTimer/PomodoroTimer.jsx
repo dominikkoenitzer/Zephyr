@@ -652,24 +652,29 @@ const PomodoroTimer = () => {
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div className="grid grid-cols-2 gap-3">
-                    {SOUND_OPTIONS.map((sound) => (
-                      <button
-                        key={sound.id}
-                        onClick={() => handleSoundChange(sound.id)}
-                        className={`p-4 rounded-xl border-2 transition-all text-left ${
-                          selectedSound === sound.id
-                            ? 'border-primary bg-primary/10 shadow-md'
-                            : 'border-border hover:border-primary/50 hover:bg-accent/50'
-                        }`}
-                      >
-                        <div className="text-2xl mb-2">{sound.icon}</div>
-                        <div className="font-medium text-sm text-foreground">{sound.name}</div>
-                        <div className="text-xs text-muted-foreground mt-1">{sound.description}</div>
-                        {selectedSound === sound.id && sound.id !== 'silence' && (
-                          <div className="mt-2 text-xs text-primary font-medium">Playing...</div>
-                        )}
-                      </button>
-                    ))}
+                    {SOUND_OPTIONS.map((sound) => {
+                      const IconComponent = sound.icon;
+                      return (
+                        <button
+                          key={sound.id}
+                          onClick={() => handleSoundChange(sound.id)}
+                          className={`p-4 rounded-xl border-2 transition-all text-left ${
+                            selectedSound === sound.id
+                              ? 'border-primary bg-primary/10 shadow-md'
+                              : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                          }`}
+                        >
+                          <div className="mb-2">
+                            <IconComponent className="h-6 w-6 text-primary" />
+                          </div>
+                          <div className="font-medium text-sm text-foreground">{sound.name}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{sound.description}</div>
+                          {selectedSound === sound.id && sound.id !== 'silence' && (
+                            <div className="mt-2 text-xs text-primary font-medium">Playing...</div>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                   <div className="text-xs text-muted-foreground text-center pt-2 border-t">
                     Click a sound to test it. Sounds will play automatically during focus sessions.
