@@ -55,7 +55,7 @@ const ApiTestPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   const addTask = async () => {
     if (!newTaskTitle.trim()) return;
@@ -87,7 +87,7 @@ const ApiTestPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  };
 
   useEffect(() => {
     testApi();
