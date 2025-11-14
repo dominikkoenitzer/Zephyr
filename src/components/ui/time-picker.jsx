@@ -110,22 +110,16 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
         {isFocused || !value ? (
           <div className="flex items-center gap-2 flex-1">
             {/* Hours */}
-            <div className="flex items-center gap-1 relative">
+            <div className="flex items-center gap-1">
               <input
                 type="number"
                 value={hours || ''}
                 onChange={(e) => handleHoursChange(parseInt(e.target.value) || 1)}
                 min={1}
                 max={12}
-                placeholder="12"
-                className="w-10 text-center bg-transparent border-none outline-none focus:outline-none font-medium text-foreground [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none placeholder:text-muted-foreground/40"
+                className="w-10 text-center bg-transparent border-none outline-none focus:outline-none font-medium text-foreground [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 onFocus={() => setIsFocused(true)}
               />
-              {!hours && (
-                <span className="absolute left-1/2 -translate-x-1/2 text-muted-foreground/30 pointer-events-none font-medium">
-                  12
-                </span>
-              )}
               <div className="flex flex-col">
                 <Button
                   type="button"
@@ -153,22 +147,16 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
             <span className="text-muted-foreground text-lg font-medium">:</span>
             
             {/* Minutes */}
-            <div className="flex items-center gap-1 relative">
+            <div className="flex items-center gap-1">
               <input
                 type="number"
                 value={minutes || ''}
                 onChange={(e) => handleMinutesChange(parseInt(e.target.value) || 0)}
                 min={0}
                 max={59}
-                placeholder="00"
-                className="w-10 text-center bg-transparent border-none outline-none focus:outline-none font-medium text-foreground [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none placeholder:text-muted-foreground/40"
+                className="w-10 text-center bg-transparent border-none outline-none focus:outline-none font-medium text-foreground [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 onFocus={() => setIsFocused(true)}
               />
-              {!minutes && (
-                <span className="absolute left-1/2 -translate-x-1/2 text-muted-foreground/30 pointer-events-none font-medium">
-                  00
-                </span>
-              )}
               <div className="flex flex-col">
                 <Button
                   type="button"
