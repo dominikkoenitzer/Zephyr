@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Container,
@@ -28,7 +28,7 @@ const ApiTestPage = () => {
   const [apiStatus, setApiStatus] = useState('Testing...');
   const toast = useToast();
 
-  const testApi = async () => {
+  const testApi = useCallback(async () => {
     setLoading(true);
     setApiStatus('Testing API connection...');
     
@@ -87,11 +87,11 @@ const ApiTestPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     testApi();
-  }, []);
+  }, [testApi]);
 
   return (
     <Container maxW="container.md" py={8}>

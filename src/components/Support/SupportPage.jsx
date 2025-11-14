@@ -31,6 +31,7 @@ import {
 import { api } from '../../services/api';
 
 const SupportPage = () => {
+  const hoverBg = useColorModeValue('gray.50', 'gray.700');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     subject: '',
@@ -171,7 +172,7 @@ const SupportPage = () => {
                 >
                   <h2>
                     <AccordionButton
-                      _hover={{ bg: useColorModeValue('gray.50', 'gray.700') }}
+                      _hover={{ bg: hoverBg }}
                       borderRadius="lg"
                       p={4}
                     >

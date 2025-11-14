@@ -10,24 +10,8 @@ import Calendar from './pages/Calendar'
 import Analytics from './pages/Analytics'
 import Settings from './pages/Settings'
 import Help from './pages/Help'
+import ErrorFallback from './components/ErrorBoundary/ErrorFallback'
 import './index.css'
-
-// ErrorBoundary for better UX
-function ErrorFallback({ error }) {
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <div className="text-center p-8">
-        <h1 className="text-2xl font-bold text-foreground mb-4">Something went wrong 😢</h1>
-        <pre className="text-destructive text-sm bg-card p-4 rounded-md mb-4 max-w-lg overflow-auto">
-          {error.message}
-        </pre>
-        <p className="text-muted-foreground">
-          Please try refreshing the page or contact support if the problem persists.
-        </p>
-      </div>
-    </div>
-  );
-}
 
 const router = createBrowserRouter([
   {
