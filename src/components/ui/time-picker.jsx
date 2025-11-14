@@ -4,8 +4,8 @@ import { cn } from "../../lib/utils"
 import { Button } from "./button"
 
 const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, ref) => {
-  const [hours, setHours] = React.useState(12)
-  const [minutes, setMinutes] = React.useState(0)
+  const [hours, setHours] = React.useState(null)
+  const [minutes, setMinutes] = React.useState(null)
   const [period, setPeriod] = React.useState('PM')
   const [isFocused, setIsFocused] = React.useState(false)
 
@@ -31,13 +31,14 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
       }
       setMinutes(min)
     } else {
-      setHours(12)
-      setMinutes(0)
+      setHours(null)
+      setMinutes(null)
       setPeriod('PM')
     }
   }, [value])
 
   const formatTime24 = (h, m, p) => {
+    if (h === null || m === null) return ''
     let hour24 = h
     if (p === 'PM' && h !== 12) {
       hour24 = h + 12
@@ -48,14 +49,14 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
   }
 
   const handleHoursChange = (newHours) => {
-    const h = Math.max(1, Math.min(12, newHours))
+    const h = newHours === '' ? null : Math.max(1, Math.min(12, parseInt(newHours) || 1))
     setHours(h)
     const newValue = formatTime24(h, minutes, period)
     onChange?.({ target: { value: newValue } })
   }
 
   const handleMinutesChange = (newMinutes) => {
-    const m = Math.max(0, Math.min(59, newMinutes))
+    const m = newMinutes === '' ? null : Math.max(0, Math.min(59, parseInt(newMinutes) || 0))
     setMinutes(m)
     const newValue = formatTime24(hours, m, period)
     onChange?.({ target: { value: newValue } })
@@ -82,11 +83,11 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
       />
       
       {/* Custom time display when not focused */}
-      {!isFocused && value && (
+      {!isFocused && value && hours !== null && minutes !== null && (
         <div 
           className="absolute left-11 top-1/2 -translate-y-1/2 text-foreground pointer-events-none z-10 text-base font-medium"
         >
-          {hours || 12}:{minutes ? String(minutes).padStart(2, '0') : '00'} {period}
+          {hours}:{String(minutes).padStart(2, '0')} {period}
         </div>
       )}
       
@@ -113,8 +114,8 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
             <div className="flex items-center gap-1">
               <input
                 type="number"
-                value={hours || ''}
-                onChange={(e) => handleHoursChange(parseInt(e.target.value) || 1)}
+                value={hours ?? ''}
+                onChange={(e) => handleHoursChange(e.target.value)}
                 min={1}
                 max={12}
                 className="w-10 text-center bg-transparent border-none outline-none focus:outline-none font-medium text-foreground [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
@@ -126,8 +127,8 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
                   variant="ghost"
                   size="icon"
                   className="h-3 w-4 rounded-b-none rounded-t border-b border-input/50 hover:bg-accent"
-                  onClick={() => handleHoursChange(hours + 1)}
-                  disabled={hours >= 12}
+                  onClick={() => handleHoursChange((hours ?? 1) + 1)}
+                  disabled={hours !== null && hours >= 12}
                 >
                   <ChevronUp className="h-2.5 w-2.5" />
                 </Button>
@@ -136,8 +137,8 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
                   variant="ghost"
                   size="icon"
                   className="h-3 w-4 rounded-t-none rounded-b hover:bg-accent"
-                  onClick={() => handleHoursChange(hours - 1)}
-                  disabled={hours <= 1}
+                  onClick={() => handleHoursChange((hours ?? 12) - 1)}
+                  disabled={hours !== null && hours <= 1}
                 >
                   <ChevronDown className="h-2.5 w-2.5" />
                 </Button>
@@ -150,8 +151,8 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
             <div className="flex items-center gap-1">
               <input
                 type="number"
-                value={minutes || ''}
-                onChange={(e) => handleMinutesChange(parseInt(e.target.value) || 0)}
+                value={minutes ?? ''}
+                onChange={(e) => handleMinutesChange(e.target.value)}
                 min={0}
                 max={59}
                 className="w-10 text-center bg-transparent border-none outline-none focus:outline-none font-medium text-foreground [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
@@ -163,8 +164,8 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
                   variant="ghost"
                   size="icon"
                   className="h-3 w-4 rounded-b-none rounded-t border-b border-input/50 hover:bg-accent"
-                  onClick={() => handleMinutesChange(minutes + 1)}
-                  disabled={minutes >= 59}
+                  onClick={() => handleMinutesChange((minutes ?? 0) + 1)}
+                  disabled={minutes !== null && minutes >= 59}
                 >
                   <ChevronUp className="h-2.5 w-2.5" />
                 </Button>
@@ -173,8 +174,8 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
                   variant="ghost"
                   size="icon"
                   className="h-3 w-4 rounded-t-none rounded-b hover:bg-accent"
-                  onClick={() => handleMinutesChange(minutes - 1)}
-                  disabled={minutes <= 0}
+                  onClick={() => handleMinutesChange((minutes ?? 59) - 1)}
+                  disabled={minutes !== null && minutes <= 0}
                 >
                   <ChevronDown className="h-2.5 w-2.5" />
                 </Button>
