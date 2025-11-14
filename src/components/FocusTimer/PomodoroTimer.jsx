@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Play, Pause, SkipForward, Settings, Award, Flame, Clock, Target, Maximize2, X, Volume2, VolumeX, RotateCcw } from 'lucide-react';
+import { Play, Pause, SkipForward, Settings, Award, Clock, Target, Maximize2, X, Volume2, VolumeX, RotateCcw } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -175,7 +175,6 @@ const PomodoroTimer = () => {
   const [longBreakTime, setLongBreakTime] = useState(DEFAULT_LONG_BREAK_TIME);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [sessionStreak, setSessionStreak] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [selectedSound, setSelectedSound] = useState('silence');
@@ -205,10 +204,8 @@ const PomodoroTimer = () => {
     const isWorkComplete = !currentIsBreak;
     if (isWorkComplete) {
       const newPomodorosCompleted = currentPomodoros + 1;
-      const newStreak = sessionStreak + 1;
       
       setPomodorosCompleted(newPomodorosCompleted);
-      setSessionStreak(newStreak);
       setIsBreak(true);
       
       const nextBreakTime = newPomodorosCompleted % 4 === 0 ? longBreakTime : breakTime;
@@ -225,14 +222,14 @@ const PomodoroTimer = () => {
       
       // Celebrate!
       celebrate();
-      showNotification('Work Session Complete', `${newStreak} session${newStreak > 1 ? 's' : ''} completed. Time for a break.`);
+      showNotification('Work Session Complete', `${newPomodorosCompleted} pomodoro${newPomodorosCompleted !== 1 ? 's' : ''} completed. Time for a break.`);
     } else {
       setIsBreak(false);
       setTimeLeft(workTime);
       showNotification('Break Complete', 'Recharged and ready to focus again');
     }
     setIsRunning(false);
-  }, [isBreak, pomodorosCompleted, breakTime, longBreakTime, workTime, sessionStreak]);
+  }, [isBreak, pomodorosCompleted, breakTime, longBreakTime, workTime]);
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -263,7 +260,6 @@ const PomodoroTimer = () => {
         setWorkTime(state.workTime || DEFAULT_WORK_TIME);
         setBreakTime(state.breakTime || DEFAULT_BREAK_TIME);
         setLongBreakTime(state.longBreakTime || DEFAULT_LONG_BREAK_TIME);
-        setSessionStreak(state.sessionStreak || 0);
       } catch (error) {
         console.error('Failed to load timer state:', error);
       }
@@ -283,11 +279,10 @@ const PomodoroTimer = () => {
         workTime,
         breakTime,
         longBreakTime,
-        sessionStreak
       };
       localStorageService.saveTimerState(state);
     }
-  }, [timeLeft, isRunning, isBreak, pomodorosCompleted, workTime, breakTime, longBreakTime, sessionStreak, isInitialized]);
+  }, [timeLeft, isRunning, isBreak, pomodorosCompleted, workTime, breakTime, longBreakTime, isInitialized]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
