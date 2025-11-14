@@ -1,6 +1,6 @@
 // --- Professional, robust, and fully commented localStorage-powered settings management ---
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Container,
