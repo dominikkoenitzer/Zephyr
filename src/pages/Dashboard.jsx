@@ -368,30 +368,54 @@ function Dashboard() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={214}>
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
+                <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorPomodoros" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                    </linearGradient>
+                    <linearGradient id="colorTasks" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10B981" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#10B981" stopOpacity={0.3}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.2} vertical={false} />
                   <XAxis 
                     dataKey="name" 
-                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                    axisLine={{ stroke: 'hsl(var(--border))' }}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11, fontWeight: 500 }}
+                    axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
+                    tickLine={false}
                   />
                   <YAxis 
-                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                    axisLine={{ stroke: 'hsl(var(--border))' }}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                    width={30}
                   />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Tooltip 
+                    content={<CustomTooltip />}
+                    cursor={{ fill: 'hsl(var(--muted))', opacity: 0.1 }}
+                  />
+                  <Legend 
+                    wrapperStyle={{ paddingTop: '10px' }}
+                    iconType="circle"
+                    formatter={(value) => <span style={{ fontSize: '12px', color: 'hsl(var(--muted-foreground))' }}>{value}</span>}
+                  />
                   <Bar 
                     dataKey="pomodoros" 
-                    fill="hsl(var(--primary))" 
+                    fill="url(#colorPomodoros)" 
                     name="Pomodoros Completed"
-                    radius={[6, 6, 0, 0]}
+                    radius={[8, 8, 0, 0]}
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={1}
                   />
                   <Bar 
                     dataKey="tasksCompleted" 
-                    fill="#10B981" 
+                    fill="url(#colorTasks)" 
                     name="Tasks Completed"
-                    radius={[6, 6, 0, 0]}
+                    radius={[8, 8, 0, 0]}
+                    stroke="#10B981"
+                    strokeWidth={1}
                   />
                 </BarChart>
               </ResponsiveContainer>
