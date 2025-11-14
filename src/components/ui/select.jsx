@@ -1,31 +1,102 @@
 import * as React from "react"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, Check } from "lucide-react"
 import { cn } from "../../lib/utils"
 
 const Select = React.forwardRef(({ className, children, value, onChange, ...props }, ref) => {
+  const [isOpen, setIsOpen] = React.useState(false)
+  const selectRef = React.useRef(null)
+  const [selectedLabel, setSelectedLabel] = React.useState('')
+
+  // Get selected option label
+  React.useEffect(() => {
+    if (selectRef.current) {
+      const selectedOption = selectRef.current.options[selectRef.current.selectedIndex]
+      setSelectedLabel(selectedOption ? selectedOption.text : '')
+    }
+  }, [value, children])
+
+  // Close on outside click
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (selectRef.current && !selectRef.current.contains(event.target)) {
+        setIsOpen(false)
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
+
+  const handleSelect = (optionValue) => {
+    if (onChange) {
+      onChange({ target: { value: optionValue } })
+    }
+    setIsOpen(false)
+  }
+
   return (
-    <div className="relative group">
+    <div className="relative" ref={selectRef}>
+      {/* Hidden native select for form compatibility */}
       <select
         ref={ref}
         value={value}
         onChange={onChange}
-        className={cn(
-          "flex h-11 w-full rounded-lg border-2 border-input bg-background px-4 py-2.5 text-base font-medium text-foreground ring-offset-background transition-all",
-          "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
-          "hover:border-primary/50 hover:bg-accent/50",
-          "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-input disabled:hover:bg-background",
-          "appearance-none cursor-pointer",
-          "[&::-webkit-appearance]:none [&::-moz-appearance]:none",
-          "[&::-ms-expand]:hidden",
-          className
-        )}
+        className="sr-only"
         {...props}
       >
         {children}
       </select>
-      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
-        <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform group-hover:text-foreground" />
-      </div>
+
+      {/* Custom dropdown button */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          "flex h-11 w-full items-center justify-between rounded-lg border-2 border-input bg-background px-4 py-2.5 text-base font-medium text-foreground",
+          "transition-all duration-200",
+          "hover:border-primary/60 hover:bg-accent/30",
+          "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          className
+        )}
+      >
+        <span className="truncate">{selectedLabel || 'Select...'}</span>
+        <ChevronDown className={cn(
+          "h-4 w-4 text-muted-foreground transition-transform duration-200",
+          isOpen && "rotate-180"
+        )} />
+      </button>
+
+      {/* Dropdown menu */}
+      {isOpen && (
+        <div className="absolute z-50 mt-2 w-full rounded-lg border-2 border-border bg-background shadow-lg animate-in fade-in-0 zoom-in-95">
+          <div className="p-1 max-h-60 overflow-auto">
+            {React.Children.map(children, (child) => {
+              if (React.isValidElement(child) && child.type === 'option') {
+                const optionValue = child.props.value
+                const isSelected = value === optionValue
+                return (
+                  <button
+                    key={optionValue}
+                    type="button"
+                    onClick={() => handleSelect(optionValue)}
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 py-2.5 rounded-md text-base font-medium transition-colors",
+                      "hover:bg-accent hover:text-accent-foreground",
+                      isSelected && "bg-primary/10 text-primary"
+                    )}
+                  >
+                    <span>{child.props.children}</span>
+                    {isSelected && <Check className="h-4 w-4" />}
+                  </button>
+                )
+              }
+              return null
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 })
