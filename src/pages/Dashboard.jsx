@@ -211,7 +211,7 @@ function Dashboard() {
     : 0;
 
   return (
-    <div className="w-full h-full space-y-6 sm:space-y-8 border-2 border-border rounded-xl p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 2xl:p-16 bg-card min-h-[calc(100vh-8rem)]">
+    <div className="w-full h-full space-y-2 sm:space-y-3 md:space-y-4 border-2 border-border rounded-xl p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-card overflow-hidden flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -221,8 +221,8 @@ function Dashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div>
-        <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4">Quick Access</h2>
+      <div className="flex-shrink-0">
+        <h2 className="text-sm sm:text-base font-semibold text-foreground mb-2">Quick Access</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
           {quickActions.map((action) => {
             const Icon = action.icon;
@@ -243,8 +243,8 @@ function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div>
-        <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4">Today's Overview</h2>
+      <div className="flex-shrink-0">
+        <h2 className="text-sm sm:text-base font-semibold text-foreground mb-2">Today's Overview</h2>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <Card className="border hover:shadow-md transition-shadow">
             <CardContent className="p-4 sm:p-6">
@@ -312,7 +312,7 @@ function Dashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4 min-h-0">
         {/* Focus Chart */}
         <Card className="border lg:col-span-2">
           <CardHeader className="pb-3 sm:pb-4">
@@ -403,7 +403,7 @@ function Dashboard() {
       </div>
 
       {/* Bottom Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      <div className="flex-shrink-0 grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
         {/* Upcoming Events */}
         <Card className="border">
           <CardHeader className="flex flex-row items-center justify-between pb-3 sm:pb-4">
