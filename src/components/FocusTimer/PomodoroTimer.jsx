@@ -569,6 +569,11 @@ const PomodoroTimer = () => {
                   <p className="text-sm text-muted-foreground mt-1">
                     {currentPreset.name} Timer
                   </p>
+                  {currentPreset.description && (
+                    <p className="text-sm text-muted-foreground mt-2 max-w-md leading-relaxed">
+                      {currentPreset.description}
+                    </p>
+                  )}
                 </div>
               </div>
               <Button
