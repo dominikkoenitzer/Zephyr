@@ -636,15 +636,11 @@ const PomodoroTimer = () => {
           )}
         </div>
 
-        <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-          <Card className="glass-card border-none hover-lift">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <TimerIcon className="h-5 w-5" />
-                Timer Presets
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+        <div className="space-y-4">
+          {/* Presets */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground px-1">Presets</h3>
+            <div className="space-y-1.5">
               {presets.map(preset => {
                 const defaultPreset = DEFAULT_PRESETS.find(dp => dp.id === preset.id);
                 const Icon = defaultPreset ? defaultPreset.icon : (preset.icon || TimerIcon);
