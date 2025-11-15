@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Bell, Moon, Sun, Monitor, Sparkles, Zap, Volume2, CheckSquare, Calendar, BookOpen, Timer, Clock } from 'lucide-react';
+import { Bell, Zap, Volume2, CheckSquare, Calendar, BookOpen, Timer } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Checkbox } from '../components/ui/checkbox';
 import { Input } from '../components/ui/input';
@@ -271,63 +271,8 @@ function Settings() {
         </CardContent>
       </Card>
 
-      {/* Appearance Card */}
-      <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            Appearance
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div 
-              onClick={() => handleThemeChange('light')}
-              className={`p-6 border-2 rounded-xl cursor-pointer hover:scale-105 transition-transform ${
-                theme === 'light' 
-                  ? 'border-primary bg-primary/5' 
-                  : 'border-border hover:border-primary/50'
-              }`}
-            >
-              <div className="flex flex-col items-center gap-3">
-                <Sun className={`h-8 w-8 ${theme === 'light' ? 'text-primary' : 'text-muted-foreground'}`} />
-                <span className={`font-medium ${theme === 'light' ? 'text-foreground' : 'text-muted-foreground'}`}>Light</span>
-              </div>
-            </div>
-            
-            <div 
-              onClick={() => handleThemeChange('dark')}
-              className={`p-6 border-2 rounded-xl cursor-pointer hover:scale-105 transition-transform ${
-                theme === 'dark' 
-                  ? 'border-primary bg-primary/5' 
-                  : 'border-border hover:border-primary/50'
-              }`}
-            >
-              <div className="flex flex-col items-center gap-3">
-                <Moon className={`h-8 w-8 ${theme === 'dark' ? 'text-primary' : 'text-muted-foreground'}`} />
-                <span className={`font-medium ${theme === 'dark' ? 'text-foreground' : 'text-muted-foreground'}`}>Dark</span>
-              </div>
-            </div>
-            
-            <div 
-              onClick={() => handleThemeChange('system')}
-              className={`p-6 border-2 rounded-xl cursor-pointer hover:scale-105 transition-transform ${
-                theme === 'system' 
-                  ? 'border-primary bg-primary/5' 
-                  : 'border-border hover:border-primary/50'
-              }`}
-            >
-              <div className="flex flex-col items-center gap-3">
-                <Monitor className={`h-8 w-8 ${theme === 'system' ? 'text-primary' : 'text-muted-foreground'}`} />
-                <span className={`font-medium ${theme === 'system' ? 'text-foreground' : 'text-muted-foreground'}`}>Auto</span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* About Card */}
-      <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+      <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Zap className="h-5 w-5 text-primary" />
