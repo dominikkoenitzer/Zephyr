@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Bell, Zap, Volume2, CheckSquare, Calendar, BookOpen, Timer } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -8,57 +8,7 @@ import { Select } from '../components/ui/select';
 import { notificationService } from '../services/notificationService';
 
 function Settings() {
-  const [notifications, setNotifications] = useState(true);
-  const [sounds, setSounds] = useState(true);
-  const [theme, setTheme] = useState('system');
   const [notificationSettings, setNotificationSettings] = useState(notificationService.getSettings());
-
-  const applyTheme = (newTheme) => {
-    const root = window.document.documentElement;
-    root.classList.remove('dark', 'light');
-    
-    if (newTheme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.classList.add(systemTheme);
-    } else {
-      root.classList.add(newTheme);
-    }
-  };
-
-  useEffect(() => {
-    // Load current theme
-    const savedTheme = localStorage.getItem('theme') || 'system';
-    setTheme(savedTheme);
-    
-    // Listen for theme changes from sidebar
-    const handleStorageChange = () => {
-      const currentTheme = localStorage.getItem('theme') || 'system';
-      setTheme(currentTheme);
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Also listen for custom event in case theme changes in same window
-    const handleThemeChange = (e) => {
-      setTheme(e.detail.theme);
-    };
-    
-    window.addEventListener('themechange', handleThemeChange);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('themechange', handleThemeChange);
-    };
-  }, []);
-
-  const handleThemeChange = (newTheme) => {
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    applyTheme(newTheme);
-    
-    // Dispatch custom event so sidebar can update
-    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: newTheme } }));
-  };
 
   const handleNotificationSettingsChange = (updates) => {
     const newSettings = { ...notificationSettings, ...updates };
