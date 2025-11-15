@@ -61,6 +61,8 @@ const CalendarView = () => {
   const [editingEvent, setEditingEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [highlightedEventId, setHighlightedEventId] = useState(null);
+  const [showSearchResults, setShowSearchResults] = useState(false);
   
   const [eventForm, setEventForm] = useState({
     title: '',
@@ -137,6 +139,23 @@ const CalendarView = () => {
     };
   }, []);
 
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const searchContainer = event.target.closest('.search-container');
+      if (!searchContainer && showSearchResults) {
+        setShowSearchResults(false);
+      }
+    };
+
+    if (showSearchResults) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [showSearchResults]);
+
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
@@ -172,6 +191,7 @@ const CalendarView = () => {
       return matchesSearch && matchesCategory;
     });
   }, [events, searchQuery, filterCategory]);
+
 
   const getEventsForDate = useCallback((date) => {
     const dateKey = getDateKey(date);
@@ -256,6 +276,40 @@ const CalendarView = () => {
     });
     setIsDialogOpen(true);
   };
+
+  // Navigate to event's date based on current view mode
+  const navigateToEvent = useCallback((event) => {
+    if (!event.date) return;
+    
+    const eventDate = new Date(event.date);
+    setHighlightedEventId(event.id);
+    setShowSearchResults(false);
+    
+    // Navigate based on view mode
+    if (viewMode === VIEW_MODES.MONTH) {
+      // Set to the month of the event
+      setCurrentDate(new Date(eventDate.getFullYear(), eventDate.getMonth(), 1));
+    } else if (viewMode === VIEW_MODES.WEEK) {
+      // Set to the week containing the event
+      const weekStart = new Date(eventDate);
+      const dayOfWeek = calendarSettings.firstDayOfWeek === 1 
+        ? (eventDate.getDay() === 0 ? 6 : eventDate.getDay() - 1)
+        : eventDate.getDay();
+      weekStart.setDate(eventDate.getDate() - dayOfWeek);
+      setCurrentDate(weekStart);
+    } else if (viewMode === VIEW_MODES.DAY) {
+      // Set to the exact day
+      setCurrentDate(eventDate);
+    }
+    
+    // Clear highlight after 3 seconds
+    setTimeout(() => {
+      setHighlightedEventId(null);
+    }, 3000);
+    
+    // Open event dialog
+    handleEventClick(event, { stopPropagation: () => {} });
+  }, [viewMode, calendarSettings.firstDayOfWeek]);
 
   const handleSaveEvent = () => {
     if (!eventForm.title.trim() || !eventForm.date) return;
@@ -368,12 +422,18 @@ const CalendarView = () => {
           <div className="space-y-1 max-h-[80px] overflow-y-auto">
             {dayEvents.slice(0, 3).map(event => {
               const eventCategory = EVENT_CATEGORIES.find(c => c.id === event.category) || EVENT_CATEGORIES[0];
+              const isHighlighted = highlightedEventId === event.id;
               return (
                 <div
                   key={event.id}
                   onClick={(e) => handleEventClick(event, e)}
-                  className="text-xs px-1.5 py-0.5 rounded truncate hover:opacity-80 transition-opacity flex items-center justify-between group"
-                  style={{ backgroundColor: eventCategory.color + '20', color: eventCategory.color }}
+                  className={`text-xs px-1.5 py-0.5 rounded truncate hover:opacity-80 transition-all flex items-center justify-between group ${
+                    isHighlighted ? 'ring-2 ring-primary ring-offset-1 scale-105' : ''
+                  }`}
+                  style={{ 
+                    backgroundColor: isHighlighted ? eventCategory.color + '40' : eventCategory.color + '20', 
+                    color: eventCategory.color 
+                  }}
                 >
                   <span className="truncate flex-1 font-medium">{event.title}</span>
                   <button
@@ -439,13 +499,19 @@ const CalendarView = () => {
               const category = item.isTask 
                 ? EVENT_CATEGORIES.find(c => c.id === 'task')
                 : EVENT_CATEGORIES.find(c => c.id === item.category) || EVENT_CATEGORIES[0];
+              const isHighlighted = !item.isTask && highlightedEventId === item.id;
               
               return (
                 <div
                   key={item.id}
                   onClick={(e) => !item.isTask && handleEventClick(item, e)}
-                  className="text-xs px-2 py-1 rounded cursor-pointer hover:opacity-80 transition-opacity"
-                  style={{ backgroundColor: category.color + '20', color: category.color }}
+                  className={`text-xs px-2 py-1 rounded cursor-pointer hover:opacity-80 transition-all ${
+                    isHighlighted ? 'ring-2 ring-primary ring-offset-1 scale-105' : ''
+                  }`}
+                  style={{ 
+                    backgroundColor: isHighlighted ? category.color + '40' : category.color + '20', 
+                    color: category.color 
+                  }}
                 >
                   {item.time && <div className="text-[10px] font-medium">{item.time}</div>}
                   <div className="font-medium truncate">{item.title}</div>
@@ -501,6 +567,7 @@ const CalendarView = () => {
               const category = item.isTask 
                 ? EVENT_CATEGORIES.find(c => c.id === 'task')
                 : EVENT_CATEGORIES.find(c => c.id === item.category) || EVENT_CATEGORIES[0];
+              const isHighlighted = !item.isTask && highlightedEventId === item.id;
               
               const startHour = item.time ? parseInt(item.time.split(':')[0]) : 9;
               const top = startHour * 64;
@@ -509,10 +576,12 @@ const CalendarView = () => {
                 <div
                   key={item.id}
                   onClick={(e) => !item.isTask && handleEventClick(item, e)}
-                  className="absolute left-0 right-0 px-2 py-1 rounded cursor-pointer hover:opacity-80 transition-opacity border-l-2"
+                  className={`absolute left-0 right-0 px-2 py-1 rounded cursor-pointer hover:opacity-80 transition-all border-l-2 ${
+                    isHighlighted ? 'ring-2 ring-primary ring-offset-1 scale-105 z-10' : ''
+                  }`}
                   style={{
                     top: `${top}px`,
-                    backgroundColor: category.color + '20',
+                    backgroundColor: isHighlighted ? category.color + '40' : category.color + '20',
                     borderLeftColor: category.color,
                     color: category.color
                   }}
@@ -567,11 +636,16 @@ const CalendarView = () => {
               <CardContent className="space-y-2">
                 {dateEvents.map(event => {
                   const category = EVENT_CATEGORIES.find(c => c.id === event.category) || EVENT_CATEGORIES[0];
+                  const isHighlighted = highlightedEventId === event.id;
                   return (
                     <div
                       key={event.id}
                       onClick={() => handleEventClick(event, { stopPropagation: () => {} })}
-                      className="p-3 rounded-lg border border-border hover:bg-accent/50 cursor-pointer transition-colors"
+                      className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                        isHighlighted 
+                          ? 'border-primary ring-2 ring-primary ring-offset-1 bg-primary/10' 
+                          : 'border-border hover:bg-accent/50'
+                      }`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -700,7 +774,7 @@ const CalendarView = () => {
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex-1 min-w-[200px] relative">
+            <div className="flex-1 min-w-[200px] relative search-container">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
               <Input
                 type="text"
@@ -709,9 +783,20 @@ const CalendarView = () => {
                 onChange={(e) => {
                   e.stopPropagation();
                   setSearchQuery(e.target.value);
+                  setShowSearchResults(e.target.value.length > 0 && filteredEvents.length > 0);
+                }}
+                onFocus={() => {
+                  if (searchQuery.length > 0 && filteredEvents.length > 0) {
+                    setShowSearchResults(true);
+                  }
                 }}
                 onKeyDown={(e) => {
                   e.stopPropagation();
+                  if (e.key === 'Enter' && filteredEvents.length > 0) {
+                    navigateToEvent(filteredEvents[0]);
+                  } else if (e.key === 'Escape') {
+                    setShowSearchResults(false);
+                  }
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -719,6 +804,58 @@ const CalendarView = () => {
                 className="pl-10"
                 autoComplete="off"
               />
+              {showSearchResults && searchQuery.length > 0 && filteredEvents.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-lg shadow-lg max-h-[300px] overflow-y-auto z-[9999]">
+                  <div className="p-2">
+                    <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                      Found {filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''}
+                    </div>
+                    {filteredEvents.slice(0, 10).map((event) => {
+                      const eventCategory = EVENT_CATEGORIES.find(c => c.id === event.category) || EVENT_CATEGORIES[0];
+                      const eventDate = event.date ? new Date(event.date) : null;
+                      return (
+                        <button
+                          key={event.id}
+                          onClick={() => navigateToEvent(event)}
+                          className="w-full flex items-start gap-3 px-3 py-2 rounded-md text-left transition-colors hover:bg-accent/50"
+                        >
+                          <div
+                            className="w-3 h-3 rounded-full flex-shrink-0 mt-1"
+                            style={{ backgroundColor: eventCategory.color }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-foreground truncate">
+                              {event.title}
+                            </div>
+                            {eventDate && (
+                              <div className="text-xs text-muted-foreground mt-0.5">
+                                {eventDate.toLocaleDateString('en-US', { 
+                                  weekday: 'short',
+                                  month: 'short', 
+                                  day: 'numeric',
+                                  year: eventDate.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+                                })}
+                                {event.time && ` at ${event.time}`}
+                              </div>
+                            )}
+                            {event.location && (
+                              <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                                <MapPin className="h-3 w-3" />
+                                {event.location}
+                              </div>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                    {filteredEvents.length > 10 && (
+                      <div className="px-3 py-2 text-xs text-center text-muted-foreground border-t border-border mt-2">
+                        Showing top 10 results. Refine your search for more specific results.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
