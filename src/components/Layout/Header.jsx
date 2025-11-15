@@ -121,7 +121,14 @@ function Header({ onMenuClick }) {
                 navigate('/journal');
                 break;
               case 'event':
-                navigate('/calendar');
+                // Navigate to calendar with the event's date
+                if (selectedResult.date) {
+                  const eventDate = new Date(selectedResult.date);
+                  const dateStr = eventDate.toISOString().split('T')[0];
+                  navigate(`/calendar?date=${dateStr}`);
+                } else {
+                  navigate('/calendar');
+                }
                 break;
               case 'task':
                 navigate('/tasks');
