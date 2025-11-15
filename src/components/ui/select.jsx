@@ -84,7 +84,7 @@ const Select = React.forwardRef(({ className, children, value, onChange, ...prop
 
       {/* Dropdown menu */}
       {isOpen && (
-        <div className="absolute z-50 mt-2 w-full rounded-lg border-2 border-border bg-background shadow-lg animate-in fade-in-0 zoom-in-95">
+        <div className="absolute z-[9999] mt-2 w-full rounded-lg border-2 border-border bg-background shadow-2xl animate-in fade-in-0 zoom-in-95">
           <div className="p-1 max-h-60 overflow-auto">
             {React.Children.map(children, (child) => {
               if (React.isValidElement(child) && child.type === 'option') {

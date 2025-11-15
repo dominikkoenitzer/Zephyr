@@ -140,7 +140,7 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
 
       {/* Dropdown picker */}
       {isOpen && (
-        <div className="absolute z-50 mt-2 w-full rounded-lg border-2 border-border bg-background shadow-lg animate-in fade-in-0 zoom-in-95">
+        <div className="absolute z-[9999] mt-2 w-full rounded-lg border-2 border-border bg-background shadow-2xl animate-in fade-in-0 zoom-in-95">
           <div className="p-4">
             <div className="flex items-center justify-center gap-4">
               {/* Hours */}
