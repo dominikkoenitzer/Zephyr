@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { DatePicker } from '../ui/date-picker';
+import { CalendarPicker } from '../ui/calendar-picker';
 import { Select } from '../ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
@@ -53,12 +53,6 @@ const TaskList = () => {
     setFolders(savedFolders);
   }, []);
 
-  // Save tasks whenever they change
-  useEffect(() => {
-    if (tasks.length > 0 || localStorageService.getTasks().length > 0) {
-      localStorageService.saveTasks(tasks);
-    }
-  }, [tasks]);
 
   // Save folders whenever they change
   useEffect(() => {
@@ -72,13 +66,15 @@ const TaskList = () => {
     if (!newTask.trim()) return;
     
     const task = localStorageService.addTask({
-      title: newTask,
+      title: newTask.trim(),
       description: '',
       priority: 'medium',
-      folderId: selectedFolder
+      folderId: selectedFolder || null
     });
     
-    setTasks(prev => [...prev, task]);
+    // Reload tasks from localStorage to ensure consistency
+    const allTasks = localStorageService.getTasks();
+    setTasks(allTasks);
     setNewTask('');
     setEditingTask(task);
   };
@@ -99,35 +95,41 @@ const TaskList = () => {
       });
       
       if (updatedTask) {
-        setTasks(prev => prev.map(t => 
-          t.id === taskId ? updatedTask : t
-        ));
+        // Reload tasks from localStorage to ensure consistency
+        const allTasks = localStorageService.getTasks();
+        setTasks(allTasks);
       }
     }
   };
 
   const deleteTask = (taskId) => {
     localStorageService.deleteTask(taskId);
-    setTasks(prev => prev.filter(t => t.id !== taskId));
+    // Reload tasks from localStorage to ensure consistency
+    const allTasks = localStorageService.getTasks();
+    setTasks(allTasks);
   };
 
   const updateTask = (taskId, updates) => {
     const updatedTask = localStorageService.updateTask(taskId, updates);
     if (updatedTask) {
-      setTasks(prev => prev.map(t => 
-        t.id === taskId ? updatedTask : t
-      ));
+      // Reload tasks from localStorage to ensure consistency
+      const allTasks = localStorageService.getTasks();
+      setTasks(allTasks);
     }
+    return updatedTask;
   };
 
   const deleteFolder = (folderId) => {
     localStorageService.deleteFolder(folderId);
-    setFolders(prev => prev.filter(f => f.id !== folderId));
+    // Reload folders from localStorage to ensure consistency
+    const allFolders = localStorageService.getFolders();
+    setFolders(allFolders);
     if (selectedFolder === folderId) {
       setSelectedFolder(null);
     }
     // Reload tasks to update folder references
-    setTasks(localStorageService.getTasks());
+    const allTasks = localStorageService.getTasks();
+    setTasks(allTasks);
   };
 
   // Filter and sort tasks
@@ -666,24 +668,38 @@ const TaskList = () => {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium block text-foreground">Due Date</label>
-                <DatePicker
+                <CalendarPicker
                   value={editingTask.dueDate ? editingTask.dueDate.split('T')[0] : ''}
-                  onChange={(e) => setEditingTask({ ...editingTask, dueDate: e.target.value || null })}
+                  onChange={(e) => {
+                    const dateValue = e.target.value || null;
+                    setEditingTask({ ...editingTask, dueDate: dateValue });
+                  }}
                   className="w-full"
                 />
               </div>
               <div className="flex gap-2">
                 <Button 
                   onClick={() => {
+                    if (!editingTask.title?.trim()) {
+                      return;
+                    }
+                    
                     const updates = {
-                      title: editingTask.title,
-                      description: editingTask.description || '',
+                      title: editingTask.title.trim(),
+                      description: editingTask.description?.trim() || '',
                       priority: editingTask.priority || 'medium',
                       folderId: editingTask.folderId || null,
-                      dueDate: editingTask.dueDate ? (editingTask.dueDate.includes('T') ? editingTask.dueDate : new Date(editingTask.dueDate + 'T00:00:00').toISOString()) : null
+                      dueDate: editingTask.dueDate 
+                        ? (editingTask.dueDate.includes('T') 
+                            ? editingTask.dueDate 
+                            : new Date(editingTask.dueDate + 'T00:00:00').toISOString())
+                        : null
                     };
-                    updateTask(editingTask.id, updates);
-                    setEditingTask(null);
+                    
+                    const updated = updateTask(editingTask.id, updates);
+                    if (updated) {
+                      setEditingTask(null);
+                    }
                   }}
                   className="flex-1"
                 >
