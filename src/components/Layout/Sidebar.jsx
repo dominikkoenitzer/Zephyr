@@ -7,15 +7,16 @@ import {
   BarChart3, 
   Settings, 
   HelpCircle,
-  Moon,
-  Sun,
-  Monitor,
   X,
   BookOpen,
-  FileText
+  FileText,
+  Sparkles,
+  Palette,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
+import { themeService, GARDEN_THEMES } from '../../services/themeService';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: BarChart3 },
@@ -30,99 +31,73 @@ const navigation = [
 
 function Sidebar({ isMobile = false, onClose }) {
   const location = useLocation();
-  const [theme, setTheme] = useState('system');
-
-  const applyTheme = (newTheme) => {
-    const root = window.document.documentElement;
-    root.classList.remove('dark', 'light');
-    
-    if (newTheme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.classList.add(systemTheme);
-    } else {
-      root.classList.add(newTheme);
-    }
-  };
+  const [currentTheme, setCurrentTheme] = useState('default');
+  const [showThemePicker, setShowThemePicker] = useState(false);
+  const [colorMode, setColorMode] = useState('light');
 
   useEffect(() => {
-    // Initialize theme on mount
-    const savedTheme = localStorage.getItem('theme') || 'system';
-    setTheme(savedTheme);
-    applyTheme(savedTheme);
+    themeService.initialize();
+    const savedTheme = themeService.getCurrentTheme();
+    setCurrentTheme(savedTheme);
+    setColorMode(themeService.getCurrentColorMode());
 
-    // Listen for theme changes from Settings page
-    const handleThemeChange = (e) => {
-      setTheme(e.detail.theme);
-    };
+    // Listen for color mode changes
+    const observer = new MutationObserver(() => {
+      setColorMode(themeService.getCurrentColorMode());
+    });
     
-    window.addEventListener('themechange', handleThemeChange);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
 
-    // Listen for system theme changes when theme is set to 'system'
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = (e) => {
-      const currentTheme = localStorage.getItem('theme') || 'system';
-      if (currentTheme === 'system') {
-        const root = window.document.documentElement;
-        root.classList.remove('dark', 'light');
-        root.classList.add(e.matches ? 'dark' : 'light');
-      }
-    };
-
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
-    
-    return () => {
-      window.removeEventListener('themechange', handleThemeChange);
-      mediaQuery.removeEventListener('change', handleSystemThemeChange);
-    };
+    return () => observer.disconnect();
   }, []);
 
-  const handleThemeChange = (newTheme) => {
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    applyTheme(newTheme);
+  const handleThemeSelect = (themeId) => {
+    setCurrentTheme(themeId);
+    themeService.applyTheme(themeId, colorMode);
+    setShowThemePicker(false);
+  };
+
+  const toggleColorMode = () => {
+    const root = window.document.documentElement;
+    const newMode = colorMode === 'dark' ? 'light' : 'dark';
     
-    // Dispatch custom event so Settings page can update
-    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: newTheme } }));
+    root.classList.remove('dark', 'light');
+    root.classList.add(newMode);
+    
+    setColorMode(newMode);
+    localStorage.setItem('theme', newMode);
+    themeService.applyTheme(currentTheme, newMode);
+    
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: newMode } }));
   };
-
-  const getThemeIcon = () => {
-    switch (theme) {
-      case 'light': return Sun;
-      case 'dark': return Moon;
-      default: return Monitor;
-    }
-  };
-
-  const cycleTheme = () => {
-    const themes = ['light', 'dark', 'system'];
-    const currentIndex = themes.indexOf(theme);
-    const nextTheme = themes[(currentIndex + 1) % themes.length];
-    handleThemeChange(nextTheme);
-  };
-
-  const ThemeIcon = getThemeIcon();
 
   if (isMobile) {
     return (
       <div className="fixed inset-0 z-50 lg:hidden">
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
-        <div className="fixed left-0 top-0 h-full w-64 glass-card border-r border-border/50 p-6 animate-slide-in-from-left">
+        <div className="fixed left-0 top-0 h-full w-72 bg-background/95 backdrop-blur-xl border-r border-border/50 p-6 animate-slide-in-from-left shadow-2xl">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-2xl font-bold text-foreground bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">Zephyr</h1>
+              <h1 className="text-2xl font-bold text-foreground">Zephyr</h1>
               <p className="text-xs text-muted-foreground mt-0.5">Flow Through Focus</p>
             </div>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-5 w-5" />
+            <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
+              <X className="h-4 w-4" />
             </Button>
           </div>
           <SidebarContent 
             navigation={navigation} 
             location={location} 
             onItemClick={onClose}
-            theme={theme}
-            cycleTheme={cycleTheme}
-            ThemeIcon={ThemeIcon}
+            currentTheme={currentTheme}
+            showThemePicker={showThemePicker}
+            setShowThemePicker={setShowThemePicker}
+            onThemeSelect={handleThemeSelect}
+            colorMode={colorMode}
+            onToggleColorMode={toggleColorMode}
           />
         </div>
       </div>
@@ -130,30 +105,41 @@ function Sidebar({ isMobile = false, onClose }) {
   }
 
   return (
-    <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 glass-card border-r border-border/50">
+    <div className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-lg">
       <div className="flex flex-col flex-grow p-6">
-        <div className="flex items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">Zephyr</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">Flow Through Focus</p>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-foreground mb-1">Zephyr</h1>
+          <p className="text-xs text-muted-foreground">Flow Through Focus</p>
         </div>
         <SidebarContent 
           navigation={navigation} 
           location={location}
-          theme={theme}
-          cycleTheme={cycleTheme}
-          ThemeIcon={ThemeIcon}
+          currentTheme={currentTheme}
+          showThemePicker={showThemePicker}
+          setShowThemePicker={setShowThemePicker}
+          onThemeSelect={handleThemeSelect}
+          colorMode={colorMode}
+          onToggleColorMode={toggleColorMode}
         />
       </div>
     </div>
   );
 }
 
-function SidebarContent({ navigation, location, onItemClick, theme, cycleTheme, ThemeIcon }) {
+function SidebarContent({ 
+  navigation, 
+  location, 
+  onItemClick,
+  currentTheme,
+  showThemePicker,
+  setShowThemePicker,
+  onThemeSelect,
+  colorMode,
+  onToggleColorMode
+}) {
   return (
     <div className="flex flex-col h-full">
-      <nav className="flex-1 space-y-2">
+      <nav className="flex-1 space-y-1">
         {navigation.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
@@ -164,27 +150,68 @@ function SidebarContent({ navigation, location, onItemClick, theme, cycleTheme, 
               to={item.href}
               onClick={onItemClick}
               className={cn(
-                "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200",
+                "group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 relative",
                 isActive 
-                  ? "bg-gradient-to-r from-primary to-purple-600 text-white shadow-lg shadow-primary/30 scale-105" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50 hover:scale-102"
+                  ? "text-foreground bg-accent" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
               )}
             >
-              <Icon className="mr-3 h-5 w-5" />
-              {item.name}
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+              )}
+              <Icon className={cn(
+                "h-5 w-5 transition-colors",
+                isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+              )} />
+              <span className="flex-1">{item.name}</span>
+              {isActive && (
+                <ChevronRight className="h-4 w-4 text-primary" />
+              )}
             </Link>
           );
         })}
       </nav>
       
-      <div className="mt-auto pt-4 border-t border-border/50">
+      <div className="mt-auto pt-4 border-t border-border/50 space-y-2">
         <Button
           variant="ghost"
-          onClick={cycleTheme}
-          className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-xl transition-all"
+          onClick={() => setShowThemePicker(!showThemePicker)}
+          className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-lg transition-all"
         >
-          <ThemeIcon className="mr-3 h-5 w-5" />
-          {theme.charAt(0).toUpperCase() + theme.slice(1)} theme
+          <Palette className="mr-3 h-4 w-4" />
+          <span className="flex-1 text-left">Theme</span>
+          <ChevronRight className={cn(
+            "h-4 w-4 transition-transform",
+            showThemePicker && "rotate-90"
+          )} />
+        </Button>
+
+        {showThemePicker && (
+          <div className="space-y-1.5 pl-4 border-l-2 border-border/30 ml-2">
+            {Object.values(GARDEN_THEMES).map((theme) => (
+              <button
+                key={theme.id}
+                onClick={() => onThemeSelect(theme.id)}
+                className={cn(
+                  "w-full text-left px-3 py-2 text-xs rounded-md transition-colors",
+                  currentTheme === theme.id
+                    ? "bg-accent text-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/30"
+                )}
+              >
+                {theme.name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <Button
+          variant="ghost"
+          onClick={onToggleColorMode}
+          className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-lg transition-all"
+        >
+          <Sparkles className="mr-3 h-4 w-4" />
+          {colorMode === 'dark' ? 'Light Mode' : 'Dark Mode'}
         </Button>
       </div>
     </div>
