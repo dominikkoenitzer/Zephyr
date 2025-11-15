@@ -10,7 +10,8 @@ import {
   Moon,
   Sun,
   Monitor,
-  X
+  X,
+  BookOpen
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
@@ -20,6 +21,7 @@ const navigation = [
   { name: 'Focus Timer', href: '/focus', icon: Timer },
   { name: 'Tasks', href: '/tasks', icon: CheckSquare },
   { name: 'Calendar', href: '/calendar', icon: Calendar },
+  { name: 'Notes & Journal', href: '/notes', icon: BookOpen },
   { name: 'Settings', href: '/settings', icon: Settings },
   { name: 'Help', href: '/help', icon: HelpCircle },
 ];
