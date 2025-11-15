@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { 
   Play, Pause, SkipForward, Settings, Award, Clock, Target, Maximize2, X, 
   RotateCcw, Plus, Trash2, Save, Edit2, Sparkles, Zap, Coffee, BookOpen,
-  Music, Timer as TimerIcon, CheckCircle2
+  Music, Timer as TimerIcon, CheckCircle2, Heart
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
@@ -21,7 +21,8 @@ const DEFAULT_PRESETS = [
     workTime: 25 * 60,
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
-    sessionsUntilLongBreak: 4
+    sessionsUntilLongBreak: 4,
+    description: 'The Pomodoro Technique: Work for 25 minutes, then take a 5-minute break. After 4 cycles, take a longer 15-minute break.'
   },
   {
     id: 'short',
@@ -31,7 +32,8 @@ const DEFAULT_PRESETS = [
     workTime: 15 * 60,
     shortBreak: 3 * 60,
     longBreak: 10 * 60,
-    sessionsUntilLongBreak: 4
+    sessionsUntilLongBreak: 4,
+    description: 'Perfect for quick bursts of productivity. Work for 15 minutes, take a 3-minute break. After 4 sessions, enjoy a 10-minute longer break.'
   },
   {
     id: 'long',
@@ -41,7 +43,19 @@ const DEFAULT_PRESETS = [
     workTime: 45 * 60,
     shortBreak: 10 * 60,
     longBreak: 20 * 60,
-    sessionsUntilLongBreak: 3
+    sessionsUntilLongBreak: 3,
+    description: 'Designed for extended focus sessions. Work for 45 minutes, then take a 10-minute break. After 3 cycles, take a 20-minute longer break.'
+  },
+  {
+    id: 'meditation',
+    name: 'Meditation',
+    icon: Heart,
+    color: '#ec4899',
+    workTime: 10 * 60,
+    shortBreak: 2 * 60,
+    longBreak: 5 * 60,
+    sessionsUntilLongBreak: 3,
+    description: 'Mindfulness and meditation timer. Meditate for 10 minutes, take a 2-minute break. After 3 sessions, take a 5-minute longer break.'
   },
   {
     id: 'custom',
@@ -51,7 +65,8 @@ const DEFAULT_PRESETS = [
     workTime: 25 * 60,
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
-    sessionsUntilLongBreak: 4
+    sessionsUntilLongBreak: 4,
+    description: 'Create your own custom timer with personalized work and break durations.'
   }
 ];
 
@@ -643,12 +658,19 @@ const PomodoroTimer = () => {
               </Button>
             </div>
 
-            <div className="text-center">
+            <div className="text-center space-y-4">
               <p className="text-muted-foreground text-lg font-medium">
                 {isRunning 
                   ? (isBreak ? "Take a moment to recharge" : "Stay focused and maintain your flow")
                   : "Ready to begin"}
               </p>
+              {currentPreset.description && (
+                <div className="mt-6 p-4 rounded-xl bg-muted/30 border border-border/50">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {currentPreset.description}
+                  </p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -694,6 +716,11 @@ const PomodoroTimer = () => {
                       <div className="text-xs text-muted-foreground">
                         {Math.floor(preset.workTime / 60)} min focus
                       </div>
+                      {preset.description && (
+                        <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                          {preset.description}
+                        </div>
+                      )}
                     </div>
                     {isSelected && (
                       <CheckCircle2 className="h-5 w-5" style={{ color: preset.color }} />
