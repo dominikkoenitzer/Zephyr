@@ -23,7 +23,7 @@ function App() {
   const handleSidebarClose = () => setSidebarOpen(false);
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300 overflow-x-hidden">
+    <div className="min-h-screen h-screen bg-background transition-colors duration-300 overflow-x-hidden">
       {/* Desktop Sidebar */}
       <Sidebar isMobile={false} />
       
@@ -33,9 +33,9 @@ function App() {
       )}
 
       {/* Main Content */}
-      <div className="lg:pl-72">
+      <div className="lg:pl-72 h-screen flex flex-col">
         <Header onMenuClick={handleSidebarOpen} />
-        <main className="pt-16 scroll-smooth-momentum">
+        <main className="flex-1 pt-16 scroll-smooth-momentum overflow-y-auto overflow-x-hidden">
           <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 max-w-7xl">
             <Outlet />
           </div>
