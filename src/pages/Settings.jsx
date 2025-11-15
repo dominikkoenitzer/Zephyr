@@ -150,16 +150,16 @@ function Settings() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-foreground">Reminder Time</p>
-                      <p className="text-xs text-muted-foreground">Minutes before event starts</p>
+                      <p className="text-xs text-muted-foreground">Min before event starts</p>
                     </div>
                     <Select
                       value={String(notificationSettings.events.reminderTime)}
                       onChange={(e) => handleEventSettingsChange({ reminderTime: parseInt(e.target.value) })}
                       className="w-32"
                     >
-                      <option value="5">5 minutes</option>
-                      <option value="15">15 minutes</option>
-                      <option value="30">30 minutes</option>
+                      <option value="5">5 min</option>
+                      <option value="15">15 min</option>
+                      <option value="30">30 min</option>
                       <option value="60">1 hour</option>
                     </Select>
                   </div>
