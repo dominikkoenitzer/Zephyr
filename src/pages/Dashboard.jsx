@@ -47,86 +47,128 @@ function Dashboard() {
   }, []);
 
   const loadDashboardData = () => {
-    const sessions = localStorageService.getFocusSessions();
-    const today = new Date().toDateString();
-    const todaySessions = sessions.filter(session => 
-      new Date(session.date).toDateString() === today
-    );
-    
-    const tasks = localStorageService.getTasks();
-    const activeTasks = tasks.filter(task => !task.completed);
-    const completedTasks = tasks.filter(task => task.completed);
-    const recentTasksList = tasks
-      .filter(task => !task.completed)
-      .sort((a, b) => {
-        const aDate = a.dueDate ? new Date(a.dueDate) : new Date(0);
-        const bDate = b.dueDate ? new Date(b.dueDate) : new Date(0);
-        return aDate - bDate;
-      })
-      .slice(0, 5);
-
-    const timerState = localStorageService.getTimerState();
-    const totalPomodoros = timerState ? timerState.pomodorosCompleted || 0 : 0;
-
-    const todayFocusTime = todaySessions.reduce((total, session) => 
-      total + (session.duration || 0), 0
-    );
-
-    const events = localStorageService.getCalendarEvents();
-    const now = new Date();
-    const upcomingEventsList = events
-      .filter(event => {
-        if (!event.date) return false;
-        const eventDate = new Date(event.date);
-        if (event.time) {
-          const [hours, minutes] = event.time.split(':').map(Number);
-          eventDate.setHours(hours, minutes, 0, 0);
+    try {
+      const sessions = localStorageService.getFocusSessions() || [];
+      const today = new Date().toDateString();
+      const todaySessions = sessions.filter(session => {
+        try {
+          return session && session.date && new Date(session.date).toDateString() === today;
+        } catch {
+          return false;
         }
-        return eventDate >= now;
-      })
-      .sort((a, b) => {
-        const aDate = new Date(a.date + (a.time ? `T${a.time}` : ''));
-        const bDate = new Date(b.date + (b.time ? `T${b.time}` : ''));
-        return aDate - bDate;
-      })
-      .slice(0, 5);
+      });
+      
+      const tasks = localStorageService.getTasks() || [];
+      const activeTasks = tasks.filter(task => !task.completed);
+      const completedTasks = tasks.filter(task => task.completed);
+      const recentTasksList = tasks
+        .filter(task => !task.completed)
+        .sort((a, b) => {
+          try {
+            const aDate = a.dueDate ? new Date(a.dueDate) : new Date(0);
+            const bDate = b.dueDate ? new Date(b.dueDate) : new Date(0);
+            return aDate - bDate;
+          } catch {
+            return 0;
+          }
+        })
+        .slice(0, 5);
 
-    setStats({
-      todayFocusTime: Math.floor(todayFocusTime / 60),
-      todaySessions: todaySessions.length,
-      activeTasks: activeTasks.length,
-      completedTasks: completedTasks.length,
-      totalPomodoros,
-    });
+      const timerState = localStorageService.getTimerState();
+      const totalPomodoros = timerState ? timerState.pomodorosCompleted || 0 : 0;
 
-    setRecentTasks(recentTasksList);
-    setUpcomingEvents(upcomingEventsList);
+      const todayFocusTime = todaySessions.reduce((total, session) => 
+        total + (session?.duration || 0), 0
+      );
+
+      const events = localStorageService.getCalendarEvents() || [];
+      const now = new Date();
+      const upcomingEventsList = events
+        .filter(event => {
+          try {
+            if (!event || !event.date) return false;
+            const eventDate = new Date(event.date);
+            if (event.time) {
+              const [hours, minutes] = event.time.split(':').map(Number);
+              eventDate.setHours(hours, minutes, 0, 0);
+            }
+            return eventDate >= now;
+          } catch {
+            return false;
+          }
+        })
+        .sort((a, b) => {
+          try {
+            const aDate = new Date(a.date + (a.time ? `T${a.time}` : ''));
+            const bDate = new Date(b.date + (b.time ? `T${b.time}` : ''));
+            return aDate - bDate;
+          } catch {
+            return 0;
+          }
+        })
+        .slice(0, 5);
+
+      setStats({
+        todayFocusTime: Math.floor(todayFocusTime / 60),
+        todaySessions: todaySessions.length,
+        activeTasks: activeTasks.length,
+        completedTasks: completedTasks.length,
+        totalPomodoros,
+      });
+
+      setRecentTasks(recentTasksList);
+      setUpcomingEvents(upcomingEventsList);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      // Set default values on error
+      setStats({
+        todayFocusTime: 0,
+        todaySessions: 0,
+        activeTasks: 0,
+        completedTasks: 0,
+        totalPomodoros: 0,
+      });
+      setRecentTasks([]);
+      setUpcomingEvents([]);
+    }
   };
 
   const chartData = useMemo(() => {
-    const sessions = localStorageService.getFocusSessions();
-    const days = [];
-    
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toDateString();
+    try {
+      const sessions = localStorageService.getFocusSessions() || [];
+      const days = [];
       
-      const daySessions = sessions.filter(session => 
-        new Date(session.date).toDateString() === dateStr
-      );
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toDateString();
+        
+        const daySessions = sessions.filter(session => {
+          try {
+            return session && session.date && new Date(session.date).toDateString() === dateStr;
+          } catch {
+            return false;
+          }
+        });
+        
+        const focusTime = daySessions.reduce((total, session) => 
+          total + (session?.duration || 0), 0
+        ) / 60;
+        
+        days.push({
+          name: date.toLocaleDateString('en-US', { weekday: 'short' }),
+          focusTime: Math.round(focusTime) || 0,
+        });
+      }
       
-      const focusTime = daySessions.reduce((total, session) => 
-        total + (session.duration || 0), 0
-      ) / 60;
-      
-      days.push({
-        name: date.toLocaleDateString('en-US', { weekday: 'short' }),
-        focusTime: Math.round(focusTime),
-      });
+      return days;
+    } catch (error) {
+      console.error('Error generating chart data:', error);
+      return Array.from({ length: 7 }, (_, i) => ({
+        name: new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'short' }),
+        focusTime: 0,
+      }));
     }
-    
-    return days;
   }, []);
 
   const formatTime = (minutes) => {
@@ -169,8 +211,7 @@ function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-6 max-w-7xl">
+    <div className="w-full">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-semibold text-foreground">
