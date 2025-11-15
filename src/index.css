@@ -265,10 +265,6 @@
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     scroll-padding-top: 4rem;
-    /* Optimize scrolling performance */
-    will-change: scroll-position;
-    /* Smooth scroll with custom easing */
-    scroll-behavior: smooth;
   }
   
   body {
@@ -279,26 +275,11 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* GPU acceleration for smooth scrolling */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    perspective: 1000px;
-    -webkit-perspective: 1000px;
   }
   
-  /* Smooth scrolling for all scrollable elements with GPU acceleration */
+  /* Smooth scrolling for all scrollable elements */
   * {
     scroll-behavior: smooth;
-  }
-  
-  /* Optimize scrollable containers */
-  [class*="overflow"], 
-  [class*="scroll"] {
-    will-change: scroll-position;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
   }
   
   /* Disable smooth scroll for programmatic scrolling */
@@ -337,7 +318,7 @@
     box-shadow: 0 12px 40px 0 var(--glass-shadow);
   }
   
-  /* Enhanced Scrollbar styling with smooth animations */
+  /* Enhanced Scrollbar styling */
   * {
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
@@ -346,15 +327,11 @@
   *::-webkit-scrollbar {
     width: 10px;
     height: 10px;
-    /* Smooth scrollbar appearance */
-    transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), height 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   *::-webkit-scrollbar-track {
     background: transparent;
     border-radius: 10px;
-    /* Smooth track transitions */
-    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   *::-webkit-scrollbar-thumb {
@@ -362,35 +339,17 @@
     border-radius: 10px;
     border: 2px solid transparent;
     background-clip: padding-box;
-    /* Ultra-smooth transitions with cubic-bezier easing */
-    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                height 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                border-radius 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    /* GPU acceleration for scrollbar */
-    will-change: background-color, width, height;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+    transition: background-color 0.2s ease;
   }
   
   *::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.5);
     background-clip: padding-box;
-    /* Slightly wider on hover for better UX */
-    width: 12px;
-    height: 12px;
   }
   
   *::-webkit-scrollbar-thumb:active {
     background: hsl(var(--muted-foreground) / 0.7);
     background-clip: padding-box;
-    width: 14px;
-    height: 14px;
-  }
-  
-  /* Smooth scrollbar fade-in on hover */
-  *:not(:hover)::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground) / 0.2);
   }
   
   /* Thin scrollbar variant */
@@ -429,65 +388,10 @@
     display: none;
   }
   
-  /* Ultra-smooth momentum scrolling with GPU acceleration */
+  /* Smooth momentum scrolling for mobile */
   .scroll-smooth-momentum {
-    /* Smooth scroll behavior */
-    scroll-behavior: smooth;
-    /* Better momentum on iOS and mobile */
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    /* GPU acceleration for ultra-smooth performance */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    will-change: scroll-position;
-    /* Optimize rendering performance */
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    perspective: 1000px;
-    -webkit-perspective: 1000px;
-    /* Smooth scroll physics */
-    overscroll-behavior-y: smooth;
-  }
-  
-  /* Premium smooth scroll with custom easing */
-  .scroll-premium {
     scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: smooth;
-    /* GPU acceleration */
-    transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
-    will-change: scroll-position;
-    /* Optimize rendering */
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-  }
-  
-  /* Smooth scroll snap for better control */
-  .scroll-snap {
-    scroll-snap-type: y proximity;
-    scroll-padding-top: 1rem;
-  }
-  
-  .scroll-snap > * {
-    scroll-snap-align: start;
-    scroll-snap-stop: normal;
-  }
-  
-  /* Smooth fade-in on scroll */
-  @keyframes fadeInOnScroll {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .animate-fade-in-scroll {
-    animation: fadeInOnScroll 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
   
   /* Gradient backgrounds */
