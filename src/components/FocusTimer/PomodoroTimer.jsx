@@ -86,48 +86,48 @@ const FullScreenMode = ({
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center p-8">
-      <div className="absolute top-6 right-6">
+    <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
         <Button
           variant="ghost"
           size="icon"
           onClick={onExit}
-          className="h-9 w-9"
+          className="h-8 w-8 sm:h-9 sm:w-9"
         >
-          <X className="h-4 w-4" />
+          <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </Button>
       </div>
       
-      <div className="flex flex-col items-center justify-center space-y-12 max-w-4xl w-full">
-        <div className="text-center">
+      <div className="flex flex-col items-center justify-center space-y-6 sm:space-y-8 md:space-y-12 max-w-4xl w-full">
+        <div className="text-center px-4">
           <h2 
-            className="text-3xl font-semibold mb-2"
+            className="text-xl sm:text-2xl md:text-3xl font-semibold mb-1 sm:mb-2"
             style={{ color: preset.color }}
           >
             {sessionType.text}
           </h2>
           {preset.description && (
-            <p className="text-sm text-muted-foreground max-w-xl mx-auto">
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto">
               {preset.description}
             </p>
           )}
         </div>
 
-        <div className="relative w-[500px] h-[500px]">
+        <div className="relative w-[280px] h-[280px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px]">
           <svg className="absolute inset-0 w-full h-full transform -rotate-90">
             <circle
-              cx="250"
-              cy="250"
-              r="180"
+              cx="50%"
+              cy="50%"
+              r="45%"
               stroke="currentColor"
               strokeWidth="3"
               fill="none"
               className="text-muted/20"
             />
             <circle
-              cx="250"
-              cy="250"
-              r="180"
+              cx="50%"
+              cy="50%"
+              r="45%"
               stroke="currentColor"
               strokeWidth="4"
               fill="none"
@@ -143,22 +143,22 @@ const FullScreenMode = ({
           
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <div 
-              className="text-8xl font-mono font-light mb-3 tracking-tight"
+              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-mono font-light mb-2 sm:mb-3 tracking-tight"
               style={{ color: preset.color }}
             >
               {formatTime(timeLeft)}
             </div>
-            <div className="text-base text-muted-foreground">
+            <div className="text-sm sm:text-base text-muted-foreground">
               {Math.round(progress)}%
             </div>
           </div>
         </div>
 
-        <div className="flex justify-center items-center gap-4">
+        <div className="flex justify-center items-center gap-3 sm:gap-4">
           <button
             onClick={onToggle}
             className={`
-              h-20 w-20 rounded-full transition-all duration-300
+              h-16 w-16 sm:h-18 sm:w-18 md:h-20 md:w-20 rounded-full transition-all duration-300
               flex items-center justify-center relative
               ${isRunning 
                 ? 'bg-foreground/10 hover:bg-foreground/15' 
@@ -168,12 +168,12 @@ const FullScreenMode = ({
             style={isRunning ? {} : { backgroundColor: preset.color }}
           >
             {isRunning ? (
-              <div className="flex items-center justify-center gap-1.5 z-10">
-                <div className="h-5 w-1.5 bg-foreground rounded-full" />
-                <div className="h-5 w-1.5 bg-foreground rounded-full" />
+              <div className="flex items-center justify-center gap-1 sm:gap-1.5 z-10">
+                <div className="h-4 w-1 sm:h-5 sm:w-1.5 bg-foreground rounded-full" />
+                <div className="h-4 w-1 sm:h-5 sm:w-1.5 bg-foreground rounded-full" />
               </div>
             ) : (
-              <Play className="h-8 w-8 text-white ml-1 z-10" strokeWidth={2.5} />
+              <Play className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white ml-0.5 sm:ml-1 z-10" strokeWidth={2.5} />
             )}
           </button>
           
@@ -181,20 +181,20 @@ const FullScreenMode = ({
             onClick={onReset}
             variant="ghost"
             size="sm"
-            className="h-10 px-4 text-muted-foreground hover:text-foreground"
+            className="h-9 sm:h-10 px-3 sm:px-4 text-xs sm:text-sm text-muted-foreground hover:text-foreground"
           >
-            <RotateCcw className="h-4 w-4 mr-1.5" />
-            Reset
+            <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-1.5" />
+            <span className="hidden sm:inline">Reset</span>
           </Button>
 
           <Button
             onClick={onSkip}
             variant="ghost"
             size="sm"
-            className="h-10 px-4 text-muted-foreground hover:text-foreground"
+            className="h-9 sm:h-10 px-3 sm:px-4 text-xs sm:text-sm text-muted-foreground hover:text-foreground"
           >
-            <SkipForward className="h-4 w-4 mr-1.5" />
-            Skip
+            <SkipForward className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-1.5" />
+            <span className="hidden sm:inline">Skip</span>
           </Button>
         </div>
       </div>
@@ -506,16 +506,16 @@ const PomodoroTimer = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+    <div className="max-w-6xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-foreground">
+              <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
                 {sessionType.text}
               </h2>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 {currentPreset.name}
               </p>
             </div>
@@ -523,30 +523,30 @@ const PomodoroTimer = () => {
               variant="ghost"
               size="icon"
               onClick={() => setIsFullScreen(true)}
-              className="h-9 w-9"
+              className="h-8 w-8 sm:h-9 sm:w-9"
               title="Full Screen"
             >
-              <Maximize2 className="h-4 w-4" />
+              <Maximize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
           </div>
 
           {/* Timer */}
-          <div className="flex justify-center items-center py-12">
-            <div className="relative w-[400px] h-[400px]">
+          <div className="flex justify-center items-center py-6 sm:py-8 md:py-12">
+            <div className="relative w-[280px] h-[280px] sm:w-[350px] sm:h-[350px] md:w-[400px] md:h-[400px]">
               <svg className="absolute inset-0 w-full h-full transform -rotate-90">
                 <circle
-                  cx="200"
-                  cy="200"
-                  r="140"
+                  cx="50%"
+                  cy="50%"
+                  r="45%"
                   stroke="currentColor"
                   strokeWidth="3"
                   fill="none"
                   className="text-muted/20"
                 />
                 <circle
-                  cx="200"
-                  cy="200"
-                  r="140"
+                  cx="50%"
+                  cy="50%"
+                  r="45%"
                   stroke="currentColor"
                   strokeWidth="4"
                   fill="none"
@@ -562,12 +562,12 @@ const PomodoroTimer = () => {
               
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <div 
-                  className="text-7xl font-mono font-light mb-2 tracking-tight"
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-mono font-light mb-1 sm:mb-2 tracking-tight"
                   style={{ color: currentPreset.color }}
                 >
                   {formatTime(timeLeft)}
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs sm:text-sm text-muted-foreground">
                   {Math.round(progress)}%
                 </div>
               </div>
@@ -575,11 +575,11 @@ const PomodoroTimer = () => {
           </div>
           
           {/* Controls */}
-          <div className="flex justify-center items-center gap-4">
+          <div className="flex justify-center items-center gap-3 sm:gap-4">
             <button
               onClick={toggleTimer}
               className={`
-                h-16 w-16 rounded-full transition-all duration-300
+                h-14 w-14 sm:h-16 sm:w-16 rounded-full transition-all duration-300
                 flex items-center justify-center relative
                 ${isRunning 
                   ? 'bg-foreground/10 hover:bg-foreground/15' 
@@ -590,11 +590,11 @@ const PomodoroTimer = () => {
             >
               {isRunning ? (
                 <div className="flex items-center justify-center gap-1 z-10">
-                  <div className="h-4 w-1 bg-foreground rounded-full" />
-                  <div className="h-4 w-1 bg-foreground rounded-full" />
+                  <div className="h-3.5 w-0.5 sm:h-4 sm:w-1 bg-foreground rounded-full" />
+                  <div className="h-3.5 w-0.5 sm:h-4 sm:w-1 bg-foreground rounded-full" />
                 </div>
               ) : (
-                <Play className="h-7 w-7 text-white ml-0.5 z-10" strokeWidth={2.5} />
+                <Play className="h-6 w-6 sm:h-7 sm:w-7 text-white ml-0.5 z-10" strokeWidth={2.5} />
               )}
             </button>
             
@@ -602,38 +602,38 @@ const PomodoroTimer = () => {
               onClick={resetTimer}
               variant="ghost"
               size="sm"
-              className="h-9 px-3 text-muted-foreground hover:text-foreground"
+              className="h-8 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm text-muted-foreground hover:text-foreground"
             >
-              <RotateCcw className="h-4 w-4 mr-1.5" />
-              Reset
+              <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-1.5" />
+              <span className="hidden sm:inline">Reset</span>
             </Button>
 
             <Button
               onClick={skipSession}
               variant="ghost"
               size="sm"
-              className="h-9 px-3 text-muted-foreground hover:text-foreground"
+              className="h-8 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm text-muted-foreground hover:text-foreground"
               disabled={timeLeft === currentSessionTime}
             >
-              <SkipForward className="h-4 w-4 mr-1.5" />
-              Skip
+              <SkipForward className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-1.5" />
+              <span className="hidden sm:inline">Skip</span>
             </Button>
           </div>
 
           {/* Description */}
           {currentPreset.description && (
-            <div className="text-center pt-4">
-              <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+            <div className="text-center pt-3 sm:pt-4">
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed px-2">
                 {currentPreset.description}
               </p>
             </div>
           )}
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Presets */}
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-muted-foreground px-1">Presets</h3>
+          <div className="space-y-1.5 sm:space-y-2">
+            <h3 className="text-xs sm:text-sm font-medium text-muted-foreground px-1">Presets</h3>
             <div className="space-y-1.5">
               {presets.map(preset => {
                 const defaultPreset = DEFAULT_PRESETS.find(dp => dp.id === preset.id);
@@ -723,7 +723,7 @@ const PomodoroTimer = () => {
           </div>
 
           <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-            <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Edit Timer Preset</DialogTitle>
               </DialogHeader>

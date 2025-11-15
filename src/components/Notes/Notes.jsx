@@ -302,67 +302,71 @@ const Notes = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-foreground mb-2">Notes</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-1 sm:mb-2">Notes</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {stats.total} notes • {stats.pinned} pinned • {stats.archived} archived
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={importNotes} className="gap-2">
-            <Upload className="h-4 w-4" />
-            Import
+        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+          <Button variant="outline" size="sm" onClick={importNotes} className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+            <Upload className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Import</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={exportNotes} className="gap-2">
-            <Download className="h-4 w-4" />
-            Export
+          <Button variant="outline" size="sm" onClick={exportNotes} className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+            <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Export</span>
           </Button>
-          <Button onClick={handleCreateNote} className="gap-2">
-            <Plus className="h-4 w-4" />
-            New Note
+          <Button onClick={handleCreateNote} size="sm" className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+            <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">New Note</span>
+            <span className="sm:hidden">New</span>
           </Button>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="space-y-3 sm:space-y-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="relative flex-1 min-w-0">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
             <Input
               placeholder="Search notes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-9 sm:pl-10 h-9 sm:h-10 text-sm"
             />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <Button
               variant={viewMode === VIEW_MODES.GRID ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode(VIEW_MODES.GRID)}
+              className="h-8 w-8 sm:h-9 sm:w-9 p-0"
             >
-              <Grid className="h-4 w-4" />
+              <Grid className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
             <Button
               variant={viewMode === VIEW_MODES.LIST ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode(VIEW_MODES.LIST)}
+              className="h-8 w-8 sm:h-9 sm:w-9 p-0"
             >
-              <List className="h-4 w-4" />
+              <List className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
           </div>
         </div>
 
         {/* Folders */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
           <Button
             variant={selectedFolder === null ? 'default' : 'outline'}
             size="sm"
             onClick={() => setSelectedFolder(null)}
+            className="text-xs sm:text-sm h-7 sm:h-8"
           >
             All Notes
           </Button>
@@ -372,21 +376,23 @@ const Notes = () => {
               variant={selectedFolder === folder.id ? 'default' : 'outline'}
               size="sm"
               onClick={() => setSelectedFolder(folder.id)}
-              className="gap-2"
+              className="gap-1 sm:gap-2 text-xs sm:text-sm h-7 sm:h-8"
               style={selectedFolder === folder.id ? { borderColor: folder.color } : {}}
             >
-              <Folder className="h-4 w-4" style={{ color: folder.color }} />
-              {folder.name} ({stats.byFolder.find(f => f.id === folder.id)?.count || 0})
+              <Folder className="h-3 w-3 sm:h-4 sm:w-4" style={{ color: folder.color }} />
+              <span className="hidden sm:inline">{folder.name} ({stats.byFolder.find(f => f.id === folder.id)?.count || 0})</span>
+              <span className="sm:hidden">{folder.name}</span>
             </Button>
           ))}
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowFolderDialog(true)}
-            className="gap-2"
+            className="gap-1 sm:gap-2 text-xs sm:text-sm h-7 sm:h-8"
           >
-            <FolderPlus className="h-4 w-4" />
-            New Folder
+            <FolderPlus className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">New Folder</span>
+            <span className="sm:hidden">New</span>
           </Button>
         </div>
 
@@ -567,7 +573,7 @@ const Notes = () => {
 
       {/* Note Dialog */}
       <Dialog open={isNoteDialogOpen} onOpenChange={setIsNoteDialogOpen}>
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Note</DialogTitle>
             <DialogDescription>
@@ -607,11 +613,11 @@ const Notes = () => {
                   value={selectedNote.content}
                   onChange={(e) => setSelectedNote({ ...selectedNote, content: e.target.value })}
                   placeholder="Write your note here..."
-                  className="w-full min-h-[400px] px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+                  className="w-full min-h-[300px] sm:min-h-[400px] px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block text-foreground">Color</label>
                   <div className="grid grid-cols-8 gap-2">
