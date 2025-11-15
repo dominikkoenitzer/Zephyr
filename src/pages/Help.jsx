@@ -42,7 +42,7 @@ function Help() {
   ];
 
   return (
-    <div className="w-full space-y-4 sm:space-y-6 md:space-y-8">
+    <div className="w-full space-y-4 sm:space-y-6 md:space-y-8 border border-border rounded-lg p-4 sm:p-6 bg-card">
       <div className="space-y-2 sm:space-y-4 animate-fade-in-up">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
           Help & Support
