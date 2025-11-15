@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { Checkbox } from '../components/ui/checkbox';
 import { Input } from '../components/ui/input';
 import { Select } from '../components/ui/select';
+import { TimePicker } from '../components/ui/time-picker';
 import { notificationService } from '../services/notificationService';
 
 function Settings() {
@@ -186,10 +187,9 @@ function Settings() {
                       <p className="text-sm font-medium text-foreground">Reminder Time</p>
                       <p className="text-xs text-muted-foreground">Daily reminder time</p>
                     </div>
-                    <Input
-                      type="time"
+                    <TimePicker
                       value={notificationSettings.journal.reminderTime}
-                      onChange={(e) => handleJournalSettingsChange({ reminderTime: e.target.value })}
+                      onChange={(time) => handleJournalSettingsChange({ reminderTime: time })}
                       className="w-32"
                     />
                   </div>
