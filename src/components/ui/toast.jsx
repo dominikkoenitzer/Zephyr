@@ -31,11 +31,11 @@ const Toast = ({ message, type = 'success', onClose, duration = 3000 }) => {
   return (
     <div
       className={cn(
-        'fixed top-4 right-4 z-[100] flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg backdrop-blur-sm',
+        'fixed bottom-4 right-4 z-[100] flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg backdrop-blur-sm',
         styles[type]
       )}
       style={{
-        animation: 'slideInRight 0.3s ease-out',
+        animation: 'slideInBottomRight 0.3s ease-out',
       }}
     >
       <Icon className="h-5 w-5 flex-shrink-0" />
