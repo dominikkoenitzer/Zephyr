@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { HelpCircle, Zap } from 'lucide-react';
+import { HelpCircle, Zap, Shield, FileText, Scale, Mail, BookOpen, AlertCircle } from 'lucide-react';
+import { Button } from '../components/ui/button';
 
 function Help() {
+  const [activeSection, setActiveSection] = useState('help');
+
   const faqs = [
     {
       question: "How does the Pomodoro timer work?",
@@ -18,11 +22,26 @@ function Help() {
     {
       question: "Does Zephyr work offline?",
       answer: "Yes! Zephyr is a Progressive Web App (PWA) that works completely offline. All your data is stored securely on your device."
+    },
+    {
+      question: "How do I clear all my data?",
+      answer: "You can clear all local storage data from the Settings page. Navigate to Settings > Data Management and click 'Clear All Local Storage'. This action cannot be undone and will reload the page."
+    },
+    {
+      question: "Is my data backed up?",
+      answer: "Currently, all data is stored locally on your device. We recommend regularly exporting important data if needed. Cloud sync features may be available in future updates."
     }
   ];
 
+  const sections = [
+    { id: 'help', label: 'Help & Support', icon: HelpCircle },
+    { id: 'privacy', label: 'Privacy Policy', icon: Shield },
+    { id: 'terms', label: 'Terms of Service', icon: FileText },
+    { id: 'legal', label: 'Legal', icon: Scale },
+  ];
+
   return (
-    <div className="container mx-auto max-w-4xl space-y-8 py-8">
+    <div className="container mx-auto max-w-6xl space-y-8 py-8 px-4">
       <div className="space-y-4 animate-fade-in-up">
         <h1 className="text-5xl font-bold text-foreground">
           Help & Support
@@ -30,6 +49,24 @@ function Help() {
         <p className="text-muted-foreground text-lg">
           Everything you need to master Zephyr
         </p>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="flex flex-wrap gap-2 border-b border-border/50 pb-4">
+        {sections.map((section) => {
+          const Icon = section.icon;
+          return (
+            <Button
+              key={section.id}
+              variant={activeSection === section.id ? 'default' : 'ghost'}
+              onClick={() => setActiveSection(section.id)}
+              className="gap-2"
+            >
+              <Icon className="h-4 w-4" />
+              {section.label}
+            </Button>
+          );
+        })}
       </div>
 
       {/* Quick Start Card */}
