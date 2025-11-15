@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { HelpCircle, Zap, Shield, FileText, Scale, AlertCircle } from 'lucide-react';
+import { HelpCircle, Zap, Shield, FileText, Scale, AlertCircle, Timer, Settings, BarChart3, WifiOff, Trash2, Cloud } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 
@@ -10,27 +10,45 @@ function Help() {
   const faqs = [
     {
       question: "How does the Pomodoro timer work?",
-      answer: "The Pomodoro Technique is a time management method that breaks work into focused intervals. In Zephyr, you work for 25 minutes (a 'pomodoro'), then take a 5-minute break. After completing 4 pomodoros, you get a longer 15-minute break. This cycle helps maintain focus, prevent burnout, and boost productivity. The timer automatically tracks your sessions and you can view your progress on the Dashboard."
+      answer: "The Pomodoro Technique is a time management method that breaks work into focused intervals. In Zephyr, you work for 25 minutes (a 'pomodoro'), then take a 5-minute break. After completing 4 pomodoros, you get a longer 15-minute break. This cycle helps maintain focus, prevent burnout, and boost productivity. The timer automatically tracks your sessions and you can view your progress on the Dashboard.",
+      icon: Timer,
+      iconColor: "text-blue-500",
+      bgColor: "bg-blue-500/10"
     },
     {
       question: "Can I customize timer durations?",
-      answer: "Yes! Zephyr offers multiple timer presets including Pomodoro, Deep Work, and Meditation. You can also create custom presets with your preferred work session, short break, and long break durations. Simply click the settings icon (⚙️) on the Focus Timer page to access preset options and create your own custom timer configuration that fits your workflow."
+      answer: "Yes! Zephyr offers multiple timer presets including Pomodoro, Deep Work, and Meditation. You can also create custom presets with your preferred work session, short break, and long break durations. Simply click the settings icon (⚙️) on the Focus Timer page to access preset options and create your own custom timer configuration that fits your workflow.",
+      icon: Settings,
+      iconColor: "text-purple-500",
+      bgColor: "bg-purple-500/10"
     },
     {
       question: "How do I track my progress?",
-      answer: "Your Dashboard provides comprehensive progress tracking. It shows your daily focus time, completed pomodoros, active and completed tasks, and completion rates. You'll also see a weekly focus time chart and upcoming tasks/events. All progress is automatically saved and displayed in real-time. Visit the Dashboard anytime to see your productivity metrics and trends."
+      answer: "Your Dashboard provides comprehensive progress tracking. It shows your daily focus time, completed pomodoros, active and completed tasks, and completion rates. You'll also see a weekly focus time chart and upcoming tasks/events. All progress is automatically saved and displayed in real-time. Visit the Dashboard anytime to see your productivity metrics and trends.",
+      icon: BarChart3,
+      iconColor: "text-green-500",
+      bgColor: "bg-green-500/10"
     },
     {
       question: "Does Zephyr work offline?",
-      answer: "Yes! Zephyr is a Progressive Web App (PWA) designed to work completely offline. All your data—tasks, calendar events, notes, journal entries, and timer sessions—is stored locally on your device using browser storage. You don't need an internet connection to use any features. This ensures your data remains private and accessible even without internet access."
+      answer: "Yes! Zephyr is a Progressive Web App (PWA) designed to work completely offline. All your data—tasks, calendar events, notes, journal entries, and timer sessions—is stored locally on your device using browser storage. You don't need an internet connection to use any features. This ensures your data remains private and accessible even without internet access.",
+      icon: WifiOff,
+      iconColor: "text-orange-500",
+      bgColor: "bg-orange-500/10"
     },
     {
       question: "How do I clear all my data?",
-      answer: "To clear all your data, go to Settings > Data Management. Click the 'Clear All Local Storage' button. You'll be asked to confirm this action as it permanently deletes all tasks, events, notes, journal entries, timer sessions, settings, and preferences. This action cannot be undone and will reload the page. Make sure to export any important data before clearing if needed."
+      answer: "To clear all your data, go to Settings > Data Management. Click the 'Clear All Local Storage' button. You'll be asked to confirm this action as it permanently deletes all tasks, events, notes, journal entries, timer sessions, settings, and preferences. This action cannot be undone and will reload the page. Make sure to export any important data before clearing if needed.",
+      icon: Trash2,
+      iconColor: "text-red-500",
+      bgColor: "bg-red-500/10"
     },
     {
       question: "Is my data backed up?",
-      answer: "Zephyr stores all data locally on your device—we don't have access to your data. Currently, there's no automatic cloud backup. To back up your data, you can manually export your notes and journal entries using the Import/Export buttons on those pages. We recommend regularly exporting important information if you want to preserve it. Cloud sync and automatic backup features may be available in future updates."
+      answer: "Zephyr stores all data locally on your device—we don't have access to your data. Currently, there's no automatic cloud backup. To back up your data, you can manually export your notes and journal entries using the Import/Export buttons on those pages. We recommend regularly exporting important information if you want to preserve it. Cloud sync and automatic backup features may be available in future updates.",
+      icon: Cloud,
+      iconColor: "text-cyan-500",
+      bgColor: "bg-cyan-500/10"
     }
   ];
 
@@ -121,24 +139,50 @@ function Help() {
 
           {/* FAQ Card */}
           <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <HelpCircle className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                </div>
                 Frequently Asked Questions
               </CardTitle>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-2">
+                Find answers to common questions about Zephyr
+              </p>
             </CardHeader>
             <CardContent>
-              <Accordion type="single" className="space-y-2 sm:space-y-3">
-                {faqs.map((faq, index) => (
-                  <AccordionItem key={index} value={`faq-${index}`}>
-                    <AccordionTrigger value={`faq-${index}`}>
-                      {faq.question}
-                    </AccordionTrigger>
-                    <AccordionContent value={`faq-${index}`}>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{faq.answer}</p>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
+              <Accordion type="single" className="space-y-3 sm:space-y-4">
+                {faqs.map((faq, index) => {
+                  const Icon = faq.icon;
+                  return (
+                    <AccordionItem key={index} value={`faq-${index}`} className="border border-border/50 rounded-xl bg-background/50 hover:bg-background/70 transition-all duration-200 hover:shadow-md overflow-hidden">
+                      <AccordionTrigger 
+                        value={`faq-${index}`}
+                        className="px-4 sm:px-5 py-4 sm:py-5 hover:no-underline group"
+                      >
+                        <div className="flex items-start gap-3 sm:gap-4 w-full text-left">
+                          <div className={`p-2.5 sm:p-3 rounded-lg ${faq.bgColor} group-hover:scale-110 transition-transform duration-200 flex-shrink-0`}>
+                            <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${faq.iconColor} transition-colors duration-200`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors duration-200 pr-2">
+                              {faq.question}
+                            </h3>
+                          </div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent value={`faq-${index}`} className="px-4 sm:px-5 pb-4 sm:pb-5">
+                        <div className="pl-0 sm:pl-14">
+                          <div className="pt-2 border-t border-border/30">
+                            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed pt-3">
+                              {faq.answer}
+                            </p>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
               </Accordion>
             </CardContent>
           </Card>
