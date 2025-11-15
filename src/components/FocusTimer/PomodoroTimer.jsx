@@ -673,19 +673,12 @@ const PomodoroTimer = () => {
               </Button>
             </div>
 
-            <div className="text-center space-y-4">
+            <div className="text-center">
               <p className="text-muted-foreground text-lg font-medium">
                 {isRunning 
                   ? (isBreak ? "Take a moment to recharge" : "Stay focused and maintain your flow")
                   : "Ready to begin"}
               </p>
-              {currentPreset.description && (
-                <div className="mt-6 p-4 rounded-xl bg-muted/30 border border-border/50">
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {currentPreset.description}
-                  </p>
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
