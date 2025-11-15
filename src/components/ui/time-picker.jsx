@@ -7,7 +7,7 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
   const [hours, setHours] = React.useState(null)
   const [minutes, setMinutes] = React.useState(null)
   const [period, setPeriod] = React.useState('PM')
-  const [isFocused, setIsFocused] = React.useState(false)
+  const [isOpen, setIsOpen] = React.useState(false)
 
   // Parse time value (HH:MM format) and convert to 12-hour
   React.useEffect(() => {
@@ -31,8 +31,8 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
       }
       setMinutes(min)
     } else {
-      setHours(null)
-      setMinutes(null)
+      setHours(12)
+      setMinutes(0)
       setPeriod('PM')
     }
   }, [value])
@@ -49,169 +49,186 @@ const TimePicker = React.forwardRef(({ className, value, onChange, ...props }, r
   }
 
   const handleHoursChange = (newHours) => {
-    const h = newHours === '' ? null : Math.max(1, Math.min(12, parseInt(newHours) || 1))
+    const h = Math.max(1, Math.min(12, parseInt(newHours) || 1))
     setHours(h)
-    const newValue = formatTime24(h, minutes, period)
+    const newValue = formatTime24(h, minutes ?? 0, period)
     onChange?.({ target: { value: newValue } })
   }
 
   const handleMinutesChange = (newMinutes) => {
-    const m = newMinutes === '' ? null : Math.max(0, Math.min(59, parseInt(newMinutes) || 0))
+    const m = Math.max(0, Math.min(59, parseInt(newMinutes) || 0))
     setMinutes(m)
-    const newValue = formatTime24(hours, m, period)
+    const newValue = formatTime24(hours ?? 12, m, period)
     onChange?.({ target: { value: newValue } })
   }
 
   const handlePeriodChange = (newPeriod) => {
     setPeriod(newPeriod)
-    const newValue = formatTime24(hours, minutes, newPeriod)
+    const newValue = formatTime24(hours ?? 12, minutes ?? 0, newPeriod)
     onChange?.({ target: { value: newValue } })
   }
 
+  const incrementHours = () => {
+    const newHours = (hours ?? 12) >= 12 ? 1 : (hours ?? 12) + 1
+    handleHoursChange(newHours)
+  }
+
+  const decrementHours = () => {
+    const newHours = (hours ?? 12) <= 1 ? 12 : (hours ?? 12) - 1
+    handleHoursChange(newHours)
+  }
+
+  const incrementMinutes = () => {
+    const newMinutes = (minutes ?? 0) >= 59 ? 0 : (minutes ?? 0) + 1
+    handleMinutesChange(newMinutes)
+  }
+
+  const decrementMinutes = () => {
+    const newMinutes = (minutes ?? 0) <= 0 ? 59 : (minutes ?? 0) - 1
+    handleMinutesChange(newMinutes)
+  }
+
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref?.current && !ref.current.contains(event.target)) {
+        setIsOpen(false)
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen, ref])
+
+  const displayTime = value && hours !== null && minutes !== null 
+    ? `${hours}:${String(minutes).padStart(2, '0')} ${period}`
+    : 'Select time'
+
   return (
-    <div className="relative">
-      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
-      
+    <div className="relative" ref={ref}>
       {/* Hidden native input for form compatibility */}
       <input
         type="time"
-        ref={ref}
         value={value}
         onChange={onChange}
         className="sr-only"
         {...props}
       />
       
-      {/* Custom time display when not focused */}
-      {!isFocused && value && hours !== null && minutes !== null && (
-        <div 
-          className="absolute left-11 top-1/2 -translate-y-1/2 text-foreground pointer-events-none z-10 text-base font-medium"
-        >
-          {hours}:{String(minutes).padStart(2, '0')} {period}
-        </div>
-      )}
-      
-      {/* Custom time picker */}
-      <div 
+      {/* Custom time picker button */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex items-center gap-3 w-full rounded-lg border-2 border-input bg-background pl-11 pr-4 py-2.5 h-12 text-base transition-all duration-200",
+          "flex h-11 w-full items-center justify-between rounded-lg border-2 border-input bg-background px-4 py-2.5 text-base font-medium text-foreground transition-all duration-200",
           "hover:border-primary/60 hover:bg-accent/30",
-          "focus-within:outline-none focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary",
-          value && !isFocused ? "text-transparent" : "",
+          "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
           className
         )}
-        onFocus={() => setIsFocused(true)}
-        onBlur={(e) => {
-          if (!e.currentTarget.contains(e.relatedTarget)) {
-            setIsFocused(false)
-          }
-        }}
-        tabIndex={0}
       >
-        {isFocused || !value ? (
-          <div className="flex items-center gap-2 flex-1">
-            {/* Hours */}
-            <div className="flex items-center gap-1">
-              <input
-                type="number"
-                value={hours ?? ''}
-                onChange={(e) => handleHoursChange(e.target.value)}
-                min={1}
-                max={12}
-                className="w-10 text-center bg-transparent border-none outline-none focus:outline-none font-medium text-foreground [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                onFocus={() => setIsFocused(true)}
-              />
-              <div className="flex flex-col">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-3 w-4 rounded-b-none rounded-t border-b border-input/50 hover:bg-accent"
-                  onClick={() => handleHoursChange((hours ?? 1) + 1)}
-                  disabled={hours !== null && hours >= 12}
-                >
-                  <ChevronUp className="h-2.5 w-2.5" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-3 w-4 rounded-t-none rounded-b hover:bg-accent"
-                  onClick={() => handleHoursChange((hours ?? 12) - 1)}
-                  disabled={hours !== null && hours <= 1}
-                >
-                  <ChevronDown className="h-2.5 w-2.5" />
-                </Button>
+        <div className="flex items-center gap-2">
+          <Clock className="h-4 w-4 text-muted-foreground" />
+          <span className={value ? "text-foreground" : "text-muted-foreground"}>
+            {displayTime}
+          </span>
+        </div>
+        <ChevronDown className={cn(
+          "h-4 w-4 text-muted-foreground transition-transform duration-200",
+          isOpen && "rotate-180"
+        )} />
+      </button>
+
+      {/* Dropdown picker */}
+      {isOpen && (
+        <div className="absolute z-50 mt-2 w-full rounded-lg border-2 border-border bg-background shadow-lg animate-in fade-in-0 zoom-in-95">
+          <div className="p-4">
+            <div className="flex items-center justify-center gap-4">
+              {/* Hours */}
+              <div className="flex flex-col items-center gap-2">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Hour</label>
+                <div className="flex flex-col items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-12 rounded-md hover:bg-accent"
+                    onClick={incrementHours}
+                  >
+                    <ChevronUp className="h-4 w-4" />
+                  </Button>
+                  <div className="flex items-center justify-center h-12 w-16 rounded-lg border-2 border-input bg-background text-lg font-semibold text-foreground">
+                    {hours ?? 12}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-12 rounded-md hover:bg-accent"
+                    onClick={decrementHours}
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
-            
-            <span className="text-muted-foreground text-lg font-medium">:</span>
-            
-            {/* Minutes */}
-            <div className="flex items-center gap-1">
-              <input
-                type="number"
-                value={minutes ?? ''}
-                onChange={(e) => handleMinutesChange(e.target.value)}
-                min={0}
-                max={59}
-                className="w-10 text-center bg-transparent border-none outline-none focus:outline-none font-medium text-foreground [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                onFocus={() => setIsFocused(true)}
-              />
-              <div className="flex flex-col">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-3 w-4 rounded-b-none rounded-t border-b border-input/50 hover:bg-accent"
-                  onClick={() => handleMinutesChange((minutes ?? 0) + 1)}
-                  disabled={minutes !== null && minutes >= 59}
-                >
-                  <ChevronUp className="h-2.5 w-2.5" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-3 w-4 rounded-t-none rounded-b hover:bg-accent"
-                  onClick={() => handleMinutesChange((minutes ?? 59) - 1)}
-                  disabled={minutes !== null && minutes <= 0}
-                >
-                  <ChevronDown className="h-2.5 w-2.5" />
-                </Button>
+
+              <span className="text-2xl font-semibold text-foreground pt-6">:</span>
+
+              {/* Minutes */}
+              <div className="flex flex-col items-center gap-2">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Min</label>
+                <div className="flex flex-col items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-12 rounded-md hover:bg-accent"
+                    onClick={incrementMinutes}
+                  >
+                    <ChevronUp className="h-4 w-4" />
+                  </Button>
+                  <div className="flex items-center justify-center h-12 w-16 rounded-lg border-2 border-input bg-background text-lg font-semibold text-foreground">
+                    {String(minutes ?? 0).padStart(2, '0')}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-12 rounded-md hover:bg-accent"
+                    onClick={decrementMinutes}
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
-            
-            {/* AM/PM */}
-            <div className="flex items-center gap-1 ml-1">
-              <button
-                type="button"
-                onClick={() => handlePeriodChange('AM')}
-                className={cn(
-                  "px-2 py-1 rounded text-sm font-medium transition-colors",
-                  period === 'AM' 
-                    ? "bg-primary text-primary-foreground" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                )}
-              >
-                AM
-              </button>
-              <button
-                type="button"
-                onClick={() => handlePeriodChange('PM')}
-                className={cn(
-                  "px-2 py-1 rounded text-sm font-medium transition-colors",
-                  period === 'PM' 
-                    ? "bg-primary text-primary-foreground" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                )}
-              >
-                PM
-              </button>
+
+              {/* AM/PM */}
+              <div className="flex flex-col items-center gap-2">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Period</label>
+                <div className="flex flex-col gap-1">
+                  <Button
+                    type="button"
+                    variant={period === 'AM' ? 'default' : 'ghost'}
+                    size="sm"
+                    className="h-10 w-14 rounded-md font-medium"
+                    onClick={() => handlePeriodChange('AM')}
+                  >
+                    AM
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={period === 'PM' ? 'default' : 'ghost'}
+                    size="sm"
+                    className="h-10 w-14 rounded-md font-medium"
+                    onClick={() => handlePeriodChange('PM')}
+                  >
+                    PM
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
-        ) : null}
-      </div>
+        </div>
+      )}
     </div>
   )
 })
