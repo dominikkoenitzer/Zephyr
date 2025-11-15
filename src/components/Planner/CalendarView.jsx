@@ -162,6 +162,17 @@ const CalendarView = () => {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   };
 
+  // Filter events based on search and category
+  const filteredEvents = useMemo(() => {
+    return events.filter(event => {
+      const matchesSearch = !searchQuery || 
+        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (event.description && event.description.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesCategory = filterCategory === 'all' || event.category === filterCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [events, searchQuery, filterCategory]);
+
   const getEventsForDate = useCallback((date) => {
     const dateKey = getDateKey(date);
     return filteredEvents.filter(event => {
@@ -178,17 +189,6 @@ const CalendarView = () => {
       return taskDate === dateKey && !task.completed;
     });
   }, [tasks]);
-
-  // Filter events based on search and category
-  const filteredEvents = useMemo(() => {
-    return events.filter(event => {
-      const matchesSearch = !searchQuery || 
-        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (event.description && event.description.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesCategory = filterCategory === 'all' || event.category === filterCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [events, searchQuery, filterCategory]);
 
   const handlePrevPeriod = () => {
     const newDate = new Date(currentDate);
