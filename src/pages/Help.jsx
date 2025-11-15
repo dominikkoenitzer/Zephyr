@@ -127,14 +127,14 @@ function Help() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Accordion type="single" className="space-y-2">
+              <Accordion type="single" className="space-y-3">
                 {faqs.map((faq, index) => (
                   <AccordionItem key={index} value={`faq-${index}`}>
                     <AccordionTrigger value={`faq-${index}`}>
                       {faq.question}
                     </AccordionTrigger>
                     <AccordionContent value={`faq-${index}`}>
-                      <p className="text-sm text-muted-foreground">{faq.answer}</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{faq.answer}</p>
                     </AccordionContent>
                   </AccordionItem>
                 ))}
