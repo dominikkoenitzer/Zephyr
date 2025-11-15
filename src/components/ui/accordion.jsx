@@ -13,7 +13,7 @@ const Accordion = ({ children, type = "single", className, ...props }) => {
 
   return (
     <AccordionContext.Provider value={{ openItems, setOpenItems, type }}>
-      <div className={cn("space-y-2", className)} {...props}>
+      <div className={cn("space-y-3", className)} {...props}>
         {children}
       </div>
     </AccordionContext.Provider>
@@ -22,7 +22,7 @@ const Accordion = ({ children, type = "single", className, ...props }) => {
 
 const AccordionItem = ({ children, value, className, ...props }) => {
   return (
-    <div className={cn("border border-border/50 rounded-lg bg-background/50 overflow-hidden", className)} {...props}>
+    <div className={cn("border border-border/50 rounded-lg bg-background/50 overflow-hidden shadow-sm", className)} {...props}>
       {React.Children.map(children, child => {
         if (React.isValidElement(child)) {
           return React.cloneElement(child, { value })
