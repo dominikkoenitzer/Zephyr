@@ -698,19 +698,34 @@ const PomodoroTimer = () => {
                     {isSelected && (
                       <CheckCircle2 className="h-5 w-5" style={{ color: preset.color }} />
                     )}
-                    {!isDefault && (
+                    <div className="flex items-center gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDeletePreset(preset.id);
+                          setEditingPreset(preset);
+                          setNewPresetName(preset.name);
+                          setIsSettingsOpen(true);
                         }}
                       >
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <Edit2 className="h-4 w-4 text-muted-foreground" />
                       </Button>
-                    )}
+                      {!isDefault && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePreset(preset.id);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      )}
+                    </div>
                   </button>
                 );
               })}
