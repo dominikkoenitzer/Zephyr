@@ -80,6 +80,7 @@ const TaskList = () => {
     
     setTasks(prev => [...prev, task]);
     setNewTask('');
+    setEditingTask(task);
   };
 
   const addFolder = () => {
@@ -674,7 +675,14 @@ const TaskList = () => {
               <div className="flex gap-2">
                 <Button 
                   onClick={() => {
-                    updateTask(editingTask.id, editingTask);
+                    const updates = {
+                      title: editingTask.title,
+                      description: editingTask.description || '',
+                      priority: editingTask.priority || 'medium',
+                      folderId: editingTask.folderId || null,
+                      dueDate: editingTask.dueDate ? (editingTask.dueDate.includes('T') ? editingTask.dueDate : new Date(editingTask.dueDate + 'T00:00:00').toISOString()) : null
+                    };
+                    updateTask(editingTask.id, updates);
                     setEditingTask(null);
                   }}
                   className="flex-1"
