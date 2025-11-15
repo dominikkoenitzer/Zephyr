@@ -1,19 +1,24 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+  },
   server: {
     port: 1000,
+    host: true,
   },
   build: {
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Vendor chunks
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+            if (id.includes('react-router') || id.includes('react-error-boundary')) {
+              return 'react-vendor';
+            }
+            if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react/jsx-runtime')) {
               return 'react-vendor';
             }
             if (id.includes('@radix-ui')) {
@@ -25,12 +30,20 @@ export default defineConfig({
             if (id.includes('@vercel/analytics')) {
               return 'analytics-vendor';
             }
-            // Other node_modules go into vendor chunk
+            if (id.includes('lucide-react') || id.includes('clsx') || id.includes('tailwind-merge') || id.includes('class-variance-authority')) {
+              return 'react-vendor';
+            }
             return 'vendor';
           }
         },
       },
     },
     chunkSizeWarningLimit: 600,
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
+    esbuildOptions: {
+      target: 'esnext',
+    },
   },
 })
