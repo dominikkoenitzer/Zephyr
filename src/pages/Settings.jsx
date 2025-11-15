@@ -265,24 +265,24 @@ function Settings() {
 
         {/* Data Management Card */}
         <Card className="glass-card border-none shadow-lg h-fit">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-3 text-xl">
-              <div className="p-2 rounded-lg bg-destructive/10">
-                <Trash2 className="h-5 w-5 text-destructive" />
+          <CardHeader className="pb-6">
+            <CardTitle className="flex items-center gap-4 text-2xl">
+              <div className="p-3 rounded-lg bg-destructive/10">
+                <Trash2 className="h-6 w-6 text-destructive" />
               </div>
               Data Management
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 rounded-xl bg-background/50 border border-border/50 space-y-4">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+          <CardContent className="space-y-6">
+            <div className="p-6 rounded-xl bg-background/50 border border-border/50 space-y-6">
+              <div className="flex items-start gap-4">
+                <AlertTriangle className="h-6 w-6 text-destructive mt-1 flex-shrink-0" />
                 <div className="flex-1">
-                  <h3 className="font-semibold text-foreground mb-1">Clear All Local Storage</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="font-bold text-lg text-foreground mb-2">Clear All Local Storage</h3>
+                  <p className="text-base text-muted-foreground mb-3">
                     This will permanently delete all data stored locally in your browser, including:
                   </p>
-                  <ul className="text-sm text-muted-foreground mt-2 ml-4 list-disc space-y-1">
+                  <ul className="text-base text-muted-foreground mt-3 ml-6 list-disc space-y-2">
                     <li>Tasks and task folders</li>
                     <li>Calendar events</li>
                     <li>Notes and journals</li>
@@ -291,23 +291,24 @@ function Settings() {
                     <li>Settings and preferences</li>
                     <li>Notification history</li>
                   </ul>
-                  <p className="text-sm text-destructive font-medium mt-3">
+                  <p className="text-base text-destructive font-semibold mt-4">
                     This action cannot be undone. The page will reload after clearing.
                   </p>
                 </div>
               </div>
-              <div className="flex justify-start">
+              <div className="flex justify-start pt-2">
                 <Button
                   type="button"
                   variant="destructive"
+                  size="lg"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     setShowClearDialog(true);
                   }}
-                  className="w-full sm:w-auto cursor-pointer"
+                  className="w-full sm:w-auto cursor-pointer text-base px-6 py-6"
                 >
-                  <Trash2 className="h-4 w-4 mr-2" />
+                  <Trash2 className="h-5 w-5 mr-2" />
                   Clear All Local Storage
                 </Button>
               </div>
