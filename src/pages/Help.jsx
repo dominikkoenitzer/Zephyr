@@ -10,27 +10,27 @@ function Help() {
   const faqs = [
     {
       question: "How does the Pomodoro timer work?",
-      answer: "The Pomodoro technique uses 25-minute focus sessions followed by 5-minute breaks. After 4 sessions, take a longer 15-minute break. This rhythm helps maintain peak productivity while preventing burnout."
+      answer: "The Pomodoro Technique is a time management method that breaks work into focused intervals. In Zephyr, you work for 25 minutes (a 'pomodoro'), then take a 5-minute break. After completing 4 pomodoros, you get a longer 15-minute break. This cycle helps maintain focus, prevent burnout, and boost productivity. The timer automatically tracks your sessions and you can view your progress on the Dashboard."
     },
     {
       question: "Can I customize timer durations?",
-      answer: "Absolutely! Click the settings icon on the Focus Timer page to adjust work sessions, short breaks, and long breaks to fit your personal rhythm."
+      answer: "Yes! Zephyr offers multiple timer presets including Pomodoro, Deep Work, and Meditation. You can also create custom presets with your preferred work session, short break, and long break durations. Simply click the settings icon (⚙️) on the Focus Timer page to access preset options and create your own custom timer configuration that fits your workflow."
     },
     {
       question: "How do I track my progress?",
-      answer: "Your Dashboard displays real-time stats including focus time, completed pomodoros, and task completion rates. All data is saved locally on your device."
+      answer: "Your Dashboard provides comprehensive progress tracking. It shows your daily focus time, completed pomodoros, active and completed tasks, and completion rates. You'll also see a weekly focus time chart and upcoming tasks/events. All progress is automatically saved and displayed in real-time. Visit the Dashboard anytime to see your productivity metrics and trends."
     },
     {
       question: "Does Zephyr work offline?",
-      answer: "Yes! Zephyr is a Progressive Web App (PWA) that works completely offline. All your data is stored securely on your device."
+      answer: "Yes! Zephyr is a Progressive Web App (PWA) designed to work completely offline. All your data—tasks, calendar events, notes, journal entries, and timer sessions—is stored locally on your device using browser storage. You don't need an internet connection to use any features. This ensures your data remains private and accessible even without internet access."
     },
     {
       question: "How do I clear all my data?",
-      answer: "You can clear all local storage data from the Settings page. Navigate to Settings > Data Management and click 'Clear All Local Storage'. This action cannot be undone and will reload the page."
+      answer: "To clear all your data, go to Settings > Data Management. Click the 'Clear All Local Storage' button. You'll be asked to confirm this action as it permanently deletes all tasks, events, notes, journal entries, timer sessions, settings, and preferences. This action cannot be undone and will reload the page. Make sure to export any important data before clearing if needed."
     },
     {
       question: "Is my data backed up?",
-      answer: "Currently, all data is stored locally on your device. We recommend regularly exporting important data if needed. Cloud sync features may be available in future updates."
+      answer: "Zephyr stores all data locally on your device—we don't have access to your data. Currently, there's no automatic cloud backup. To back up your data, you can manually export your notes and journal entries using the Import/Export buttons on those pages. We recommend regularly exporting important information if you want to preserve it. Cloud sync and automatic backup features may be available in future updates."
     }
   ];
 
