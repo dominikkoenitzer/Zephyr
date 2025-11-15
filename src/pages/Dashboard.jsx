@@ -211,29 +211,29 @@ function Dashboard() {
     : 0;
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-foreground mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back! Here's what's happening today.</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-1 sm:mb-2">Dashboard</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Welcome back! Here's what's happening today.</p>
         </div>
       </div>
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-4">Quick Access</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4">Quick Access</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (
               <Link key={action.name} to={action.href} className="block">
                 <Card className="border hover:border-primary/50 hover:shadow-md transition-all duration-200 cursor-pointer group h-full">
-                  <CardContent className="flex flex-col items-center justify-center p-6 h-full">
-                    <div className={`mb-3 p-3 rounded-lg bg-accent/50 group-hover:bg-accent transition-colors ${action.color}`}>
-                      <Icon className="h-6 w-6" />
+                  <CardContent className="flex flex-col items-center justify-center p-4 sm:p-6 h-full">
+                    <div className={`mb-2 sm:mb-3 p-2 sm:p-3 rounded-lg bg-accent/50 group-hover:bg-accent transition-colors ${action.color}`}>
+                      <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
-                    <span className="text-sm font-medium text-foreground text-center">{action.name}</span>
+                    <span className="text-xs sm:text-sm font-medium text-foreground text-center">{action.name}</span>
                   </CardContent>
                 </Card>
               </Link>
@@ -244,63 +244,63 @@ function Dashboard() {
 
       {/* Stats Grid */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-4">Today's Overview</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4">Today's Overview</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <Card className="border hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 rounded-lg bg-blue-500/10">
-                  <Clock className="h-5 w-5 text-blue-500" />
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="p-1.5 sm:p-2 rounded-lg bg-blue-500/10">
+                  <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Focus Time</p>
-                <p className="text-3xl font-bold text-foreground">{formatTime(stats.todayFocusTime)}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Focus Time</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">{formatTime(stats.todayFocusTime)}</p>
                 <p className="text-xs text-muted-foreground">{stats.todaySessions} session{stats.todaySessions !== 1 ? 's' : ''}</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 rounded-lg bg-orange-500/10">
-                  <Coffee className="h-5 w-5 text-orange-500" />
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="p-1.5 sm:p-2 rounded-lg bg-orange-500/10">
+                  <Coffee className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Pomodoros</p>
-                <p className="text-3xl font-bold text-foreground">{stats.totalPomodoros}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Pomodoros</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">{stats.totalPomodoros}</p>
                 <p className="text-xs text-muted-foreground">Total completed</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 rounded-lg bg-green-500/10">
-                  <CheckSquare className="h-5 w-5 text-green-500" />
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="p-1.5 sm:p-2 rounded-lg bg-green-500/10">
+                  <CheckSquare className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Active Tasks</p>
-                <p className="text-3xl font-bold text-foreground">{stats.activeTasks}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Active Tasks</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">{stats.activeTasks}</p>
                 <p className="text-xs text-muted-foreground">{stats.completedTasks} completed</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 rounded-lg bg-purple-500/10">
-                  <Target className="h-5 w-5 text-purple-500" />
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="p-1.5 sm:p-2 rounded-lg bg-purple-500/10">
+                  <Target className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Completion Rate</p>
-                <p className="text-3xl font-bold text-foreground">{completionRate}%</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Completion Rate</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">{completionRate}%</p>
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <TrendingUp className="h-3 w-3" />
                   Task completion
@@ -312,15 +312,15 @@ function Dashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Focus Chart */}
         <Card className="border lg:col-span-2">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg font-semibold">Weekly Focus Time</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">Your focus sessions over the past 7 days</p>
+          <CardHeader className="pb-3 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg font-semibold">Weekly Focus Time</CardTitle>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">Your focus sessions over the past 7 days</p>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={200} className="sm:h-[250px]">
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorFocus" x1="0" y1="0" x2="0" y2="1">
@@ -355,15 +355,15 @@ function Dashboard() {
 
         {/* Upcoming Tasks */}
         <Card className="border">
-          <CardHeader className="flex flex-row items-center justify-between pb-4">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 sm:pb-4">
             <div>
-              <CardTitle className="text-lg font-semibold">Upcoming Tasks</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">Your next priorities</p>
+              <CardTitle className="text-base sm:text-lg font-semibold">Upcoming Tasks</CardTitle>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">Your next priorities</p>
             </div>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-8 px-3 text-xs"
+              className="h-7 sm:h-8 px-2 sm:px-3 text-xs"
               onClick={() => navigate('/tasks')}
             >
               View all
@@ -371,14 +371,14 @@ function Dashboard() {
           </CardHeader>
           <CardContent>
             {recentTasks.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {recentTasks.slice(0, 4).map((task) => (
-                  <div key={task.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent/50 transition-colors">
-                    <CheckSquare className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <div key={task.id} className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-accent/50 transition-colors">
+                    <CheckSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{task.title}</p>
+                      <p className="text-xs sm:text-sm font-medium text-foreground truncate">{task.title}</p>
                       {task.dueDate && (
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground mt-0.5 sm:mt-1">
                           {formatDate(task.dueDate)}
                         </p>
                       )}
@@ -387,12 +387,12 @@ function Dashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <CheckSquare className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground mb-4">No active tasks</p>
+              <div className="text-center py-6 sm:py-8">
+                <CheckSquare className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground/50 mx-auto mb-2 sm:mb-3" />
+                <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">No active tasks</p>
                 <Link to="/tasks">
-                  <Button variant="outline" size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
+                  <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+                    <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                     Add task
                   </Button>
                 </Link>
@@ -403,18 +403,18 @@ function Dashboard() {
       </div>
 
       {/* Bottom Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Upcoming Events */}
         <Card className="border">
-          <CardHeader className="flex flex-row items-center justify-between pb-4">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 sm:pb-4">
             <div>
-              <CardTitle className="text-lg font-semibold">Upcoming Events</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">What's coming up</p>
+              <CardTitle className="text-base sm:text-lg font-semibold">Upcoming Events</CardTitle>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">What's coming up</p>
             </div>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-8 px-3 text-xs"
+              className="h-7 sm:h-8 px-2 sm:px-3 text-xs"
               onClick={() => navigate('/calendar')}
             >
               View all
@@ -422,13 +422,13 @@ function Dashboard() {
           </CardHeader>
           <CardContent>
             {upcomingEvents.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {upcomingEvents.slice(0, 5).map((event) => (
-                  <div key={event.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent/50 transition-colors">
-                    <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <div key={event.id} className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-accent/50 transition-colors">
+                    <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{event.title}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-xs sm:text-sm font-medium text-foreground truncate">{event.title}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 sm:mt-1">
                         {formatDate(event.date)}
                         {event.time && ` • ${event.time}`}
                       </p>
@@ -437,12 +437,12 @@ function Dashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <Calendar className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground mb-4">No upcoming events</p>
+              <div className="text-center py-6 sm:py-8">
+                <Calendar className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground/50 mx-auto mb-2 sm:mb-3" />
+                <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">No upcoming events</p>
                 <Link to="/calendar">
-                  <Button variant="outline" size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
+                  <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+                    <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                     Add event
                   </Button>
                 </Link>
@@ -453,12 +453,12 @@ function Dashboard() {
 
         {/* Weekly Summary */}
         <Card className="border">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg font-semibold">This Week</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">Your weekly progress summary</p>
+          <CardHeader className="pb-3 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg font-semibold">This Week</CardTitle>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">Your weekly progress summary</p>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {(() => {
                 const sessions = localStorageService.getFocusSessions() || [];
                 const tasks = localStorageService.getTasks() || [];
@@ -491,26 +491,26 @@ function Dashboard() {
 
                 return (
                   <>
-                    <div className="flex items-center justify-between p-4 rounded-lg bg-accent/30">
-                      <div className="flex items-center gap-3">
-                        <Clock className="h-5 w-5 text-blue-500" />
-                        <span className="text-sm font-medium text-foreground">Focus Time</span>
+                    <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-accent/30">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+                        <span className="text-xs sm:text-sm font-medium text-foreground">Focus Time</span>
                       </div>
-                      <span className="text-lg font-semibold text-foreground">{formatTime(Math.round(totalFocusTime))}</span>
+                      <span className="text-base sm:text-lg font-semibold text-foreground">{formatTime(Math.round(totalFocusTime))}</span>
                     </div>
-                    <div className="flex items-center justify-between p-4 rounded-lg bg-accent/30">
-                      <div className="flex items-center gap-3">
-                        <Timer className="h-5 w-5 text-orange-500" />
-                        <span className="text-sm font-medium text-foreground">Sessions</span>
+                    <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-accent/30">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <Timer className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
+                        <span className="text-xs sm:text-sm font-medium text-foreground">Sessions</span>
                       </div>
-                      <span className="text-lg font-semibold text-foreground">{weekSessions.length}</span>
+                      <span className="text-base sm:text-lg font-semibold text-foreground">{weekSessions.length}</span>
                     </div>
-                    <div className="flex items-center justify-between p-4 rounded-lg bg-accent/30">
-                      <div className="flex items-center gap-3">
-                        <CheckSquare className="h-5 w-5 text-green-500" />
-                        <span className="text-sm font-medium text-foreground">Tasks Completed</span>
+                    <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-accent/30">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <CheckSquare className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+                        <span className="text-xs sm:text-sm font-medium text-foreground">Tasks Completed</span>
                       </div>
-                      <span className="text-lg font-semibold text-foreground">{weekTasks.length}</span>
+                      <span className="text-base sm:text-lg font-semibold text-foreground">{weekTasks.length}</span>
                     </div>
                   </>
                 );
