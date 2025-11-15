@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Play, SkipForward, Settings, Clock, Target, Maximize2, X, 
   RotateCcw, Plus, Trash2, Save, Edit2, Zap, BookOpen,
@@ -82,7 +82,24 @@ const FullScreenMode = ({
   formatTime,
   preset
 }) => {
-  const circumference = 2 * Math.PI * 200;
+  const fullScreenContainerRef = useRef(null);
+  const [circumference, setCircumference] = useState(2 * Math.PI * 225);
+
+  useEffect(() => {
+    const updateCircumference = () => {
+      if (fullScreenContainerRef.current) {
+        const containerSize = fullScreenContainerRef.current.offsetWidth;
+        // Radius is 45% of container
+        const radius = containerSize * 0.45;
+        setCircumference(2 * Math.PI * radius);
+      }
+    };
+
+    updateCircumference();
+    window.addEventListener('resize', updateCircumference);
+    return () => window.removeEventListener('resize', updateCircumference);
+  }, []);
+
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
@@ -113,7 +130,7 @@ const FullScreenMode = ({
           )}
         </div>
 
-        <div className="relative w-[280px] h-[280px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px]">
+        <div ref={fullScreenContainerRef} className="relative w-[280px] h-[280px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px]">
           <svg className="absolute inset-0 w-full h-full transform -rotate-90">
             <circle
               cx="50%"
@@ -214,6 +231,8 @@ const PomodoroTimer = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [editingPreset, setEditingPreset] = useState(null);
   const [newPresetName, setNewPresetName] = useState('');
+  const timerContainerRef = useRef(null);
+  const [circumference, setCircumference] = useState(2 * Math.PI * 180);
 
   const currentPreset = presets.find(p => p.id === selectedPreset) || presets[0];
   const workTime = currentPreset.workTime;
@@ -379,6 +398,22 @@ const PomodoroTimer = () => {
     };
   }, [isFullScreen]);
 
+  // Calculate circumference based on container size
+  useEffect(() => {
+    const updateCircumference = () => {
+      if (timerContainerRef.current) {
+        const containerSize = timerContainerRef.current.offsetWidth;
+        // Radius is 45% of container, so calculate: 2 * PI * (containerSize * 0.45)
+        const radius = containerSize * 0.45;
+        setCircumference(2 * Math.PI * radius);
+      }
+    };
+
+    updateCircumference();
+    window.addEventListener('resize', updateCircumference);
+    return () => window.removeEventListener('resize', updateCircumference);
+  }, []);
+
   const toggleTimer = () => {
     setIsRunning(!isRunning);
   };
@@ -400,7 +435,6 @@ const PomodoroTimer = () => {
     ? (sessionsCompleted % sessionsUntilLongBreak === 0 ? longBreakTime : breakTime)
     : workTime;
   const progress = ((currentSessionTime - timeLeft) / currentSessionTime) * 100;
-  const circumference = 2 * Math.PI * 160;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
   const totalFocusTime = Math.floor((sessionsCompleted * workTime) / 60);
 
@@ -532,7 +566,7 @@ const PomodoroTimer = () => {
 
           {/* Timer */}
           <div className="flex justify-center items-center py-6 sm:py-8 md:py-12">
-            <div className="relative w-[280px] h-[280px] sm:w-[350px] sm:h-[350px] md:w-[400px] md:h-[400px]">
+            <div ref={timerContainerRef} className="relative w-[280px] h-[280px] sm:w-[350px] sm:h-[350px] md:w-[400px] md:h-[400px]">
               <svg className="absolute inset-0 w-full h-full transform -rotate-90">
                 <circle
                   cx="50%"
