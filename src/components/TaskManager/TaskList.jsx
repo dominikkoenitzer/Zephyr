@@ -164,8 +164,14 @@ const TaskList = () => {
           break;
         }
         case 'dueDate': {
-          const dateA = a.dueDate ? new Date(a.dueDate) : new Date(0);
-          const dateB = b.dueDate ? new Date(b.dueDate) : new Date(0);
+          // Parse YYYY-MM-DD format as local date to avoid timezone issues
+          const parseLocalDate = (dateString) => {
+            if (!dateString) return new Date(0);
+            const parts = dateString.split('T')[0].split('-').map(Number);
+            return new Date(parts[0], parts[1] - 1, parts[2]);
+          };
+          const dateA = parseLocalDate(a.dueDate);
+          const dateB = parseLocalDate(b.dueDate);
           comparison = dateA - dateB;
           break;
         }
@@ -210,13 +216,22 @@ const TaskList = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return null;
-    const date = new Date(dateString);
+    // Parse YYYY-MM-DD format as local date to avoid timezone issues
+    const dateParts = dateString.split('T')[0].split('-').map(Number);
+    const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined });
   };
 
   const isOverdue = (dueDate) => {
     if (!dueDate) return false;
-    return new Date(dueDate) < new Date() && new Date(dueDate).toDateString() !== new Date().toDateString();
+    // Parse YYYY-MM-DD format as local date to avoid timezone issues
+    const dateParts = dueDate.split('T')[0].split('-').map(Number);
+    const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const due = new Date(date);
+    due.setHours(0, 0, 0, 0);
+    return due < today;
   };
 
   return (
@@ -691,8 +706,8 @@ const TaskList = () => {
                       folderId: editingTask.folderId || null,
                       dueDate: editingTask.dueDate 
                         ? (editingTask.dueDate.includes('T') 
-                            ? editingTask.dueDate 
-                            : new Date(editingTask.dueDate + 'T00:00:00').toISOString())
+                            ? editingTask.dueDate.split('T')[0] 
+                            : editingTask.dueDate)
                         : null
                     };
                     
