@@ -189,7 +189,7 @@ function Settings() {
                     </div>
                     <TimePicker
                       value={notificationSettings.journal.reminderTime}
-                      onChange={(time) => handleJournalSettingsChange({ reminderTime: time })}
+                      onChange={(e) => handleJournalSettingsChange({ reminderTime: e.target.value })}
                       className="w-32"
                     />
                   </div>
