@@ -1,11 +1,8 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Bell, Zap, Volume2, CheckSquare, Calendar, BookOpen, Timer } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { Bell, Volume2, CheckSquare, Calendar, Timer } from 'lucide-react';
 import { Checkbox } from '../components/ui/checkbox';
-import { Input } from '../components/ui/input';
 import { Select } from '../components/ui/select';
-import { TimePicker } from '../components/ui/time-picker';
 import { notificationService } from '../services/notificationService';
 
 function Settings() {
@@ -33,37 +30,35 @@ function Settings() {
     });
   };
 
-  const handleJournalSettingsChange = (updates) => {
-    handleNotificationSettingsChange({
-      journal: { ...notificationSettings.journal, ...updates }
-    });
-  };
 
   return (
-    <div className="container mx-auto max-w-4xl space-y-8 py-8">
-      <div className="space-y-4 animate-fade-in-up">
-        <h1 className="text-5xl font-bold text-foreground">
+    <div className="container mx-auto max-w-5xl space-y-6 py-8 px-4">
+      {/* Header */}
+      <div className="space-y-2 animate-fade-in-up">
+        <h1 className="text-4xl font-bold text-foreground">
           Settings
         </h1>
-        <p className="text-muted-foreground text-lg">
-          Customize your Zephyr experience
+        <p className="text-muted-foreground">
+          Manage your notification preferences and app settings
         </p>
       </div>
 
       {/* Notifications Card */}
-      <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5 text-primary" />
+      <Card className="glass-card border-none animate-fade-in-up shadow-lg" style={{ animationDelay: '0.1s' }}>
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-3 text-xl">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Bell className="h-5 w-5 text-primary" />
+            </div>
             Notifications
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Global Settings */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-background/50 rounded-xl">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-background/50 border border-border/50 hover:bg-background/70 transition-colors">
               <div className="flex-1">
-                <h3 className="font-medium text-foreground">Enable Notifications</h3>
+                <h3 className="font-semibold text-foreground mb-1">Enable Notifications</h3>
                 <p className="text-sm text-muted-foreground">Master switch for all notifications</p>
               </div>
               <Checkbox
@@ -72,13 +67,13 @@ function Settings() {
               />
             </div>
             
-            <div className="flex items-center justify-between p-4 bg-background/50 rounded-xl">
-              <div className="flex-1">
-                <h3 className="font-medium text-foreground flex items-center gap-2">
-                  <Volume2 className="h-4 w-4" />
-                  Notification Sound
-                </h3>
-                <p className="text-sm text-muted-foreground">Play sound when notifications arrive</p>
+            <div className="flex items-center justify-between p-4 rounded-xl bg-background/50 border border-border/50 hover:bg-background/70 transition-colors">
+              <div className="flex-1 flex items-center gap-3">
+                <Volume2 className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <h3 className="font-semibold text-foreground mb-1">Notification Sound</h3>
+                  <p className="text-sm text-muted-foreground">Play sound when notifications arrive</p>
+                </div>
               </div>
               <Checkbox
                 checked={notificationSettings.soundEnabled}
@@ -87,167 +82,132 @@ function Settings() {
             </div>
           </div>
 
-          <div className="border-t border-border pt-4 space-y-4">
-            <h3 className="font-semibold text-foreground text-sm">Notification Types</h3>
+          {/* Notification Types */}
+          <div className="border-t border-border/50 pt-6 space-y-4">
+            <h3 className="font-semibold text-foreground text-base mb-4">Notification Types</h3>
             
             {/* Task Notifications */}
-            <div className="space-y-3 p-4 bg-background/30 rounded-xl border border-border">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <CheckSquare className="h-4 w-4 text-blue-500" />
-                  <h4 className="font-medium text-foreground">Task Notifications</h4>
+            <div className="relative rounded-xl border border-border/50 bg-background/30 hover:bg-background/40 transition-colors">
+              <div className="relative p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                      <CheckSquare className="h-5 w-5 text-blue-500" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Task Notifications</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">Stay on top of your tasks</p>
+                    </div>
+                  </div>
+                  <Checkbox
+                    checked={notificationSettings.tasks.enabled}
+                    onCheckedChange={(checked) => handleTaskSettingsChange({ enabled: checked })}
+                  />
                 </div>
-                <Checkbox
-                  checked={notificationSettings.tasks.enabled}
-                  onCheckedChange={(checked) => handleTaskSettingsChange({ enabled: checked })}
-                />
+                {notificationSettings.tasks.enabled && (
+                  <div className="mt-4 pt-4 border-t border-border/50 space-y-3">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-foreground mb-1">Due Date Reminder</p>
+                        <p className="text-xs text-muted-foreground">Days before due date</p>
+                      </div>
+                      <Select
+                        value={String(notificationSettings.tasks.dueDateReminder)}
+                        onChange={(e) => handleTaskSettingsChange({ dueDateReminder: parseInt(e.target.value) })}
+                        className="w-32"
+                      >
+                        <option value="1">1 day</option>
+                        <option value="2">2 days</option>
+                        <option value="3">3 days</option>
+                        <option value="7">1 week</option>
+                      </Select>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-foreground mb-1">Overdue Tasks</p>
+                        <p className="text-xs text-muted-foreground">Notify about overdue tasks</p>
+                      </div>
+                      <Checkbox
+                        checked={notificationSettings.tasks.overdue}
+                        onCheckedChange={(checked) => handleTaskSettingsChange({ overdue: checked })}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
-              {notificationSettings.tasks.enabled && (
-                <div className="space-y-3 pl-6 border-l-2 border-border">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Due Date Reminder</p>
-                      <p className="text-xs text-muted-foreground">Days before due date</p>
-                    </div>
-                    <Select
-                      value={String(notificationSettings.tasks.dueDateReminder)}
-                      onChange={(e) => handleTaskSettingsChange({ dueDateReminder: parseInt(e.target.value) })}
-                      className="w-32"
-                    >
-                      <option value="1">1 day</option>
-                      <option value="2">2 days</option>
-                      <option value="3">3 days</option>
-                      <option value="7">1 week</option>
-                    </Select>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Overdue Tasks</p>
-                      <p className="text-xs text-muted-foreground">Notify about overdue tasks</p>
-                    </div>
-                    <Checkbox
-                      checked={notificationSettings.tasks.overdue}
-                      onCheckedChange={(checked) => handleTaskSettingsChange({ overdue: checked })}
-                    />
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Event Notifications */}
-            <div className="space-y-3 p-4 bg-background/30 rounded-xl border border-border">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-orange-500" />
-                  <h4 className="font-medium text-foreground">Event Notifications</h4>
-                </div>
-                <Checkbox
-                  checked={notificationSettings.events.enabled}
-                  onCheckedChange={(checked) => handleEventSettingsChange({ enabled: checked })}
-                />
-              </div>
-              {notificationSettings.events.enabled && (
-                <div className="space-y-3 pl-6 border-l-2 border-border">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Reminder Time</p>
-                      <p className="text-xs text-muted-foreground">Min before event starts</p>
+            <div className="relative rounded-xl border border-border/50 bg-background/30 hover:bg-background/40 transition-colors">
+              <div className="relative p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                      <Calendar className="h-5 w-5 text-orange-500" />
                     </div>
-                    <Select
-                      value={String(notificationSettings.events.reminderTime)}
-                      onChange={(e) => handleEventSettingsChange({ reminderTime: parseInt(e.target.value) })}
-                      className="w-32"
-                    >
-                      <option value="5">5 min</option>
-                      <option value="15">15 min</option>
-                      <option value="30">30 min</option>
-                      <option value="60">1 hour</option>
-                    </Select>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Journal Notifications */}
-            <div className="space-y-3 p-4 bg-background/30 rounded-xl border border-border">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4 text-purple-500" />
-                  <h4 className="font-medium text-foreground">Journal Reminders</h4>
-                </div>
-                <Checkbox
-                  checked={notificationSettings.journal.enabled}
-                  onCheckedChange={(checked) => handleJournalSettingsChange({ enabled: checked })}
-                />
-              </div>
-              {notificationSettings.journal.enabled && (
-                <div className="space-y-3 pl-6 border-l-2 border-border">
-                  <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-foreground">Reminder Time</p>
-                      <p className="text-xs text-muted-foreground">Daily reminder time</p>
+                      <h4 className="font-semibold text-foreground">Event Notifications</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">Never miss an important event</p>
                     </div>
-                    <TimePicker
-                      value={notificationSettings.journal.reminderTime}
-                      onChange={(e) => handleJournalSettingsChange({ reminderTime: e.target.value })}
-                      className="w-32"
-                    />
                   </div>
+                  <Checkbox
+                    checked={notificationSettings.events.enabled}
+                    onCheckedChange={(checked) => handleEventSettingsChange({ enabled: checked })}
+                  />
                 </div>
-              )}
+                {notificationSettings.events.enabled && (
+                  <div className="mt-4 pt-4 border-t border-border/50">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-foreground mb-1">Reminder Time</p>
+                        <p className="text-xs text-muted-foreground">Minutes before event starts</p>
+                      </div>
+                      <Select
+                        value={String(notificationSettings.events.reminderTime)}
+                        onChange={(e) => handleEventSettingsChange({ reminderTime: parseInt(e.target.value) })}
+                        className="w-32"
+                      >
+                        <option value="5">5 min</option>
+                        <option value="15">15 min</option>
+                        <option value="30">30 min</option>
+                        <option value="60">1 hour</option>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Timer Notifications */}
-            <div className="space-y-3 p-4 bg-background/30 rounded-xl border border-border">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Timer className="h-4 w-4 text-green-500" />
-                  <h4 className="font-medium text-foreground">Timer Notifications</h4>
+            <div className="relative rounded-xl border border-border/50 bg-background/30 hover:bg-background/40 transition-colors">
+              <div className="relative p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-green-500/10 border border-green-500/20">
+                      <Timer className="h-5 w-5 text-green-500" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Timer Notifications</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">Alerts when sessions complete</p>
+                    </div>
+                  </div>
+                  <Checkbox
+                    checked={notificationSettings.timer.enabled}
+                    onCheckedChange={(checked) => handleNotificationSettingsChange({ 
+                      timer: { ...notificationSettings.timer, enabled: checked }
+                    })}
+                  />
                 </div>
-                <Checkbox
-                  checked={notificationSettings.timer.enabled}
-                  onCheckedChange={(checked) => handleNotificationSettingsChange({ 
-                    timer: { ...notificationSettings.timer, enabled: checked }
-                  })}
-                />
+                {notificationSettings.timer.enabled && (
+                  <div className="mt-4 pt-4 border-t border-border/50">
+                    <p className="text-sm text-muted-foreground">Get notified when your focus timer sessions complete</p>
+                  </div>
+                )}
               </div>
-              {notificationSettings.timer.enabled && (
-                <div className="pl-6 border-l-2 border-border">
-                  <p className="text-xs text-muted-foreground">Get notified when timer sessions complete</p>
-                </div>
-              )}
             </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* About Card */}
-      <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-primary" />
-            About Zephyr
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <p className="text-muted-foreground">
-              <strong className="text-foreground">Zephyr</strong> is a next-generation productivity platform 
-              that helps you achieve deep focus through Pomodoro sessions, intelligent task management, 
-              and mindful planning.
-            </p>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="font-semibold">Version:</span>
-              <span>1.0.0</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground font-semibold">Tagline:</span>
-              <span className="italic text-primary">&ldquo;Flow Through Focus&rdquo;</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
     </div>
   );
 }
