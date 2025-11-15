@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { 
-  Play, Pause, SkipForward, Settings, Award, Clock, Target, Maximize2, X, 
+  Play, Pause, SkipForward, Settings, Clock, Target, Maximize2, X, 
   RotateCcw, Plus, Trash2, Save, Edit2, Sparkles, Zap, Coffee, BookOpen,
   Music, Timer as TimerIcon, CheckCircle2, Heart
 } from 'lucide-react';
@@ -11,7 +11,6 @@ import { Input } from '../ui/input';
 import { Select } from '../ui/select';
 import { CustomNumberInput } from '../ui/custom-number-input';
 import { localStorageService } from '../../services/localStorage';
-import { achievementSoundService } from '../../services/achievementSound';
 
 const DEFAULT_PRESETS = [
   {
@@ -71,27 +70,6 @@ const DEFAULT_PRESETS = [
   }
 ];
 
-const CompletionIndicator = ({ show, pomodorosCompleted }) => {
-  if (!show) return null;
-  
-  return (
-    <div className="fixed bottom-6 right-6 z-50 pointer-events-none animate-fade-in-up">
-      <div className="bg-gradient-to-br from-primary/95 to-primary/80 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border-2 border-primary/30">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-            <Award className="h-7 w-7 text-white" />
-          </div>
-          <div>
-            <p className="text-base font-bold text-white">Session Complete!</p>
-            <p className="text-sm text-white/90">
-              {pomodorosCompleted} session{pomodorosCompleted !== 1 ? 's' : ''} completed
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const FullScreenMode = ({ 
   timeLeft, 
@@ -235,7 +213,6 @@ const PomodoroTimer = () => {
   const [presets, setPresets] = useState(DEFAULT_PRESETS);
   const [isPresetDialogOpen, setIsPresetDialogOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [showCelebration, setShowCelebration] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [editingPreset, setEditingPreset] = useState(null);
@@ -253,15 +230,6 @@ const PomodoroTimer = () => {
     }
   };
 
-  const celebrate = async () => {
-    try {
-      await achievementSoundService.playAchievementSound();
-    } catch (error) {
-      console.error('Failed to play achievement sound:', error);
-    }
-    setShowCelebration(true);
-    setTimeout(() => setShowCelebration(false), 2500);
-  };
 
   const handleComplete = useCallback(() => {
     const isWorkComplete = !isBreak;
@@ -535,11 +503,6 @@ const PomodoroTimer = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <CompletionIndicator 
-        show={showCelebration} 
-        pomodorosCompleted={sessionsCompleted}
-      />
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* Header */}
