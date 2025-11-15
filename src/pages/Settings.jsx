@@ -84,36 +84,36 @@ function Settings() {
 
 
   return (
-    <div className="container mx-auto max-w-7xl py-8 px-6 h-[calc(100vh-6rem)] overflow-hidden flex flex-col">
+    <div className="w-full space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="space-y-2 mb-6 flex-shrink-0">
-        <h1 className="text-4xl font-bold text-foreground">
+      <div className="space-y-1 sm:space-y-2">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
           Settings
         </h1>
-        <p className="text-base text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground">
           Manage your notification preferences and app settings
         </p>
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 overflow-y-auto pb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Notifications Card */}
         <Card className="glass-card border-none shadow-lg h-fit">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-3 text-xl">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Bell className="h-5 w-5 text-primary" />
+        <CardHeader className="pb-3 sm:pb-4">
+          <CardTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl">
+            <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
+              <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
             Notifications
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6">
           {/* Global Settings */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-4 rounded-xl bg-background/50 border border-border/50 hover:bg-background/70 transition-colors">
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground mb-1">Enable Notifications</h3>
-                <p className="text-sm text-muted-foreground">Master switch for all notifications</p>
+          <div className="space-y-2 sm:space-y-3">
+            <div className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-background/50 border border-border/50 hover:bg-background/70 transition-colors">
+              <div className="flex-1 min-w-0 pr-2">
+                <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Enable Notifications</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">Master switch for all notifications</p>
               </div>
               <Checkbox
                 checked={notificationSettings.enabled}
@@ -121,12 +121,12 @@ function Settings() {
               />
             </div>
             
-            <div className="flex items-center justify-between p-4 rounded-xl bg-background/50 border border-border/50 hover:bg-background/70 transition-colors">
-              <div className="flex-1 flex items-center gap-3">
-                <Volume2 className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <h3 className="font-semibold text-foreground mb-1">Notification Sound</h3>
-                  <p className="text-sm text-muted-foreground">Play sound when notifications arrive</p>
+            <div className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-background/50 border border-border/50 hover:bg-background/70 transition-colors">
+              <div className="flex-1 flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
+                <Volume2 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
+                <div className="min-w-0">
+                  <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Notification Sound</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Play sound when notifications arrive</p>
                 </div>
               </div>
               <Checkbox
@@ -265,24 +265,24 @@ function Settings() {
 
         {/* Data Management Card */}
         <Card className="glass-card border-none shadow-lg h-fit">
-          <CardHeader className="pb-6">
-            <CardTitle className="flex items-center gap-4 text-2xl">
-              <div className="p-3 rounded-lg bg-destructive/10">
-                <Trash2 className="h-6 w-6 text-destructive" />
+          <CardHeader className="pb-4 sm:pb-6">
+            <CardTitle className="flex items-center gap-2 sm:gap-4 text-lg sm:text-xl md:text-2xl">
+              <div className="p-2 sm:p-3 rounded-lg bg-destructive/10">
+                <Trash2 className="h-5 w-5 sm:h-6 sm:w-6 text-destructive" />
               </div>
               Data Management
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="p-6 rounded-xl bg-background/50 border border-border/50 space-y-6">
-              <div className="flex items-start gap-4">
-                <AlertTriangle className="h-6 w-6 text-destructive mt-1 flex-shrink-0" />
-                <div className="flex-1">
-                  <h3 className="font-bold text-lg text-foreground mb-2">Clear All Local Storage</h3>
-                  <p className="text-base text-muted-foreground mb-3">
+          <CardContent className="space-y-4 sm:space-y-6">
+            <div className="p-4 sm:p-6 rounded-xl bg-background/50 border border-border/50 space-y-4 sm:space-y-6">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-destructive mt-1 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-base sm:text-lg text-foreground mb-1 sm:mb-2">Clear All Local Storage</h3>
+                  <p className="text-sm sm:text-base text-muted-foreground mb-2 sm:mb-3">
                     This will permanently delete all data stored locally in your browser, including:
                   </p>
-                  <ul className="text-base text-muted-foreground mt-3 ml-6 list-disc space-y-2">
+                  <ul className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3 ml-4 sm:ml-6 list-disc space-y-1 sm:space-y-2">
                     <li>Tasks and task folders</li>
                     <li>Calendar events</li>
                     <li>Notes and journals</li>
@@ -291,7 +291,7 @@ function Settings() {
                     <li>Settings and preferences</li>
                     <li>Notification history</li>
                   </ul>
-                  <p className="text-base text-destructive font-semibold mt-4">
+                  <p className="text-sm sm:text-base text-destructive font-semibold mt-3 sm:mt-4">
                     This action cannot be undone. The page will reload after clearing.
                   </p>
                 </div>
@@ -306,10 +306,11 @@ function Settings() {
                     e.stopPropagation();
                     setShowClearDialog(true);
                   }}
-                  className="w-full sm:w-auto cursor-pointer text-base px-6 py-6"
+                  className="w-full sm:w-auto cursor-pointer text-sm sm:text-base px-4 sm:px-6 py-4 sm:py-6"
                 >
-                  <Trash2 className="h-5 w-5 mr-2" />
-                  Clear All Local Storage
+                  <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
+                  <span className="hidden sm:inline">Clear All Local Storage</span>
+                  <span className="sm:hidden">Clear All Data</span>
                 </Button>
               </div>
             </div>
@@ -319,7 +320,7 @@ function Settings() {
 
       {/* Clear Confirmation Dialog */}
       <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>
-        <DialogContent>
+        <DialogContent className="w-[95vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />

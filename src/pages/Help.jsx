@@ -42,18 +42,18 @@ function Help() {
   ];
 
   return (
-    <div className="container mx-auto max-w-6xl space-y-8 py-8 px-4">
-      <div className="space-y-4 animate-fade-in-up">
-        <h1 className="text-5xl font-bold text-foreground">
+    <div className="w-full space-y-4 sm:space-y-6 md:space-y-8">
+      <div className="space-y-2 sm:space-y-4 animate-fade-in-up">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
           Help & Support
         </h1>
-        <p className="text-muted-foreground text-lg">
+        <p className="text-sm sm:text-base md:text-lg text-muted-foreground">
           Everything you need to master Zephyr
         </p>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex flex-wrap gap-2 border-b border-border/50 pb-4">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 border-b border-border/50 pb-3 sm:pb-4 overflow-x-auto">
         {sections.map((section) => {
           const Icon = section.icon;
           return (
@@ -61,10 +61,11 @@ function Help() {
               key={section.id}
               variant={activeSection === section.id ? 'default' : 'ghost'}
               onClick={() => setActiveSection(section.id)}
-              className="gap-2"
+              className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3"
             >
-              <Icon className="h-4 w-4" />
-              {section.label}
+              <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{section.label}</span>
+              <span className="sm:hidden">{section.label.split(' ')[0]}</span>
             </Button>
           );
         })}
@@ -72,46 +73,46 @@ function Help() {
 
       {/* Help & Support Section */}
       {activeSection === 'help' && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Quick Start Card */}
           <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 Quick Start Guide
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <div className="flex gap-4 items-start">
-                  <div className="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center font-bold flex-shrink-0 text-lg">1</div>
+            <CardContent className="space-y-3 sm:space-y-4">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex gap-3 sm:gap-4 items-start">
+                  <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold flex-shrink-0 text-base sm:text-lg">1</div>
                   <div>
-                    <h4 className="font-semibold text-foreground mb-1">Set Your Priorities</h4>
-                    <p className="text-sm text-muted-foreground">Head to the Tasks page and add what you want to accomplish today.</p>
+                    <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Set Your Priorities</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Head to the Tasks page and add what you want to accomplish today.</p>
                   </div>
                 </div>
                 
-                <div className="flex gap-4 items-start">
-                  <div className="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center font-bold flex-shrink-0 text-lg">2</div>
+                <div className="flex gap-3 sm:gap-4 items-start">
+                  <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold flex-shrink-0 text-base sm:text-lg">2</div>
                   <div>
-                    <h4 className="font-semibold text-foreground mb-1">Start a Focus Session</h4>
-                    <p className="text-sm text-muted-foreground">Click the Focus Timer and press play to begin your first 25-minute session.</p>
+                    <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Start a Focus Session</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Click the Focus Timer and press play to begin your first 25-minute session.</p>
                   </div>
                 </div>
                 
-                <div className="flex gap-4 items-start">
-                  <div className="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center font-bold flex-shrink-0 text-lg">3</div>
+                <div className="flex gap-3 sm:gap-4 items-start">
+                  <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold flex-shrink-0 text-base sm:text-lg">3</div>
                   <div>
-                    <h4 className="font-semibold text-foreground mb-1">Take Breaks</h4>
-                    <p className="text-sm text-muted-foreground">When the timer completes, enjoy your well-earned break. Stretch, hydrate, breathe!</p>
+                    <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Take Breaks</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">When the timer completes, enjoy your well-earned break. Stretch, hydrate, breathe!</p>
                   </div>
                 </div>
                 
-                <div className="flex gap-4 items-start">
-                  <div className="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center font-bold flex-shrink-0 text-lg">4</div>
+                <div className="flex gap-3 sm:gap-4 items-start">
+                  <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold flex-shrink-0 text-base sm:text-lg">4</div>
                   <div>
-                    <h4 className="font-semibold text-foreground mb-1">Track Your Progress</h4>
-                    <p className="text-sm text-muted-foreground">Check your Dashboard to see your productivity stats.</p>
+                    <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Track Your Progress</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Check your Dashboard to see your productivity stats.</p>
                   </div>
                 </div>
               </div>
@@ -121,13 +122,13 @@ function Help() {
           {/* FAQ Card */}
           <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <HelpCircle className="h-5 w-5 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 Frequently Asked Questions
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Accordion type="single" className="space-y-3">
+              <Accordion type="single" className="space-y-2 sm:space-y-3">
                 {faqs.map((faq, index) => (
                   <AccordionItem key={index} value={`faq-${index}`}>
                     <AccordionTrigger value={`faq-${index}`}>
@@ -148,12 +149,12 @@ function Help() {
       {activeSection === 'privacy' && (
         <Card className="glass-card border-none">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               Privacy Policy
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6 text-sm text-muted-foreground">
+          <CardContent className="space-y-4 sm:space-y-6 text-xs sm:text-sm text-muted-foreground">
             <div>
               <p className="text-xs text-muted-foreground mb-4">Last updated: {new Date().toLocaleDateString()}</p>
               
@@ -231,12 +232,12 @@ function Help() {
       {activeSection === 'terms' && (
         <Card className="glass-card border-none">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               Terms of Service
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6 text-sm text-muted-foreground">
+          <CardContent className="space-y-4 sm:space-y-6 text-xs sm:text-sm text-muted-foreground">
             <div>
               <p className="text-xs text-muted-foreground mb-4">Last updated: {new Date().toLocaleDateString()}</p>
               
@@ -317,15 +318,15 @@ function Help() {
 
       {/* Legal Section */}
       {activeSection === 'legal' && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Card className="glass-card border-none">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Scale className="h-5 w-5 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Scale className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 Legal Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6 text-sm text-muted-foreground">
+            <CardContent className="space-y-4 sm:space-y-6 text-xs sm:text-sm text-muted-foreground">
               <div>
                 <h3 className="font-semibold text-foreground text-base mb-2">Copyright Notice</h3>
                 <p className="mb-4">

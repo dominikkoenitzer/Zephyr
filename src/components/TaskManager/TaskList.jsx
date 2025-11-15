@@ -235,23 +235,23 @@ const TaskList = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-6">
+    <div className="w-full max-w-6xl mx-auto space-y-4 sm:space-y-6">
       {/* Header Card */}
       <Card className="glass-card border-none animate-fade-in-up">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-3xl font-bold mb-2 text-foreground">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex-1">
+              <CardTitle className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-foreground">
                 Task Manager
               </CardTitle>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {totalCount > 0 
                   ? `${completedCount} of ${totalCount} tasks completed (${completionRate}%)`
                   : "Your journey to productivity starts here"}
               </p>
             </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary">{completionRate}%</div>
+            <div className="text-center sm:text-right">
+              <div className="text-3xl sm:text-4xl font-bold text-primary">{completionRate}%</div>
               <div className="text-xs text-muted-foreground uppercase tracking-wide">Complete</div>
             </div>
           </div>
@@ -266,9 +266,9 @@ const TaskList = () => {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Sidebar - Folders & Filters */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4 order-2 lg:order-1">
           {/* Folders */}
           <Card className="glass-card border-none">
             <CardHeader className="pb-3">
@@ -446,23 +446,23 @@ const TaskList = () => {
         </div>
 
         {/* Main Content */}
-        <div className="lg:col-span-3 space-y-6">
+        <div className="lg:col-span-3 space-y-4 sm:space-y-6 order-1 lg:order-2">
           {/* Add Task Card */}
           <Card className="glass-card border-none hover-lift">
-            <CardContent className="pt-6">
-              <form onSubmit={addTask} className="flex gap-3">
+            <CardContent className="pt-4 sm:pt-6">
+              <form onSubmit={addTask} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <div className="flex-1 relative">
-                  <ListTodo className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <ListTodo className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                   <Input
                     placeholder="What would you like to accomplish?"
                     value={newTask}
                     onChange={(e) => setNewTask(e.target.value)}
-                    className="pl-11 h-12 text-base"
+                    className="pl-10 sm:pl-11 h-10 sm:h-12 text-sm sm:text-base"
                   />
                 </div>
-                <Button type="submit" size="lg" className="px-6">
-                  <Plus className="h-5 w-5 mr-2" />
-                  Add Task
+                <Button type="submit" size="lg" className="w-full sm:w-auto px-4 sm:px-6 h-10 sm:h-12">
+                  <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
+                  <span className="text-sm sm:text-base">Add Task</span>
                 </Button>
               </form>
             </CardContent>
@@ -487,20 +487,20 @@ const TaskList = () => {
                   return (
                     <div
                       key={task.id}
-                      className="flex items-center gap-3 p-4 bg-background/80 backdrop-blur-sm border border-border rounded-lg transition-all duration-200 hover:shadow-sm hover:border-primary/20 group"
+                      className="flex items-start sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-background/80 backdrop-blur-sm border border-border rounded-lg transition-all duration-200 hover:shadow-sm hover:border-primary/20 group"
                     >
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="p-0 h-auto hover:bg-transparent"
+                        className="p-0 h-auto hover:bg-transparent flex-shrink-0 mt-0.5 sm:mt-0"
                         onClick={() => toggleTask(task.id)}
                       >
-                        <Circle className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
+                        <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground hover:text-primary transition-colors" />
                       </Button>
                       
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-base font-medium text-foreground">
+                        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                          <span className="text-sm sm:text-base font-medium text-foreground">
                             {task.title}
                           </span>
                           {task.priority && (
@@ -542,22 +542,22 @@ const TaskList = () => {
                         )}
                       </div>
                       
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="p-2 h-auto text-muted-foreground hover:text-primary"
+                          className="p-1.5 sm:p-2 h-auto text-muted-foreground hover:text-primary"
                           onClick={() => setEditingTask(task)}
                         >
-                          <Edit2 className="h-4 w-4" />
+                          <Edit2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="p-2 h-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                          className="p-1.5 sm:p-2 h-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                           onClick={() => deleteTask(task.id)}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </Button>
                       </div>
                     </div>
@@ -633,7 +633,7 @@ const TaskList = () => {
       {/* Edit Task Dialog */}
       {editingTask && (
         <Dialog open={!!editingTask} onOpenChange={() => setEditingTask(null)}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Task</DialogTitle>
             </DialogHeader>
