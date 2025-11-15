@@ -548,7 +548,7 @@ const CalendarView = () => {
           </div>
           <div className="col-span-9 sm:col-span-10 space-y-1 relative">
             {hours.map(hour => (
-              <div key={hour} className="h-12 sm:h-16 border-b border-border/50" />
+              <div key={hour} className="h-12 sm:h-16 border-b border-border/50" style={{ minHeight: '48px' }} />
             ))}
             {allItems.map((item) => {
               const category = item.isTask 
@@ -556,7 +556,8 @@ const CalendarView = () => {
                 : EVENT_CATEGORIES.find(c => c.id === item.category) || EVENT_CATEGORIES[0];
               
               const startHour = item.time ? parseInt(item.time.split(':')[0]) : 9;
-              const top = startHour * (window.innerWidth < 640 ? 48 : 64);
+              // Calculate top position based on hour (48px per hour on mobile, scales up on larger screens)
+              const topPercent = (startHour / 24) * 100;
               
               return (
                 <div
@@ -564,7 +565,7 @@ const CalendarView = () => {
                   onClick={(e) => !item.isTask && handleEventClick(item, e)}
                   className="absolute left-0 right-0 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded cursor-pointer hover:opacity-80 transition-opacity border-l-2"
                   style={{
-                    top: `${top}px`,
+                    top: `${topPercent}%`,
                     backgroundColor: category.color + '20',
                     borderLeftColor: category.color,
                     color: category.color
