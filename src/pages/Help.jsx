@@ -91,9 +91,9 @@ function Help() {
 
       {/* Help & Support Section */}
       {activeSection === 'help' && (
-        <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-y-hidden space-y-3 sm:space-y-4">
+        <div className="flex-1 min-h-0 overflow-y-auto space-y-2 sm:space-y-3 md:space-y-4 pr-1">
           {/* Quick Start Card */}
-          <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+          <Card className="glass-card border-none animate-fade-in-up flex-shrink-0" style={{ animationDelay: '0.1s' }}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -138,43 +138,43 @@ function Help() {
           </Card>
 
           {/* FAQ Card */}
-          <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <HelpCircle className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+          <Card className="glass-card border-none animate-fade-in-up w-full flex-shrink-0" style={{ animationDelay: '0.2s' }}>
+            <CardHeader className="pb-2 sm:pb-3 md:pb-4 flex-shrink-0">
+              <CardTitle className="flex items-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl">
+                <div className="p-1.5 sm:p-2 md:p-2.5 rounded-lg bg-primary/10">
+                  <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary" />
                 </div>
-                Frequently Asked Questions
+                <span className="break-words">Frequently Asked Questions</span>
               </CardTitle>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-2">
+              <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1 sm:mt-2">
                 Find answers to common questions about Zephyr
               </p>
             </CardHeader>
-            <CardContent>
-              <Accordion type="single" className="space-y-3 sm:space-y-4">
+            <CardContent className="pr-1 sm:pr-2">
+              <Accordion type="single" className="space-y-2 sm:space-y-3 md:space-y-4 w-full">
                 {faqs.map((faq, index) => {
                   const Icon = faq.icon;
                   return (
-                    <AccordionItem key={index} value={`faq-${index}`} className="border border-border/50 rounded-xl bg-background/50 hover:bg-background/70 transition-all duration-200 hover:shadow-md overflow-hidden">
+                    <AccordionItem key={index} value={`faq-${index}`} className="border border-border/50 rounded-lg sm:rounded-xl bg-background/50 hover:bg-background/70 transition-all duration-200 hover:shadow-md overflow-hidden w-full">
                       <AccordionTrigger 
                         value={`faq-${index}`}
-                        className="px-4 sm:px-5 py-4 sm:py-5 hover:no-underline group"
+                        className="px-2 sm:px-3 md:px-4 lg:px-5 py-2.5 sm:py-3 md:py-4 lg:py-5 hover:no-underline group"
                       >
-                        <div className="flex items-start gap-3 sm:gap-4 w-full text-left">
-                          <div className={`p-2.5 sm:p-3 rounded-lg ${faq.bgColor} group-hover:scale-110 transition-transform duration-200 flex-shrink-0`}>
-                            <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${faq.iconColor} transition-colors duration-200`} />
+                        <div className="flex items-start gap-2 sm:gap-3 md:gap-4 w-full text-left">
+                          <div className={`p-1.5 sm:p-2 md:p-2.5 lg:p-3 rounded-lg ${faq.bgColor} group-hover:scale-110 transition-transform duration-200 flex-shrink-0`}>
+                            <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 ${faq.iconColor} transition-colors duration-200`} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors duration-200 pr-2">
+                            <h3 className="font-semibold text-xs sm:text-sm md:text-base text-foreground group-hover:text-primary transition-colors duration-200 pr-1 sm:pr-2 break-words leading-tight sm:leading-normal">
                               {faq.question}
                             </h3>
                           </div>
                         </div>
                       </AccordionTrigger>
-                      <AccordionContent value={`faq-${index}`} className="px-4 sm:px-5 pb-4 sm:pb-5">
-                        <div className="pl-0 sm:pl-14">
+                      <AccordionContent value={`faq-${index}`} className="px-2 sm:px-3 md:px-4 lg:px-5 pb-2.5 sm:pb-3 md:pb-4 lg:pb-5">
+                        <div className="pl-0 sm:pl-10 md:pl-12 lg:pl-14">
                           <div className="pt-2 border-t border-border/30">
-                            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed pt-3">
+                            <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed pt-2 sm:pt-3 break-words">
                               {faq.answer}
                             </p>
                           </div>
