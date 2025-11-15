@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
 import { Select } from '../ui/select';
+import { CustomNumberInput } from '../ui/custom-number-input';
 import { localStorageService } from '../../services/localStorage';
 import { achievementSoundService } from '../../services/achievementSound';
 
@@ -745,64 +746,57 @@ const PomodoroTimer = () => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-4">
                     <div>
                       <label className="text-sm font-medium mb-2 block text-foreground">Focus Time (min)</label>
-                      <Input
-                        type="number"
+                      <CustomNumberInput
                         min={1}
                         max={120}
+                        step={1}
                         value={Math.floor(editingPreset.workTime / 60)}
                         onChange={(e) => {
                           const minutes = parseInt(e.target.value) || 1;
                           setEditingPreset({ ...editingPreset, workTime: minutes * 60 });
                         }}
-                        className="w-full"
                       />
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-2 block text-foreground">Short Break (min)</label>
-                      <Input
-                        type="number"
+                      <CustomNumberInput
                         min={1}
                         max={60}
+                        step={1}
                         value={Math.floor(editingPreset.shortBreak / 60)}
                         onChange={(e) => {
                           const minutes = parseInt(e.target.value) || 1;
                           setEditingPreset({ ...editingPreset, shortBreak: minutes * 60 });
                         }}
-                        className="w-full"
                       />
                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium mb-2 block text-foreground">Long Break (min)</label>
-                      <Input
-                        type="number"
+                      <CustomNumberInput
                         min={1}
                         max={120}
+                        step={1}
                         value={Math.floor(editingPreset.longBreak / 60)}
                         onChange={(e) => {
                           const minutes = parseInt(e.target.value) || 1;
                           setEditingPreset({ ...editingPreset, longBreak: minutes * 60 });
                         }}
-                        className="w-full"
                       />
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-2 block text-foreground">Sessions Until Long Break</label>
-                      <Input
-                        type="number"
+                      <CustomNumberInput
                         min={1}
                         max={10}
+                        step={1}
                         value={editingPreset.sessionsUntilLongBreak || 4}
                         onChange={(e) => {
                           const count = parseInt(e.target.value) || 4;
                           setEditingPreset({ ...editingPreset, sessionsUntilLongBreak: count });
                         }}
-                        className="w-full"
                       />
                     </div>
                   </div>
