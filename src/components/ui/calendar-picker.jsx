@@ -12,12 +12,22 @@ const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props }, ref) => {
   const [isOpen, setIsOpen] = React.useState(false)
-  const [selectedDate, setSelectedDate] = React.useState(value ? new Date(value) : null)
+  
+  // Parse initial value as local date to avoid timezone issues
+  const getInitialDate = () => {
+    if (!value) return null
+    const [year, month, day] = value.split('T')[0].split('-').map(Number)
+    return new Date(year, month - 1, day)
+  }
+  
+  const [selectedDate, setSelectedDate] = React.useState(getInitialDate())
   const [currentMonth, setCurrentMonth] = React.useState(new Date())
 
   React.useEffect(() => {
     if (value) {
-      setSelectedDate(new Date(value))
+      // Parse date string as local date to avoid timezone issues
+      const [year, month, day] = value.split('T')[0].split('-').map(Number)
+      setSelectedDate(new Date(year, month - 1, day))
     } else {
       setSelectedDate(null)
     }
@@ -68,7 +78,12 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
   const handleDateSelect = (date) => {
     if (!date) return
     
-    const dateString = date.toISOString().split('T')[0]
+    // Format date as YYYY-MM-DD in local timezone to avoid timezone shifts
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const dateString = `${year}-${month}-${day}`
+    
     setSelectedDate(date)
     setIsOpen(false)
     
