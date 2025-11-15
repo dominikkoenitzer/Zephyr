@@ -701,12 +701,23 @@ const CalendarView = () => {
         <CardContent className="pt-6">
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex-1 min-w-[200px] relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
               <Input
+                type="text"
                 placeholder="Search events..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  setSearchQuery(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  e.stopPropagation();
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
                 className="pl-10"
+                autoComplete="off"
               />
             </div>
             <div className="flex items-center gap-2">
