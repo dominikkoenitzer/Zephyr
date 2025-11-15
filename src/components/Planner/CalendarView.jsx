@@ -61,7 +61,6 @@ const CalendarView = () => {
   const [editingEvent, setEditingEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
-  const [highlightedEventId, setHighlightedEventId] = useState(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
   
   const [eventForm, setEventForm] = useState({
@@ -282,7 +281,6 @@ const CalendarView = () => {
     if (!event.date) return;
     
     const eventDate = new Date(event.date);
-    setHighlightedEventId(event.id);
     setShowSearchResults(false);
     
     // Navigate based on view mode
@@ -301,11 +299,6 @@ const CalendarView = () => {
       // Set to the exact day
       setCurrentDate(eventDate);
     }
-    
-    // Clear highlight after 3 seconds
-    setTimeout(() => {
-      setHighlightedEventId(null);
-    }, 3000);
   }, [viewMode, calendarSettings.firstDayOfWeek]);
 
   const handleSaveEvent = () => {
@@ -419,16 +412,13 @@ const CalendarView = () => {
           <div className="space-y-1 max-h-[80px] overflow-y-auto">
             {dayEvents.slice(0, 3).map(event => {
               const eventCategory = EVENT_CATEGORIES.find(c => c.id === event.category) || EVENT_CATEGORIES[0];
-              const isHighlighted = highlightedEventId === event.id;
               return (
                 <div
                   key={event.id}
                   onClick={(e) => handleEventClick(event, e)}
-                  className={`text-xs px-1.5 py-0.5 rounded truncate hover:opacity-80 transition-all flex items-center justify-between group ${
-                    isHighlighted ? 'ring-2 ring-primary ring-offset-1 scale-105' : ''
-                  }`}
+                  className="text-xs px-1.5 py-0.5 rounded truncate hover:opacity-80 transition-opacity flex items-center justify-between group"
                   style={{ 
-                    backgroundColor: isHighlighted ? eventCategory.color + '40' : eventCategory.color + '20', 
+                    backgroundColor: eventCategory.color + '20', 
                     color: eventCategory.color 
                   }}
                 >
@@ -496,17 +486,14 @@ const CalendarView = () => {
               const category = item.isTask 
                 ? EVENT_CATEGORIES.find(c => c.id === 'task')
                 : EVENT_CATEGORIES.find(c => c.id === item.category) || EVENT_CATEGORIES[0];
-              const isHighlighted = !item.isTask && highlightedEventId === item.id;
               
               return (
                 <div
                   key={item.id}
                   onClick={(e) => !item.isTask && handleEventClick(item, e)}
-                  className={`text-xs px-2 py-1 rounded cursor-pointer hover:opacity-80 transition-all ${
-                    isHighlighted ? 'ring-2 ring-primary ring-offset-1 scale-105' : ''
-                  }`}
+                  className="text-xs px-2 py-1 rounded cursor-pointer hover:opacity-80 transition-opacity"
                   style={{ 
-                    backgroundColor: isHighlighted ? category.color + '40' : category.color + '20', 
+                    backgroundColor: category.color + '20', 
                     color: category.color 
                   }}
                 >
@@ -564,7 +551,6 @@ const CalendarView = () => {
               const category = item.isTask 
                 ? EVENT_CATEGORIES.find(c => c.id === 'task')
                 : EVENT_CATEGORIES.find(c => c.id === item.category) || EVENT_CATEGORIES[0];
-              const isHighlighted = !item.isTask && highlightedEventId === item.id;
               
               const startHour = item.time ? parseInt(item.time.split(':')[0]) : 9;
               const top = startHour * 64;
@@ -573,12 +559,10 @@ const CalendarView = () => {
                 <div
                   key={item.id}
                   onClick={(e) => !item.isTask && handleEventClick(item, e)}
-                  className={`absolute left-0 right-0 px-2 py-1 rounded cursor-pointer hover:opacity-80 transition-all border-l-2 ${
-                    isHighlighted ? 'ring-2 ring-primary ring-offset-1 scale-105 z-10' : ''
-                  }`}
+                  className="absolute left-0 right-0 px-2 py-1 rounded cursor-pointer hover:opacity-80 transition-opacity border-l-2"
                   style={{
                     top: `${top}px`,
-                    backgroundColor: isHighlighted ? category.color + '40' : category.color + '20',
+                    backgroundColor: category.color + '20',
                     borderLeftColor: category.color,
                     color: category.color
                   }}
@@ -633,16 +617,11 @@ const CalendarView = () => {
               <CardContent className="space-y-2">
                 {dateEvents.map(event => {
                   const category = EVENT_CATEGORIES.find(c => c.id === event.category) || EVENT_CATEGORIES[0];
-                  const isHighlighted = highlightedEventId === event.id;
                   return (
                     <div
                       key={event.id}
                       onClick={() => handleEventClick(event, { stopPropagation: () => {} })}
-                      className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                        isHighlighted 
-                          ? 'border-primary ring-2 ring-primary ring-offset-1 bg-primary/10' 
-                          : 'border-border hover:bg-accent/50'
-                      }`}
+                      className="p-3 rounded-lg border border-border hover:bg-accent/50 cursor-pointer transition-colors"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
