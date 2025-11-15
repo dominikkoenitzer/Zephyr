@@ -264,7 +264,8 @@
   html {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    scroll-padding-top: 4rem;
+    scroll-padding-top: 50vh;
+    scroll-padding-bottom: 50vh;
   }
   
   body {
