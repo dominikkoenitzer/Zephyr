@@ -11,6 +11,7 @@ import { Input } from '../ui/input';
 import { Select } from '../ui/select';
 import { CustomNumberInput } from '../ui/custom-number-input';
 import { localStorageService } from '../../services/localStorage';
+import { notificationService } from '../../services/notificationService';
 
 const DEFAULT_PRESETS = [
   {
@@ -248,6 +249,13 @@ const PomodoroTimer = () => {
         type: 'work'
       });
       localStorageService.saveFocusSessions(sessions);
+      
+      notificationService.createNotification(
+        'timer',
+        'Session Complete',
+        `${newSessionsCompleted} session${newSessionsCompleted !== 1 ? 's' : ''} completed. Time for a break.`,
+        { type: 'navigate', path: '/focus' }
+      );
       
       showNotification('Work Session Complete', `${newSessionsCompleted} session${newSessionsCompleted !== 1 ? 's' : ''} completed. Time for a break.`);
     } else {

@@ -3,12 +3,20 @@ import { Outlet } from 'react-router-dom';
 import Header from './components/Layout/Header';
 import Sidebar from './components/Layout/Sidebar';
 import { themeService } from './services/themeService';
+import { notificationService } from './services/notificationService';
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     themeService.initialize();
+    
+    // Start notification checking
+    notificationService.startChecking();
+    
+    return () => {
+      notificationService.stopChecking();
+    };
   }, []);
 
   const handleSidebarOpen = () => setSidebarOpen(true);
