@@ -1,13 +1,14 @@
-import Notes from '../components/Notes/Notes';
+import Journal from '../components/Journal/Journal';
 
-function NotesPage() {
+function JournalPage() {
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-7xl">
-        <Notes />
+        <Journal />
       </div>
     </div>
   );
 }
 
-export default NotesPage;
+export default JournalPage;
+
