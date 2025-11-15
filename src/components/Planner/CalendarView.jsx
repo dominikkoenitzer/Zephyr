@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Select } from '../ui/select';
+import { Checkbox } from '../ui/checkbox';
 import { TimePicker } from '../ui/time-picker';
 import { CalendarPicker } from '../ui/calendar-picker';
 import { localStorageService } from '../../services/localStorage';
@@ -920,31 +921,43 @@ const CalendarView = () => {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block text-foreground">Category</label>
-                <Select
-                  value={eventForm.category}
-                  onChange={(e) => setEventForm({ ...eventForm, category: e.target.value })}
-                  className="w-full"
-                >
-                  {EVENT_CATEGORIES.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </Select>
+            <div>
+              <label className="text-sm font-medium mb-3 block text-foreground">Category</label>
+              <div className="grid grid-cols-3 gap-2">
+                {EVENT_CATEGORIES.map(cat => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setEventForm({ ...eventForm, category: cat.id })}
+                    className={`
+                      flex items-center gap-2 px-4 py-3 rounded-lg border-2 transition-all
+                      ${eventForm.category === cat.id 
+                        ? 'border-primary bg-primary/10 shadow-sm' 
+                        : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                      }
+                    `}
+                  >
+                    <div
+                      className="w-3 h-3 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: cat.color }}
+                    />
+                    <span className="text-sm font-medium text-foreground">{cat.name}</span>
+                  </button>
+                ))}
               </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block text-foreground">Repeat</label>
-                <Select
-                  value={eventForm.recurrence}
-                  onChange={(e) => setEventForm({ ...eventForm, recurrence: e.target.value })}
-                  className="w-full"
-                >
-                  {RECURRENCE_OPTIONS.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </Select>
-              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block text-foreground">Repeat</label>
+              <Select
+                value={eventForm.recurrence}
+                onChange={(e) => setEventForm({ ...eventForm, recurrence: e.target.value })}
+                className="w-full"
+              >
+                {RECURRENCE_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </Select>
             </div>
 
             <div>
@@ -967,16 +980,14 @@ const CalendarView = () => {
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
+            <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30">
+              <Checkbox
                 id="reminder"
                 checked={eventForm.reminder}
-                onChange={(e) => setEventForm({ ...eventForm, reminder: e.target.checked })}
-                className="w-4 h-4 rounded border-input"
+                onCheckedChange={(checked) => setEventForm({ ...eventForm, reminder: checked })}
               />
-              <label htmlFor="reminder" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-1">
-                <Bell className="h-4 w-4" />
+              <label htmlFor="reminder" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2 flex-1">
+                <Bell className="h-4 w-4 text-muted-foreground" />
                 Set Reminder
               </label>
             </div>
@@ -1122,56 +1133,48 @@ const CalendarView = () => {
             </div>
 
             {/* Toggle Options */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <label className="text-sm font-medium text-foreground">Show Weekends</label>
-                  <p className="text-xs text-muted-foreground">Display Saturday and Sunday in calendar views</p>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/30 hover:bg-muted/50 transition-colors">
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-foreground cursor-pointer">Show Weekends</label>
+                  <p className="text-xs text-muted-foreground mt-0.5">Display Saturday and Sunday in calendar views</p>
                 </div>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={calendarSettings.showWeekends}
-                  onChange={(e) => setCalendarSettings({ ...calendarSettings, showWeekends: e.target.checked })}
-                  className="w-4 h-4 rounded border-input"
+                  onCheckedChange={(checked) => setCalendarSettings({ ...calendarSettings, showWeekends: checked })}
                 />
               </div>
 
-              <div className="flex items-center justify-between">
-                <div>
-                  <label className="text-sm font-medium text-foreground">Show Week Numbers</label>
-                  <p className="text-xs text-muted-foreground">Display week numbers in month view</p>
+              <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/30 hover:bg-muted/50 transition-colors">
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-foreground cursor-pointer">Show Week Numbers</label>
+                  <p className="text-xs text-muted-foreground mt-0.5">Display week numbers in month view</p>
                 </div>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={calendarSettings.showWeekNumbers}
-                  onChange={(e) => setCalendarSettings({ ...calendarSettings, showWeekNumbers: e.target.checked })}
-                  className="w-4 h-4 rounded border-input"
+                  onCheckedChange={(checked) => setCalendarSettings({ ...calendarSettings, showWeekNumbers: checked })}
                 />
               </div>
 
-              <div className="flex items-center justify-between">
-                <div>
-                  <label className="text-sm font-medium text-foreground">Show Mini Calendar</label>
-                  <p className="text-xs text-muted-foreground">Display mini calendar sidebar in month view</p>
+              <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/30 hover:bg-muted/50 transition-colors">
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-foreground cursor-pointer">Show Mini Calendar</label>
+                  <p className="text-xs text-muted-foreground mt-0.5">Display mini calendar sidebar in month view</p>
                 </div>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={calendarSettings.showMiniCalendar}
-                  onChange={(e) => setCalendarSettings({ ...calendarSettings, showMiniCalendar: e.target.checked })}
-                  className="w-4 h-4 rounded border-input"
+                  onCheckedChange={(checked) => setCalendarSettings({ ...calendarSettings, showMiniCalendar: checked })}
                 />
               </div>
 
-              <div className="flex items-center justify-between">
-                <div>
-                  <label className="text-sm font-medium text-foreground">Show Tasks on Calendar</label>
-                  <p className="text-xs text-muted-foreground">Display tasks with due dates on the calendar</p>
+              <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/30 hover:bg-muted/50 transition-colors">
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-foreground cursor-pointer">Show Tasks on Calendar</label>
+                  <p className="text-xs text-muted-foreground mt-0.5">Display tasks with due dates on the calendar</p>
                 </div>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={calendarSettings.showTasks}
-                  onChange={(e) => setCalendarSettings({ ...calendarSettings, showTasks: e.target.checked })}
-                  className="w-4 h-4 rounded border-input"
+                  onCheckedChange={(checked) => setCalendarSettings({ ...calendarSettings, showTasks: checked })}
                 />
               </div>
             </div>
