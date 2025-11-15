@@ -651,46 +651,35 @@ const PomodoroTimer = () => {
                   <div
                     key={preset.id}
                     className={`
-                      w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer
+                      w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors cursor-pointer group
                       ${isSelected 
-                        ? 'shadow-lg scale-[1.02]' 
-                        : 'hover:scale-[1.01] hover:shadow-md'
+                        ? 'bg-accent' 
+                        : 'hover:bg-accent/50'
                       }
                     `}
-                    style={{
-                      borderColor: isSelected ? preset.color : 'transparent',
-                      backgroundColor: isSelected ? `${preset.color}15` : 'transparent',
-                    }}
                     onClick={() => handlePresetChange(preset.id)}
                   >
-                    <div
-                      className="p-2 rounded-lg"
-                      style={{ backgroundColor: `${preset.color}20` }}
-                    >
-                      {typeof Icon === 'function' ? (
-                        <Icon className="h-5 w-5" style={{ color: preset.color }} />
-                      ) : (
-                        <TimerIcon className="h-5 w-5" style={{ color: preset.color }} />
-                      )}
-                    </div>
-                    <div className="flex-1 text-left">
-                      <div className="font-semibold text-foreground">{preset.name}</div>
+                    {typeof Icon === 'function' ? (
+                      <Icon className="h-4 w-4 flex-shrink-0" style={{ color: isSelected ? preset.color : undefined }} />
+                    ) : (
+                      <TimerIcon className="h-4 w-4 flex-shrink-0" style={{ color: isSelected ? preset.color : undefined }} />
+                    )}
+                    <div className="flex-1 text-left min-w-0">
+                      <div className="text-sm font-medium text-foreground truncate">{preset.name}</div>
                       <div className="text-xs text-muted-foreground">
-                        {Math.floor(preset.workTime / 60)} min focus
+                        {Math.floor(preset.workTime / 60)} min
                       </div>
-                      {preset.description && (
-                        <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                          {preset.description}
-                        </div>
-                      )}
                     </div>
                     {isSelected && (
-                      <CheckCircle2 className="h-5 w-5" style={{ color: preset.color }} />
+                      <div 
+                        className="h-2 w-2 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: preset.color }}
+                      />
                     )}
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         type="button"
-                        className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-accent transition-colors"
+                        className="h-7 w-7 flex items-center justify-center rounded hover:bg-background transition-colors"
                         onClick={(e) => {
                           e.stopPropagation();
                           setEditingPreset(preset);
@@ -698,18 +687,18 @@ const PomodoroTimer = () => {
                           setIsSettingsOpen(true);
                         }}
                       >
-                        <Edit2 className="h-4 w-4 text-muted-foreground" />
+                        <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
                       </button>
                       {!isDefault && (
                         <button
                           type="button"
-                          className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-accent transition-colors"
+                          className="h-7 w-7 flex items-center justify-center rounded hover:bg-background transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeletePreset(preset.id);
                           }}
                         >
-                          <Trash2 className="h-4 w-4 text-destructive" />
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
                         </button>
                       )}
                     </div>
@@ -717,51 +706,26 @@ const PomodoroTimer = () => {
                 );
               })}
               
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-3 mt-2"
+              <button
                 onClick={handleCreatePreset}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent/50 transition-colors text-sm text-muted-foreground hover:text-foreground"
               >
                 <Plus className="h-4 w-4" />
-                Create Custom Timer
-              </Button>
-            </CardContent>
-          </Card>
+                New Preset
+              </button>
+            </div>
+          </div>
 
-          <div className="space-y-4">
-            <Card className="glass-card border-none hover-lift">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3 mb-3">
-                  <div 
-                    className="p-3 rounded-xl"
-                    style={{ backgroundColor: `${currentPreset.color}20` }}
-                  >
-                    <Award className="h-6 w-6" style={{ color: currentPreset.color }} />
-                  </div>
-                  <div>
-                    <div className="text-4xl font-bold text-foreground">{sessionsCompleted}</div>
-                    <div className="text-xs text-muted-foreground uppercase tracking-wide">Sessions</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="glass-card border-none hover-lift">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3 mb-3">
-                  <div 
-                    className="p-3 rounded-xl"
-                    style={{ backgroundColor: `${currentPreset.color}20` }}
-                  >
-                    <Clock className="h-6 w-6" style={{ color: currentPreset.color }} />
-                  </div>
-                  <div>
-                    <div className="text-4xl font-bold text-foreground">{totalFocusTime}</div>
-                    <div className="text-xs text-muted-foreground uppercase tracking-wide">Minutes Focused</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Stats */}
+          <div className="pt-4 border-t border-border space-y-4">
+            <div>
+              <div className="text-2xl font-semibold text-foreground">{sessionsCompleted}</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Sessions</div>
+            </div>
+            <div>
+              <div className="text-2xl font-semibold text-foreground">{totalFocusTime}</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Minutes</div>
+            </div>
           </div>
 
           <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
