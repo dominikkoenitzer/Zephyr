@@ -1,4 +1,4 @@
-import { FileText, BookOpen, Calendar, CheckSquare, Timer, X, ArrowRight } from 'lucide-react';
+import { FileText, BookOpen, Calendar, CheckSquare, Timer, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
 

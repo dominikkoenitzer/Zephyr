@@ -2,8 +2,10 @@ import CalendarView from '../components/Planner/CalendarView';
 
 function Calendar() {
   return (
-    <div className="container mx-auto max-w-7xl space-y-8">
-      <CalendarView />
+    <div className="min-h-screen bg-background py-8">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <CalendarView />
+      </div>
     </div>
   );
 }

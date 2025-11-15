@@ -70,7 +70,7 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
             <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               Notes ({results.notes.length})
             </div>
-            {results.notes.slice(0, 5).map((note, idx) => {
+            {results.notes.slice(0, 5).map((note) => {
               const index = currentIndex++;
               return (
                 <button
@@ -114,7 +114,7 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
             <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               Journal ({results.journal.length})
             </div>
-            {results.journal.slice(0, 5).map((entry, idx) => {
+            {results.journal.slice(0, 5).map((entry) => {
               const index = currentIndex++;
               return (
                 <button
@@ -158,7 +158,7 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
             <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               Events ({results.events.length})
             </div>
-            {results.events.slice(0, 5).map((event, idx) => {
+            {results.events.slice(0, 5).map((event) => {
               const index = currentIndex++;
               return (
                 <button
@@ -198,7 +198,7 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
             <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               Tasks ({results.tasks.length})
             </div>
-            {results.tasks.slice(0, 5).map((task, idx) => {
+            {results.tasks.slice(0, 5).map((task) => {
               const index = currentIndex++;
               return (
                 <button
