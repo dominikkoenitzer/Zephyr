@@ -7,12 +7,10 @@ import {
   Clock,
   Target,
   Coffee,
-  TrendingUp,
-  BarChart3,
   FileText,
   BookOpen,
-  ArrowRight,
-  Plus
+  Plus,
+  TrendingUp
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -120,7 +118,6 @@ function Dashboard() {
       setUpcomingEvents(upcomingEventsList);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
-      // Set default values on error
       setStats({
         todayFocusTime: 0,
         todaySessions: 0,
@@ -193,8 +190,8 @@ function Dashboard() {
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-background border border-border rounded p-2 shadow-sm">
-          <p className="text-sm text-foreground">{payload[0].value} min</p>
+        <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+          <p className="text-sm font-medium text-foreground">{payload[0].value} min</p>
         </div>
       );
     }
@@ -202,272 +199,326 @@ function Dashboard() {
   };
 
   const quickActions = [
-    { name: 'Focus Timer', icon: Timer, href: '/focus' },
-    { name: 'Tasks', icon: CheckSquare, href: '/tasks' },
-    { name: 'Calendar', icon: Calendar, href: '/calendar' },
-    { name: 'Notes', icon: FileText, href: '/notes' },
-    { name: 'Journal', icon: BookOpen, href: '/journal' },
-    { name: 'Analytics', icon: BarChart3, href: '/analytics' },
+    { name: 'Focus Timer', icon: Timer, href: '/focus', color: 'text-blue-500' },
+    { name: 'Tasks', icon: CheckSquare, href: '/tasks', color: 'text-green-500' },
+    { name: 'Calendar', icon: Calendar, href: '/calendar', color: 'text-purple-500' },
+    { name: 'Notes', icon: FileText, href: '/notes', color: 'text-orange-500' },
+    { name: 'Journal', icon: BookOpen, href: '/journal', color: 'text-pink-500' },
   ];
 
-  return (
-    <div className="w-full">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-foreground">
-            Dashboard
-          </h1>
-        </div>
+  const completionRate = stats.activeTasks + stats.completedTasks > 0 
+    ? Math.round((stats.completedTasks / (stats.activeTasks + stats.completedTasks)) * 100)
+    : 0;
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-8">
+  return (
+    <div className="w-full space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-bold text-foreground mb-2">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome back! Here's what's happening today.</p>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div>
+        <h2 className="text-lg font-semibold text-foreground mb-4">Quick Access</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (
               <Link key={action.name} to={action.href} className="block">
-                <Card className="border hover:border-primary/50 transition-colors cursor-pointer h-full">
-                  <CardContent className="flex flex-col items-center justify-center p-4 h-full">
-                    <Icon className="h-5 w-5 text-muted-foreground mb-2" />
-                    <span className="text-xs text-foreground text-center">{action.name}</span>
+                <Card className="border hover:border-primary/50 hover:shadow-md transition-all duration-200 cursor-pointer group h-full">
+                  <CardContent className="flex flex-col items-center justify-center p-6 h-full">
+                    <div className={`mb-3 p-3 rounded-lg bg-accent/50 group-hover:bg-accent transition-colors ${action.color}`}>
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <span className="text-sm font-medium text-foreground text-center">{action.name}</span>
                   </CardContent>
                 </Card>
               </Link>
             );
           })}
         </div>
+      </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card className="border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-muted-foreground">Focus Today</span>
-                <Clock className="h-4 w-4 text-muted-foreground" />
+      {/* Stats Grid */}
+      <div>
+        <h2 className="text-lg font-semibold text-foreground mb-4">Today's Overview</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="border hover:shadow-md transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 rounded-lg bg-blue-500/10">
+                  <Clock className="h-5 w-5 text-blue-500" />
+                </div>
               </div>
-              <div className="text-2xl font-semibold text-foreground">{formatTime(stats.todayFocusTime)}</div>
-              <div className="text-xs text-muted-foreground mt-1">{stats.todaySessions} sessions</div>
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Focus Time</p>
+                <p className="text-3xl font-bold text-foreground">{formatTime(stats.todayFocusTime)}</p>
+                <p className="text-xs text-muted-foreground">{stats.todaySessions} session{stats.todaySessions !== 1 ? 's' : ''}</p>
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-muted-foreground">Pomodoros</span>
-                <Coffee className="h-4 w-4 text-muted-foreground" />
+          <Card className="border hover:shadow-md transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 rounded-lg bg-orange-500/10">
+                  <Coffee className="h-5 w-5 text-orange-500" />
+                </div>
               </div>
-              <div className="text-2xl font-semibold text-foreground">{stats.totalPomodoros}</div>
-              <div className="text-xs text-muted-foreground mt-1">Total</div>
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Pomodoros</p>
+                <p className="text-3xl font-bold text-foreground">{stats.totalPomodoros}</p>
+                <p className="text-xs text-muted-foreground">Total completed</p>
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-muted-foreground">Active Tasks</span>
-                <CheckSquare className="h-4 w-4 text-muted-foreground" />
+          <Card className="border hover:shadow-md transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 rounded-lg bg-green-500/10">
+                  <CheckSquare className="h-5 w-5 text-green-500" />
+                </div>
               </div>
-              <div className="text-2xl font-semibold text-foreground">{stats.activeTasks}</div>
-              <div className="text-xs text-muted-foreground mt-1">{stats.completedTasks} completed</div>
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Active Tasks</p>
+                <p className="text-3xl font-bold text-foreground">{stats.activeTasks}</p>
+                <p className="text-xs text-muted-foreground">{stats.completedTasks} completed</p>
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-muted-foreground">Completion</span>
-                <Target className="h-4 w-4 text-muted-foreground" />
+          <Card className="border hover:shadow-md transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 rounded-lg bg-purple-500/10">
+                  <Target className="h-5 w-5 text-purple-500" />
+                </div>
               </div>
-              <div className="text-2xl font-semibold text-foreground">
-                {stats.activeTasks + stats.completedTasks > 0 
-                  ? Math.round((stats.completedTasks / (stats.activeTasks + stats.completedTasks)) * 100)
-                  : 0}%
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Completion Rate</p>
+                <p className="text-3xl font-bold text-foreground">{completionRate}%</p>
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <TrendingUp className="h-3 w-3" />
+                  Task completion
+                </p>
               </div>
-              <div className="text-xs text-muted-foreground mt-1">Task rate</div>
             </CardContent>
           </Card>
         </div>
+      </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Focus Chart */}
-          <Card className="border lg:col-span-2">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium">Focus Time</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorFocus" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis 
-                    dataKey="name" 
-                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis 
-                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Area 
-                    type="monotone" 
-                    dataKey="focusTime" 
-                    stroke="hsl(var(--primary))" 
-                    strokeWidth={1.5}
-                    fill="url(#colorFocus)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Focus Chart */}
+        <Card className="border lg:col-span-2">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg font-semibold">Weekly Focus Time</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">Your focus sessions over the past 7 days</p>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="colorFocus" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                <XAxis 
+                  dataKey="name" 
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis 
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Area 
+                  type="monotone" 
+                  dataKey="focusTime" 
+                  stroke="hsl(var(--primary))" 
+                  strokeWidth={2}
+                  fill="url(#colorFocus)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
 
-          {/* Upcoming Tasks */}
-          <Card className="border">
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
-              <CardTitle className="text-base font-medium">Upcoming Tasks</CardTitle>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-2 text-xs"
-                onClick={() => navigate('/tasks')}
-              >
-                View all
-              </Button>
-            </CardHeader>
-            <CardContent>
-              {recentTasks.length > 0 ? (
-                <div className="space-y-2">
-                  {recentTasks.slice(0, 4).map((task) => (
-                    <div key={task.id} className="flex items-start gap-2 py-2 border-b border-border last:border-0">
-                      <CheckSquare className="h-3.5 w-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-foreground truncate">{task.title}</p>
-                        {task.dueDate && (
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(task.dueDate)}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <p className="text-sm text-muted-foreground mb-3">No active tasks</p>
-                  <Link to="/tasks">
-                    <Button variant="outline" size="sm" className="text-xs">
-                      <Plus className="h-3 w-3 mr-1" />
-                      Add task
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Bottom Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Upcoming Events */}
-          <Card className="border">
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
-              <CardTitle className="text-base font-medium">Upcoming Events</CardTitle>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-2 text-xs"
-                onClick={() => navigate('/calendar')}
-              >
-                View all
-              </Button>
-            </CardHeader>
-            <CardContent>
-              {upcomingEvents.length > 0 ? (
-                <div className="space-y-2">
-                  {upcomingEvents.slice(0, 5).map((event) => (
-                    <div key={event.id} className="flex items-start gap-2 py-2 border-b border-border last:border-0">
-                      <Calendar className="h-3.5 w-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-foreground truncate">{event.title}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {formatDate(event.date)}
-                          {event.time && ` • ${event.time}`}
+        {/* Upcoming Tasks */}
+        <Card className="border">
+          <CardHeader className="flex flex-row items-center justify-between pb-4">
+            <div>
+              <CardTitle className="text-lg font-semibold">Upcoming Tasks</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">Your next priorities</p>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 px-3 text-xs"
+              onClick={() => navigate('/tasks')}
+            >
+              View all
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {recentTasks.length > 0 ? (
+              <div className="space-y-3">
+                {recentTasks.slice(0, 4).map((task) => (
+                  <div key={task.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent/50 transition-colors">
+                    <CheckSquare className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{task.title}</p>
+                      {task.dueDate && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {formatDate(task.dueDate)}
                         </p>
-                      </div>
+                      )}
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <p className="text-sm text-muted-foreground mb-3">No upcoming events</p>
-                  <Link to="/calendar">
-                    <Button variant="outline" size="sm" className="text-xs">
-                      <Plus className="h-3 w-3 mr-1" />
-                      Add event
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <CheckSquare className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground mb-4">No active tasks</p>
+                <Link to="/tasks">
+                  <Button variant="outline" size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add task
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
-          {/* Weekly Summary */}
-          <Card className="border">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium">This Week</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {(() => {
-                  const sessions = localStorageService.getFocusSessions();
-                  const tasks = localStorageService.getTasks();
-                  const today = new Date();
-                  const weekStart = new Date(today);
-                  weekStart.setDate(today.getDate() - 6);
-                  
-                  const weekSessions = sessions.filter(session => {
+      {/* Bottom Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Upcoming Events */}
+        <Card className="border">
+          <CardHeader className="flex flex-row items-center justify-between pb-4">
+            <div>
+              <CardTitle className="text-lg font-semibold">Upcoming Events</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">What's coming up</p>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 px-3 text-xs"
+              onClick={() => navigate('/calendar')}
+            >
+              View all
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {upcomingEvents.length > 0 ? (
+              <div className="space-y-3">
+                {upcomingEvents.slice(0, 5).map((event) => (
+                  <div key={event.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent/50 transition-colors">
+                    <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{event.title}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {formatDate(event.date)}
+                        {event.time && ` • ${event.time}`}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Calendar className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground mb-4">No upcoming events</p>
+                <Link to="/calendar">
+                  <Button variant="outline" size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add event
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Weekly Summary */}
+        <Card className="border">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg font-semibold">This Week</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">Your weekly progress summary</p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {(() => {
+                const sessions = localStorageService.getFocusSessions() || [];
+                const tasks = localStorageService.getTasks() || [];
+                const today = new Date();
+                const weekStart = new Date(today);
+                weekStart.setDate(today.getDate() - 6);
+                
+                const weekSessions = sessions.filter(session => {
+                  try {
                     const sessionDate = new Date(session.date);
                     return sessionDate >= weekStart;
-                  });
-                  
-                  const weekTasks = tasks.filter(task => {
-                    if (!task.completed) return false;
+                  } catch {
+                    return false;
+                  }
+                });
+                
+                const weekTasks = tasks.filter(task => {
+                  if (!task.completed) return false;
+                  try {
                     const completedDate = task.completedAt ? new Date(task.completedAt) : null;
                     return completedDate && completedDate >= weekStart;
-                  });
-                  
-                  const totalFocusTime = weekSessions.reduce((total, session) => 
-                    total + (session.duration || 0), 0
-                  ) / 60;
+                  } catch {
+                    return false;
+                  }
+                });
+                
+                const totalFocusTime = weekSessions.reduce((total, session) => 
+                  total + (session.duration || 0), 0
+                ) / 60;
 
-                  return (
-                    <>
-                      <div className="flex items-center justify-between py-2 border-b border-border">
-                        <span className="text-sm text-muted-foreground">Focus Time</span>
-                        <span className="text-sm font-medium text-foreground">{formatTime(Math.round(totalFocusTime))}</span>
+                return (
+                  <>
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-accent/30">
+                      <div className="flex items-center gap-3">
+                        <Clock className="h-5 w-5 text-blue-500" />
+                        <span className="text-sm font-medium text-foreground">Focus Time</span>
                       </div>
-                      <div className="flex items-center justify-between py-2 border-b border-border">
-                        <span className="text-sm text-muted-foreground">Sessions</span>
-                        <span className="text-sm font-medium text-foreground">{weekSessions.length}</span>
+                      <span className="text-lg font-semibold text-foreground">{formatTime(Math.round(totalFocusTime))}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-accent/30">
+                      <div className="flex items-center gap-3">
+                        <Timer className="h-5 w-5 text-orange-500" />
+                        <span className="text-sm font-medium text-foreground">Sessions</span>
                       </div>
-                      <div className="flex items-center justify-between py-2">
-                        <span className="text-sm text-muted-foreground">Tasks Completed</span>
-                        <span className="text-sm font-medium text-foreground">{weekTasks.length}</span>
+                      <span className="text-lg font-semibold text-foreground">{weekSessions.length}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-accent/30">
+                      <div className="flex items-center gap-3">
+                        <CheckSquare className="h-5 w-5 text-green-500" />
+                        <span className="text-sm font-medium text-foreground">Tasks Completed</span>
                       </div>
-                    </>
-                  );
-                })()}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                      <span className="text-lg font-semibold text-foreground">{weekTasks.length}</span>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, Bell, Search } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -146,7 +146,7 @@ function Header({ onMenuClick }) {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [searchQuery, searchResults, showSearchResults, selectedIndex]);
+  }, [searchQuery, searchResults, showSearchResults, selectedIndex, navigate]);
 
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', {

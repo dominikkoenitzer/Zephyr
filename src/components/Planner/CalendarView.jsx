@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   ChevronLeft, ChevronRight, X, Plus, Search, Filter, Calendar as CalendarIcon,
-  Clock, MapPin, Tag, Repeat, Bell, Edit2, Trash2, Grid3x3, List, LayoutGrid,
-  CheckCircle, Circle, Settings
+  Clock, MapPin, Bell, Trash2, Grid3x3, List, LayoutGrid,
+  Circle, Settings
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -55,6 +55,8 @@ const CalendarView = () => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.MONTH);
   const [events, setEvents] = useState([]);
   const [tasks, setTasks] = useState([]);
+  // selectedDate is set but not currently used - kept for future functionality
+  // eslint-disable-next-line no-unused-vars
   const [selectedDate, setSelectedDate] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -513,7 +515,8 @@ const CalendarView = () => {
   const renderDayView = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const isToday = getDateKey(currentDate) === getDateKey(today);
+    // Note: isCurrentDateToday could be used for highlighting today in day view if needed
+    // const isCurrentDateToday = getDateKey(currentDate) === getDateKey(today);
     const dayEvents = getEventsForDate(currentDate);
     const dayTasks = getTasksForDate(currentDate);
     const allItems = [...dayEvents, ...dayTasks.map(t => ({ ...t, isTask: true }))].sort((a, b) => {

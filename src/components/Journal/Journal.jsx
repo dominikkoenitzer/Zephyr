@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import {
-  Plus, Search, Trash2, Save, X, BookOpen, Calendar, Heart, Smile, Frown, Meh, Star, 
-  Filter, Hash, Download, Upload, TrendingUp, BarChart3, Calendar as CalendarIcon,
-  Clock, Tag, Grid, List, Archive, ArchiveRestore, Sparkles, Target
+  Plus, Search, Trash2, Save, X, BookOpen, Heart, Smile, Frown, Meh, Star, 
+  Filter, Hash, Download, Upload, Calendar as CalendarIcon,
+  Grid, List, Archive, ArchiveRestore, Sparkles, Target
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -35,7 +35,7 @@ const Journal = () => {
   const [filterMood, setFilterMood] = useState('');
   const [viewMode, setViewMode] = useState(VIEW_MODES.LIST);
   const [showArchived, setShowArchived] = useState(false);
-  const [sortBy, setSortBy] = useState('date'); // date, mood, length
+  const [sortBy] = useState('date'); // date, mood, length
   const textareaRef = useRef(null);
 
   useEffect(() => {
@@ -77,9 +77,10 @@ const Journal = () => {
     // Sort
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'mood':
+        case 'mood': {
           const moodOrder = ['happy', 'excited', 'calm', 'grateful', 'neutral', 'sad'];
           return moodOrder.indexOf(a.mood) - moodOrder.indexOf(b.mood);
+        }
         case 'length':
           return b.content.length - a.content.length;
         default: // date
