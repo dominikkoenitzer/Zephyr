@@ -211,7 +211,7 @@ function Dashboard() {
     : 0;
 
   return (
-    <div className="w-full space-y-6 sm:space-y-8">
+    <div className="w-full space-y-6 sm:space-y-8 border border-border rounded-lg p-4 sm:p-6 bg-card">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
