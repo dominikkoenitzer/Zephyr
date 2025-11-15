@@ -249,7 +249,6 @@ const PomodoroTimer = () => {
       });
       localStorageService.saveFocusSessions(sessions);
       
-      celebrate();
       showNotification('Work Session Complete', `${newSessionsCompleted} session${newSessionsCompleted !== 1 ? 's' : ''} completed. Time for a break.`);
     } else {
       setIsBreak(false);
