@@ -306,9 +306,6 @@ const CalendarView = () => {
     setTimeout(() => {
       setHighlightedEventId(null);
     }, 3000);
-    
-    // Open event dialog
-    handleEventClick(event, { stopPropagation: () => {} });
   }, [viewMode, calendarSettings.firstDayOfWeek]);
 
   const handleSaveEvent = () => {
