@@ -127,6 +127,133 @@
     --primary: 15 90% 65%;
     --accent: 15 50% 15%;
   }
+
+  /* Garden Themes */
+  [data-garden-theme="spring"] {
+    --primary: 142 76% 36%;
+    --accent: 142 50% 95%;
+    --background: 142 20% 98%;
+    --foreground: 142 30% 15%;
+    --muted: 142 15% 90%;
+    --border: 142 30% 85%;
+  }
+
+  .dark [data-garden-theme="spring"] {
+    --primary: 142 76% 50%;
+    --accent: 142 40% 15%;
+    --background: 142 30% 8%;
+    --foreground: 142 20% 95%;
+    --muted: 142 20% 20%;
+    --border: 142 20% 25%;
+  }
+
+  [data-garden-theme="summer"] {
+    --primary: 120 60% 45%;
+    --accent: 120 40% 95%;
+    --background: 120 15% 98%;
+    --foreground: 120 25% 12%;
+    --muted: 120 10% 92%;
+    --border: 120 25% 88%;
+  }
+
+  .dark [data-garden-theme="summer"] {
+    --primary: 120 60% 55%;
+    --accent: 120 35% 15%;
+    --background: 120 25% 6%;
+    --foreground: 120 15% 95%;
+    --muted: 120 20% 18%;
+    --border: 120 20% 22%;
+  }
+
+  [data-garden-theme="autumn"] {
+    --primary: 25 85% 50%;
+    --accent: 25 50% 96%;
+    --background: 25 20% 99%;
+    --foreground: 25 30% 12%;
+    --muted: 25 15% 94%;
+    --border: 25 30% 90%;
+  }
+
+  .dark [data-garden-theme="autumn"] {
+    --primary: 25 85% 60%;
+    --accent: 25 40% 15%;
+    --background: 25 30% 8%;
+    --foreground: 25 20% 95%;
+    --muted: 25 20% 20%;
+    --border: 25 20% 25%;
+  }
+
+  [data-garden-theme="forest"] {
+    --primary: 150 50% 35%;
+    --accent: 150 40% 96%;
+    --background: 150 15% 98%;
+    --foreground: 150 30% 10%;
+    --muted: 150 10% 93%;
+    --border: 150 25% 89%;
+  }
+
+  .dark [data-garden-theme="forest"] {
+    --primary: 150 50% 45%;
+    --accent: 150 35% 15%;
+    --background: 150 25% 5%;
+    --foreground: 150 15% 96%;
+    --muted: 150 20% 18%;
+    --border: 150 20% 22%;
+  }
+
+  [data-garden-theme="lavender"] {
+    --primary: 270 50% 60%;
+    --accent: 270 40% 97%;
+    --background: 270 15% 99%;
+    --foreground: 270 30% 12%;
+    --muted: 270 10% 95%;
+    --border: 270 25% 91%;
+  }
+
+  .dark [data-garden-theme="lavender"] {
+    --primary: 270 50% 70%;
+    --accent: 270 35% 15%;
+    --background: 270 25% 7%;
+    --foreground: 270 20% 96%;
+    --muted: 270 20% 19%;
+    --border: 270 20% 23%;
+  }
+
+  [data-garden-theme="rose"] {
+    --primary: 340 70% 55%;
+    --accent: 340 50% 97%;
+    --background: 340 15% 99%;
+    --foreground: 340 30% 12%;
+    --muted: 340 10% 95%;
+    --border: 340 25% 91%;
+  }
+
+  .dark [data-garden-theme="rose"] {
+    --primary: 340 70% 65%;
+    --accent: 340 35% 15%;
+    --background: 340 25% 7%;
+    --foreground: 340 20% 96%;
+    --muted: 340 20% 19%;
+    --border: 340 20% 23%;
+  }
+
+  [data-garden-theme="ocean"] {
+    --primary: 195 80% 50%;
+    --accent: 195 50% 96%;
+    --background: 195 15% 98%;
+    --foreground: 195 30% 12%;
+    --muted: 195 10% 93%;
+    --border: 195 25% 89%;
+  }
+
+  .dark [data-garden-theme="ocean"] {
+    --primary: 195 80% 60%;
+    --accent: 195 40% 15%;
+    --background: 195 25% 6%;
+    --foreground: 195 20% 95%;
+    --muted: 195 20% 18%;
+    --border: 195 20% 22%;
+  }
 }
 
 @layer base {
