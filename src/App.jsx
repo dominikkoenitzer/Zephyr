@@ -33,10 +33,10 @@ function App() {
       )}
 
       {/* Main Content */}
-      <div className="lg:pl-72">
+      <div className="lg:pl-72 min-h-screen flex flex-col">
         <Header onMenuClick={handleSidebarOpen} />
-        <main className="pt-16 scroll-smooth-momentum">
-          <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 max-w-7xl">
+        <main className="flex-1 flex items-center justify-center pt-16 scroll-smooth-momentum overflow-y-auto">
+          <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 max-w-7xl w-full">
             <Outlet />
           </div>
         </main>
