@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   ChevronLeft, ChevronRight, X, Plus, Search, Filter, Calendar as CalendarIcon,
   Clock, MapPin, Tag, Repeat, Bell, Edit2, Trash2, Grid3x3, List, LayoutGrid,
-  CheckCircle, Circle
+  CheckCircle, Circle, Settings
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -39,15 +39,27 @@ const RECURRENCE_OPTIONS = [
 
 const CalendarView = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [calendarSettings, setCalendarSettings] = useState({
+    firstDayOfWeek: 0,
+    defaultView: 'month',
+    showWeekends: true,
+    showWeekNumbers: false,
+    timeFormat: '12h',
+    showMiniCalendar: true,
+    showTasks: true,
+    eventDensity: 'normal',
+    startHour: 0,
+    endHour: 23
+  });
   const [viewMode, setViewMode] = useState(VIEW_MODES.MONTH);
   const [events, setEvents] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
-  const [showMiniCalendar, setShowMiniCalendar] = useState(true);
   
   const [eventForm, setEventForm] = useState({
     title: '',
@@ -64,8 +76,12 @@ const CalendarView = () => {
 
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Load events and tasks from localStorage
+  // Load calendar settings, events and tasks from localStorage
   useEffect(() => {
+    const settings = localStorageService.getCalendarSettings();
+    setCalendarSettings(settings);
+    setViewMode(settings.defaultView || VIEW_MODES.MONTH);
+    
     const savedEvents = localStorageService.getCalendarEvents();
     const savedTasks = localStorageService.getTasks();
     setEvents(savedEvents);
@@ -86,6 +102,18 @@ const CalendarView = () => {
   ];
 
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+  // Get week days based on first day of week setting
+  const getWeekDays = () => {
+    const days = [...weekDays];
+    if (calendarSettings.firstDayOfWeek === 1) {
+      // Monday first
+      return [...days.slice(1), days[0]];
+    }
+    return days; // Sunday first
+  };
+  
+  const displayWeekDays = getWeekDays();
 
   const getDateKey = (date) => {
     if (!date) return '';
@@ -236,6 +264,11 @@ const CalendarView = () => {
     setIsDialogOpen(false);
   };
 
+  const handleSaveSettings = () => {
+    localStorageService.saveCalendarSettings(calendarSettings);
+    setIsSettingsOpen(false);
+  };
+
   const handleDeleteEvent = (eventId, e) => {
     e.stopPropagation();
     setEvents(events.filter(event => event.id !== eventId));
@@ -246,7 +279,13 @@ const CalendarView = () => {
   };
 
   const getFirstDayOfMonth = (date) => {
-    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+    // Adjust based on first day of week setting
+    if (calendarSettings.firstDayOfWeek === 1) {
+      // Monday = 0, Sunday = 6
+      return firstDay === 0 ? 6 : firstDay - 1;
+    }
+    return firstDay; // Sunday = 0
   };
 
   const renderMonthView = () => {
@@ -305,7 +344,7 @@ const CalendarView = () => {
                 </div>
               );
             })}
-            {dayTasks.slice(0, 2).map(task => (
+            {calendarSettings.showTasks && dayTasks.slice(0, 2).map(task => (
               <div
                 key={task.id}
                 className="text-xs px-1.5 py-0.5 rounded truncate flex items-center gap-1"
@@ -315,9 +354,9 @@ const CalendarView = () => {
                 <span className="truncate">{task.title}</span>
               </div>
             ))}
-            {(dayEvents.length > 3 || dayTasks.length > 2) && (
+            {(dayEvents.length > 3 || (calendarSettings.showTasks && dayTasks.length > 2)) && (
               <div className="text-xs text-muted-foreground px-1.5">
-                +{dayEvents.length - 3 + Math.max(0, dayTasks.length - 2)} more
+                +{dayEvents.length - 3 + (calendarSettings.showTasks ? Math.max(0, dayTasks.length - 2) : 0)} more
               </div>
             )}
           </div>
@@ -605,6 +644,10 @@ const CalendarView = () => {
           <Button onClick={handleToday} variant="outline">
             Today
           </Button>
+          <Button onClick={() => setIsSettingsOpen(true)} variant="outline" className="gap-2">
+            <Settings className="h-4 w-4" />
+            Settings
+          </Button>
           <Button onClick={() => handleDateClick(new Date())} className="gap-2">
             <Plus className="h-4 w-4" />
             New Event
@@ -682,7 +725,7 @@ const CalendarView = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Mini Calendar Sidebar */}
-        {showMiniCalendar && viewMode === VIEW_MODES.MONTH && (
+        {calendarSettings.showMiniCalendar && viewMode === VIEW_MODES.MONTH && (
           <div className="lg:col-span-1">
             <Card>
               <CardHeader>
@@ -719,13 +762,13 @@ const CalendarView = () => {
                       <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
-                  <div className="grid grid-cols-7 gap-1 mb-2">
-                    {weekDays.map(day => (
-                      <div key={day} className="text-center text-xs font-semibold text-muted-foreground">
-                        {day[0]}
-                      </div>
-                    ))}
-                  </div>
+          <div className="grid grid-cols-7 gap-1 mb-2">
+            {displayWeekDays.map(day => (
+              <div key={day} className="text-center text-xs font-semibold text-muted-foreground">
+                {day[0]}
+              </div>
+            ))}
+          </div>
                   <div className="grid grid-cols-7 gap-1">
                     {renderMiniCalendar()}
                   </div>
@@ -754,7 +797,7 @@ const CalendarView = () => {
         )}
 
         {/* Main Calendar View */}
-        <div className={showMiniCalendar && viewMode === VIEW_MODES.MONTH ? 'lg:col-span-3' : 'col-span-full'}>
+        <div className={calendarSettings.showMiniCalendar && viewMode === VIEW_MODES.MONTH ? 'lg:col-span-3' : 'col-span-full'}>
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -788,7 +831,7 @@ const CalendarView = () => {
               {viewMode === VIEW_MODES.MONTH && (
                 <>
                   <div className="grid grid-cols-7 gap-2 mb-2">
-                    {weekDays.map(day => (
+                    {displayWeekDays.map(day => (
                       <div
                         key={day}
                         className="text-center text-sm font-semibold text-muted-foreground py-2"
@@ -978,6 +1021,170 @@ const CalendarView = () => {
                 disabled={!eventForm.title.trim() || !eventForm.date}
               >
                 {editingEvent ? 'Update Event' : 'Create Event'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Calendar Settings Dialog */}
+      <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Calendar Settings</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            {/* First Day of Week */}
+            <div>
+              <label className="text-sm font-medium mb-2 block text-foreground">First Day of Week</label>
+              <Select
+                value={calendarSettings.firstDayOfWeek}
+                onChange={(e) => setCalendarSettings({ ...calendarSettings, firstDayOfWeek: parseInt(e.target.value) })}
+                className="w-full"
+              >
+                <option value={0}>Sunday</option>
+                <option value={1}>Monday</option>
+              </Select>
+            </div>
+
+            {/* Default View */}
+            <div>
+              <label className="text-sm font-medium mb-2 block text-foreground">Default View</label>
+              <Select
+                value={calendarSettings.defaultView}
+                onChange={(e) => setCalendarSettings({ ...calendarSettings, defaultView: e.target.value })}
+                className="w-full"
+              >
+                <option value="month">Month</option>
+                <option value="week">Week</option>
+                <option value="day">Day</option>
+                <option value="agenda">Agenda</option>
+              </Select>
+            </div>
+
+            {/* Time Format */}
+            <div>
+              <label className="text-sm font-medium mb-2 block text-foreground">Time Format</label>
+              <Select
+                value={calendarSettings.timeFormat}
+                onChange={(e) => setCalendarSettings({ ...calendarSettings, timeFormat: e.target.value })}
+                className="w-full"
+              >
+                <option value="12h">12 Hour (AM/PM)</option>
+                <option value="24h">24 Hour</option>
+              </Select>
+            </div>
+
+            {/* Event Density */}
+            <div>
+              <label className="text-sm font-medium mb-2 block text-foreground">Event Display Density</label>
+              <Select
+                value={calendarSettings.eventDensity}
+                onChange={(e) => setCalendarSettings({ ...calendarSettings, eventDensity: e.target.value })}
+                className="w-full"
+              >
+                <option value="compact">Compact</option>
+                <option value="normal">Normal</option>
+                <option value="comfortable">Comfortable</option>
+              </Select>
+            </div>
+
+            {/* Day View Hours */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block text-foreground">Day View Start Hour</label>
+                <Select
+                  value={calendarSettings.startHour}
+                  onChange={(e) => setCalendarSettings({ ...calendarSettings, startHour: parseInt(e.target.value) })}
+                  className="w-full"
+                >
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={i}>
+                      {i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block text-foreground">Day View End Hour</label>
+                <Select
+                  value={calendarSettings.endHour}
+                  onChange={(e) => setCalendarSettings({ ...calendarSettings, endHour: parseInt(e.target.value) })}
+                  className="w-full"
+                >
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={i}>
+                      {i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            </div>
+
+            {/* Toggle Options */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium text-foreground">Show Weekends</label>
+                  <p className="text-xs text-muted-foreground">Display Saturday and Sunday in calendar views</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={calendarSettings.showWeekends}
+                  onChange={(e) => setCalendarSettings({ ...calendarSettings, showWeekends: e.target.checked })}
+                  className="w-4 h-4 rounded border-input"
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium text-foreground">Show Week Numbers</label>
+                  <p className="text-xs text-muted-foreground">Display week numbers in month view</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={calendarSettings.showWeekNumbers}
+                  onChange={(e) => setCalendarSettings({ ...calendarSettings, showWeekNumbers: e.target.checked })}
+                  className="w-4 h-4 rounded border-input"
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium text-foreground">Show Mini Calendar</label>
+                  <p className="text-xs text-muted-foreground">Display mini calendar sidebar in month view</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={calendarSettings.showMiniCalendar}
+                  onChange={(e) => setCalendarSettings({ ...calendarSettings, showMiniCalendar: e.target.checked })}
+                  className="w-4 h-4 rounded border-input"
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium text-foreground">Show Tasks on Calendar</label>
+                  <p className="text-xs text-muted-foreground">Display tasks with due dates on the calendar</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={calendarSettings.showTasks}
+                  onChange={(e) => setCalendarSettings({ ...calendarSettings, showTasks: e.target.checked })}
+                  className="w-4 h-4 rounded border-input"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4 border-t border-border">
+              <Button
+                variant="outline"
+                onClick={() => setIsSettingsOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleSaveSettings}>
+                Save Settings
               </Button>
             </div>
           </div>
