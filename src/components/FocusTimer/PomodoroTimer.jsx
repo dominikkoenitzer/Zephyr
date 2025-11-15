@@ -145,6 +145,11 @@ const FullScreenMode = ({
           >
             {sessionType.text}
           </h2>
+          {preset.description && (
+            <p className="text-lg text-muted-foreground mt-4 max-w-2xl leading-relaxed">
+              {preset.description}
+            </p>
+          )}
         </div>
 
         <div className="relative w-[700px] h-[700px]">
