@@ -5,7 +5,6 @@ import { Analytics as VercelAnalytics } from '@vercel/analytics/react'
 import App from './App'
 import ErrorFallback from './components/ErrorBoundary/ErrorFallback'
 import PageLoader from './components/ui/PageLoader'
-import { initSmoothScroll } from './utils/smoothScroll'
 import './index.css'
 
 // Initialize theme before React renders
@@ -24,9 +23,6 @@ const initializeTheme = () => {
 
 // Apply theme immediately
 initializeTheme();
-
-// Initialize smooth scroll enhancements
-initSmoothScroll();
 
 // Lazy load pages for code-splitting
 const Dashboard = lazy(() => import('./pages/Dashboard'))
