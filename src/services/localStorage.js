@@ -251,13 +251,99 @@ class LocalStorageService {
         sessionsUntilLongBreak: 4,
         soundEnabled: true,
         notificationsEnabled: true,
-        theme: 'system'
+        theme: 'system',
+        calendar: {
+          firstDayOfWeek: 0,
+          defaultView: 'month',
+          showWeekends: true,
+          showWeekNumbers: false,
+          timeFormat: '12h',
+          showMiniCalendar: true,
+          showTasks: true,
+          eventDensity: 'normal',
+          startHour: 0,
+          endHour: 23
+        }
       };
       
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      if (!parsed.calendar) {
+        parsed.calendar = {
+          firstDayOfWeek: 0,
+          defaultView: 'month',
+          showWeekends: true,
+          showWeekNumbers: false,
+          timeFormat: '12h',
+          showMiniCalendar: true,
+          showTasks: true,
+          eventDensity: 'normal',
+          startHour: 0,
+          endHour: 23
+        };
+      }
+      return parsed;
     } catch (error) {
       console.error('Failed to get settings:', error);
-      return {};
+      return {
+        calendar: {
+          firstDayOfWeek: 0,
+          defaultView: 'month',
+          showWeekends: true,
+          showWeekNumbers: false,
+          timeFormat: '12h',
+          showMiniCalendar: true,
+          showTasks: true,
+          eventDensity: 'normal',
+          startHour: 0,
+          endHour: 23
+        }
+      };
+    }
+  }
+
+  saveCalendarSettings(calendarSettings) {
+    try {
+      const currentSettings = this.getSettings();
+      const updatedSettings = {
+        ...currentSettings,
+        calendar: calendarSettings
+      };
+      return this.saveSettings(updatedSettings);
+    } catch (error) {
+      console.error('Failed to save calendar settings:', error);
+      return false;
+    }
+  }
+
+  getCalendarSettings() {
+    try {
+      const settings = this.getSettings();
+      return settings.calendar || {
+        firstDayOfWeek: 0,
+        defaultView: 'month',
+        showWeekends: true,
+        showWeekNumbers: false,
+        timeFormat: '12h',
+        showMiniCalendar: true,
+        showTasks: true,
+        eventDensity: 'normal',
+        startHour: 0,
+        endHour: 23
+      };
+    } catch (error) {
+      console.error('Failed to get calendar settings:', error);
+      return {
+        firstDayOfWeek: 0,
+        defaultView: 'month',
+        showWeekends: true,
+        showWeekNumbers: false,
+        timeFormat: '12h',
+        showMiniCalendar: true,
+        showTasks: true,
+        eventDensity: 'normal',
+        startHour: 0,
+        endHour: 23
+      };
     }
   }
 
