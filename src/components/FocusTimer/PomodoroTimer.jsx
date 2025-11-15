@@ -332,10 +332,15 @@ const PomodoroTimer = () => {
     if (savedPresets) {
       try {
         const parsed = JSON.parse(savedPresets);
-        setPresets([...DEFAULT_PRESETS, ...parsed]);
+        // Merge with defaults, ensuring defaults come first
+        const defaultIds = DEFAULT_PRESETS.map(p => p.id);
+        const customPresets = parsed.filter(p => !defaultIds.includes(p.id));
+        setPresets([...DEFAULT_PRESETS, ...customPresets]);
       } catch (error) {
         console.error('Failed to load presets:', error);
       }
+    } else {
+      setPresets([...DEFAULT_PRESETS]);
     }
     
     const savedPreset = localStorage.getItem('selectedFocusPreset');
@@ -695,16 +700,16 @@ const PomodoroTimer = () => {
             </CardHeader>
             <CardContent className="space-y-3">
               {presets.map(preset => {
-                const Icon = preset.icon;
+                const defaultPreset = DEFAULT_PRESETS.find(dp => dp.id === preset.id);
+                const Icon = defaultPreset ? defaultPreset.icon : (preset.icon || TimerIcon);
                 const isSelected = selectedPreset === preset.id;
-                const isDefault = DEFAULT_PRESETS.find(dp => dp.id === preset.id);
+                const isDefault = !!defaultPreset;
                 
                 return (
-                  <button
+                  <div
                     key={preset.id}
-                    onClick={() => handlePresetChange(preset.id)}
                     className={`
-                      w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all
+                      w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer
                       ${isSelected 
                         ? 'shadow-lg scale-[1.02]' 
                         : 'hover:scale-[1.01] hover:shadow-md'
@@ -714,12 +719,17 @@ const PomodoroTimer = () => {
                       borderColor: isSelected ? preset.color : 'transparent',
                       backgroundColor: isSelected ? `${preset.color}15` : 'transparent',
                     }}
+                    onClick={() => handlePresetChange(preset.id)}
                   >
                     <div
                       className="p-2 rounded-lg"
                       style={{ backgroundColor: `${preset.color}20` }}
                     >
-                      <Icon className="h-5 w-5" style={{ color: preset.color }} />
+                      {typeof Icon === 'function' ? (
+                        <Icon className="h-5 w-5" style={{ color: preset.color }} />
+                      ) : (
+                        <TimerIcon className="h-5 w-5" style={{ color: preset.color }} />
+                      )}
                     </div>
                     <div className="flex-1 text-left">
                       <div className="font-semibold text-foreground">{preset.name}</div>
@@ -736,10 +746,9 @@ const PomodoroTimer = () => {
                       <CheckCircle2 className="h-5 w-5" style={{ color: preset.color }} />
                     )}
                     <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
+                      <button
+                        type="button"
+                        className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-accent transition-colors"
                         onClick={(e) => {
                           e.stopPropagation();
                           setEditingPreset(preset);
@@ -748,22 +757,21 @@ const PomodoroTimer = () => {
                         }}
                       >
                         <Edit2 className="h-4 w-4 text-muted-foreground" />
-                      </Button>
+                      </button>
                       {!isDefault && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
+                        <button
+                          type="button"
+                          className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-accent transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeletePreset(preset.id);
                           }}
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                        </button>
                       )}
                     </div>
-                  </button>
+                  </div>
                 );
               })}
               
