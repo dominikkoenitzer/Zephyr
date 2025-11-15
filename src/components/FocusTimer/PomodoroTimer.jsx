@@ -182,8 +182,8 @@ const FullScreenMode = ({
           <button
             onClick={onToggle}
             className={`
-              relative h-20 w-20 rounded-full transition-all duration-300
-              flex items-center justify-center
+              h-20 w-20 rounded-full transition-all duration-300
+              flex items-center justify-center relative
               ${isRunning 
                 ? 'bg-foreground/10 hover:bg-foreground/15' 
                 : 'hover:scale-105 active:scale-95'
@@ -191,17 +191,13 @@ const FullScreenMode = ({
             `}
             style={isRunning ? {} : { backgroundColor: preset.color }}
           >
-            <div className={`
-              absolute inset-0 rounded-full transition-opacity duration-300
-              ${isRunning ? 'opacity-0' : 'opacity-100'}
-            `} style={{ backgroundColor: preset.color }} />
             {isRunning ? (
-              <div className="flex items-center justify-center gap-1.5">
+              <div className="flex items-center justify-center gap-1.5 z-10">
                 <div className="h-5 w-1.5 bg-foreground rounded-full" />
                 <div className="h-5 w-1.5 bg-foreground rounded-full" />
               </div>
             ) : (
-              <Play className="h-8 w-8 text-white ml-1" fill="currentColor" />
+              <Play className="h-8 w-8 text-white ml-1 z-10" strokeWidth={2.5} />
             )}
           </button>
           
@@ -616,8 +612,8 @@ const PomodoroTimer = () => {
             <button
               onClick={toggleTimer}
               className={`
-                relative h-16 w-16 rounded-full transition-all duration-300
-                flex items-center justify-center
+                h-16 w-16 rounded-full transition-all duration-300
+                flex items-center justify-center relative
                 ${isRunning 
                   ? 'bg-foreground/10 hover:bg-foreground/15' 
                   : 'hover:scale-105 active:scale-95'
@@ -625,17 +621,13 @@ const PomodoroTimer = () => {
               `}
               style={isRunning ? {} : { backgroundColor: currentPreset.color }}
             >
-              <div className={`
-                absolute inset-0 rounded-full transition-opacity duration-300
-                ${isRunning ? 'opacity-0' : 'opacity-100'}
-              `} style={{ backgroundColor: currentPreset.color }} />
               {isRunning ? (
-                <div className="flex items-center justify-center gap-1">
+                <div className="flex items-center justify-center gap-1 z-10">
                   <div className="h-4 w-1 bg-foreground rounded-full" />
                   <div className="h-4 w-1 bg-foreground rounded-full" />
                 </div>
               ) : (
-                <Play className="h-7 w-7 text-white ml-0.5" fill="currentColor" />
+                <Play className="h-7 w-7 text-white ml-0.5 z-10" strokeWidth={2.5} />
               )}
             </button>
             
