@@ -1,6 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
-  Plus, Search, Pin, PinOff, Trash2, Edit2, Save, X, FileText, Filter, Hash
+  Plus, Search, Pin, PinOff, Trash2, Edit2, Save, X, FileText, Filter, Hash,
+  Folder, FolderPlus, Download, Upload, MoreVertical, Star, StarOff, 
+  Calendar, Clock, Tag, Grid, List, Archive, ArchiveRestore
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -19,15 +21,30 @@ const NOTE_COLORS = [
   { name: 'Indigo', value: '#6366f1' },
 ];
 
+const VIEW_MODES = {
+  GRID: 'grid',
+  LIST: 'list',
+};
+
 const Notes = () => {
   const [notes, setNotes] = useState([]);
+  const [folders, setFolders] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNote, setSelectedNote] = useState(null);
   const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(false);
   const [filterTag, setFilterTag] = useState('');
+  const [selectedFolder, setSelectedFolder] = useState(null);
+  const [viewMode, setViewMode] = useState(VIEW_MODES.GRID);
+  const [showArchived, setShowArchived] = useState(false);
+  const [sortBy, setSortBy] = useState('updated'); // updated, created, title, color
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showFolderDialog, setShowFolderDialog] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     loadNotes();
+    loadFolders();
   }, []);
 
   const loadNotes = () => {
@@ -35,9 +52,63 @@ const Notes = () => {
     setNotes(loadedNotes);
   };
 
+  const loadFolders = () => {
+    const stored = localStorage.getItem('zephyr_note_folders');
+    if (stored) {
+      try {
+        setFolders(JSON.parse(stored));
+      } catch (e) {
+        console.error('Failed to load folders:', e);
+      }
+    }
+  };
+
+  const saveFolders = (foldersToSave) => {
+    localStorage.setItem('zephyr_note_folders', JSON.stringify(foldersToSave));
+    setFolders(foldersToSave);
+  };
+
+  const createFolder = () => {
+    if (!newFolderName.trim()) return;
+    const newFolder = {
+      id: `folder-${Date.now()}`,
+      name: newFolderName.trim(),
+      color: NOTE_COLORS[Math.floor(Math.random() * NOTE_COLORS.length)].value,
+      createdAt: new Date().toISOString(),
+    };
+    saveFolders([...folders, newFolder]);
+    setNewFolderName('');
+    setShowFolderDialog(false);
+  };
+
+  const deleteFolder = (folderId) => {
+    const updatedFolders = folders.filter(f => f.id !== folderId);
+    saveFolders(updatedFolders);
+    // Move notes from deleted folder to root
+    const notesToUpdate = notes.filter(n => n.folderId === folderId);
+    notesToUpdate.forEach(note => {
+      localStorageService.updateNote(note.id, { folderId: null });
+    });
+    if (selectedFolder === folderId) {
+      setSelectedFolder(null);
+    }
+    loadNotes();
+  };
+
   const filteredNotes = useMemo(() => {
     let filtered = notes;
     
+    // Filter by archived status
+    filtered = filtered.filter(note => showArchived ? note.archived : !note.archived);
+    
+    // Filter by folder
+    if (selectedFolder) {
+      filtered = filtered.filter(note => note.folderId === selectedFolder);
+    } else {
+      filtered = filtered.filter(note => !note.folderId);
+    }
+    
+    // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(note =>
@@ -47,22 +118,48 @@ const Notes = () => {
       );
     }
     
+    // Filter by tag
     if (filterTag) {
       filtered = filtered.filter(note =>
         note.tags.some(tag => tag.toLowerCase() === filterTag.toLowerCase())
       );
     }
     
-    return filtered.sort((a, b) => {
+    // Sort
+    filtered.sort((a, b) => {
       if (a.pinned && !b.pinned) return -1;
       if (!a.pinned && b.pinned) return 1;
-      return new Date(b.updatedAt) - new Date(a.updatedAt);
+      
+      switch (sortBy) {
+        case 'created':
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        case 'title':
+          return a.title.localeCompare(b.title);
+        case 'color':
+          return a.color.localeCompare(b.color);
+        default: // updated
+          return new Date(b.updatedAt) - new Date(a.updatedAt);
+      }
     });
-  }, [notes, searchQuery, filterTag]);
+    
+    return filtered;
+  }, [notes, searchQuery, filterTag, selectedFolder, showArchived, sortBy]);
 
   const allTags = useMemo(() => {
     return [...new Set(notes.flatMap(n => n.tags))];
   }, [notes]);
+
+  const stats = useMemo(() => {
+    return {
+      total: notes.length,
+      pinned: notes.filter(n => n.pinned).length,
+      archived: notes.filter(n => n.archived).length,
+      byFolder: folders.map(folder => ({
+        ...folder,
+        count: notes.filter(n => n.folderId === folder.id).length,
+      })),
+    };
+  }, [notes, folders]);
 
   const handleCreateNote = () => {
     setSelectedNote({
@@ -71,8 +168,16 @@ const Notes = () => {
       tags: [],
       color: NOTE_COLORS[0].value,
       pinned: false,
+      folderId: selectedFolder,
+      archived: false,
+      favorite: false,
     });
     setIsNoteDialogOpen(true);
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }, 100);
   };
 
   const handleSaveNote = () => {
@@ -109,12 +214,33 @@ const Notes = () => {
   const handleEditNote = (note) => {
     setSelectedNote({ ...note });
     setIsNoteDialogOpen(true);
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }, 100);
   };
 
   const handleTogglePin = (noteId) => {
     const note = notes.find(n => n.id === noteId);
     if (note) {
       localStorageService.updateNote(noteId, { pinned: !note.pinned });
+      loadNotes();
+    }
+  };
+
+  const handleToggleArchive = (noteId) => {
+    const note = notes.find(n => n.id === noteId);
+    if (note) {
+      localStorageService.updateNote(noteId, { archived: !note.archived });
+      loadNotes();
+    }
+  };
+
+  const handleToggleFavorite = (noteId) => {
+    const note = notes.find(n => n.id === noteId);
+    if (note) {
+      localStorageService.updateNote(noteId, { favorite: !note.favorite });
       loadNotes();
     }
   };
@@ -135,59 +261,176 @@ const Notes = () => {
     });
   };
 
+  const exportNotes = () => {
+    const dataStr = JSON.stringify(notes, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `notes-export-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importNotes = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const imported = JSON.parse(event.target.result);
+            if (Array.isArray(imported)) {
+              const existing = localStorageService.getNotes();
+              const merged = [...existing, ...imported];
+              localStorage.setItem('zephyr_notes', JSON.stringify(merged));
+              loadNotes();
+              alert(`Imported ${imported.length} notes successfully!`);
+            }
+          } catch (error) {
+            alert('Failed to import notes. Invalid file format.');
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  };
+
   return (
     <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-          Notes
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          Capture your thoughts and ideas
-        </p>
-      </div>
-
-      <div className="flex items-center justify-between mb-6">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search notes..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-bold text-foreground mb-2">Notes</h1>
+          <p className="text-muted-foreground">
+            {stats.total} notes • {stats.pinned} pinned • {stats.archived} archived
+          </p>
         </div>
-        <Button onClick={handleCreateNote} className="gap-2">
-          <Plus className="h-4 w-4" />
-          New Note
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={importNotes} className="gap-2">
+            <Upload className="h-4 w-4" />
+            Import
+          </Button>
+          <Button variant="outline" size="sm" onClick={exportNotes} className="gap-2">
+            <Download className="h-4 w-4" />
+            Export
+          </Button>
+          <Button onClick={handleCreateNote} className="gap-2">
+            <Plus className="h-4 w-4" />
+            New Note
+          </Button>
+        </div>
       </div>
 
-      {allTags.length > 0 && (
-        <div className="flex items-center gap-2 flex-wrap">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium text-muted-foreground">Filter by tag:</span>
-          <Button
-            variant={filterTag === '' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setFilterTag('')}
-          >
-            All
-          </Button>
-          {allTags.map(tag => (
+      {/* Search and Filters */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search notes..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <div className="flex items-center gap-2">
             <Button
-              key={tag}
-              variant={filterTag === tag ? 'default' : 'outline'}
+              variant={viewMode === VIEW_MODES.GRID ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setFilterTag(filterTag === tag ? '' : tag)}
-              className="gap-1"
+              onClick={() => setViewMode(VIEW_MODES.GRID)}
             >
-              <Hash className="h-3 w-3" />
-              {tag}
+              <Grid className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === VIEW_MODES.LIST ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode(VIEW_MODES.LIST)}
+            >
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Folders */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            variant={selectedFolder === null ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setSelectedFolder(null)}
+          >
+            All Notes
+          </Button>
+          {folders.map(folder => (
+            <Button
+              key={folder.id}
+              variant={selectedFolder === folder.id ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSelectedFolder(folder.id)}
+              className="gap-2"
+              style={selectedFolder === folder.id ? { borderColor: folder.color } : {}}
+            >
+              <Folder className="h-4 w-4" style={{ color: folder.color }} />
+              {folder.name} ({stats.byFolder.find(f => f.id === folder.id)?.count || 0})
             </Button>
           ))}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowFolderDialog(true)}
+            className="gap-2"
+          >
+            <FolderPlus className="h-4 w-4" />
+            New Folder
+          </Button>
         </div>
-      )}
 
+        {/* Tags and Filters */}
+        <div className="flex items-center gap-4 flex-wrap">
+          {allTags.length > 0 && (
+            <>
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium text-muted-foreground">Tags:</span>
+              <Button
+                variant={filterTag === '' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilterTag('')}
+              >
+                All
+              </Button>
+              {allTags.map(tag => (
+                <Button
+                  key={tag}
+                  variant={filterTag === tag ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setFilterTag(filterTag === tag ? '' : tag)}
+                  className="gap-1"
+                >
+                  <Hash className="h-3 w-3" />
+                  {tag}
+                </Button>
+              ))}
+            </>
+          )}
+          <div className="flex items-center gap-2 ml-auto">
+            <Button
+              variant={showArchived ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setShowArchived(!showArchived)}
+              className="gap-2"
+            >
+              {showArchived ? <ArchiveRestore className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
+              {showArchived ? 'Show Active' : 'Show Archived'}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Notes Grid/List */}
       {filteredNotes.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-16">
@@ -205,26 +448,35 @@ const Notes = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className={viewMode === VIEW_MODES.GRID 
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+          : "space-y-3"
+        }>
           {filteredNotes.map(note => (
             <Card
               key={note.id}
-              className="hover-lift cursor-pointer transition-all group"
+              className={`hover-lift cursor-pointer transition-all group relative ${
+                viewMode === VIEW_MODES.LIST ? 'flex items-center gap-4' : ''
+              }`}
               onClick={() => handleEditNote(note)}
+              style={{ borderLeft: `4px solid ${note.color}` }}
             >
-              <CardHeader className="pb-3">
+              <CardHeader className={`pb-3 ${viewMode === VIEW_MODES.LIST ? 'flex-1' : ''}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
                       {note.pinned && (
                         <Pin className="h-4 w-4 text-primary flex-shrink-0" />
                       )}
-                      <CardTitle className="text-lg font-semibold truncate" style={{ color: note.color }}>
+                      {note.favorite && (
+                        <Star className="h-4 w-4 text-yellow-500 flex-shrink-0 fill-yellow-500" />
+                      )}
+                      <CardTitle className={`text-lg font-semibold truncate ${viewMode === VIEW_MODES.LIST ? 'text-base' : ''}`}>
                         {note.title || 'Untitled Note'}
                       </CardTitle>
                     </div>
                     {note.tags.length > 0 && (
-                      <div className="flex items-center gap-1 flex-wrap">
+                      <div className="flex items-center gap-1 flex-wrap mb-2">
                         {note.tags.slice(0, 3).map(tag => (
                           <span
                             key={tag}
@@ -239,6 +491,11 @@ const Notes = () => {
                           </span>
                         )}
                       </div>
+                    )}
+                    {viewMode === VIEW_MODES.LIST && (
+                      <p className="text-sm text-muted-foreground line-clamp-1">
+                        {note.content || 'No content'}
+                      </p>
                     )}
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -260,6 +517,21 @@ const Notes = () => {
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="h-8 w-8"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleFavorite(note.id);
+                      }}
+                    >
+                      {note.favorite ? (
+                        <StarOff className="h-4 w-4 text-yellow-500" />
+                      ) : (
+                        <Star className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="h-8 w-8 text-destructive"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -271,14 +543,22 @@ const Notes = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
-                  {note.content || 'No content'}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {new Date(note.updatedAt).toLocaleDateString()}
-                </p>
-              </CardContent>
+              {viewMode === VIEW_MODES.GRID && (
+                <CardContent>
+                  <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
+                    {note.content || 'No content'}
+                  </p>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{new Date(note.updatedAt).toLocaleDateString()}</span>
+                    {note.folderId && (
+                      <span className="flex items-center gap-1">
+                        <Folder className="h-3 w-3" />
+                        {folders.find(f => f.id === note.folderId)?.name}
+                      </span>
+                    )}
+                  </div>
+                </CardContent>
+              )}
             </Card>
           ))}
         </div>
@@ -286,47 +566,89 @@ const Notes = () => {
 
       {/* Note Dialog */}
       <Dialog open={isNoteDialogOpen} onOpenChange={setIsNoteDialogOpen}>
-        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Note</DialogTitle>
           </DialogHeader>
           {selectedNote && (
             <div className="space-y-4 py-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block text-foreground">Title</label>
+              <div className="flex items-center gap-2">
                 <Input
                   value={selectedNote.title}
                   onChange={(e) => setSelectedNote({ ...selectedNote, title: e.target.value })}
                   placeholder="Note title..."
-                  className="w-full"
+                  className="text-xl font-semibold"
                 />
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant={selectedNote.pinned ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedNote({ ...selectedNote, pinned: !selectedNote.pinned })}
+                  >
+                    {selectedNote.pinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
+                  </Button>
+                  <Button
+                    variant={selectedNote.favorite ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedNote({ ...selectedNote, favorite: !selectedNote.favorite })}
+                  >
+                    {selectedNote.favorite ? <StarOff className="h-4 w-4" /> : <Star className="h-4 w-4" />}
+                  </Button>
+                </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block text-foreground">Content</label>
                 <textarea
+                  ref={textareaRef}
                   value={selectedNote.content}
                   onChange={(e) => setSelectedNote({ ...selectedNote, content: e.target.value })}
                   placeholder="Write your note here..."
-                  className="w-full min-h-[300px] px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+                  className="w-full min-h-[400px] px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium mb-2 block text-foreground">Color</label>
-                <div className="grid grid-cols-8 gap-2">
-                  {NOTE_COLORS.map(color => (
-                    <button
-                      key={color.value}
-                      onClick={() => setSelectedNote({ ...selectedNote, color: color.value })}
-                      className={`
-                        w-full aspect-square rounded-lg border-2 transition-all
-                        ${selectedNote.color === color.value ? 'scale-110 border-foreground' : 'border-transparent hover:scale-105'}
-                      `}
-                      style={{ backgroundColor: color.value }}
-                      title={color.name}
-                    />
-                  ))}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block text-foreground">Color</label>
+                  <div className="grid grid-cols-8 gap-2">
+                    {NOTE_COLORS.map(color => (
+                      <button
+                        key={color.value}
+                        onClick={() => setSelectedNote({ ...selectedNote, color: color.value })}
+                        className={`
+                          w-full aspect-square rounded-lg border-2 transition-all
+                          ${selectedNote.color === color.value ? 'scale-110 border-foreground' : 'border-transparent hover:scale-105'}
+                        `}
+                        style={{ backgroundColor: color.value }}
+                        title={color.name}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block text-foreground">Folder</label>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant={selectedNote.folderId === null ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setSelectedNote({ ...selectedNote, folderId: null })}
+                    >
+                      None
+                    </Button>
+                    {folders.map(folder => (
+                      <Button
+                        key={folder.id}
+                        variant={selectedNote.folderId === folder.id ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedNote({ ...selectedNote, folderId: folder.id })}
+                        className="gap-2"
+                      >
+                        <Folder className="h-4 w-4" style={{ color: folder.color }} />
+                        {folder.name}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -360,17 +682,6 @@ const Notes = () => {
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={selectedNote.pinned ? 'default' : 'outline'}
-                  onClick={() => setSelectedNote({ ...selectedNote, pinned: !selectedNote.pinned })}
-                  className="gap-2"
-                >
-                  {selectedNote.pinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
-                  {selectedNote.pinned ? 'Unpin' : 'Pin'}
-                </Button>
-              </div>
-
               <div className="flex justify-end gap-2 pt-4 border-t border-border">
                 <Button
                   variant="outline"
@@ -390,9 +701,35 @@ const Notes = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Folder Dialog */}
+      <Dialog open={showFolderDialog} onOpenChange={setShowFolderDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Folder</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Input
+              placeholder="Folder name..."
+              value={newFolderName}
+              onChange={(e) => setNewFolderName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  createFolder();
+                }
+              }}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowFolderDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={createFolder}>Create</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
 export default Notes;
-
