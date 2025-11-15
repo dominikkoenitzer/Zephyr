@@ -1,0 +1,14 @@
+# robots.txt for Zephyr
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://zephyr.app/sitemap.xml
+
+# Disallow admin or private routes if any
+# Disallow: /admin
+# Disallow: /private
+
+# Crawl-delay (optional, helps prevent server overload)
+Crawl-delay: 1
+
