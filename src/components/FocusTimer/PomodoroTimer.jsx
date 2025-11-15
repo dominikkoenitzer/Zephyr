@@ -109,66 +109,50 @@ const FullScreenMode = ({
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center p-8">
-      <div className="absolute top-8 right-8">
+    <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center p-8">
+      <div className="absolute top-6 right-6">
         <Button
           variant="ghost"
           size="icon"
           onClick={onExit}
-          className="h-14 w-14 rounded-full hover:bg-background/80 backdrop-blur-sm border border-border/50"
+          className="h-9 w-9"
         >
-          <X className="h-6 w-6" />
+          <X className="h-4 w-4" />
         </Button>
       </div>
       
-      <div className="flex flex-col items-center justify-center space-y-20 max-w-5xl w-full">
-        <div className="text-center space-y-6">
-          {sessionType.icon && (
-            <div className="flex justify-center">
-              <div 
-                className="p-6 rounded-3xl backdrop-blur-xl border-2 shadow-2xl"
-                style={{ 
-                  backgroundColor: `${preset.color}15`,
-                  borderColor: `${preset.color}40`
-                }}
-              >
-                <sessionType.icon 
-                  className="h-16 w-16" 
-                  style={{ color: preset.color }}
-                />
-              </div>
-            </div>
-          )}
+      <div className="flex flex-col items-center justify-center space-y-12 max-w-4xl w-full">
+        <div className="text-center">
           <h2 
-            className="text-5xl font-bold"
+            className="text-3xl font-semibold mb-2"
             style={{ color: preset.color }}
           >
             {sessionType.text}
           </h2>
           {preset.description && (
-            <p className="text-lg text-muted-foreground mt-4 max-w-2xl leading-relaxed">
+            <p className="text-sm text-muted-foreground max-w-xl mx-auto">
               {preset.description}
             </p>
           )}
         </div>
 
-        <div className="relative w-[700px] h-[700px]">
+        <div className="relative w-[500px] h-[500px]">
           <svg className="absolute inset-0 w-full h-full transform -rotate-90">
             <circle
-              cx="350"
-              cy="350"
-              r="200"
+              cx="250"
+              cy="250"
+              r="180"
               stroke="currentColor"
-              strokeWidth="24"
+              strokeWidth="3"
               fill="none"
-              className="text-muted/10"
+              className="text-muted/20"
             />
             <circle
-              cx="350"
-              cy="350"
-              r="200"
+              cx="250"
+              cy="250"
+              r="180"
               stroke="currentColor"
-              strokeWidth="24"
+              strokeWidth="4"
               fill="none"
               strokeLinecap="round"
               style={{
@@ -182,54 +166,46 @@ const FullScreenMode = ({
           
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <div 
-              className="text-[140px] font-mono font-bold mb-6 tracking-tight"
+              className="text-8xl font-mono font-light mb-3 tracking-tight"
               style={{ color: preset.color }}
             >
               {formatTime(timeLeft)}
             </div>
-            <div className="text-3xl text-muted-foreground font-medium">
-              {Math.round(progress)}% complete
+            <div className="text-base text-muted-foreground">
+              {Math.round(progress)}%
             </div>
           </div>
         </div>
 
-        <div className="flex justify-center items-center gap-8">
+        <div className="flex justify-center items-center gap-4">
           <Button
             onClick={onToggle}
             size="lg"
-            className="w-36 h-36 rounded-full shadow-2xl hover:scale-105 transition-transform"
+            className="h-16 w-16 rounded-full"
             style={{ backgroundColor: preset.color }}
           >
-            {isRunning ? <Pause className="h-16 w-16" /> : <Play className="h-16 w-16 ml-2" />}
+            {isRunning ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7 ml-0.5" />}
           </Button>
           
           <Button
             onClick={onReset}
-            size="lg"
-            variant="outline"
-            className="h-20 px-10 text-xl rounded-full hover:scale-105 transition-transform border-2 backdrop-blur-sm"
+            variant="ghost"
+            size="sm"
+            className="h-10 px-4"
           >
-            <RotateCcw className="h-6 w-6 mr-3" />
+            <RotateCcw className="h-4 w-4 mr-1.5" />
             Reset
           </Button>
 
           <Button
             onClick={onSkip}
-            size="lg"
             variant="ghost"
-            className="h-20 px-10 text-xl rounded-full hover:scale-105 transition-transform backdrop-blur-sm"
+            size="sm"
+            className="h-10 px-4"
           >
-            <SkipForward className="h-6 w-6 mr-3" />
+            <SkipForward className="h-4 w-4 mr-1.5" />
             Skip
           </Button>
-        </div>
-
-        <div className="text-center">
-          <p className="text-3xl text-muted-foreground font-medium">
-            {isRunning 
-              ? (isBreak ? "Take a moment to recharge" : "Stay focused and maintain your flow")
-              : "Ready to begin"}
-          </p>
         </div>
       </div>
     </div>
@@ -544,144 +520,121 @@ const PomodoroTimer = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8">
+    <div className="max-w-6xl mx-auto p-6 space-y-6">
       <CompletionIndicator 
         show={showCelebration} 
         pomodorosCompleted={sessionsCompleted}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="glass-card border-none lg:col-span-2 animate-fade-in-up">
-          <CardHeader className="pb-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                {sessionType.icon && (
-                  <div 
-                    className="p-4 rounded-2xl backdrop-blur-xl border-2 shadow-lg"
-                    style={{ 
-                      backgroundColor: `${currentPreset.color}15`,
-                      borderColor: `${currentPreset.color}40`
-                    }}
-                  >
-                    <sessionType.icon 
-                      className="h-7 w-7" 
-                      style={{ color: currentPreset.color }}
-                    />
-                  </div>
-                )}
-                <div>
-                  <CardTitle 
-                    className="text-3xl font-bold"
-                    style={{ color: currentPreset.color }}
-                  >
-                    {sessionType.text}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {currentPreset.name} Timer
-                  </p>
-                  {currentPreset.description && (
-                    <p className="text-sm text-muted-foreground mt-2 max-w-md leading-relaxed">
-                      {currentPreset.description}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsFullScreen(true)}
-                className="h-12 w-12 rounded-xl hover:bg-accent/50"
-                title="Enter Full Screen Mode"
-              >
-                <Maximize2 className="h-5 w-5" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-10">
-            <div className="flex justify-center items-center py-8">
-              <div className="relative w-[500px] h-[500px]">
-                <svg className="absolute inset-0 w-full h-full transform -rotate-90">
-                  <circle
-                    cx="250"
-                    cy="250"
-                    r="160"
-                    stroke="currentColor"
-                    strokeWidth="20"
-                    fill="none"
-                    className="text-muted/10"
-                  />
-                  <circle
-                    cx="250"
-                    cy="250"
-                    r="160"
-                    stroke="currentColor"
-                    strokeWidth="20"
-                    fill="none"
-                    strokeLinecap="round"
-                    style={{
-                      color: currentPreset.color,
-                      strokeDasharray: circumference,
-                      strokeDashoffset: strokeDashoffset,
-                      transition: 'stroke-dashoffset 1s ease-out'
-                    }}
-                  />
-                </svg>
-                
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div 
-                    className="text-[100px] font-mono font-bold mb-4 tracking-tight"
-                    style={{ color: currentPreset.color }}
-                  >
-                    {formatTime(timeLeft)}
-                  </div>
-                  <div className="text-xl text-muted-foreground font-medium">
-                    {Math.round(progress)}% complete
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex justify-center items-center gap-5">
-              <Button
-                onClick={toggleTimer}
-                size="lg"
-                className="w-28 h-28 rounded-full shadow-2xl hover:scale-105 transition-transform"
-                style={{ backgroundColor: currentPreset.color }}
-              >
-                {isRunning ? <Pause className="h-12 w-12" /> : <Play className="h-12 w-12 ml-1" />}
-              </Button>
-              
-              <Button
-                onClick={resetTimer}
-                size="lg"
-                variant="outline"
-                className="h-16 px-8 rounded-full hover:scale-105 transition-transform border-2 backdrop-blur-sm"
-              >
-                <RotateCcw className="h-5 w-5 mr-2" />
-                Reset
-              </Button>
-
-              <Button
-                onClick={skipSession}
-                size="lg"
-                variant="ghost"
-                className="h-16 px-8 rounded-full hover:scale-105 transition-transform backdrop-blur-sm"
-                disabled={timeLeft === currentSessionTime}
-              >
-                <SkipForward className="h-5 w-5 mr-2" />
-                Skip
-              </Button>
-            </div>
-
-            <div className="text-center">
-              <p className="text-muted-foreground text-lg font-medium">
-                {isRunning 
-                  ? (isBreak ? "Take a moment to recharge" : "Stay focused and maintain your flow")
-                  : "Ready to begin"}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold text-foreground">
+                {sessionType.text}
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                {currentPreset.name}
               </p>
             </div>
-          </CardContent>
-        </Card>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsFullScreen(true)}
+              className="h-9 w-9"
+              title="Full Screen"
+            >
+              <Maximize2 className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Timer */}
+          <div className="flex justify-center items-center py-12">
+            <div className="relative w-[400px] h-[400px]">
+              <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+                <circle
+                  cx="200"
+                  cy="200"
+                  r="140"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  fill="none"
+                  className="text-muted/20"
+                />
+                <circle
+                  cx="200"
+                  cy="200"
+                  r="140"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                  strokeLinecap="round"
+                  style={{
+                    color: currentPreset.color,
+                    strokeDasharray: circumference,
+                    strokeDashoffset: strokeDashoffset,
+                    transition: 'stroke-dashoffset 1s ease-out'
+                  }}
+                />
+              </svg>
+              
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <div 
+                  className="text-7xl font-mono font-light mb-2 tracking-tight"
+                  style={{ color: currentPreset.color }}
+                >
+                  {formatTime(timeLeft)}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {Math.round(progress)}%
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Controls */}
+          <div className="flex justify-center items-center gap-3">
+            <Button
+              onClick={toggleTimer}
+              size="lg"
+              className="h-14 w-14 rounded-full"
+              style={{ backgroundColor: currentPreset.color }}
+            >
+              {isRunning ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
+            </Button>
+            
+            <Button
+              onClick={resetTimer}
+              variant="ghost"
+              size="sm"
+              className="h-9 px-4"
+            >
+              <RotateCcw className="h-4 w-4 mr-1.5" />
+              Reset
+            </Button>
+
+            <Button
+              onClick={skipSession}
+              variant="ghost"
+              size="sm"
+              className="h-9 px-4"
+              disabled={timeLeft === currentSessionTime}
+            >
+              <SkipForward className="h-4 w-4 mr-1.5" />
+              Skip
+            </Button>
+          </div>
+
+          {/* Description */}
+          {currentPreset.description && (
+            <div className="text-center pt-4">
+              <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                {currentPreset.description}
+              </p>
+            </div>
+          )}
+        </div>
 
         <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <Card className="glass-card border-none hover-lift">
