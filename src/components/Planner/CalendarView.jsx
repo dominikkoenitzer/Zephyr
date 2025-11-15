@@ -88,6 +88,20 @@ const CalendarView = () => {
     setEvents(savedEvents);
     setTasks(savedTasks);
     setIsInitialized(true);
+
+    // Check for date parameter in URL or location state
+    const urlParams = new URLSearchParams(window.location.search);
+    const dateParam = urlParams.get('date');
+    if (dateParam) {
+      try {
+        const targetDate = new Date(dateParam);
+        if (!isNaN(targetDate.getTime())) {
+          setCurrentDate(targetDate);
+        }
+      } catch (e) {
+        console.error('Invalid date parameter:', e);
+      }
+    }
   }, []);
 
   // Save events to localStorage whenever they change
@@ -96,6 +110,32 @@ const CalendarView = () => {
       localStorageService.saveCalendarEvents(events);
     }
   }, [events, isInitialized]);
+
+  // Watch for URL parameter changes
+  useEffect(() => {
+    const handleLocationChange = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const dateParam = urlParams.get('date');
+      if (dateParam) {
+        try {
+          const targetDate = new Date(dateParam);
+          if (!isNaN(targetDate.getTime())) {
+            setCurrentDate(targetDate);
+          }
+        } catch (e) {
+          console.error('Invalid date parameter:', e);
+        }
+      }
+    };
+
+    // Check on mount and when URL changes
+    handleLocationChange();
+    window.addEventListener('popstate', handleLocationChange);
+    
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+    };
+  }, []);
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -124,11 +164,11 @@ const CalendarView = () => {
 
   const getEventsForDate = useCallback((date) => {
     const dateKey = getDateKey(date);
-    return events.filter(event => {
+    return filteredEvents.filter(event => {
       const eventDate = event.date ? getDateKey(new Date(event.date)) : '';
       return eventDate === dateKey;
     });
-  }, [events]);
+  }, [filteredEvents]);
 
   const getTasksForDate = useCallback((date) => {
     const dateKey = getDateKey(date);

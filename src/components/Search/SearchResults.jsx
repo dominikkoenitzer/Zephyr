@@ -25,7 +25,14 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
         navigate('/journal');
         break;
       case 'event':
-        navigate('/calendar');
+        // Navigate to calendar with the event's date
+        if (item.date) {
+          const eventDate = new Date(item.date);
+          const dateStr = eventDate.toISOString().split('T')[0];
+          navigate(`/calendar?date=${dateStr}`);
+        } else {
+          navigate('/calendar');
+        }
         break;
       case 'task':
         navigate('/tasks');
