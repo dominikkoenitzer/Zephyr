@@ -216,7 +216,7 @@ function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-1 sm:mb-2">Dashboard</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">Welcome back! Here's what's happening today.</p>
+          <p className="text-sm sm:text-base text-muted-foreground">Welcome back! Here&apos;s what&apos;s happening today.</p>
         </div>
       </div>
 
@@ -244,7 +244,7 @@ function Dashboard() {
 
       {/* Stats Grid */}
       <div className="flex-shrink-0">
-        <h2 className="text-sm sm:text-base font-semibold text-foreground mb-2">Today's Overview</h2>
+        <h2 className="text-sm sm:text-base font-semibold text-foreground mb-2">Today&apos;s Overview</h2>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <Card className="border hover:shadow-md transition-shadow">
             <CardContent className="p-4 sm:p-6">
@@ -409,7 +409,7 @@ function Dashboard() {
           <CardHeader className="flex flex-row items-center justify-between pb-3 sm:pb-4">
             <div>
               <CardTitle className="text-base sm:text-lg font-semibold">Upcoming Events</CardTitle>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">What's coming up</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">What&apos;s coming up</p>
             </div>
             <Button 
               variant="ghost" 
