@@ -7,7 +7,7 @@ import {
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { localStorageService } from '../../services/localStorage';
 
 const NOTE_COLORS = [
@@ -569,6 +569,9 @@ const Notes = () => {
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Note</DialogTitle>
+            <DialogDescription>
+              Create or edit your note. Add a title, content, tags, and organize with folders.
+            </DialogDescription>
           </DialogHeader>
           {selectedNote && (
             <div className="space-y-4 py-4">
@@ -707,6 +710,9 @@ const Notes = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create New Folder</DialogTitle>
+            <DialogDescription>
+              Organize your notes by creating folders with custom names.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <Input

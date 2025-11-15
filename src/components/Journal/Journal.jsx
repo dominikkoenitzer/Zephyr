@@ -7,7 +7,7 @@ import {
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { localStorageService } from '../../services/localStorage';
 
 const MOODS = [
@@ -94,6 +94,28 @@ const Journal = () => {
     return [...new Set(journalEntries.flatMap(e => e.tags))];
   }, [journalEntries]);
 
+  const calculateStreak = (entries) => {
+    if (entries.length === 0) return 0;
+    const sorted = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
+    let streak = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    for (let i = 0; i < sorted.length; i++) {
+      const entryDate = new Date(sorted[i].date);
+      entryDate.setHours(0, 0, 0, 0);
+      const daysDiff = Math.floor((today - entryDate) / (1000 * 60 * 60 * 24));
+      
+      if (daysDiff === i) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    
+    return streak;
+  };
+
   const stats = useMemo(() => {
     const totalEntries = journalEntries.length;
     const moodCounts = MOODS.reduce((acc, mood) => {
@@ -120,28 +142,6 @@ const Journal = () => {
       archived: journalEntries.filter(e => e.archived).length,
     };
   }, [journalEntries]);
-
-  const calculateStreak = (entries) => {
-    if (entries.length === 0) return 0;
-    const sorted = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
-    let streak = 0;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    for (let i = 0; i < sorted.length; i++) {
-      const entryDate = new Date(sorted[i].date);
-      entryDate.setHours(0, 0, 0, 0);
-      const daysDiff = Math.floor((today - entryDate) / (1000 * 60 * 60 * 24));
-      
-      if (daysDiff === i) {
-        streak++;
-      } else {
-        break;
-      }
-    }
-    
-    return streak;
-  };
 
   const handleCreateJournalEntry = () => {
     const entry = localStorageService.getJournalEntryByDate(selectedDate);
@@ -591,6 +591,9 @@ const Journal = () => {
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Journal Entry</DialogTitle>
+            <DialogDescription>
+              Reflect on your day. Record your thoughts, feelings, and experiences.
+            </DialogDescription>
           </DialogHeader>
           {selectedJournalEntry && (
             <div className="space-y-4 py-4">
