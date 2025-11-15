@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { HelpCircle, Zap, Shield, FileText, Scale, Mail, BookOpen, AlertCircle } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { HelpCircle, Zap, Shield, FileText, Scale, AlertCircle } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 
 function Help() {
   const [activeSection, setActiveSection] = useState('help');
@@ -125,38 +125,19 @@ function Help() {
                 Frequently Asked Questions
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {faqs.map((faq, index) => (
-                <div key={index} className="p-4 bg-background/50 rounded-xl border border-border/50">
-                  <h4 className="font-semibold text-foreground mb-2">{faq.question}</h4>
-                  <p className="text-sm text-muted-foreground">{faq.answer}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Contact Support */}
-          <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Mail className="h-5 w-5 text-primary" />
-                Need More Help?
-              </CardTitle>
-            </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Can't find what you're looking for? We're here to help!
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="outline" className="gap-2">
-                  <Mail className="h-4 w-4" />
-                  Contact Support
-                </Button>
-                <Button variant="outline" className="gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  Documentation
-                </Button>
-              </div>
+              <Accordion type="single" className="space-y-2">
+                {faqs.map((faq, index) => (
+                  <AccordionItem key={index} value={`faq-${index}`}>
+                    <AccordionTrigger value={`faq-${index}`}>
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent value={`faq-${index}`}>
+                      <p className="text-sm text-muted-foreground">{faq.answer}</p>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </CardContent>
           </Card>
         </div>
