@@ -42,7 +42,7 @@ function Help() {
   ];
 
   return (
-    <div className="w-full h-full space-y-4 sm:space-y-6 md:space-y-8 border-2 border-border rounded-xl p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 2xl:p-16 bg-card min-h-[calc(100vh-8rem)]">
+    <div className="w-full h-full space-y-2 sm:space-y-3 md:space-y-4 border-2 border-border rounded-xl p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-card overflow-hidden flex flex-col">
       <div className="space-y-2 sm:space-y-4 animate-fade-in-up">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
           Help & Support
