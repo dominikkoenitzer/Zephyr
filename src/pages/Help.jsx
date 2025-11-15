@@ -42,18 +42,18 @@ function Help() {
   ];
 
   return (
-    <div className="w-full h-full lg:max-h-full lg:h-full space-y-2 sm:space-y-3 md:space-y-4 border-2 border-border rounded-xl p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-card lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden flex flex-col min-h-0">
-      <div className="space-y-2 sm:space-y-4 animate-fade-in-up">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
+    <div className="w-full h-full lg:max-h-full lg:h-full border-2 border-border rounded-xl p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-card lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden flex flex-col min-h-0">
+      <div className="flex-shrink-0 space-y-2 sm:space-y-3 mb-2 sm:mb-3">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
           Help & Support
         </h1>
-        <p className="text-sm sm:text-base md:text-lg text-muted-foreground">
+        <p className="text-xs sm:text-sm md:text-base text-muted-foreground">
           Everything you need to master Zephyr
         </p>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex flex-wrap gap-1.5 sm:gap-2 border-b border-border/50 pb-3 sm:pb-4 overflow-x-auto">
+      <div className="flex-shrink-0 flex flex-wrap gap-1.5 sm:gap-2 border-b border-border/50 pb-2 sm:pb-3 overflow-x-auto mb-2 sm:mb-3">
         {sections.map((section) => {
           const Icon = section.icon;
           return (
@@ -73,7 +73,7 @@ function Help() {
 
       {/* Help & Support Section */}
       {activeSection === 'help' && (
-        <div className="space-y-4 sm:space-y-6">
+        <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-y-hidden space-y-3 sm:space-y-4">
           {/* Quick Start Card */}
           <Card className="glass-card border-none animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
             <CardHeader>
@@ -147,14 +147,15 @@ function Help() {
 
       {/* Privacy Policy Section */}
       {activeSection === 'privacy' && (
-        <Card className="glass-card border-none">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-              Privacy Policy
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-6 text-xs sm:text-sm text-muted-foreground">
+        <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-y-hidden">
+          <Card className="glass-card border-none h-full">
+            <CardHeader className="flex-shrink-0 pb-2 sm:pb-3">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                Privacy Policy
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 sm:space-y-4 text-xs sm:text-sm text-muted-foreground">
             <div>
               <p className="text-xs text-muted-foreground mb-4">Last updated: {new Date().toLocaleDateString()}</p>
               
@@ -226,18 +227,20 @@ function Help() {
             </div>
           </CardContent>
         </Card>
+        </div>
       )}
 
       {/* Terms of Service Section */}
       {activeSection === 'terms' && (
-        <Card className="glass-card border-none">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-              <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-              Terms of Service
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-6 text-xs sm:text-sm text-muted-foreground">
+        <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-y-hidden">
+          <Card className="glass-card border-none h-full">
+            <CardHeader className="flex-shrink-0 pb-2 sm:pb-3">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                Terms of Service
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 sm:space-y-4 text-xs sm:text-sm text-muted-foreground">
             <div>
               <p className="text-xs text-muted-foreground mb-4">Last updated: {new Date().toLocaleDateString()}</p>
               
@@ -314,11 +317,12 @@ function Help() {
             </div>
           </CardContent>
         </Card>
+        </div>
       )}
 
       {/* Legal Section */}
       {activeSection === 'legal' && (
-        <div className="space-y-4 sm:space-y-6">
+        <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-y-hidden space-y-3 sm:space-y-4">
           <Card className="glass-card border-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
