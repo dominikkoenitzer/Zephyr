@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Bell, Volume2, CheckSquare, Calendar, Timer } from 'lucide-react';
+import { Bell, Volume2, CheckSquare, Calendar, Timer, Trash2, AlertTriangle } from 'lucide-react';
 import { Checkbox } from '../components/ui/checkbox';
 import { Select } from '../components/ui/select';
+import { Button } from '../components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import Toast from '../components/ui/toast';
 import { notificationService } from '../services/notificationService';
+import { localStorageService } from '../services/localStorage';
 
 function Settings() {
   const [notificationSettings, setNotificationSettings] = useState(notificationService.getSettings());
+  const [showClearDialog, setShowClearDialog] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const handleNotificationSettingsChange = (updates) => {
     const newSettings = { ...notificationSettings, ...updates };
@@ -30,21 +36,69 @@ function Settings() {
     });
   };
 
+  const handleClearAllLocalStorage = () => {
+    try {
+      // Clear all data using the localStorage service
+      localStorageService.clearAllData();
+      
+      // Clear additional keys that might not be in STORAGE_KEYS
+      const additionalKeys = [
+        'zephyrSettings',
+        'focusTimerPresets',
+        'selectedFocusPreset',
+        'zephyr_note_folders',
+        'theme',
+        'gardenTheme',
+        'zephyr_notifications',
+        'zephyr_notification_settings'
+      ];
+      
+      additionalKeys.forEach(key => {
+        localStorage.removeItem(key);
+      });
+      
+      // Clear all remaining localStorage items (catch-all)
+      localStorage.clear();
+      
+      // Reset notification settings to default
+      setNotificationSettings(notificationService.getSettings());
+      
+      // Show custom toast notification
+      setToast({
+        message: 'All local storage data has been cleared successfully. The page will reload.',
+        type: 'success'
+      });
+      
+      // Reload the page after a short delay to show the toast
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to clear local storage:', error);
+      setToast({
+        message: 'Failed to clear local storage. Please try again.',
+        type: 'error'
+      });
+    }
+  };
+
 
   return (
-    <div className="container mx-auto max-w-5xl space-y-6 py-8 px-4">
+    <div className="container mx-auto max-w-7xl py-8 px-6 h-[calc(100vh-6rem)] overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="space-y-2 animate-fade-in-up">
+      <div className="space-y-2 mb-6 flex-shrink-0">
         <h1 className="text-4xl font-bold text-foreground">
           Settings
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-base text-muted-foreground">
           Manage your notification preferences and app settings
         </p>
       </div>
 
-      {/* Notifications Card */}
-      <Card className="glass-card border-none animate-fade-in-up shadow-lg" style={{ animationDelay: '0.1s' }}>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 overflow-y-auto pb-4">
+        {/* Notifications Card */}
+        <Card className="glass-card border-none shadow-lg h-fit">
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-3 text-xl">
             <div className="p-2 rounded-lg bg-primary/10">
@@ -208,6 +262,111 @@ function Settings() {
           </div>
         </CardContent>
       </Card>
+
+        {/* Data Management Card */}
+        <Card className="glass-card border-none shadow-lg h-fit">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 rounded-lg bg-destructive/10">
+                <Trash2 className="h-5 w-5 text-destructive" />
+              </div>
+              Data Management
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-4 rounded-xl bg-background/50 border border-border/50 space-y-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground mb-1">Clear All Local Storage</h3>
+                  <p className="text-sm text-muted-foreground">
+                    This will permanently delete all data stored locally in your browser, including:
+                  </p>
+                  <ul className="text-sm text-muted-foreground mt-2 ml-4 list-disc space-y-1">
+                    <li>Tasks and task folders</li>
+                    <li>Calendar events</li>
+                    <li>Notes and journals</li>
+                    <li>Focus timer sessions and presets</li>
+                    <li>Wellness data</li>
+                    <li>Settings and preferences</li>
+                    <li>Notification history</li>
+                  </ul>
+                  <p className="text-sm text-destructive font-medium mt-3">
+                    This action cannot be undone. The page will reload after clearing.
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-start">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowClearDialog(true);
+                  }}
+                  className="w-full sm:w-auto cursor-pointer"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Clear All Local Storage
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Clear Confirmation Dialog */}
+      <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Clear All Local Storage?
+            </DialogTitle>
+            <DialogDescription className="pt-2">
+              Are you sure you want to clear all local storage data? This will permanently delete:
+              <ul className="list-disc ml-6 mt-2 space-y-1 text-sm">
+                <li>All tasks, events, notes, and journal entries</li>
+                <li>All settings and preferences</li>
+                <li>All timer sessions and presets</li>
+                <li>All wellness tracking data</li>
+              </ul>
+              <p className="mt-3 font-semibold text-destructive">
+                This action cannot be undone. The page will reload after clearing.
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowClearDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setShowClearDialog(false);
+                handleClearAllLocalStorage();
+              }}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Clear All Data
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+          duration={toast.type === 'success' ? 2000 : 4000}
+        />
+      )}
     </div>
   );
 }
