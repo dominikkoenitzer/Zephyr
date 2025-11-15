@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import {
-  Plus, Search, Pin, PinOff, Trash2, Edit2, Save, X, FileText, Filter, Hash,
-  Folder, FolderPlus, Download, Upload, MoreVertical, Star, StarOff, 
-  Calendar, Clock, Tag, Grid, List, Archive, ArchiveRestore
+  Plus, Search, Pin, PinOff, Trash2, Save, X, FileText, Filter, Hash,
+  Folder, FolderPlus, Download, Upload, Star, StarOff, 
+  Grid, List, Archive, ArchiveRestore
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -36,8 +36,7 @@ const Notes = () => {
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [viewMode, setViewMode] = useState(VIEW_MODES.GRID);
   const [showArchived, setShowArchived] = useState(false);
-  const [sortBy, setSortBy] = useState('updated'); // updated, created, title, color
-  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [sortBy] = useState('updated'); // updated, created, title, color
   const [showFolderDialog, setShowFolderDialog] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const textareaRef = useRef(null);
@@ -81,19 +80,20 @@ const Notes = () => {
     setShowFolderDialog(false);
   };
 
-  const deleteFolder = (folderId) => {
-    const updatedFolders = folders.filter(f => f.id !== folderId);
-    saveFolders(updatedFolders);
-    // Move notes from deleted folder to root
-    const notesToUpdate = notes.filter(n => n.folderId === folderId);
-    notesToUpdate.forEach(note => {
-      localStorageService.updateNote(note.id, { folderId: null });
-    });
-    if (selectedFolder === folderId) {
-      setSelectedFolder(null);
-    }
-    loadNotes();
-  };
+  // TODO: Implement deleteFolder functionality when needed
+  // const deleteFolder = (folderId) => {
+  //   const updatedFolders = folders.filter(f => f.id !== folderId);
+  //   saveFolders(updatedFolders);
+  //   // Move notes from deleted folder to root
+  //   const notesToUpdate = notes.filter(n => n.folderId === folderId);
+  //   notesToUpdate.forEach(note => {
+  //     localStorageService.updateNote(note.id, { folderId: null });
+  //   });
+  //   if (selectedFolder === folderId) {
+  //     setSelectedFolder(null);
+  //   }
+  //   loadNotes();
+  // };
 
   const filteredNotes = useMemo(() => {
     let filtered = notes;
@@ -229,13 +229,14 @@ const Notes = () => {
     }
   };
 
-  const handleToggleArchive = (noteId) => {
-    const note = notes.find(n => n.id === noteId);
-    if (note) {
-      localStorageService.updateNote(noteId, { archived: !note.archived });
-      loadNotes();
-    }
-  };
+  // TODO: Implement handleToggleArchive functionality when needed
+  // const handleToggleArchive = (noteId) => {
+  //   const note = notes.find(n => n.id === noteId);
+  //   if (note) {
+  //     localStorageService.updateNote(noteId, { archived: !note.archived });
+  //     loadNotes();
+  //   }
+  // };
 
   const handleToggleFavorite = (noteId) => {
     const note = notes.find(n => n.id === noteId);

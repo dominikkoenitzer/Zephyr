@@ -203,11 +203,11 @@ function Help() {
 
               <h3 className="font-semibold text-foreground text-base mb-2">6. Data Deletion</h3>
               <p className="mb-4">
-                You can delete all your data at any time by using the "Clear All Local Storage" feature in Settings. 
+                You can delete all your data at any time by using the &quot;Clear All Local Storage&quot; feature in Settings. 
                 This action permanently removes all stored data and cannot be undone.
               </p>
 
-              <h3 className="font-semibold text-foreground text-base mb-2">7. Children's Privacy</h3>
+              <h3 className="font-semibold text-foreground text-base mb-2">7. Children&apos;s Privacy</h3>
               <p className="mb-4">
                 Zephyr is not intended for children under 13 years of age. We do not knowingly collect information from children.
               </p>
@@ -215,7 +215,7 @@ function Help() {
               <h3 className="font-semibold text-foreground text-base mb-2">8. Changes to This Policy</h3>
               <p className="mb-4">
                 We may update this Privacy Policy from time to time. Any changes will be reflected in this document with an 
-                updated "Last updated" date.
+                updated &quot;Last updated&quot; date.
               </p>
 
               <h3 className="font-semibold text-foreground text-base mb-2">9. Contact Us</h3>
@@ -257,7 +257,7 @@ function Help() {
 
               <h3 className="font-semibold text-foreground text-base mb-2">3. Disclaimer</h3>
               <p className="mb-4">
-                The materials in Zephyr are provided on an 'as is' basis. Zephyr makes no warranties, expressed or implied, 
+                The materials in Zephyr are provided on an &apos;as is&apos; basis. Zephyr makes no warranties, expressed or implied, 
                 and hereby disclaims and negates all other warranties including, without limitation, implied warranties or 
                 conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property 
                 or other violation of rights.
@@ -347,7 +347,7 @@ function Help() {
 
                 <h3 className="font-semibold text-foreground text-base mb-2">Disclaimer of Warranties</h3>
                 <p className="mb-4">
-                  ZEPHYR IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, 
+                  ZEPHYR IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, 
                   INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, 
                   AND NON-INFRINGEMENT.
                 </p>

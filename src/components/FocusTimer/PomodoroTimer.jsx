@@ -1,14 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { 
-  Play, Pause, SkipForward, Settings, Clock, Target, Maximize2, X, 
-  RotateCcw, Plus, Trash2, Save, Edit2, Sparkles, Zap, Coffee, BookOpen,
-  Music, Timer as TimerIcon, CheckCircle2, Heart
+  Play, SkipForward, Settings, Clock, Target, Maximize2, X, 
+  RotateCcw, Plus, Trash2, Save, Edit2, Zap, BookOpen,
+  Timer as TimerIcon, Heart
 } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
-import { Select } from '../ui/select';
 import { CustomNumberInput } from '../ui/custom-number-input';
 import { localStorageService } from '../../services/localStorage';
 import { notificationService } from '../../services/notificationService';
@@ -75,7 +73,6 @@ const DEFAULT_PRESETS = [
 const FullScreenMode = ({ 
   timeLeft, 
   isRunning, 
-  isBreak, 
   progress, 
   sessionType, 
   onToggle, 
@@ -212,7 +209,6 @@ const PomodoroTimer = () => {
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
   const [selectedPreset, setSelectedPreset] = useState('pomodoro');
   const [presets, setPresets] = useState(DEFAULT_PRESETS);
-  const [isPresetDialogOpen, setIsPresetDialogOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -314,6 +310,7 @@ const PomodoroTimer = () => {
     }
     
     setIsInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -340,7 +337,7 @@ const PomodoroTimer = () => {
         setTimeLeft(currentTime);
       }
     }
-  }, [selectedPreset, isBreak, workTime, breakTime, longBreakTime, sessionsCompleted, sessionsUntilLongBreak, isRunning]);
+  }, [selectedPreset, isBreak, workTime, breakTime, longBreakTime, sessionsCompleted, sessionsUntilLongBreak, isRunning, timeLeft]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -362,7 +359,8 @@ const PomodoroTimer = () => {
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isRunning, timeLeft, handleComplete]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRunning, handleComplete]);
 
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
@@ -495,7 +493,6 @@ const PomodoroTimer = () => {
       <FullScreenMode
         timeLeft={timeLeft}
         isRunning={isRunning}
-        isBreak={isBreak}
         progress={progress}
         sessionType={sessionType}
         onToggle={toggleTimer}
