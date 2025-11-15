@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Timer, 
   CheckSquare, 
@@ -28,6 +28,7 @@ import {
 } from 'recharts';
 
 function Dashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     todayFocusTime: 0,
     todaySessions: 0,
@@ -172,12 +173,9 @@ function Dashboard() {
       <div className="container mx-auto px-6 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-foreground mb-1">
+          <h1 className="text-3xl font-semibold text-foreground">
             Dashboard
           </h1>
-          <p className="text-sm text-muted-foreground">
-            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-          </p>
         </div>
 
         {/* Quick Actions */}
@@ -185,9 +183,9 @@ function Dashboard() {
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (
-              <Link key={action.name} to={action.href}>
-                <Card className="border hover:border-primary/50 transition-colors cursor-pointer">
-                  <CardContent className="flex flex-col items-center justify-center p-4">
+              <Link key={action.name} to={action.href} className="block">
+                <Card className="border hover:border-primary/50 transition-colors cursor-pointer h-full">
+                  <CardContent className="flex flex-col items-center justify-center p-4 h-full">
                     <Icon className="h-5 w-5 text-muted-foreground mb-2" />
                     <span className="text-xs text-foreground text-center">{action.name}</span>
                   </CardContent>
@@ -293,11 +291,14 @@ function Dashboard() {
           <Card className="border">
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="text-base font-medium">Upcoming Tasks</CardTitle>
-              <Link to="/tasks">
-                <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
-                  View all
-                </Button>
-              </Link>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2 text-xs"
+                onClick={() => navigate('/tasks')}
+              >
+                View all
+              </Button>
             </CardHeader>
             <CardContent>
               {recentTasks.length > 0 ? (
@@ -337,11 +338,14 @@ function Dashboard() {
           <Card className="border">
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="text-base font-medium">Upcoming Events</CardTitle>
-              <Link to="/calendar">
-                <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
-                  View all
-                </Button>
-              </Link>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2 text-xs"
+                onClick={() => navigate('/calendar')}
+              >
+                View all
+              </Button>
             </CardHeader>
             <CardContent>
               {upcomingEvents.length > 0 ? (
