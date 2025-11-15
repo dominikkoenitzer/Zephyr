@@ -7,6 +7,8 @@ const STORAGE_KEYS = {
   WELLNESS: 'zephyr_wellness',
   CALENDAR_EVENTS: 'zephyr_calendar_events',
   TASK_FOLDERS: 'zephyr_task_folders',
+  NOTES: 'zephyr_notes',
+  JOURNAL_ENTRIES: 'zephyr_journal_entries',
 };
 
 class LocalStorageService {
@@ -445,6 +447,172 @@ class LocalStorageService {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  // Notes management
+  saveNotes(notes) {
+    try {
+      localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
+      return true;
+    } catch (error) {
+      console.error('Failed to save notes:', error);
+      return false;
+    }
+  }
+
+  getNotes() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.NOTES);
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error('Failed to get notes:', error);
+      return [];
+    }
+  }
+
+  addNote(note) {
+    try {
+      const notes = this.getNotes();
+      const newNote = {
+        id: note.id || `note-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        title: note.title || 'Untitled Note',
+        content: note.content || '',
+        tags: note.tags || [],
+        color: note.color || '#6366f1',
+        createdAt: note.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        pinned: note.pinned || false,
+      };
+      notes.push(newNote);
+      this.saveNotes(notes);
+      return newNote;
+    } catch (error) {
+      console.error('Failed to add note:', error);
+      return null;
+    }
+  }
+
+  updateNote(noteId, updates) {
+    try {
+      const notes = this.getNotes();
+      const index = notes.findIndex(n => n.id === noteId);
+      if (index === -1) return null;
+      
+      notes[index] = {
+        ...notes[index],
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      };
+      this.saveNotes(notes);
+      return notes[index];
+    } catch (error) {
+      console.error('Failed to update note:', error);
+      return null;
+    }
+  }
+
+  deleteNote(noteId) {
+    try {
+      const notes = this.getNotes();
+      const filtered = notes.filter(n => n.id !== noteId);
+      this.saveNotes(filtered);
+      return true;
+    } catch (error) {
+      console.error('Failed to delete note:', error);
+      return false;
+    }
+  }
+
+  // Journal entries management
+  saveJournalEntries(entries) {
+    try {
+      localStorage.setItem(STORAGE_KEYS.JOURNAL_ENTRIES, JSON.stringify(entries));
+      return true;
+    } catch (error) {
+      console.error('Failed to save journal entries:', error);
+      return false;
+    }
+  }
+
+  getJournalEntries() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.JOURNAL_ENTRIES);
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error('Failed to get journal entries:', error);
+      return [];
+    }
+  }
+
+  addJournalEntry(entry) {
+    try {
+      const entries = this.getJournalEntries();
+      const date = entry.date || new Date().toISOString().split('T')[0];
+      const existingIndex = entries.findIndex(e => e.date === date);
+      
+      const newEntry = {
+        id: entry.id || `journal-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        date,
+        content: entry.content || '',
+        mood: entry.mood || 'neutral',
+        tags: entry.tags || [],
+        createdAt: entry.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      if (existingIndex !== -1) {
+        entries[existingIndex] = { ...entries[existingIndex], ...newEntry };
+      } else {
+        entries.push(newEntry);
+      }
+      
+      this.saveJournalEntries(entries);
+      return newEntry;
+    } catch (error) {
+      console.error('Failed to add journal entry:', error);
+      return null;
+    }
+  }
+
+  updateJournalEntry(entryId, updates) {
+    try {
+      const entries = this.getJournalEntries();
+      const index = entries.findIndex(e => e.id === entryId);
+      if (index === -1) return null;
+      
+      entries[index] = {
+        ...entries[index],
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      };
+      this.saveJournalEntries(entries);
+      return entries[index];
+    } catch (error) {
+      console.error('Failed to update journal entry:', error);
+      return null;
+    }
+  }
+
+  deleteJournalEntry(entryId) {
+    try {
+      const entries = this.getJournalEntries();
+      const filtered = entries.filter(e => e.id !== entryId);
+      this.saveJournalEntries(filtered);
+      return true;
+    } catch (error) {
+      console.error('Failed to delete journal entry:', error);
+      return false;
+    }
+  }
+
+  getJournalEntryByDate(date) {
+    try {
+      const entries = this.getJournalEntries();
+      return entries.find(e => e.date === date) || null;
+    } catch (error) {
+      console.error('Failed to get journal entry by date:', error);
+      return null;
+    }
   }
 }
 
