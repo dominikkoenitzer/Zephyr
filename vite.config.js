@@ -13,29 +13,17 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
+        manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router') || id.includes('react-error-boundary')) {
-              return 'react-vendor';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'react-vendor';
-            }
-            if (id.includes('recharts')) {
-              return 'react-vendor';
-            }
-            if (id.includes('@vercel/analytics')) {
-              return 'react-vendor';
-            }
-            if (id.includes('lucide-react') || id.includes('clsx') || id.includes('tailwind-merge') || id.includes('class-variance-authority')) {
-              return 'react-vendor';
-            }
             return 'vendor';
           }
         },
       },
     },
     chunkSizeWarningLimit: 600,
+    commonjsOptions: {
+      include: [/node_modules/],
+    },
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
@@ -44,3 +32,4 @@ export default defineConfig({
     },
   },
 })
+
