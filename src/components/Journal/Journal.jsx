@@ -297,75 +297,76 @@ const Journal = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-foreground mb-2">Journal</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-1 sm:mb-2">Journal</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {stats.total} entries • {stats.streak} day streak • {stats.thisMonth} this month
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={importJournal} className="gap-2">
-            <Upload className="h-4 w-4" />
-            Import
+        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+          <Button variant="outline" size="sm" onClick={importJournal} className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+            <Upload className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Import</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={exportJournal} className="gap-2">
-            <Download className="h-4 w-4" />
-            Export
+          <Button variant="outline" size="sm" onClick={exportJournal} className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+            <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Export</span>
           </Button>
-          <Button onClick={handleCreateJournalEntry} className="gap-2">
-            <Plus className="h-4 w-4" />
-            New Entry
+          <Button onClick={handleCreateJournalEntry} size="sm" className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+            <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">New Entry</span>
+            <span className="sm:hidden">New</span>
           </Button>
         </div>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total Entries</p>
-                <p className="text-2xl font-bold">{stats.total}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Total Entries</p>
+                <p className="text-xl sm:text-2xl font-bold">{stats.total}</p>
               </div>
-              <BookOpen className="h-8 w-8 text-primary opacity-50" />
+              <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-50" />
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Current Streak</p>
-                <p className="text-2xl font-bold">{stats.streak} days</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Current Streak</p>
+                <p className="text-xl sm:text-2xl font-bold">{stats.streak} days</p>
               </div>
-              <Target className="h-8 w-8 text-primary opacity-50" />
+              <Target className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-50" />
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">This Month</p>
-                <p className="text-2xl font-bold">{stats.thisMonth}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">This Month</p>
+                <p className="text-xl sm:text-2xl font-bold">{stats.thisMonth}</p>
               </div>
-              <CalendarIcon className="h-8 w-8 text-primary opacity-50" />
+              <CalendarIcon className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-50" />
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Most Common Mood</p>
-                <p className="text-lg font-bold capitalize">{stats.mostCommonMood}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Most Common Mood</p>
+                <p className="text-base sm:text-lg font-bold capitalize">{stats.mostCommonMood}</p>
               </div>
               {MOODS.find(m => m.id === stats.mostCommonMood) && (
-                <div className="text-2xl">
+                <div className="text-xl sm:text-2xl">
                   {MOODS.find(m => m.id === stats.mostCommonMood).emoji}
                 </div>
               )}
@@ -375,31 +376,33 @@ const Journal = () => {
       </div>
 
       {/* Search and Filters */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="space-y-3 sm:space-y-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="relative flex-1 min-w-0">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
             <Input
               placeholder="Search journal entries..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-9 sm:pl-10 h-9 sm:h-10 text-sm"
             />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <Button
               variant={viewMode === VIEW_MODES.LIST ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode(VIEW_MODES.LIST)}
+              className="h-8 w-8 sm:h-9 sm:w-9 p-0"
             >
-              <List className="h-4 w-4" />
+              <List className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
             <Button
               variant={viewMode === VIEW_MODES.GRID ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode(VIEW_MODES.GRID)}
+              className="h-8 w-8 sm:h-9 sm:w-9 p-0"
             >
-              <Grid className="h-4 w-4" />
+              <Grid className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
           </div>
         </div>
@@ -589,7 +592,7 @@ const Journal = () => {
 
       {/* Journal Entry Dialog */}
       <Dialog open={isJournalDialogOpen} onOpenChange={setIsJournalDialogOpen}>
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Journal Entry</DialogTitle>
             <DialogDescription>
@@ -610,7 +613,7 @@ const Journal = () => {
 
               <div>
                 <label className="text-sm font-medium mb-2 block text-foreground">Mood</label>
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-2">
                   {MOODS.map(mood => {
                     const Icon = mood.icon;
                     return (
@@ -641,7 +644,7 @@ const Journal = () => {
                   value={selectedJournalEntry.content}
                   onChange={(e) => setSelectedJournalEntry({ ...selectedJournalEntry, content: e.target.value })}
                   placeholder="How was your day? What are you grateful for? What did you learn? What are your goals for tomorrow?"
-                  className="w-full min-h-[400px] px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+                  className="w-full min-h-[300px] sm:min-h-[400px] px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
                 />
               </div>
 
