@@ -30,6 +30,7 @@ const TasksPage = lazy(() => import('./pages/TasksPage'))
 const FocusTimer = lazy(() => import('./pages/FocusTimer'))
 const Calendar = lazy(() => import('./pages/Calendar'))
 const Analytics = lazy(() => import('./pages/Analytics'))
+const Notes = lazy(() => import('./pages/Notes'))
 const Settings = lazy(() => import('./pages/Settings'))
 const Help = lazy(() => import('./pages/Help'))
 
@@ -76,6 +77,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <Analytics />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/notes',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Notes />
           </Suspense>
         ),
       },
