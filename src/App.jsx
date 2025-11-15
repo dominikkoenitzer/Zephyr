@@ -4,9 +4,13 @@ import Header from './components/Layout/Header';
 import Sidebar from './components/Layout/Sidebar';
 import { themeService } from './services/themeService';
 import { notificationService } from './services/notificationService';
+import { useSEO } from './hooks/useSEO';
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // Update SEO metadata for each route
+  useSEO();
 
   useEffect(() => {
     themeService.initialize();
