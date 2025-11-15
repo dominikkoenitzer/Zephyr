@@ -179,20 +179,37 @@ const FullScreenMode = ({
         </div>
 
         <div className="flex justify-center items-center gap-4">
-          <Button
+          <button
             onClick={onToggle}
-            size="lg"
-            className="h-16 w-16 rounded-full"
-            style={{ backgroundColor: preset.color }}
+            className={`
+              relative h-20 w-20 rounded-full transition-all duration-300
+              flex items-center justify-center
+              ${isRunning 
+                ? 'bg-foreground/10 hover:bg-foreground/15' 
+                : 'hover:scale-105 active:scale-95'
+              }
+            `}
+            style={isRunning ? {} : { backgroundColor: preset.color }}
           >
-            {isRunning ? <Pause className="h-7 w-7" /> : <Play className="h-7 w-7 ml-0.5" />}
-          </Button>
+            <div className={`
+              absolute inset-0 rounded-full transition-opacity duration-300
+              ${isRunning ? 'opacity-0' : 'opacity-100'}
+            `} style={{ backgroundColor: preset.color }} />
+            {isRunning ? (
+              <div className="flex items-center justify-center gap-1.5">
+                <div className="h-5 w-1.5 bg-foreground rounded-full" />
+                <div className="h-5 w-1.5 bg-foreground rounded-full" />
+              </div>
+            ) : (
+              <Play className="h-8 w-8 text-white ml-1" fill="currentColor" />
+            )}
+          </button>
           
           <Button
             onClick={onReset}
             variant="ghost"
             size="sm"
-            className="h-10 px-4"
+            className="h-10 px-4 text-muted-foreground hover:text-foreground"
           >
             <RotateCcw className="h-4 w-4 mr-1.5" />
             Reset
@@ -202,7 +219,7 @@ const FullScreenMode = ({
             onClick={onSkip}
             variant="ghost"
             size="sm"
-            className="h-10 px-4"
+            className="h-10 px-4 text-muted-foreground hover:text-foreground"
           >
             <SkipForward className="h-4 w-4 mr-1.5" />
             Skip
@@ -595,21 +612,38 @@ const PomodoroTimer = () => {
           </div>
           
           {/* Controls */}
-          <div className="flex justify-center items-center gap-3">
-            <Button
+          <div className="flex justify-center items-center gap-4">
+            <button
               onClick={toggleTimer}
-              size="lg"
-              className="h-14 w-14 rounded-full"
-              style={{ backgroundColor: currentPreset.color }}
+              className={`
+                relative h-16 w-16 rounded-full transition-all duration-300
+                flex items-center justify-center
+                ${isRunning 
+                  ? 'bg-foreground/10 hover:bg-foreground/15' 
+                  : 'hover:scale-105 active:scale-95'
+                }
+              `}
+              style={isRunning ? {} : { backgroundColor: currentPreset.color }}
             >
-              {isRunning ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
-            </Button>
+              <div className={`
+                absolute inset-0 rounded-full transition-opacity duration-300
+                ${isRunning ? 'opacity-0' : 'opacity-100'}
+              `} style={{ backgroundColor: currentPreset.color }} />
+              {isRunning ? (
+                <div className="flex items-center justify-center gap-1">
+                  <div className="h-4 w-1 bg-foreground rounded-full" />
+                  <div className="h-4 w-1 bg-foreground rounded-full" />
+                </div>
+              ) : (
+                <Play className="h-7 w-7 text-white ml-0.5" fill="currentColor" />
+              )}
+            </button>
             
             <Button
               onClick={resetTimer}
               variant="ghost"
               size="sm"
-              className="h-9 px-4"
+              className="h-9 px-3 text-muted-foreground hover:text-foreground"
             >
               <RotateCcw className="h-4 w-4 mr-1.5" />
               Reset
@@ -619,7 +653,7 @@ const PomodoroTimer = () => {
               onClick={skipSession}
               variant="ghost"
               size="sm"
-              className="h-9 px-4"
+              className="h-9 px-3 text-muted-foreground hover:text-foreground"
               disabled={timeLeft === currentSessionTime}
             >
               <SkipForward className="h-4 w-4 mr-1.5" />
