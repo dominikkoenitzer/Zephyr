@@ -84,7 +84,7 @@ function Settings() {
 
 
   return (
-    <div className="w-full space-y-4 sm:space-y-6 border border-border rounded-lg p-4 sm:p-6 bg-card">
+    <div className="w-full h-full space-y-4 sm:space-y-6 border-2 border-border rounded-xl p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 2xl:p-16 bg-card min-h-[calc(100vh-8rem)]">
       {/* Header */}
       <div className="space-y-1 sm:space-y-2">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
