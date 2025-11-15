@@ -211,7 +211,7 @@ function Dashboard() {
     : 0;
 
   return (
-    <div className="w-full h-full lg:h-full space-y-2 sm:space-y-3 md:space-y-4 border-2 border-border rounded-xl p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-card lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden flex flex-col">
+    <div className="w-full h-full lg:h-[calc(100vh-4rem)] space-y-2 sm:space-y-3 md:space-y-4 border-2 border-border rounded-xl p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-card lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
