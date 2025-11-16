@@ -12,11 +12,37 @@ import {
   FileText,
   Sparkles,
   Palette,
-  ChevronRight
+  ChevronRight,
+  Gem,
+  Sparkle,
+  Sun,
+  Moon,
+  Waves,
+  TreePine,
+  Flower2,
+  Droplets,
+  Circle,
+  Sunset,
+  Mountain
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
 import { themeService, GARDEN_THEMES } from '../../services/themeService';
+
+// Theme icons mapping
+const THEME_ICONS = {
+  emerald: Gem,
+  sapphire: Sparkle,
+  amethyst: Gem,
+  sunset: Sunset,
+  midnight: Moon,
+  coral: Flower2,
+  mint: Droplets,
+  aurora: Sparkles,
+  ocean: Waves,
+  forest: TreePine,
+  default: Circle
+};
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: BarChart3 },
@@ -210,6 +236,7 @@ function SidebarContent({
               const themeColor = theme.colors 
                 ? `hsl(${theme.colors.primary})` 
                 : 'hsl(var(--primary))';
+              const ThemeIcon = THEME_ICONS[theme.id] || Circle;
               
               return (
                 <button
@@ -217,34 +244,45 @@ function SidebarContent({
                   key={theme.id}
                   onClick={() => onThemeSelect(theme.id)}
                   className={cn(
-                    "relative p-2.5 rounded-lg transition-all duration-200 group",
-                    "border-2",
+                    "relative p-3 rounded-lg transition-all duration-200 group",
+                    "border",
                     isSelected
-                      ? "border-primary bg-primary/5 shadow-sm"
-                      : "border-border/50 hover:border-border hover:bg-accent/30"
+                      ? "border-primary/50 bg-primary/5 shadow-sm ring-1 ring-primary/20"
+                      : "border-border/40 hover:border-border/60 hover:bg-accent/20"
                   )}
                   title={theme.description}
                 >
-                  <div className="flex flex-col items-center gap-1.5">
+                  <div className="flex flex-col items-center gap-2">
                     <div 
-                      className="w-8 h-8 rounded-full flex-shrink-0 transition-all duration-200 shadow-sm"
+                      className="relative w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 shadow-sm group-hover:scale-105"
                       style={{ 
                         backgroundColor: themeColor,
                         boxShadow: isSelected 
-                          ? `0 0 0 2px ${themeColor}40, 0 2px 8px ${themeColor}30` 
-                          : `0 2px 4px ${themeColor}20`
+                          ? `0 0 0 2px ${themeColor}30, 0 4px 12px ${themeColor}25` 
+                          : `0 2px 6px ${themeColor}15`
                       }}
-                    />
+                    >
+                      <ThemeIcon 
+                        className={cn(
+                          "h-5 w-5 transition-all duration-200",
+                          isSelected ? "text-white scale-110" : "text-white/90 group-hover:text-white"
+                        )}
+                        strokeWidth={isSelected ? 2.5 : 2}
+                      />
+                      {isSelected && (
+                        <div className="absolute inset-0 rounded-lg bg-white/10" />
+                      )}
+                    </div>
                     <span className={cn(
-                      "text-[10px] font-medium transition-colors",
-                      isSelected ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                      "text-[10px] font-medium transition-colors leading-tight",
+                      isSelected ? "text-primary font-semibold" : "text-muted-foreground group-hover:text-foreground"
                     )}>
                       {theme.name}
                     </span>
                   </div>
                   {isSelected && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-background flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: themeColor }} />
+                    <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full border-2 border-background bg-primary flex items-center justify-center shadow-sm">
+                      <div className="w-2 h-2 rounded-full bg-white" />
                     </div>
                   )}
                 </button>
