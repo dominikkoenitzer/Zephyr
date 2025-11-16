@@ -1,6 +1,9 @@
+// Ensure React loads first by importing it at the very top
 import React, { Suspense, lazy } from 'react'
 import ReactDOM from 'react-dom/client'
+// Import React Router after React
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+// Import Analytics after React
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react'
 import App from './App'
 import ErrorFallback from './components/ErrorBoundary/ErrorFallback'
