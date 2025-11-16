@@ -20,23 +20,20 @@ export default defineConfig({
     // Reduce chunk size warnings
     rollupOptions: {
       output: {
+        // Ensure deterministic chunk names and prevent multiple react-vendor chunks
         manualChunks(id) {
-          // React core libraries - must load first
-          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
-            return 'react-vendor';
-          }
-          
-          // React Router (depends on React) - check before generic react-* pattern
-          if (id.includes('node_modules/react-router')) {
-            return 'router-vendor';
-          }
-          
-          // React-dependent libraries - must load with React
-          // Check for react-error-boundary and any other react-* packages
-          if (id.includes('node_modules/react-error-boundary') || 
+          // React core libraries - must load first and be in a single chunk
+          if (id.includes('node_modules/react/') || 
+              id.includes('node_modules/react-dom/') ||
+              id.includes('node_modules/react-error-boundary') ||
               id.includes('node_modules/react-') ||
               (id.includes('node_modules') && id.includes('/react'))) {
             return 'react-vendor';
+          }
+          
+          // React Router (depends on React) - separate chunk but loads after react-vendor
+          if (id.includes('node_modules/react-router')) {
+            return 'router-vendor';
           }
           
           // Radix UI components (depends on React)
