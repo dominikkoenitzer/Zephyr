@@ -324,49 +324,49 @@ const Journal = () => {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-        <Card>
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+        <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Total Entries</p>
-                <p className="text-xl sm:text-2xl font-bold">{stats.total}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">Total Entries</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold mt-0.5">{stats.total}</p>
               </div>
-              <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-50" />
+              <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-primary opacity-50 flex-shrink-0 ml-2" />
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Current Streak</p>
-                <p className="text-xl sm:text-2xl font-bold">{stats.streak} days</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">Current Streak</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold mt-0.5">{stats.streak} <span className="text-xs sm:text-sm font-normal">days</span></p>
               </div>
-              <Target className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-50" />
+              <Target className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-primary opacity-50 flex-shrink-0 ml-2" />
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">This Month</p>
-                <p className="text-xl sm:text-2xl font-bold">{stats.thisMonth}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">This Month</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold mt-0.5">{stats.thisMonth}</p>
               </div>
-              <CalendarIcon className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-50" />
+              <CalendarIcon className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-primary opacity-50 flex-shrink-0 ml-2" />
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Most Common Mood</p>
-                <p className="text-base sm:text-lg font-bold capitalize">{stats.mostCommonMood}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">Most Common Mood</p>
+                <p className="text-sm sm:text-base md:text-lg font-bold capitalize mt-0.5 truncate">{stats.mostCommonMood}</p>
               </div>
               {MOODS.find(m => m.id === stats.mostCommonMood) && (
-                <div className="text-xl sm:text-2xl">
+                <div className="text-lg sm:text-xl md:text-2xl flex-shrink-0 ml-2">
                   {MOODS.find(m => m.id === stats.mostCommonMood).emoji}
                 </div>
               )}
@@ -410,15 +410,16 @@ const Journal = () => {
         </div>
 
         {/* Mood Filters */}
-        <div className="flex items-center gap-4 flex-wrap">
+        <div className="space-y-3">
           {MOODS.length > 0 && (
-            <>
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium text-muted-foreground">Mood:</span>
+            <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
+              <Filter className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-medium text-muted-foreground flex-shrink-0">Mood:</span>
               <Button
                 variant={filterMood === '' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setFilterMood('')}
+                className="flex-shrink-0 text-xs sm:text-sm h-8 sm:h-9"
               >
                 All
               </Button>
@@ -430,23 +431,25 @@ const Journal = () => {
                     variant={filterMood === mood.id ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setFilterMood(filterMood === mood.id ? '' : mood.id)}
-                    className="gap-2"
+                    className="gap-1.5 sm:gap-2 flex-shrink-0 text-xs sm:text-sm h-8 sm:h-9"
                     style={filterMood === mood.id ? { borderColor: mood.color } : {}}
                   >
-                    <Icon className="h-4 w-4" style={{ color: mood.color }} />
-                    {mood.label}
+                    <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: mood.color }} />
+                    <span className="hidden sm:inline">{mood.label}</span>
+                    <span className="sm:hidden text-base">{mood.emoji}</span>
                   </Button>
                 );
               })}
-            </>
+            </div>
           )}
           {allTags.length > 0 && (
-            <>
-              <span className="text-sm font-medium text-muted-foreground">Tags:</span>
+            <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
+              <span className="text-xs sm:text-sm font-medium text-muted-foreground flex-shrink-0">Tags:</span>
               <Button
                 variant={filterTag === '' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setFilterTag('')}
+                className="flex-shrink-0 text-xs sm:text-sm h-8 sm:h-9"
               >
                 All
               </Button>
@@ -456,23 +459,24 @@ const Journal = () => {
                   variant={filterTag === tag ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setFilterTag(filterTag === tag ? '' : tag)}
-                  className="gap-1"
+                  className="gap-1 flex-shrink-0 text-xs sm:text-sm h-8 sm:h-9"
                 >
                   <Hash className="h-3 w-3" />
-                  {tag}
+                  <span className="max-w-[100px] truncate">{tag}</span>
                 </Button>
               ))}
-            </>
+            </div>
           )}
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-2">
             <Button
               variant={showArchived ? 'default' : 'outline'}
               size="sm"
               onClick={() => setShowArchived(!showArchived)}
-              className="gap-2"
+              className="gap-2 text-xs sm:text-sm h-8 sm:h-9"
             >
-              {showArchived ? <ArchiveRestore className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
-              {showArchived ? 'Show Active' : 'Show Archived'}
+              {showArchived ? <ArchiveRestore className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <Archive className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
+              <span className="hidden sm:inline">{showArchived ? 'Show Active' : 'Show Archived'}</span>
+              <span className="sm:hidden">{showArchived ? 'Active' : 'Archived'}</span>
             </Button>
           </div>
         </div>
@@ -497,8 +501,8 @@ const Journal = () => {
         </Card>
       ) : (
         <div className={viewMode === VIEW_MODES.GRID 
-          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-          : "space-y-4"
+          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
+          : "space-y-3 sm:space-y-4"
         }>
           {filteredJournalEntries.map(entry => {
             const mood = MOODS.find(m => m.id === entry.mood) || MOODS[1];
@@ -507,26 +511,26 @@ const Journal = () => {
               <Card
                 key={entry.id}
                 className={`hover-lift cursor-pointer transition-all group ${
-                  viewMode === VIEW_MODES.LIST ? 'flex items-start gap-4' : ''
+                  viewMode === VIEW_MODES.LIST ? 'flex flex-col sm:flex-row items-start gap-2 sm:gap-4' : ''
                 }`}
                 onClick={() => handleEditJournalEntry(entry)}
                 style={{ borderLeft: `4px solid ${mood.color}` }}
               >
-                <CardHeader className={`pb-3 ${viewMode === VIEW_MODES.LIST ? 'flex-1' : ''}`}>
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
+                <CardHeader className={`pb-3 ${viewMode === VIEW_MODES.LIST ? 'flex-1 min-w-0' : ''}`}>
+                  <div className="flex items-start justify-between gap-2 sm:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-2">
                         <div
-                          className="p-2 rounded-lg flex-shrink-0"
+                          className="p-1.5 sm:p-2 rounded-lg flex-shrink-0"
                           style={{ backgroundColor: `${mood.color}20` }}
                         >
-                          <MoodIcon className="h-5 w-5" style={{ color: mood.color }} />
+                          <MoodIcon className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: mood.color }} />
                         </div>
-                        <div className="flex-1">
-                          <CardTitle className="text-lg">
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-base sm:text-lg truncate">
                             {getRelativeDate(entry.date)}
                           </CardTitle>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs sm:text-sm text-muted-foreground truncate">
                             {formatDate(entry.date)}
                           </p>
                         </div>
@@ -549,11 +553,11 @@ const Journal = () => {
                         </p>
                       )}
                     </div>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-8 w-8 sm:h-8 sm:w-8"
                         aria-label={entry.archived ? "Unarchive entry" : "Archive entry"}
                         title={entry.archived ? "Unarchive entry" : "Archive entry"}
                         onClick={(e) => {
@@ -570,7 +574,7 @@ const Journal = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-destructive"
+                        className="h-8 w-8 sm:h-8 sm:w-8 text-destructive"
                         aria-label="Delete entry"
                         title="Delete entry"
                         onClick={(e) => {
@@ -584,8 +588,8 @@ const Journal = () => {
                   </div>
                 </CardHeader>
                 {viewMode === VIEW_MODES.GRID && (
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground line-clamp-4 whitespace-pre-wrap">
+                  <CardContent className="pt-0">
+                    <p className="text-sm text-muted-foreground line-clamp-3 sm:line-clamp-4 whitespace-pre-wrap break-words">
                       {entry.content || 'No content'}
                     </p>
                   </CardContent>
@@ -598,7 +602,7 @@ const Journal = () => {
 
       {/* Journal Entry Dialog */}
       <Dialog open={isJournalDialogOpen} onOpenChange={setIsJournalDialogOpen}>
-        <DialogContent className="w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:w-full sm:max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Journal Entry</DialogTitle>
             <DialogDescription>
@@ -621,24 +625,26 @@ const Journal = () => {
 
               <div>
                 <label className="text-sm font-medium mb-2 block text-foreground">Mood</label>
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
                   {MOODS.map(mood => {
                     const Icon = mood.icon;
                     return (
                       <button
                         key={mood.id}
+                        type="button"
                         onClick={() => setSelectedJournalEntry({ ...selectedJournalEntry, mood: mood.id })}
                         className={`
-                          flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all
+                          flex flex-col items-center gap-1.5 sm:gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all
+                          active:scale-95 sm:hover:scale-105
                           ${selectedJournalEntry.mood === mood.id
                             ? 'border-foreground scale-105'
-                            : 'border-border hover:scale-102'
+                            : 'border-border'
                           }
                         `}
                         style={selectedJournalEntry.mood === mood.id ? { backgroundColor: `${mood.color}15` } : {}}
                       >
-                        <Icon className="h-6 w-6" style={{ color: mood.color }} />
-                        <span className="text-xs font-medium">{mood.label}</span>
+                        <Icon className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: mood.color }} />
+                        <span className="text-xs sm:text-sm font-medium text-center">{mood.label}</span>
                       </button>
                     );
                   })}
@@ -652,7 +658,7 @@ const Journal = () => {
                   value={selectedJournalEntry.content}
                   onChange={(e) => setSelectedJournalEntry({ ...selectedJournalEntry, content: e.target.value })}
                   placeholder="How was your day? What are you grateful for? What did you learn? What are your goals for tomorrow?"
-                  className="w-full min-h-[300px] sm:min-h-[400px] px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+                  className="w-full min-h-[250px] sm:min-h-[300px] md:min-h-[400px] px-3 py-2 rounded-md border border-input bg-background text-sm sm:text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
                 />
               </div>
 
@@ -688,29 +694,36 @@ const Journal = () => {
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-4 border-t border-border">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsJournalDialogOpen(false);
-                    setSelectedJournalEntry(null);
-                  }}
-                >
-                  Cancel
-                </Button>
-                {selectedJournalEntry.id && (
+              <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-2 pt-4 border-t border-border">
+                <div className="flex gap-2 order-2 sm:order-1">
                   <Button
                     variant="outline"
-                    onClick={() => handleDeleteJournalEntry(selectedJournalEntry.id)}
-                    className="text-destructive hover:text-destructive"
+                    onClick={() => {
+                      setIsJournalDialogOpen(false);
+                      setSelectedJournalEntry(null);
+                    }}
+                    className="flex-1 sm:flex-none"
                   >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete
+                    Cancel
                   </Button>
-                )}
-                <Button onClick={handleSaveJournalEntry} className="gap-2">
+                  {selectedJournalEntry.id && (
+                    <Button
+                      variant="outline"
+                      onClick={() => handleDeleteJournalEntry(selectedJournalEntry.id)}
+                      className="text-destructive hover:text-destructive flex-1 sm:flex-none"
+                    >
+                      <Trash2 className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Delete</span>
+                    </Button>
+                  )}
+                </div>
+                <Button 
+                  onClick={handleSaveJournalEntry} 
+                  className="gap-2 order-1 sm:order-2 flex-1 sm:flex-none"
+                >
                   <Save className="h-4 w-4" />
-                  Save Entry
+                  <span className="hidden sm:inline">Save Entry</span>
+                  <span className="sm:hidden">Save</span>
                 </Button>
               </div>
             </div>
