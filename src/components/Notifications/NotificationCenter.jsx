@@ -51,7 +51,7 @@ const NotificationCenter = ({ onClose }) => {
   const readNotifications = notifications.filter(n => n.read);
 
   return (
-    <div className="absolute top-full right-0 mt-3 sm:mt-4 w-[calc(100vw-1.5rem)] sm:w-96 max-w-[calc(100vw-1.5rem)] sm:max-w-96 bg-background border border-border rounded-lg shadow-lg max-h-[calc(100vh-5rem)] sm:max-h-[600px] flex flex-col z-50">
+    <div className="absolute top-full right-0 mt-5 sm:mt-6 w-[calc(100vw-1.5rem)] sm:w-96 max-w-[calc(100vw-1.5rem)] sm:max-w-96 bg-background border border-border rounded-lg shadow-lg max-h-[calc(100vh-5rem)] sm:max-h-[600px] flex flex-col z-50">
       <div className="flex items-center justify-between p-2.5 sm:p-4 border-b border-border">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
           <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-foreground flex-shrink-0" />
