@@ -51,27 +51,28 @@ const NotificationCenter = ({ onClose }) => {
   const readNotifications = notifications.filter(n => n.read);
 
   return (
-    <div className="absolute top-full right-0 mt-2 w-96 bg-background border border-border rounded-lg shadow-lg max-h-[600px] flex flex-col z-50">
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <div className="flex items-center gap-2">
-          <Bell className="h-5 w-5 text-foreground" />
-          <h3 className="font-semibold text-foreground">Notifications</h3>
+    <div className="absolute top-full right-0 mt-2 w-[calc(100vw-1.5rem)] sm:w-96 max-w-[calc(100vw-1.5rem)] sm:max-w-96 bg-background border border-border rounded-lg shadow-lg max-h-[calc(100vh-5rem)] sm:max-h-[600px] flex flex-col z-50">
+      <div className="flex items-center justify-between p-2.5 sm:p-4 border-b border-border">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+          <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-foreground flex-shrink-0" />
+          <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">Notifications</h3>
           {unreadCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-medium bg-primary text-primary-foreground rounded-full">
+            <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-medium bg-primary text-primary-foreground rounded-full flex-shrink-0">
               {unreadCount}
             </span>
           )}
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
           {unreadCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleMarkAllRead}
-              className="h-8 px-2 text-xs"
+              className="h-7 sm:h-8 px-1.5 sm:px-2 text-[10px] sm:text-xs"
             >
-              <CheckCheck className="h-3.5 w-3.5 mr-1" />
-              Mark all read
+              <CheckCheck className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" />
+              <span className="hidden sm:inline">Mark all read</span>
+              <span className="sm:hidden">All</span>
             </Button>
           )}
           <Button
@@ -81,24 +82,24 @@ const NotificationCenter = ({ onClose }) => {
               navigate('/settings');
               onClose();
             }}
-            className="h-8 w-8"
+            className="h-7 w-7 sm:h-8 sm:w-8"
           >
-            <Settings className="h-4 w-4" />
+            <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </Button>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         {notifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 px-4">
-            <Bell className="h-12 w-12 text-muted-foreground mb-3 opacity-50" />
-            <p className="text-sm font-medium text-foreground mb-1">No notifications</p>
-            <p className="text-xs text-muted-foreground text-center">
+          <div className="flex flex-col items-center justify-center py-8 sm:py-12 px-3 sm:px-4">
+            <Bell className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mb-2 sm:mb-3 opacity-50" />
+            <p className="text-xs sm:text-sm font-medium text-foreground mb-0.5 sm:mb-1">No notifications</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground text-center px-2">
               You&apos;re all caught up! Notifications will appear here.
             </p>
           </div>
         ) : (
-          <div className="p-2 space-y-1">
+          <div className="p-1.5 sm:p-2 space-y-0.5 sm:space-y-1">
             {unreadNotifications.length > 0 && (
               <>
                 {unreadNotifications.map(notification => (
@@ -111,8 +112,8 @@ const NotificationCenter = ({ onClose }) => {
                   />
                 ))}
                 {readNotifications.length > 0 && (
-                  <div className="pt-2 mt-2 border-t border-border">
-                    <div className="px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  <div className="pt-1.5 sm:pt-2 mt-1.5 sm:mt-2 border-t border-border">
+                    <div className="px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                       Earlier
                     </div>
                   </div>
