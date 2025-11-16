@@ -26,14 +26,17 @@ export default defineConfig({
             return 'react-vendor';
           }
           
-          // React-dependent libraries - must load with React
-          if (id.includes('node_modules/react-error-boundary')) {
-            return 'react-vendor';
-          }
-          
-          // React Router (depends on React)
+          // React Router (depends on React) - check before generic react-* pattern
           if (id.includes('node_modules/react-router')) {
             return 'router-vendor';
+          }
+          
+          // React-dependent libraries - must load with React
+          // Check for react-error-boundary and any other react-* packages
+          if (id.includes('node_modules/react-error-boundary') || 
+              id.includes('node_modules/react-') ||
+              (id.includes('node_modules') && id.includes('/react'))) {
+            return 'react-vendor';
           }
           
           // Radix UI components (depends on React)
