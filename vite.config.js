@@ -26,20 +26,31 @@ function fixChunkLoading() {
     transformIndexHtml(html) {
       // Find react-vendor modulepreload link and convert it to a script tag
       // This ensures react-vendor executes before other modules
-      const reactVendorRegex = /<link[^>]*react-vendor[^>]*href="([^"]*)"[^>]*>/;
-      const reactVendorMatch = html.match(reactVendorRegex);
+      const reactVendorPattern = /<link[^>]*rel="modulepreload"[^>]*react-vendor[^>]*href="([^"]*)"[^>]*>/i;
+      const reactVendorMatch = html.match(reactVendorPattern);
       
       if (reactVendorMatch) {
         const reactVendorPath = reactVendorMatch[1];
         // Remove the modulepreload link
-        html = html.replace(reactVendorRegex, '');
+        html = html.replace(reactVendorPattern, '');
         
-        // Find the main script tag and insert react-vendor script before it
-        const mainScriptMatch = html.match(/(<script[^>]*type="module"[^>]*src="[^"]*index[^"]*"[^>]*>)/);
+        // Find the main script tag (index-*.js) and insert react-vendor script before it
+        const mainScriptPattern = /(<script[^>]*type="module"[^>]*src="[^"]*\/index-[^"]*\.js"[^>]*>)/i;
+        const mainScriptMatch = html.match(mainScriptPattern);
+        
         if (mainScriptMatch) {
           const insertPos = mainScriptMatch.index;
           const reactVendorScript = `    <script type="module" crossorigin src="${reactVendorPath}"></script>\n`;
           html = html.slice(0, insertPos) + reactVendorScript + html.slice(insertPos);
+        } else {
+          // Fallback: insert before any script tag
+          const anyScriptPattern = /(<script[^>]*type="module"[^>]*>)/i;
+          const anyScriptMatch = html.match(anyScriptPattern);
+          if (anyScriptMatch) {
+            const insertPos = anyScriptMatch.index;
+            const reactVendorScript = `    <script type="module" crossorigin src="${reactVendorPath}"></script>\n`;
+            html = html.slice(0, insertPos) + reactVendorScript + html.slice(insertPos);
+          }
         }
       }
       
