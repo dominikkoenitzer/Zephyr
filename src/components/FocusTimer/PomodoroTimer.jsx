@@ -110,6 +110,8 @@ const FullScreenMode = ({
           size="icon"
           onClick={onExit}
           className="h-8 w-8 sm:h-9 sm:w-9"
+          aria-label="Exit fullscreen"
+          title="Exit fullscreen"
         >
           <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </Button>
@@ -173,7 +175,10 @@ const FullScreenMode = ({
 
         <div className="flex justify-center items-center gap-3 sm:gap-4">
           <button
+            type="button"
             onClick={onToggle}
+            aria-label={isRunning ? "Pause timer" : "Start timer"}
+            title={isRunning ? "Pause timer" : "Start timer"}
             className={`
               h-16 w-16 sm:h-18 sm:w-18 md:h-20 md:w-20 rounded-full transition-all duration-300
               flex items-center justify-center relative
@@ -611,7 +616,10 @@ const PomodoroTimer = () => {
           {/* Controls */}
           <div className="flex justify-center items-center gap-3 sm:gap-4">
             <button
+              type="button"
               onClick={toggleTimer}
+              aria-label={isRunning ? "Pause timer" : "Start timer"}
+              title={isRunning ? "Pause timer" : "Start timer"}
               className={`
                 h-14 w-14 sm:h-16 sm:w-16 rounded-full transition-all duration-300
                 flex items-center justify-center relative

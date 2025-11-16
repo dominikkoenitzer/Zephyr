@@ -656,6 +656,8 @@ const CalendarView = () => {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8"
+                          aria-label="Delete event"
+                          title="Delete event"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeleteEvent(event.id, e);
@@ -758,6 +760,8 @@ const CalendarView = () => {
             <div className="flex-1 min-w-0 relative search-container">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground pointer-events-none z-10" />
               <Input
+                id="calendar-search"
+                name="calendar-search"
                 type="text"
                 placeholder="Search events..."
                 value={searchQuery}
@@ -908,6 +912,8 @@ const CalendarView = () => {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
+                      aria-label="Previous month"
+                      title="Previous month"
                       onClick={() => {
                         const newDate = new Date(currentDate);
                         newDate.setMonth(newDate.getMonth() - 1);
@@ -923,6 +929,8 @@ const CalendarView = () => {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
+                      aria-label="Next month"
+                      title="Next month"
                       onClick={() => {
                         const newDate = new Date(currentDate);
                         newDate.setMonth(newDate.getMonth() + 1);
@@ -983,6 +991,8 @@ const CalendarView = () => {
                     size="icon"
                     onClick={handlePrevPeriod}
                     className="h-8 w-8 sm:h-9 sm:w-9"
+                    aria-label="Previous period"
+                    title="Previous period"
                   >
                     <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </Button>
@@ -991,6 +1001,8 @@ const CalendarView = () => {
                     size="icon"
                     onClick={handleNextPeriod}
                     className="h-8 w-8 sm:h-9 sm:w-9"
+                    aria-label="Next period"
+                    title="Next period"
                   >
                     <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </Button>
@@ -1043,6 +1055,8 @@ const CalendarView = () => {
             <div>
               <label className="text-sm font-medium mb-2 block text-foreground">Event Title *</label>
               <Input
+                id="event-title"
+                name="event-title"
                 placeholder="Enter event title"
                 value={eventForm.title}
                 onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
@@ -1136,6 +1150,8 @@ const CalendarView = () => {
             <div>
               <label className="text-sm font-medium mb-2 block text-foreground">Location</label>
               <Input
+                id="event-location"
+                name="event-location"
                 placeholder="Enter location (optional)"
                 value={eventForm.location}
                 onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })}
