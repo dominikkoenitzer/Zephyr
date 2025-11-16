@@ -183,22 +183,28 @@ function SidebarContent({
         })}
       </nav>
       
-      <div className="mt-auto pt-4 border-t border-border/50 space-y-2">
-        <Button
-          variant="ghost"
-          onClick={() => setShowThemePicker(!showThemePicker)}
-          className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-lg transition-all"
-        >
-          <Palette className="mr-3 h-4 w-4" />
-          <span className="flex-1 text-left">Theme</span>
-          <ChevronRight className={cn(
-            "h-4 w-4 transition-transform",
-            showThemePicker && "rotate-90"
-          )} />
-        </Button>
+      <div className="mt-auto pt-4 border-t border-border/50 space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-2">
+            <Palette className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground">Theme</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowThemePicker(!showThemePicker)}
+            className="h-7 w-7 p-0"
+            aria-label={showThemePicker ? "Collapse themes" : "Expand themes"}
+          >
+            <ChevronRight className={cn(
+              "h-3.5 w-3.5 transition-transform duration-200",
+              showThemePicker && "rotate-90"
+            )} />
+          </Button>
+        </div>
 
         {showThemePicker && (
-          <div className="space-y-2 pl-4 border-l-2 border-border/30 ml-2">
+          <div className="grid grid-cols-2 gap-2">
             {Object.values(GARDEN_THEMES).map((theme) => {
               const isSelected = currentTheme === theme.id;
               const themeColor = theme.colors 
@@ -211,30 +217,33 @@ function SidebarContent({
                   key={theme.id}
                   onClick={() => onThemeSelect(theme.id)}
                   className={cn(
-                    "w-full text-left px-3 py-2.5 text-xs rounded-lg transition-all duration-200 flex items-center gap-2.5 group",
+                    "relative p-2.5 rounded-lg transition-all duration-200 group",
+                    "border-2",
                     isSelected
-                      ? "bg-accent text-foreground font-medium shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent/30"
+                      ? "border-primary bg-primary/5 shadow-sm"
+                      : "border-border/50 hover:border-border hover:bg-accent/30"
                   )}
+                  title={theme.description}
                 >
-                  <div 
-                    className="w-4 h-4 rounded-full flex-shrink-0 border-2 transition-all duration-200"
-                    style={{ 
-                      backgroundColor: themeColor,
-                      borderColor: isSelected ? themeColor : 'transparent',
-                      boxShadow: isSelected ? `0 0 0 2px hsl(var(--background)), 0 0 0 4px ${themeColor}40` : 'none'
-                    }}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium">{theme.name}</div>
-                    {theme.description && (
-                      <div className="text-[10px] text-muted-foreground mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {theme.description}
-                      </div>
-                    )}
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div 
+                      className="w-8 h-8 rounded-full flex-shrink-0 transition-all duration-200 shadow-sm"
+                      style={{ 
+                        backgroundColor: themeColor,
+                        boxShadow: isSelected 
+                          ? `0 0 0 2px ${themeColor}40, 0 2px 8px ${themeColor}30` 
+                          : `0 2px 4px ${themeColor}20`
+                      }}
+                    />
+                    <span className={cn(
+                      "text-[10px] font-medium transition-colors",
+                      isSelected ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                    )}>
+                      {theme.name}
+                    </span>
                   </div>
                   {isSelected && (
-                    <div className="flex-shrink-0">
+                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-background flex items-center justify-center">
                       <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: themeColor }} />
                     </div>
                   )}
