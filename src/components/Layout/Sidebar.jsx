@@ -78,8 +78,8 @@ function Sidebar({ isMobile = false, onClose }) {
     return (
       <div className="fixed inset-0 z-50 lg:hidden">
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
-        <div className="fixed left-0 top-0 h-full w-72 bg-background/95 backdrop-blur-xl border-r border-border/50 p-6 animate-slide-in-from-left shadow-2xl">
-          <div className="flex items-center justify-between mb-8">
+        <div className="fixed left-0 top-0 h-full w-72 bg-background/95 backdrop-blur-xl border-r border-border/50 animate-slide-in-from-left shadow-2xl flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between p-4 sm:p-6 pb-4 sm:pb-6 flex-shrink-0">
             <div>
               <h1 className="text-2xl font-bold text-foreground">Zephyr</h1>
               <p className="text-xs text-muted-foreground mt-0.5">Flow Through Focus</p>
@@ -95,17 +95,19 @@ function Sidebar({ isMobile = false, onClose }) {
               <X className="h-4 w-4" />
             </Button>
           </div>
-          <SidebarContent 
-            navigation={navigation} 
-            location={location} 
-            onItemClick={onClose}
-            currentTheme={currentTheme}
-            showThemePicker={showThemePicker}
-            setShowThemePicker={setShowThemePicker}
-            onThemeSelect={handleThemeSelect}
-            colorMode={colorMode}
-            onToggleColorMode={toggleColorMode}
-          />
+          <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 pb-4 sm:pb-6">
+            <SidebarContent 
+              navigation={navigation} 
+              location={location} 
+              onItemClick={onClose}
+              currentTheme={currentTheme}
+              showThemePicker={showThemePicker}
+              setShowThemePicker={setShowThemePicker}
+              onThemeSelect={handleThemeSelect}
+              colorMode={colorMode}
+              onToggleColorMode={toggleColorMode}
+            />
+          </div>
         </div>
       </div>
     );
@@ -145,7 +147,7 @@ function SidebarContent({
   onToggleColorMode
 }) {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-full">
       <nav className="flex-1 space-y-1">
         {navigation.map((item) => {
           const Icon = item.icon;
