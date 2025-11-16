@@ -191,19 +191,19 @@ function Help() {
 
       {/* Privacy Policy Section */}
       {activeSection === 'privacy' && (
-        <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-y-hidden">
-          <Card className="glass-card border-none h-full">
-            <CardHeader className="flex-shrink-0 pb-3 sm:pb-4">
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <Card className="glass-card border-none bg-background/80 sm:bg-background/90 backdrop-blur-sm shadow-lg">
+            <CardHeader className="flex-shrink-0 pb-3 sm:pb-4 sticky top-0 bg-background/95 backdrop-blur-md z-10 border-b border-border/50">
               <CardTitle className="flex items-center gap-2 text-lg sm:text-xl md:text-2xl">
                 <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
                 Privacy Policy
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 sm:space-y-5 md:space-y-6 px-3 sm:px-4 md:px-6">
-            <div className="space-y-4 sm:space-y-5 md:space-y-6">
+            <CardContent className="space-y-4 sm:space-y-5 md:space-y-6 px-3 sm:px-4 md:px-6 pb-6 sm:pb-8">
+            <div className="space-y-4 sm:space-y-5 md:space-y-6 max-w-4xl mx-auto">
               <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">Last updated: {new Date().toLocaleDateString()}</p>
               
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">1. Information We Collect</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   Zephyr is designed with privacy in mind. All data is stored locally on your device using browser localStorage. 
@@ -212,7 +212,7 @@ function Help() {
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">2. Local Data Storage</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed mb-2 sm:mb-3">
                   All your tasks, calendar events, notes, journal entries, timer sessions, and settings are stored exclusively 
@@ -229,7 +229,7 @@ function Help() {
                 </ul>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">3. Data Security</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed mb-2 sm:mb-3">
                   Since all data is stored locally, you have complete control over your information. We recommend:
@@ -241,7 +241,7 @@ function Help() {
                 </ul>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">4. Third-Party Services</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   Zephyr does not integrate with third-party services that collect personal data. The application is a 
@@ -249,7 +249,7 @@ function Help() {
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">5. Cookies and Tracking</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   Zephyr does not use cookies or tracking technologies. We do not track your usage patterns, collect analytics, 
@@ -257,7 +257,7 @@ function Help() {
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">6. Data Deletion</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   You can delete all your data at any time by using the &quot;Clear All Local Storage&quot; feature in Settings. 
@@ -265,14 +265,14 @@ function Help() {
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">7. Children&apos;s Privacy</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   Zephyr is not intended for children under 13 years of age. We do not knowingly collect information from children.
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">8. Changes to This Policy</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   We may update this Privacy Policy from time to time. Any changes will be reflected in this document with an 
@@ -280,7 +280,7 @@ function Help() {
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">9. Contact Us</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   If you have questions about this Privacy Policy, please contact us through the Help & Support section.
@@ -294,19 +294,19 @@ function Help() {
 
       {/* Terms of Service Section */}
       {activeSection === 'terms' && (
-        <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-y-hidden">
-          <Card className="glass-card border-none h-full">
-            <CardHeader className="flex-shrink-0 pb-3 sm:pb-4">
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <Card className="glass-card border-none bg-background/80 sm:bg-background/90 backdrop-blur-sm shadow-lg">
+            <CardHeader className="flex-shrink-0 pb-3 sm:pb-4 sticky top-0 bg-background/95 backdrop-blur-md z-10 border-b border-border/50">
               <CardTitle className="flex items-center gap-2 text-lg sm:text-xl md:text-2xl">
                 <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
                 Terms of Service
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 sm:space-y-5 md:space-y-6 px-3 sm:px-4 md:px-6">
-            <div className="space-y-4 sm:space-y-5 md:space-y-6">
+            <CardContent className="space-y-4 sm:space-y-5 md:space-y-6 px-3 sm:px-4 md:px-6 pb-6 sm:pb-8">
+            <div className="space-y-4 sm:space-y-5 md:space-y-6 max-w-4xl mx-auto">
               <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">Last updated: {new Date().toLocaleDateString()}</p>
               
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">1. Acceptance of Terms</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   By accessing and using Zephyr, you accept and agree to be bound by the terms and provision of this agreement. 
@@ -314,7 +314,7 @@ function Help() {
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">2. Use License</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed mb-2 sm:mb-3">
                   Permission is granted to use Zephyr for personal, non-commercial purposes. Under this license you may not:
@@ -327,7 +327,7 @@ function Help() {
                 </ul>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">3. Disclaimer</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   The materials in Zephyr are provided on an &apos;as is&apos; basis. Zephyr makes no warranties, expressed or implied, 
@@ -337,7 +337,7 @@ function Help() {
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">4. Limitations</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   In no event shall Zephyr or its suppliers be liable for any damages (including, without limitation, damages for 
@@ -347,7 +347,7 @@ function Help() {
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">5. Data Responsibility</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   You are solely responsible for backing up your data. Zephyr stores all data locally on your device, and we 
@@ -356,7 +356,7 @@ function Help() {
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">6. Accuracy of Materials</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   The materials appearing in Zephyr could include technical, typographical, or photographic errors. Zephyr does 
@@ -364,7 +364,7 @@ function Help() {
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">7. Modifications</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   Zephyr may revise these terms of service at any time without notice. By using this application you are agreeing 
@@ -372,7 +372,7 @@ function Help() {
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">8. Prohibited Uses</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed mb-2 sm:mb-3">You may not use Zephyr:</p>
                 <ul className="list-disc ml-4 sm:ml-5 md:ml-6 space-y-1.5 sm:space-y-2 text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
@@ -383,7 +383,7 @@ function Help() {
                 </ul>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">9. Termination</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   We reserve the right to terminate or suspend access to Zephyr immediately, without prior notice or liability, 
@@ -391,7 +391,7 @@ function Help() {
                 </p>
               </section>
 
-              <section className="space-y-2 sm:space-y-3">
+              <section className="space-y-2 sm:space-y-3 bg-card/30 sm:bg-card/40 p-3 sm:p-4 rounded-lg border border-border/30">
                 <h3 className="font-semibold text-foreground text-sm sm:text-base md:text-lg mb-2 sm:mb-3 leading-tight">10. Governing Law</h3>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                   These terms and conditions are governed by and construed in accordance with applicable laws. Any disputes 
