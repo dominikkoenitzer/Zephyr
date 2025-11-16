@@ -1,23 +1,14 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import {
-  Plus, Search, Trash2, Save, X, BookOpen, Heart, Smile, Frown, Meh, Star, 
-  Filter, Hash, Download, Upload, Calendar as CalendarIcon,
-  Grid, List, Archive, ArchiveRestore, Sparkles, Target
+  Plus, Search, Trash2, Save, X, BookOpen, 
+  Hash, Download, Upload, Calendar as CalendarIcon,
+  Grid, List, Archive, ArchiveRestore, Target
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { localStorageService } from '../../services/localStorage';
-
-const MOODS = [
-  { id: 'happy', icon: Smile, color: '#10b981', label: 'Happy', emoji: '😊' },
-  { id: 'neutral', icon: Meh, color: '#6b7280', label: 'Neutral', emoji: '😐' },
-  { id: 'sad', icon: Frown, color: '#ef4444', label: 'Sad', emoji: '😢' },
-  { id: 'excited', icon: Star, color: '#f59e0b', label: 'Excited', emoji: '⭐' },
-  { id: 'calm', icon: Heart, color: '#8b5cf6', label: 'Calm', emoji: '💜' },
-  { id: 'grateful', icon: Sparkles, color: '#ec4899', label: 'Grateful', emoji: '✨' },
-];
 
 const VIEW_MODES = {
   GRID: 'grid',
@@ -32,10 +23,9 @@ const Journal = () => {
   const [isJournalDialogOpen, setIsJournalDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [filterTag, setFilterTag] = useState('');
-  const [filterMood, setFilterMood] = useState('');
   const [viewMode, setViewMode] = useState(VIEW_MODES.LIST);
   const [showArchived, setShowArchived] = useState(false);
-  const [sortBy] = useState('date'); // date, mood, length
+  const [sortBy] = useState('date'); // date, length
   const textareaRef = useRef(null);
 
   useEffect(() => {
@@ -62,11 +52,6 @@ const Journal = () => {
       );
     }
     
-    // Filter by mood
-    if (filterMood) {
-      filtered = filtered.filter(entry => entry.mood === filterMood);
-    }
-    
     // Filter by tag
     if (filterTag) {
       filtered = filtered.filter(entry =>
@@ -77,10 +62,6 @@ const Journal = () => {
     // Sort
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'mood': {
-          const moodOrder = ['happy', 'excited', 'calm', 'grateful', 'neutral', 'sad'];
-          return moodOrder.indexOf(a.mood) - moodOrder.indexOf(b.mood);
-        }
         case 'length':
           return b.content.length - a.content.length;
         default: // date
@@ -89,7 +70,7 @@ const Journal = () => {
     });
     
     return filtered;
-  }, [journalEntries, searchQuery, filterMood, filterTag, showArchived, sortBy]);
+  }, [journalEntries, searchQuery, filterTag, showArchived, sortBy]);
 
   const allTags = useMemo(() => {
     return [...new Set(journalEntries.flatMap(e => e.tags))];
@@ -119,13 +100,6 @@ const Journal = () => {
 
   const stats = useMemo(() => {
     const totalEntries = journalEntries.length;
-    const moodCounts = MOODS.reduce((acc, mood) => {
-      acc[mood.id] = journalEntries.filter(e => e.mood === mood.id).length;
-      return acc;
-    }, {});
-    const mostCommonMood = Object.entries(moodCounts).reduce((a, b) => 
-      moodCounts[a[0]] > moodCounts[b[0]] ? a : b
-    )[0];
     const streak = calculateStreak(journalEntries);
     const thisMonth = journalEntries.filter(e => {
       const entryDate = new Date(e.date);
@@ -138,8 +112,6 @@ const Journal = () => {
       total: totalEntries,
       thisMonth,
       streak,
-      mostCommonMood,
-      moodCounts,
       archived: journalEntries.filter(e => e.archived).length,
     };
   }, [journalEntries]);
@@ -152,7 +124,6 @@ const Journal = () => {
       setSelectedJournalEntry({
         date: selectedDate,
         content: '',
-        mood: 'neutral',
         tags: [],
         archived: false,
       });
@@ -324,7 +295,7 @@ const Journal = () => {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
         <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
@@ -355,21 +326,6 @@ const Journal = () => {
                 <p className="text-lg sm:text-xl md:text-2xl font-bold mt-0.5">{stats.thisMonth}</p>
               </div>
               <CalendarIcon className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-primary opacity-50 flex-shrink-0 ml-2" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="hover:shadow-md transition-shadow">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center justify-between">
-              <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm text-muted-foreground truncate">Most Common Mood</p>
-                <p className="text-sm sm:text-base md:text-lg font-bold capitalize mt-0.5 truncate">{stats.mostCommonMood}</p>
-              </div>
-              {MOODS.find(m => m.id === stats.mostCommonMood) && (
-                <div className="text-lg sm:text-xl md:text-2xl flex-shrink-0 ml-2">
-                  {MOODS.find(m => m.id === stats.mostCommonMood).emoji}
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
@@ -409,39 +365,8 @@ const Journal = () => {
           </div>
         </div>
 
-        {/* Mood Filters */}
+        {/* Tag Filters */}
         <div className="space-y-3">
-          {MOODS.length > 0 && (
-            <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
-              <Filter className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-              <span className="text-xs sm:text-sm font-medium text-muted-foreground flex-shrink-0">Mood:</span>
-              <Button
-                variant={filterMood === '' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFilterMood('')}
-                className="flex-shrink-0 text-xs sm:text-sm h-8 sm:h-9"
-              >
-                All
-              </Button>
-              {MOODS.map(mood => {
-                const Icon = mood.icon;
-                return (
-                  <Button
-                    key={mood.id}
-                    variant={filterMood === mood.id ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setFilterMood(filterMood === mood.id ? '' : mood.id)}
-                    className="gap-1.5 sm:gap-2 flex-shrink-0 text-xs sm:text-sm h-8 sm:h-9"
-                    style={filterMood === mood.id ? { borderColor: mood.color } : {}}
-                  >
-                    <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: mood.color }} />
-                    <span className="hidden sm:inline">{mood.label}</span>
-                    <span className="sm:hidden text-base">{mood.emoji}</span>
-                  </Button>
-                );
-              })}
-            </div>
-          )}
           {allTags.length > 0 && (
             <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
               <span className="text-xs sm:text-sm font-medium text-muted-foreground flex-shrink-0">Tags:</span>
@@ -489,7 +414,7 @@ const Journal = () => {
             <BookOpen className="h-16 w-16 text-muted-foreground mb-4" />
             <h3 className="text-xl font-semibold mb-2">No journal entries found</h3>
             <p className="text-muted-foreground text-center mb-4">
-              {searchQuery || filterMood || filterTag
+              {searchQuery || filterTag
                 ? 'Try adjusting your search or filters'
                 : 'Start your journaling journey today'}
             </p>
@@ -505,8 +430,6 @@ const Journal = () => {
           : "space-y-3 sm:space-y-4"
         }>
           {filteredJournalEntries.map(entry => {
-            const mood = MOODS.find(m => m.id === entry.mood) || MOODS[1];
-            const MoodIcon = mood.icon;
             return (
               <Card
                 key={entry.id}
@@ -514,26 +437,17 @@ const Journal = () => {
                   viewMode === VIEW_MODES.LIST ? 'flex flex-col sm:flex-row items-start gap-2 sm:gap-4' : ''
                 }`}
                 onClick={() => handleEditJournalEntry(entry)}
-                style={{ borderLeft: `4px solid ${mood.color}` }}
               >
                 <CardHeader className={`pb-3 ${viewMode === VIEW_MODES.LIST ? 'flex-1 min-w-0' : ''}`}>
                   <div className="flex items-start justify-between gap-2 sm:gap-4">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                        <div
-                          className="p-1.5 sm:p-2 rounded-lg flex-shrink-0"
-                          style={{ backgroundColor: `${mood.color}20` }}
-                        >
-                          <MoodIcon className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: mood.color }} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <CardTitle className="text-base sm:text-lg truncate">
-                            {getRelativeDate(entry.date)}
-                          </CardTitle>
-                          <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                            {formatDate(entry.date)}
-                          </p>
-                        </div>
+                      <div className="mb-2">
+                        <CardTitle className="text-base sm:text-lg truncate">
+                          {getRelativeDate(entry.date)}
+                        </CardTitle>
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                          {formatDate(entry.date)}
+                        </p>
                       </div>
                       {entry.tags.length > 0 && (
                         <div className="flex items-center gap-1 flex-wrap mt-2">
@@ -621,34 +535,6 @@ const Journal = () => {
                   onChange={(e) => setSelectedJournalEntry({ ...selectedJournalEntry, date: e.target.value })}
                   className="w-full"
                 />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block text-foreground">Mood</label>
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
-                  {MOODS.map(mood => {
-                    const Icon = mood.icon;
-                    return (
-                      <button
-                        key={mood.id}
-                        type="button"
-                        onClick={() => setSelectedJournalEntry({ ...selectedJournalEntry, mood: mood.id })}
-                        className={`
-                          flex flex-col items-center gap-1.5 sm:gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all
-                          active:scale-95 sm:hover:scale-105
-                          ${selectedJournalEntry.mood === mood.id
-                            ? 'border-foreground scale-105'
-                            : 'border-border'
-                          }
-                        `}
-                        style={selectedJournalEntry.mood === mood.id ? { backgroundColor: `${mood.color}15` } : {}}
-                      >
-                        <Icon className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: mood.color }} />
-                        <span className="text-xs sm:text-sm font-medium text-center">{mood.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
               </div>
 
               <div>
