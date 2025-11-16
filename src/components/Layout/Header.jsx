@@ -190,6 +190,8 @@ function Header({ onMenuClick }) {
             <div className="relative" ref={searchContainerRef}>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
               <Input
+                id="header-search"
+                name="search"
                 ref={searchInputRef}
                 placeholder="Search notes, journal, events..."
                 className="pl-9 h-9 w-64 text-sm"
@@ -221,6 +223,8 @@ function Header({ onMenuClick }) {
               variant="ghost"
               size="icon"
               className="h-9 w-9 relative"
+              aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+              title={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
               onClick={() => setShowNotifications(!showNotifications)}
             >
               <Bell className="h-4 w-4" />

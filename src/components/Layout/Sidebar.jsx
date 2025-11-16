@@ -84,7 +84,14 @@ function Sidebar({ isMobile = false, onClose }) {
               <h1 className="text-2xl font-bold text-foreground">Zephyr</h1>
               <p className="text-xs text-muted-foreground mt-0.5">Flow Through Focus</p>
             </div>
-            <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={onClose} 
+              className="h-8 w-8"
+              aria-label="Close sidebar"
+              title="Close sidebar"
+            >
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -190,6 +197,7 @@ function SidebarContent({
           <div className="space-y-1.5 pl-4 border-l-2 border-border/30 ml-2">
             {Object.values(GARDEN_THEMES).map((theme) => (
               <button
+                type="button"
                 key={theme.id}
                 onClick={() => onThemeSelect(theme.id)}
                 className={cn(

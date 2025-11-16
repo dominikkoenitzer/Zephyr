@@ -334,6 +334,8 @@ const Notes = () => {
           <div className="relative flex-1 min-w-0">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
             <Input
+              id="notes-search"
+              name="notes-search"
               placeholder="Search notes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -510,6 +512,8 @@ const Notes = () => {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
+                      aria-label={note.pinned ? "Unpin note" : "Pin note"}
+                      title={note.pinned ? "Unpin note" : "Pin note"}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleTogglePin(note.id);
@@ -584,6 +588,8 @@ const Notes = () => {
             <div className="space-y-4 py-4">
               <div className="flex items-center gap-2">
                 <Input
+                  id="note-title"
+                  name="note-title"
                   value={selectedNote.title}
                   onChange={(e) => setSelectedNote({ ...selectedNote, title: e.target.value })}
                   placeholder="Note title..."
@@ -681,6 +687,8 @@ const Notes = () => {
                   ))}
                 </div>
                 <Input
+                  id="note-tag"
+                  name="note-tag"
                   placeholder="Add a tag and press Enter"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -723,6 +731,8 @@ const Notes = () => {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <Input
+              id="folder-name"
+              name="folder-name"
               placeholder="Folder name..."
               value={newFolderName}
               onChange={(e) => setNewFolderName(e.target.value)}
