@@ -15,15 +15,13 @@ import {
   ChevronRight,
   Gem,
   Sparkle,
-  Sun,
   Moon,
   Waves,
   TreePine,
   Flower2,
   Droplets,
   Circle,
-  Sunset,
-  Mountain
+  Sunset
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
