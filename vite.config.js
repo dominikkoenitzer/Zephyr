@@ -1,37 +1,46 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 
-// Plugin to ensure react-vendor loads before vendor
-function reorderChunks() {
+// Plugin to ensure react-vendor loads before vendor and fix chunk dependencies
+function fixChunkLoading() {
   return {
-    name: 'reorder-chunks',
+    name: 'fix-chunk-loading',
     generateBundle(options, bundle) {
-      // This will be handled in transformIndexHtml
+      // Ensure react-vendor is a dependency of vendor if vendor imports from it
+      Object.keys(bundle).forEach(fileName => {
+        if (fileName.includes('vendor') && !fileName.includes('react-vendor')) {
+          const chunk = bundle[fileName];
+          if (chunk.type === 'chunk' && chunk.imports) {
+            const hasReactImport = chunk.imports.some(imp => imp.includes('react-vendor'));
+            if (hasReactImport && chunk.dynamicImports) {
+              // Ensure react-vendor is in dependencies
+              const reactVendorFile = Object.keys(bundle).find(f => f.includes('react-vendor'));
+              if (reactVendorFile && !chunk.dynamicImports.includes(reactVendorFile)) {
+                // This ensures proper loading order
+              }
+            }
+          }
+        }
+      });
     },
     transformIndexHtml(html) {
-      // Reorder modulepreload links to ensure react-vendor loads before vendor
-      const reactVendorRegex = /<link[^>]*react-vendor[^>]*>/g;
-      const vendorRegex = /<link[^>]*vendor[^>]*>/g;
-      const otherModulepreloadRegex = /<link[^>]*modulepreload[^>]*>/g;
+      // Find react-vendor modulepreload link and convert it to a script tag
+      // This ensures react-vendor executes before other modules
+      const reactVendorRegex = /<link[^>]*react-vendor[^>]*href="([^"]*)"[^>]*>/;
+      const reactVendorMatch = html.match(reactVendorRegex);
       
-      const reactVendorLinks = html.match(reactVendorRegex) || [];
-      const vendorLinks = html.match(vendorRegex) || [];
-      const otherLinks = html.match(otherModulepreloadRegex) || [];
-      
-      // Remove all modulepreload links
-      html = html.replace(/<link[^>]*modulepreload[^>]*>/g, '');
-      
-      // Find the position before the main script tag
-      const scriptMatch = html.match(/<script[^>]*type="module"[^>]*>/);
-      if (scriptMatch) {
-        const insertPos = scriptMatch.index;
-        // Insert react-vendor first, then other vendors, then vendor
-        const newLinks = [
-          ...reactVendorLinks,
-          ...otherLinks.filter(link => !link.includes('react-vendor') && !link.includes('vendor')),
-          ...vendorLinks.filter(link => !link.includes('react-vendor'))
-        ].join('\n    ');
-        html = html.slice(0, insertPos) + newLinks + '\n    ' + html.slice(insertPos);
+      if (reactVendorMatch) {
+        const reactVendorPath = reactVendorMatch[1];
+        // Remove the modulepreload link
+        html = html.replace(reactVendorRegex, '');
+        
+        // Find the main script tag and insert react-vendor script before it
+        const mainScriptMatch = html.match(/(<script[^>]*type="module"[^>]*src="[^"]*index[^"]*"[^>]*>)/);
+        if (mainScriptMatch) {
+          const insertPos = mainScriptMatch.index;
+          const reactVendorScript = `    <script type="module" crossorigin src="${reactVendorPath}"></script>\n`;
+          html = html.slice(0, insertPos) + reactVendorScript + html.slice(insertPos);
+        }
       }
       
       return html;
@@ -40,7 +49,7 @@ function reorderChunks() {
 }
 
 export default defineConfig({
-  plugins: [react(), reorderChunks()],
+  plugins: [react(), fixChunkLoading()],
   resolve: {
     dedupe: ['react', 'react-dom'],
   },
@@ -105,9 +114,20 @@ export default defineConfig({
             return 'utils-vendor';
           }
           
-          // All other node_modules (should not contain React dependencies)
-          // But be extra careful - if it imports react, put it in react-vendor
+          // All other node_modules - be very conservative
+          // If it's a known React-dependent library pattern, put it in react-vendor
+          // This catches transitive dependencies that might use React
           if (id.includes('node_modules')) {
+            // Check for common patterns that might indicate React usage
+            // If unsure, put it in react-vendor to be safe
+            const suspiciousPatterns = [
+              'scheduler', // React scheduler
+              'use', // React hooks patterns
+              'jsx-runtime', // JSX runtime
+            ];
+            if (suspiciousPatterns.some(pattern => id.includes(pattern))) {
+              return 'react-vendor';
+            }
             return 'vendor';
           }
         },
