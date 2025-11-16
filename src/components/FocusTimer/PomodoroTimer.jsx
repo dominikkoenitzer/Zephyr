@@ -238,6 +238,8 @@ const PomodoroTimer = () => {
   const [newPresetName, setNewPresetName] = useState('');
   const timerContainerRef = useRef(null);
   const [circumference, setCircumference] = useState(2 * Math.PI * 180);
+  const prevPresetRef = useRef(selectedPreset);
+  const prevIsBreakRef = useRef(isBreak);
 
   const currentPreset = presets.find(p => p.id === selectedPreset) || presets[0];
   const workTime = currentPreset.workTime;
@@ -353,15 +355,22 @@ const PomodoroTimer = () => {
   }, [timeLeft, isRunning, isBreak, sessionsCompleted, workTime, breakTime, longBreakTime, isInitialized]);
 
   useEffect(() => {
-    if (!isRunning) {
+    // Only reset timer when preset changes or session type changes (work <-> break)
+    // Don't reset when timer is paused
+    const presetChanged = prevPresetRef.current !== selectedPreset;
+    const sessionTypeChanged = prevIsBreakRef.current !== isBreak;
+    
+    if ((presetChanged || sessionTypeChanged) && !isRunning) {
       const currentTime = isBreak 
         ? (sessionsCompleted % sessionsUntilLongBreak === 0 ? longBreakTime : breakTime)
         : workTime;
-      if (timeLeft !== currentTime) {
-        setTimeLeft(currentTime);
-      }
+      setTimeLeft(currentTime);
     }
-  }, [selectedPreset, isBreak, workTime, breakTime, longBreakTime, sessionsCompleted, sessionsUntilLongBreak, isRunning, timeLeft]);
+    
+    // Update refs
+    prevPresetRef.current = selectedPreset;
+    prevIsBreakRef.current = isBreak;
+  }, [selectedPreset, isBreak, workTime, breakTime, longBreakTime, sessionsCompleted, sessionsUntilLongBreak, isRunning]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
