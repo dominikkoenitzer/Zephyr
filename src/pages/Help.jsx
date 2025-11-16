@@ -237,14 +237,18 @@ function Help() {
 
                 <h3 className="font-semibold text-foreground text-base mb-2">4. Third-Party Services</h3>
                 <p className="mb-4">
-                  Zephyr does not integrate with third-party services that collect personal data. The application is a 
-                  standalone Progressive Web App (PWA) that functions entirely within your browser.
+                  Zephyr uses Vercel Analytics, a privacy-focused analytics service provided by Vercel, Inc. This service 
+                  collects anonymous, aggregated usage statistics to help improve the application. No personal data or user 
+                  content is shared with Vercel Analytics. The application is otherwise a standalone Progressive Web App (PWA) 
+                  that functions primarily within your browser.
                 </p>
 
                 <h3 className="font-semibold text-foreground text-base mb-2">5. Cookies and Tracking</h3>
                 <p className="mb-4">
-                  Zephyr does not use cookies or tracking technologies. We do not track your usage patterns, collect analytics, 
-                  or monitor your behavior within the application.
+                  Zephyr uses Vercel Analytics to collect anonymous usage statistics. This service collects aggregated, 
+                  non-personally identifiable information about how the application is used, such as page views and performance metrics. 
+                  No personal data, user content, or identifiable information is collected. Vercel Analytics operates in compliance 
+                  with privacy regulations and does not use cookies or track individual users across sites.
                 </p>
 
                 <h3 className="font-semibold text-foreground text-base mb-2">6. Data Deletion</h3>
@@ -266,7 +270,7 @@ function Help() {
 
                 <h3 className="font-semibold text-foreground text-base mb-2">9. Contact Us</h3>
                 <p>
-                  If you have questions about this Privacy Policy, please contact us through the Help & Support section.
+                  If you have questions about this Privacy Policy, please contact us at: <a href="mailto:dominikkoenitzer@users.noreply.github.com" className="text-primary hover:underline">dominikkoenitzer@users.noreply.github.com</a>
                 </p>
               </div>
             </CardContent>
@@ -354,9 +358,14 @@ function Help() {
                 </p>
 
                 <h3 className="font-semibold text-foreground text-base mb-2">10. Governing Law</h3>
-                <p>
+                <p className="mb-4">
                   These terms and conditions are governed by and construed in accordance with applicable laws. Any disputes 
                   relating to these terms shall be subject to the exclusive jurisdiction of the courts in the applicable jurisdiction.
+                </p>
+
+                <h3 className="font-semibold text-foreground text-base mb-2">11. Contact Information</h3>
+                <p>
+                  For questions about these Terms of Service, please contact us at: <a href="mailto:dominikkoenitzer@users.noreply.github.com" className="text-primary hover:underline">dominikkoenitzer@users.noreply.github.com</a>
                 </p>
               </div>
             </CardContent>
@@ -423,7 +432,7 @@ function Help() {
 
                 <h3 className="font-semibold text-foreground text-base mb-2">Contact Information</h3>
                 <p>
-                  For legal inquiries or questions about these terms, please contact us through the Help & Support section.
+                  For legal inquiries or questions about these terms, please contact us at: <a href="mailto:dominikkoenitzer@users.noreply.github.com" className="text-primary hover:underline">dominikkoenitzer@users.noreply.github.com</a>
                 </p>
               </div>
             </CardContent>
