@@ -1,8 +1,46 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 
+// Plugin to ensure react-vendor loads before vendor
+function reorderChunks() {
+  return {
+    name: 'reorder-chunks',
+    generateBundle(options, bundle) {
+      // This will be handled in transformIndexHtml
+    },
+    transformIndexHtml(html) {
+      // Reorder modulepreload links to ensure react-vendor loads before vendor
+      const reactVendorRegex = /<link[^>]*react-vendor[^>]*>/g;
+      const vendorRegex = /<link[^>]*vendor[^>]*>/g;
+      const otherModulepreloadRegex = /<link[^>]*modulepreload[^>]*>/g;
+      
+      const reactVendorLinks = html.match(reactVendorRegex) || [];
+      const vendorLinks = html.match(vendorRegex) || [];
+      const otherLinks = html.match(otherModulepreloadRegex) || [];
+      
+      // Remove all modulepreload links
+      html = html.replace(/<link[^>]*modulepreload[^>]*>/g, '');
+      
+      // Find the position before the main script tag
+      const scriptMatch = html.match(/<script[^>]*type="module"[^>]*>/);
+      if (scriptMatch) {
+        const insertPos = scriptMatch.index;
+        // Insert react-vendor first, then other vendors, then vendor
+        const newLinks = [
+          ...reactVendorLinks,
+          ...otherLinks.filter(link => !link.includes('react-vendor') && !link.includes('vendor')),
+          ...vendorLinks.filter(link => !link.includes('react-vendor'))
+        ].join('\n    ');
+        html = html.slice(0, insertPos) + newLinks + '\n    ' + html.slice(insertPos);
+      }
+      
+      return html;
+    }
+  }
+}
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), reorderChunks()],
   resolve: {
     dedupe: ['react', 'react-dom'],
   },
@@ -23,6 +61,7 @@ export default defineConfig({
         // Ensure deterministic chunk names and prevent multiple react-vendor chunks
         manualChunks(id) {
           // React core libraries - must load first and be in a single chunk
+          // Check for react, react-dom, and any react-* packages
           if (id.includes('node_modules/react/') || 
               id.includes('node_modules/react-dom/') ||
               id.includes('node_modules/react-error-boundary') ||
@@ -51,9 +90,9 @@ export default defineConfig({
             return 'icons-vendor';
           }
           
-          // Analytics (depends on React)
+          // Analytics (depends on React) - ensure it's in react-vendor or separate
           if (id.includes('node_modules/@vercel/analytics')) {
-            return 'analytics-vendor';
+            return 'react-vendor';
           }
           
           // Utility libraries (small, can be grouped) - non-React dependencies only
@@ -67,6 +106,7 @@ export default defineConfig({
           }
           
           // All other node_modules (should not contain React dependencies)
+          // But be extra careful - if it imports react, put it in react-vendor
           if (id.includes('node_modules')) {
             return 'vendor';
           }

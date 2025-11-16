@@ -259,6 +259,8 @@
 @layer base {
   * {
     border-color: hsl(var(--border));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   
   html {
@@ -335,16 +337,16 @@
   /* Glassmorphism effect */
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
+    backdrop-filter: blur(16px) saturate(180%);
     border: 1px solid var(--glass-border);
     box-shadow: 0 8px 32px 0 var(--glass-shadow);
   }
   
   .glass-card {
     background: var(--glass-bg);
-    backdrop-filter: blur(12px) saturate(160%);
     -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: blur(12px) saturate(160%);
     border: 1px solid var(--glass-border);
     box-shadow: 
       0 8px 32px 0 var(--glass-shadow),
