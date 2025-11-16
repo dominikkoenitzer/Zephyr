@@ -21,37 +21,42 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // React core libraries
+          // React core libraries - must load first
           if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
             return 'react-vendor';
           }
           
-          // React Router
+          // React-dependent libraries - must load with React
+          if (id.includes('node_modules/react-error-boundary')) {
+            return 'react-vendor';
+          }
+          
+          // React Router (depends on React)
           if (id.includes('node_modules/react-router')) {
             return 'router-vendor';
           }
           
-          // Radix UI components (split into one chunk as they're often used together)
+          // Radix UI components (depends on React)
           if (id.includes('node_modules/@radix-ui')) {
             return 'radix-vendor';
           }
           
-          // Charts library (recharts is large)
+          // Charts library (recharts is large, depends on React)
           if (id.includes('node_modules/recharts')) {
             return 'charts-vendor';
           }
           
-          // Icons library (lucide-react can be large)
+          // Icons library (lucide-react can be large, depends on React)
           if (id.includes('node_modules/lucide-react')) {
             return 'icons-vendor';
           }
           
-          // Analytics
+          // Analytics (depends on React)
           if (id.includes('node_modules/@vercel/analytics')) {
             return 'analytics-vendor';
           }
           
-          // Utility libraries (small, can be grouped)
+          // Utility libraries (small, can be grouped) - non-React dependencies only
           if (
             id.includes('node_modules/clsx') ||
             id.includes('node_modules/tailwind-merge') ||
@@ -61,12 +66,7 @@ export default defineConfig({
             return 'utils-vendor';
           }
           
-          // Error boundary
-          if (id.includes('node_modules/react-error-boundary')) {
-            return 'utils-vendor';
-          }
-          
-          // All other node_modules
+          // All other node_modules (should not contain React dependencies)
           if (id.includes('node_modules')) {
             return 'vendor';
           }
