@@ -115,21 +115,23 @@ function Sidebar({ isMobile = false, onClose }) {
 
   return (
     <div className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-lg overflow-hidden">
-      <div className="flex flex-col flex-grow p-6">
-        <div className="mb-8">
+      <div className="flex flex-col h-full">
+        <div className="flex-shrink-0 p-6 pb-4">
           <h1 className="text-2xl font-bold text-foreground mb-1">Zephyr</h1>
           <p className="text-xs text-muted-foreground">Flow Through Focus</p>
         </div>
-        <SidebarContent 
-          navigation={navigation} 
-          location={location}
-          currentTheme={currentTheme}
-          showThemePicker={showThemePicker}
-          setShowThemePicker={setShowThemePicker}
-          onThemeSelect={handleThemeSelect}
-          colorMode={colorMode}
-          onToggleColorMode={toggleColorMode}
-        />
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6">
+          <SidebarContent 
+            navigation={navigation} 
+            location={location}
+            currentTheme={currentTheme}
+            showThemePicker={showThemePicker}
+            setShowThemePicker={setShowThemePicker}
+            onThemeSelect={handleThemeSelect}
+            colorMode={colorMode}
+            onToggleColorMode={toggleColorMode}
+          />
+        </div>
       </div>
     </div>
   );
