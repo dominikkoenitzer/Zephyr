@@ -196,22 +196,49 @@ function SidebarContent({
         </Button>
 
         {showThemePicker && (
-          <div className="space-y-1.5 pl-4 border-l-2 border-border/30 ml-2">
-            {Object.values(GARDEN_THEMES).map((theme) => (
-              <button
-                type="button"
-                key={theme.id}
-                onClick={() => onThemeSelect(theme.id)}
-                className={cn(
-                  "w-full text-left px-3 py-2 text-xs rounded-md transition-colors",
-                  currentTheme === theme.id
-                    ? "bg-accent text-foreground font-medium"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/30"
-                )}
-              >
-                {theme.name}
-              </button>
-            ))}
+          <div className="space-y-2 pl-4 border-l-2 border-border/30 ml-2">
+            {Object.values(GARDEN_THEMES).map((theme) => {
+              const isSelected = currentTheme === theme.id;
+              const themeColor = theme.colors 
+                ? `hsl(${theme.colors.primary})` 
+                : 'hsl(var(--primary))';
+              
+              return (
+                <button
+                  type="button"
+                  key={theme.id}
+                  onClick={() => onThemeSelect(theme.id)}
+                  className={cn(
+                    "w-full text-left px-3 py-2.5 text-xs rounded-lg transition-all duration-200 flex items-center gap-2.5 group",
+                    isSelected
+                      ? "bg-accent text-foreground font-medium shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent/30"
+                  )}
+                >
+                  <div 
+                    className="w-4 h-4 rounded-full flex-shrink-0 border-2 transition-all duration-200"
+                    style={{ 
+                      backgroundColor: themeColor,
+                      borderColor: isSelected ? themeColor : 'transparent',
+                      boxShadow: isSelected ? `0 0 0 2px hsl(var(--background)), 0 0 0 4px ${themeColor}40` : 'none'
+                    }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium">{theme.name}</div>
+                    {theme.description && (
+                      <div className="text-[10px] text-muted-foreground mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {theme.description}
+                      </div>
+                    )}
+                  </div>
+                  {isSelected && (
+                    <div className="flex-shrink-0">
+                      <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: themeColor }} />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
         )}
 
