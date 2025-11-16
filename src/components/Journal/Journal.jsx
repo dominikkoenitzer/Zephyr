@@ -381,6 +381,8 @@ const Journal = () => {
           <div className="relative flex-1 min-w-0">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
             <Input
+              id="journal-search"
+              name="journal-search"
               placeholder="Search journal entries..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -552,6 +554,8 @@ const Journal = () => {
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
+                        aria-label={entry.archived ? "Unarchive entry" : "Archive entry"}
+                        title={entry.archived ? "Unarchive entry" : "Archive entry"}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleToggleArchive(entry.id);
@@ -567,6 +571,8 @@ const Journal = () => {
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-destructive"
+                        aria-label="Delete entry"
+                        title="Delete entry"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDeleteJournalEntry(entry.id);
@@ -604,6 +610,8 @@ const Journal = () => {
               <div>
                 <label className="text-sm font-medium mb-2 block text-foreground">Date</label>
                 <Input
+                  id="journal-date"
+                  name="journal-date"
                   type="date"
                   value={selectedJournalEntry.date}
                   onChange={(e) => setSelectedJournalEntry({ ...selectedJournalEntry, date: e.target.value })}
@@ -667,6 +675,8 @@ const Journal = () => {
                   ))}
                 </div>
                 <Input
+                  id="journal-tag"
+                  name="journal-tag"
                   placeholder="Add a tag and press Enter"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
