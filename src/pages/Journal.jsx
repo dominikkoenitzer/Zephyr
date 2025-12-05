@@ -2,7 +2,7 @@ import Journal from '../components/Journal/Journal';
 
 function JournalPage() {
   return (
-    <div className="w-full h-full lg:max-h-full lg:h-full border-2 border-border rounded-xl p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-card lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden flex flex-col min-h-0">
+    <div className="w-full flex-1 flex flex-col border border-border/60 rounded-2xl p-responsive bg-card/80 overflow-y-auto scrollbar-thin gap-[var(--panel-gap)]">
       <Journal />
     </div>
   );

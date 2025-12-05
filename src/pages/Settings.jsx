@@ -1,18 +1,17 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Bell, Volume2, CheckSquare, Calendar, Timer, Trash2, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Checkbox } from '../components/ui/checkbox';
-import { Select } from '../components/ui/select';
 import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
-import Toast from '../components/ui/toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { notificationService } from '../services/notificationService';
 import { localStorageService } from '../services/localStorage';
 
 function Settings() {
   const [notificationSettings, setNotificationSettings] = useState(notificationService.getSettings());
   const [showClearDialog, setShowClearDialog] = useState(false);
-  const [toast, setToast] = useState(null);
 
   const handleNotificationSettingsChange = (updates) => {
     const newSettings = { ...notificationSettings, ...updates };
@@ -63,11 +62,7 @@ function Settings() {
       // Reset notification settings to default
       setNotificationSettings(notificationService.getSettings());
       
-      // Show custom toast notification
-      setToast({
-        message: 'All local storage data has been cleared successfully. The page will reload.',
-        type: 'success'
-      });
+      toast.success('All local storage data has been cleared. The page will reload.');
       
       // Reload the page after a short delay to show the toast
       setTimeout(() => {
@@ -75,34 +70,37 @@ function Settings() {
       }, 2000);
     } catch (error) {
       console.error('Failed to clear local storage:', error);
-      setToast({
-        message: 'Failed to clear local storage. Please try again.',
-        type: 'error'
-      });
+      toast.error('Failed to clear local storage. Please try again.');
     }
   };
 
 
   return (
-    <div className="w-full h-full lg:max-h-full lg:h-full space-y-2 sm:space-y-3 md:space-y-4 border-2 border-border rounded-xl p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-card lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden flex flex-col min-h-0">
+    <div className="w-full max-w-screen-2xl mx-auto flex-1 panel-stack border border-border/40 rounded-2xl bg-gradient-to-b from-background via-card/80 to-card/90 p-responsive overflow-y-auto min-h-0 backdrop-blur">
       {/* Header */}
-      <div className="space-y-1 sm:space-y-2">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
-          Settings
-        </h1>
-        <p className="text-sm sm:text-base text-muted-foreground">
-          Manage your notification preferences and app settings
-        </p>
+      <div className="space-y-2 sm:space-y-3 pb-2 sm:pb-3">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-xs font-semibold text-primary shadow-sm ring-1 ring-primary/20">
+          <Bell className="h-4 w-4" />
+          <span>Control center</span>
+        </div>
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
+            Settings
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Manage notifications, data, and personalization
+          </p>
+        </div>
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--panel-gap)]">
         {/* Notifications Card */}
-        <Card className="glass-card border-none shadow-lg h-fit">
+        <Card className="border border-border/30 bg-background/80 rounded-2xl shadow-lg h-fit backdrop-blur">
         <CardHeader className="pb-3 sm:pb-4">
-          <CardTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl">
-            <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
-              <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+          <CardTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl text-foreground">
+            <div className="p-1.5 sm:p-2 rounded-lg bg-primary/15 text-primary shadow-sm ring-1 ring-primary/20">
+              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
             Notifications
           </CardTitle>
@@ -110,7 +108,7 @@ function Settings() {
         <CardContent className="space-y-4 sm:space-y-6">
           {/* Global Settings */}
           <div className="space-y-2 sm:space-y-3">
-            <div className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-background/50 border border-border/50 hover:bg-background/70 transition-colors">
+            <div className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-background/70 border border-border/60 hover:border-primary/30 hover:shadow-sm transition-colors">
               <div className="flex-1 min-w-0 pr-2">
                 <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Enable Notifications</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground">Master switch for all notifications</p>
@@ -121,7 +119,7 @@ function Settings() {
               />
             </div>
             
-            <div className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-background/50 border border-border/50 hover:bg-background/70 transition-colors">
+            <div className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-background/70 border border-border/60 hover:border-primary/30 hover:shadow-sm transition-colors">
               <div className="flex-1 flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
                 <Volume2 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
                 <div className="min-w-0">
@@ -141,12 +139,12 @@ function Settings() {
             <h3 className="font-semibold text-foreground text-base mb-4">Notification Types</h3>
             
             {/* Task Notifications */}
-            <div className="relative rounded-xl border border-border/50 bg-background/30 hover:bg-background/40 transition-colors">
+            <div className="relative rounded-xl border border-border/60 bg-background/80 hover:border-primary/30 hover:shadow-md transition-colors">
               <div className="relative p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                      <CheckSquare className="h-5 w-5 text-blue-500" />
+                    <div className="p-2 rounded-lg bg-primary/15 border border-primary/20 text-primary">
+                      <CheckSquare className="h-5 w-5" />
                     </div>
                     <div>
                       <h4 className="font-semibold text-foreground">Task Notifications</h4>
@@ -167,13 +165,17 @@ function Settings() {
                       </div>
                       <Select
                         value={String(notificationSettings.tasks.dueDateReminder)}
-                        onChange={(e) => handleTaskSettingsChange({ dueDateReminder: parseInt(e.target.value) })}
-                        className="w-32"
+                        onValueChange={(value) => handleTaskSettingsChange({ dueDateReminder: parseInt(value) })}
                       >
-                        <option value="1">1 day</option>
-                        <option value="2">2 days</option>
-                        <option value="3">3 days</option>
-                        <option value="7">1 week</option>
+                        <SelectTrigger className="w-32">
+                          <SelectValue placeholder="Select reminder" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1 day</SelectItem>
+                          <SelectItem value="2">2 days</SelectItem>
+                          <SelectItem value="3">3 days</SelectItem>
+                          <SelectItem value="7">1 week</SelectItem>
+                        </SelectContent>
                       </Select>
                     </div>
                     <div className="flex items-center justify-between gap-4">
@@ -192,12 +194,12 @@ function Settings() {
             </div>
 
             {/* Event Notifications */}
-            <div className="relative rounded-xl border border-border/50 bg-background/30 hover:bg-background/40 transition-colors">
+            <div className="relative rounded-xl border border-border/60 bg-background/80 hover:border-primary/30 hover:shadow-md transition-colors">
               <div className="relative p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-orange-500/10 border border-orange-500/20">
-                      <Calendar className="h-5 w-5 text-orange-500" />
+                    <div className="p-2 rounded-lg bg-primary/15 border border-primary/20 text-primary">
+                      <Calendar className="h-5 w-5" />
                     </div>
                     <div>
                       <h4 className="font-semibold text-foreground">Event Notifications</h4>
@@ -218,13 +220,17 @@ function Settings() {
                       </div>
                       <Select
                         value={String(notificationSettings.events.reminderTime)}
-                        onChange={(e) => handleEventSettingsChange({ reminderTime: parseInt(e.target.value) })}
-                        className="w-32"
+                        onValueChange={(value) => handleEventSettingsChange({ reminderTime: parseInt(value) })}
                       >
-                        <option value="5">5 min</option>
-                        <option value="15">15 min</option>
-                        <option value="30">30 min</option>
-                        <option value="60">1 hour</option>
+                        <SelectTrigger className="w-32">
+                          <SelectValue placeholder="Select reminder" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="5">5 min</SelectItem>
+                          <SelectItem value="15">15 min</SelectItem>
+                          <SelectItem value="30">30 min</SelectItem>
+                          <SelectItem value="60">1 hour</SelectItem>
+                        </SelectContent>
                       </Select>
                     </div>
                   </div>
@@ -264,17 +270,17 @@ function Settings() {
       </Card>
 
         {/* Data Management Card */}
-        <Card className="glass-card border-none shadow-lg h-fit">
+        <Card className="border border-border/30 bg-background/80 rounded-2xl shadow-lg h-fit backdrop-blur">
           <CardHeader className="pb-4 sm:pb-6">
             <CardTitle className="flex items-center gap-2 sm:gap-4 text-lg sm:text-xl md:text-2xl">
-              <div className="p-2 sm:p-3 rounded-lg bg-destructive/10">
+              <div className="p-2 sm:p-3 rounded-lg bg-destructive/15 shadow-sm ring-1 ring-destructive/20">
                 <Trash2 className="h-5 w-5 sm:h-6 sm:w-6 text-destructive" />
               </div>
               Data Management
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6">
-            <div className="p-4 sm:p-6 rounded-xl bg-background/50 border border-border/50 space-y-4 sm:space-y-6">
+            <div className="p-4 sm:p-6 rounded-xl bg-background/80 border border-border/60 space-y-4 sm:space-y-6">
               <div className="flex items-start gap-3 sm:gap-4">
                 <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-destructive mt-1 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
@@ -360,15 +366,6 @@ function Settings() {
         </DialogContent>
       </Dialog>
 
-      {/* Toast Notification */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-          duration={toast.type === 'success' ? 2000 : 4000}
-        />
-      )}
     </div>
   );
 }
