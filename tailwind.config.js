@@ -11,10 +11,31 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
+      padding: {
+        DEFAULT: "1rem",
+        sm: "1.5rem",
+        lg: "2rem",
+        xl: "2.5rem",
+        "2xl": "3rem",
       },
+      screens: {
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
+        "2xl": "1400px",
+        "3xl": "1920px",
+      },
+    },
+    screens: {
+      xs: "475px",
+      sm: "640px",
+      md: "768px",
+      lg: "1024px",
+      xl: "1280px",
+      "2xl": "1536px",
+      "3xl": "1920px",
+      "4xl": "2560px",
     },
     extend: {
       colors: {
@@ -56,6 +77,34 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      spacing: {
+        "safe-top": "env(safe-area-inset-top)",
+        "safe-bottom": "env(safe-area-inset-bottom)",
+        "safe-left": "env(safe-area-inset-left)",
+        "safe-right": "env(safe-area-inset-right)",
+        "18": "4.5rem",
+        "88": "22rem",
+        "112": "28rem",
+        "128": "32rem",
+      },
+      minHeight: {
+        "screen-safe": "calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))",
+        "dvh": "100dvh",
+      },
+      maxHeight: {
+        "screen-safe": "calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))",
+        "dvh": "100dvh",
+      },
+      height: {
+        "screen-safe": "calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))",
+        "dvh": "100dvh",
+        "svh": "100svh",
+        "lvh": "100lvh",
+      },
+      width: {
+        "sidebar": "clamp(16rem, 20vw, 20rem)",
+        "sidebar-collapsed": "4rem",
       },
       fontFamily: {
         sans: [

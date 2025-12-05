@@ -1,0 +1,14 @@
+# Cursor Rules for Zephyr (React + Vite + Tailwind)
+
+- Package manager: pnpm only (no npm/yarn lockfiles). Commands: pnpm install; pnpm dev -- --host --port 1000; pnpm lint; pnpm build.
+- Do not edit generated output in dist/; source is under src/.
+- Styling: Tailwind-first; reuse primitives in src/components/ui before adding new UI code. Prefer clsx/tailwind-merge helpers in lib/utils.js.
+- Routing: defined in src/main.jsx using React Router v6 with lazy-loaded pages and PageLoader fallback. Keep new routes lazy.
+- App shell: layout in App.jsx; preserve themeService init and notificationService start/stop patterns.
+- Theme: respect bg-background/text-foreground classes and index.css tokens; dark/light/system handled in main.jsx.
+- ESLint: config in eslint.config.js (React 18, hooks rules, prop-types off). Always run pnpm lint and pnpm build before finishing to catch errors.
+- Build: Vite + @vitejs/plugin-react-swc. Keep fix-chunk-loading plugin and manualChunks logic intact in vite.config.js.
+- Analytics: @vercel/analytics already mounted in main.jsx; avoid duplicate mounts.
+- Testing: no dedicated test setup detected—if adding tests, clarify framework first.
+- Git hygiene: keep env files, logs, caches, and editor cruft out of version control; follow .gitignore.
+- General: Use concise responses. Prefer functional components/hooks; keep browser-only APIs behind effects or guards.

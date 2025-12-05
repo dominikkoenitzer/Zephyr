@@ -3,12 +3,15 @@ const STORAGE_KEYS = {
   TIMER_STATE: 'zephyr_timer_state',
   TASKS: 'zephyr_tasks',
   FOCUS_SESSIONS: 'zephyr_focus_sessions',
+  FOCUS_STREAK: 'zephyr_focus_streak',
   SETTINGS: 'zephyr_settings',
   WELLNESS: 'zephyr_wellness',
   CALENDAR_EVENTS: 'zephyr_calendar_events',
   TASK_FOLDERS: 'zephyr_task_folders',
   NOTES: 'zephyr_notes',
   JOURNAL_ENTRIES: 'zephyr_journal_entries',
+  ONBOARDING: 'zephyr_onboarding',
+  LAST_SESSION: 'zephyr_last_focus_session',
 };
 
 class LocalStorageService {
@@ -226,6 +229,87 @@ class LocalStorageService {
     } catch (error) {
       console.error('Failed to save focus sessions:', error);
       return false;
+    }
+  }
+
+  // Focus streak tracking
+  saveFocusStreak(streak) {
+    try {
+      const normalized = {
+        count: Math.max(0, streak?.count || 0),
+        lastDate: streak?.lastDate || null
+      };
+      localStorage.setItem(STORAGE_KEYS.FOCUS_STREAK, JSON.stringify(normalized));
+      return normalized;
+    } catch (error) {
+      console.error('Failed to save focus streak:', error);
+      return { count: 0, lastDate: null };
+    }
+  }
+
+  getFocusStreak() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.FOCUS_STREAK);
+      if (!data) return { count: 0, lastDate: null };
+      
+      const parsed = JSON.parse(data);
+      return {
+        count: Math.max(0, parsed.count || 0),
+        lastDate: parsed.lastDate || null
+      };
+    } catch (error) {
+      console.error('Failed to get focus streak:', error);
+      return { count: 0, lastDate: null };
+    }
+  }
+
+  // Onboarding progress
+  saveOnboarding(progress) {
+    try {
+      const existing = this.getOnboarding();
+      const updated = { ...existing, ...progress, lastUpdated: Date.now() };
+      localStorage.setItem(STORAGE_KEYS.ONBOARDING, JSON.stringify(updated));
+      return updated;
+    } catch (error) {
+      console.error('Failed to save onboarding:', error);
+      return null;
+    }
+  }
+
+  getOnboarding() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.ONBOARDING);
+      return data ? JSON.parse(data) : {};
+    } catch (error) {
+      console.error('Failed to get onboarding:', error);
+      return {};
+    }
+  }
+
+  // Last focus session details
+  saveLastSession(session) {
+    try {
+      const payload = {
+        presetId: session?.presetId || 'pomodoro',
+        duration: session?.duration || 0,
+        task: session?.task || null,
+        completedAt: session?.completedAt || new Date().toISOString()
+      };
+      localStorage.setItem(STORAGE_KEYS.LAST_SESSION, JSON.stringify(payload));
+      return payload;
+    } catch (error) {
+      console.error('Failed to save last session:', error);
+      return null;
+    }
+  }
+
+  getLastSession() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.LAST_SESSION);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('Failed to get last session:', error);
+      return null;
     }
   }
 

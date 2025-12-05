@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   Play, SkipForward, Settings, Clock, Target, Maximize2, X, 
   RotateCcw, Plus, Trash2, Save, Edit2, Zap, BookOpen,
@@ -11,12 +12,39 @@ import { CustomNumberInput } from '../ui/custom-number-input';
 import { localStorageService } from '../../services/localStorage';
 import { notificationService } from '../../services/notificationService';
 
+const THEME_COLOR_OPTIONS = [
+  'hsl(var(--primary))',
+  'hsl(var(--accent))',
+  'hsl(var(--ring))',
+  'hsl(var(--secondary-foreground))',
+  'hsl(var(--destructive))',
+  'hsl(var(--muted-foreground))'
+];
+
+const LEGACY_PRESET_COLOR_MAP = {
+  '#3b82f6': THEME_COLOR_OPTIONS[0],
+  '#8b5cf6': THEME_COLOR_OPTIONS[2],
+  '#6366f1': THEME_COLOR_OPTIONS[2],
+  '#ec4899': THEME_COLOR_OPTIONS[3],
+  '#ef4444': THEME_COLOR_OPTIONS[4],
+  '#10b981': THEME_COLOR_OPTIONS[1],
+  '#f59e0b': THEME_COLOR_OPTIONS[0],
+};
+
+const normalizePresetColor = (color) => {
+  if (!color || typeof color !== 'string') return color;
+  const trimmed = color.trim();
+  if (trimmed.startsWith('hsl(') || trimmed.startsWith('var(')) return trimmed;
+  const lower = trimmed.toLowerCase();
+  return LEGACY_PRESET_COLOR_MAP[lower] || trimmed;
+};
+
 const DEFAULT_PRESETS = [
   {
     id: 'pomodoro',
     name: 'Pomodoro',
     icon: Target,
-    color: '#ef4444',
+    color: THEME_COLOR_OPTIONS[0],
     workTime: 25 * 60,
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
@@ -27,7 +55,7 @@ const DEFAULT_PRESETS = [
     id: 'short',
     name: 'Short Focus',
     icon: Zap,
-    color: '#3b82f6',
+    color: THEME_COLOR_OPTIONS[1],
     workTime: 15 * 60,
     shortBreak: 3 * 60,
     longBreak: 10 * 60,
@@ -38,7 +66,7 @@ const DEFAULT_PRESETS = [
     id: 'long',
     name: 'Deep Work',
     icon: BookOpen,
-    color: '#8b5cf6',
+    color: THEME_COLOR_OPTIONS[2],
     workTime: 45 * 60,
     shortBreak: 10 * 60,
     longBreak: 20 * 60,
@@ -49,7 +77,7 @@ const DEFAULT_PRESETS = [
     id: 'meditation',
     name: 'Meditation',
     icon: Heart,
-    color: '#ec4899',
+    color: THEME_COLOR_OPTIONS[3],
     workTime: 10 * 60,
     shortBreak: 2 * 60,
     longBreak: 5 * 60,
@@ -60,7 +88,7 @@ const DEFAULT_PRESETS = [
     id: 'custom',
     name: 'Custom',
     icon: Settings,
-    color: '#10b981',
+    color: THEME_COLOR_OPTIONS[4],
     workTime: 25 * 60,
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
@@ -225,6 +253,7 @@ const FullScreenMode = ({
 };
 
 const PomodoroTimer = () => {
+  const [searchParams] = useSearchParams();
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
@@ -240,6 +269,10 @@ const PomodoroTimer = () => {
   const [circumference, setCircumference] = useState(2 * Math.PI * 180);
   const prevPresetRef = useRef(selectedPreset);
   const prevIsBreakRef = useRef(isBreak);
+  const [sessionTask, setSessionTask] = useState(null);
+  const [, setStreak] = useState(localStorageService.getFocusStreak());
+  const [, setNextPromptVisible] = useState(false);
+  const [hasAutoStarted, setHasAutoStarted] = useState(false);
 
   const currentPreset = presets.find(p => p.id === selectedPreset) || presets[0];
   const workTime = currentPreset.workTime;
@@ -251,6 +284,26 @@ const PomodoroTimer = () => {
     if ('Notification' in window && Notification.permission === 'granted') {
       new Notification(title, { body: message, icon: '/favicon.ico' });
     }
+  };
+
+  const updateStreakCounters = () => {
+    const today = new Date();
+    const todayKey = today.toDateString();
+    const existing = localStorageService.getFocusStreak();
+    const lastDate = existing.lastDate ? new Date(existing.lastDate) : null;
+    let nextCount = 1;
+
+    if (lastDate) {
+      const diff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+      if (diff === 0) {
+        nextCount = existing.count || 1;
+      } else if (diff === 1) {
+        nextCount = (existing.count || 0) + 1;
+      }
+    }
+
+    const updated = localStorageService.saveFocusStreak({ count: nextCount, lastDate: todayKey });
+    setStreak(updated);
   };
 
 
@@ -268,9 +321,19 @@ const PomodoroTimer = () => {
       sessions.push({
         date: new Date().toISOString(),
         duration: workTime,
-        type: 'work'
+        type: 'work',
+        task: sessionTask
       });
       localStorageService.saveFocusSessions(sessions);
+      localStorageService.saveOnboarding({ focusStarted: true });
+      updateStreakCounters();
+      localStorageService.saveLastSession({
+        presetId: selectedPreset,
+        duration: workTime,
+        task: sessionTask,
+        completedAt: new Date().toISOString()
+      });
+      setNextPromptVisible(true);
       
       notificationService.createNotification(
         'timer',
@@ -286,7 +349,7 @@ const PomodoroTimer = () => {
       showNotification('Break Complete', 'Recharged and ready to focus again');
     }
     setIsRunning(false);
-  }, [isBreak, sessionsCompleted, breakTime, longBreakTime, workTime, sessionsUntilLongBreak]);
+  }, [isBreak, sessionsCompleted, breakTime, longBreakTime, workTime, sessionsUntilLongBreak, selectedPreset, sessionTask]);
 
   useEffect(() => {
     const state = localStorageService.getTimerState();
@@ -310,6 +373,9 @@ const PomodoroTimer = () => {
         
         setIsBreak(state.isBreak || false);
         setSessionsCompleted(state.pomodorosCompleted || 0);
+        if (state.focusTask) {
+          setSessionTask(state.focusTask);
+        }
       } catch (error) {
         console.error('Failed to load timer state:', error);
       }
@@ -318,7 +384,10 @@ const PomodoroTimer = () => {
     const savedPresets = localStorage.getItem('focusTimerPresets');
     if (savedPresets) {
       try {
-        const parsed = JSON.parse(savedPresets);
+        const parsed = JSON.parse(savedPresets).map(p => ({
+          ...p,
+          color: normalizePresetColor(p.color),
+        }));
         // Merge with defaults, ensuring defaults come first
         const defaultIds = DEFAULT_PRESETS.map(p => p.id);
         const customPresets = parsed.filter(p => !defaultIds.includes(p.id));
@@ -349,10 +418,39 @@ const PomodoroTimer = () => {
         workTime,
         breakTime,
         longBreakTime,
+        focusTask: sessionTask,
       };
       localStorageService.saveTimerState(state);
     }
-  }, [timeLeft, isRunning, isBreak, sessionsCompleted, workTime, breakTime, longBreakTime, isInitialized]);
+  }, [timeLeft, isRunning, isBreak, sessionsCompleted, workTime, breakTime, longBreakTime, sessionTask, isInitialized]);
+
+  // Handle inbound intent (task -> focus, resume, auto-start)
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    const titleParam = searchParams.get('title');
+    const taskId = searchParams.get('taskId');
+    const resume = searchParams.get('resume') === '1';
+    const autoStartFlag = searchParams.get('start') === '1';
+
+    if (titleParam) {
+      setSessionTask({
+        id: taskId || null,
+        title: decodeURIComponent(titleParam)
+      });
+    } else if (resume) {
+      const last = localStorageService.getLastSession();
+      if (last?.task) {
+        setSessionTask(last.task);
+      }
+    }
+
+    if (autoStartFlag && !hasAutoStarted) {
+      setIsRunning(true);
+      setHasAutoStarted(true);
+      localStorageService.saveOnboarding({ focusStarted: true });
+    }
+  }, [isInitialized, searchParams, hasAutoStarted]);
 
   useEffect(() => {
     // Only reset timer when preset changes or session type changes (work <-> break)
@@ -429,6 +527,10 @@ const PomodoroTimer = () => {
   }, []);
 
   const toggleTimer = () => {
+    if (!isRunning) {
+      localStorageService.saveOnboarding({ focusStarted: true });
+      setNextPromptVisible(false);
+    }
     setIsRunning(!isRunning);
   };
 
@@ -438,10 +540,12 @@ const PomodoroTimer = () => {
       ? (sessionsCompleted % sessionsUntilLongBreak === 0 ? longBreakTime : breakTime)
       : workTime;
     setTimeLeft(currentTime);
+    setNextPromptVisible(false);
   };
 
   const skipSession = () => {
     setIsRunning(false);
+    setNextPromptVisible(false);
     handleComplete();
   };
 
@@ -505,7 +609,7 @@ const PomodoroTimer = () => {
       id: `custom-${Date.now()}`,
       name: 'New Timer',
       icon: TimerIcon,
-      color: '#6366f1',
+      color: THEME_COLOR_OPTIONS[0],
       workTime: 25 * 60,
       shortBreak: 5 * 60,
       longBreak: 15 * 60,
@@ -554,8 +658,8 @@ const PomodoroTimer = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+    <div className="w-full content-wide px-responsive py-responsive space-y-[var(--section-gap)]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--panel-gap)]">
         <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
@@ -848,7 +952,7 @@ const PomodoroTimer = () => {
                   <div>
                     <label className="text-sm font-medium mb-2 block text-foreground">Color</label>
                     <div className="grid grid-cols-6 gap-2">
-                      {['#ef4444', '#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ec4899'].map(color => (
+                      {THEME_COLOR_OPTIONS.map(color => (
                         <button
                           key={color}
                           onClick={() => setEditingPreset({ ...editingPreset, color })}

@@ -211,7 +211,7 @@ function Dashboard() {
     : 0;
 
   return (
-    <div className="w-full h-full lg:max-h-full lg:h-full space-y-2 sm:space-y-3 md:space-y-4 border-2 border-border rounded-xl p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-card lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden flex flex-col min-h-0">
+    <div className="w-full flex-1 panel-stack border border-border/60 rounded-2xl bg-card/80 p-responsive overflow-y-auto lg:overflow-y-auto min-h-0">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -319,37 +319,41 @@ function Dashboard() {
             <CardTitle className="text-base sm:text-lg font-semibold">Weekly Focus Time</CardTitle>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1">Your focus sessions over the past 7 days</p>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={200} className="sm:h-[250px]">
-              <AreaChart data={chartData}>
-                <defs>
-                  <linearGradient id="colorFocus" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                <XAxis 
-                  dataKey="name" 
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis 
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Area 
-                  type="monotone" 
-                  dataKey="focusTime" 
-                  stroke="hsl(var(--primary))" 
-                  strokeWidth={2}
-                  fill="url(#colorFocus)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+          <CardContent className="pb-4 sm:pb-6">
+            <div className="-mx-3 sm:mx-0 overflow-x-auto pb-2">
+              <div className="min-w-[520px] sm:min-w-0 h-[220px] sm:h-[260px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient id="colorFocus" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                    <XAxis 
+                      dataKey="name" 
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis 
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Area 
+                      type="monotone" 
+                      dataKey="focusTime" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={2}
+                      fill="url(#colorFocus)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
