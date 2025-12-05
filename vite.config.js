@@ -122,6 +122,22 @@ export default defineConfig({
           if (id.includes('node_modules/@vercel/analytics')) {
             return 'react-vendor';
           }
+
+          // React-adjacent libraries that don't include "react" in the path
+          if (
+            id.includes('node_modules/sonner') ||
+            id.includes('node_modules/prop-types')
+          ) {
+            return 'react-vendor';
+          }
+
+          // Core router runtime + its lodash helpers
+          if (
+            id.includes('node_modules/@remix-run/router') ||
+            id.includes('node_modules/lodash')
+          ) {
+            return 'router-vendor';
+          }
           
           // Utility libraries (small, can be grouped) - non-React dependencies only
           if (
