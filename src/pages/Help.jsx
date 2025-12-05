@@ -12,43 +12,43 @@ function Help() {
       question: "How does the Pomodoro timer work?",
       answer: "The Pomodoro Technique is a time management method that breaks work into focused intervals. In Zephyr, you work for 25 minutes (a 'pomodoro'), then take a 5-minute break. After completing 4 pomodoros, you get a longer 15-minute break. This cycle helps maintain focus, prevent burnout, and boost productivity. The timer automatically tracks your sessions and you can view your progress on the Dashboard.",
       icon: Timer,
-      iconColor: "text-blue-500",
-      bgColor: "bg-blue-500/10"
+      iconColor: "text-primary",
+      bgColor: "bg-primary/10"
     },
     {
       question: "Can I customize timer durations?",
       answer: "Yes! Zephyr offers multiple timer presets including Pomodoro, Deep Work, and Meditation. You can also create custom presets with your preferred work session, short break, and long break durations. Simply click the settings icon (⚙️) on the Focus Timer page to access preset options and create your own custom timer configuration that fits your workflow.",
       icon: Settings,
-      iconColor: "text-purple-500",
-      bgColor: "bg-purple-500/10"
+      iconColor: "text-primary",
+      bgColor: "bg-accent/60"
     },
     {
       question: "How do I track my progress?",
       answer: "Your Dashboard provides comprehensive progress tracking. It shows your daily focus time, completed pomodoros, active and completed tasks, and completion rates. You'll also see a weekly focus time chart and upcoming tasks/events. All progress is automatically saved and displayed in real-time. Visit the Dashboard anytime to see your productivity metrics and trends.",
       icon: BarChart3,
-      iconColor: "text-green-500",
-      bgColor: "bg-green-500/10"
+      iconColor: "text-primary",
+      bgColor: "bg-accent/50"
     },
     {
       question: "Does Zephyr work offline?",
       answer: "Yes! Zephyr is a Progressive Web App (PWA) designed to work completely offline. All your data—tasks, calendar events, notes, journal entries, and timer sessions—is stored locally on your device using browser storage. You don't need an internet connection to use any features. This ensures your data remains private and accessible even without internet access.",
       icon: WifiOff,
-      iconColor: "text-orange-500",
-      bgColor: "bg-orange-500/10"
-    },
-    {
-      question: "How do I clear all my data?",
-      answer: "To clear all your data, go to Settings > Data Management. Click the 'Clear All Local Storage' button. You'll be asked to confirm this action as it permanently deletes all tasks, events, notes, journal entries, timer sessions, settings, and preferences. This action cannot be undone and will reload the page. Make sure to export any important data before clearing if needed.",
-      icon: Trash2,
-      iconColor: "text-red-500",
-      bgColor: "bg-red-500/10"
+      iconColor: "text-primary",
+      bgColor: "bg-accent/60"
     },
     {
       question: "Is my data backed up?",
       answer: "Zephyr stores all data locally on your device—we don't have access to your data. Currently, there's no automatic cloud backup. To back up your data, you can manually export your notes and journal entries using the Import/Export buttons on those pages. We recommend regularly exporting important information if you want to preserve it. Cloud sync and automatic backup features may be available in future updates.",
       icon: Cloud,
-      iconColor: "text-cyan-500",
-      bgColor: "bg-cyan-500/10"
+      iconColor: "text-primary",
+      bgColor: "bg-accent/60"
+    },
+    {
+      question: "How do I clear all my data?",
+      answer: "To clear all your data, go to Settings > Data Management. Click the 'Clear All Local Storage' button. You'll be asked to confirm this action as it permanently deletes all tasks, events, notes, journal entries, timer sessions, settings, and preferences. This action cannot be undone and will reload the page. Make sure to export any important data before clearing if needed.",
+      icon: Trash2,
+      iconColor: "text-destructive",
+      bgColor: "bg-destructive/10"
     }
   ];
 
@@ -60,7 +60,7 @@ function Help() {
   ];
 
   return (
-    <div className="w-full h-full lg:max-h-full lg:h-full border-2 border-border rounded-xl p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-card lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden flex flex-col min-h-0">
+    <div className="w-full flex-1 panel-stack border border-border/60 rounded-2xl bg-card/90 p-responsive overflow-y-auto min-h-0">
       <div className="flex-shrink-0 space-y-2 sm:space-y-3 mb-2 sm:mb-3">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
           Help & Support
@@ -93,7 +93,7 @@ function Help() {
       {activeSection === 'help' && (
         <div className="flex-1 min-h-0 overflow-y-auto space-y-2 sm:space-y-3 md:space-y-4 pr-1">
           {/* Quick Start Card */}
-          <Card className="glass-card border-none animate-fade-in-up flex-shrink-0" style={{ animationDelay: '0.1s' }}>
+          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm animate-fade-in-up flex-shrink-0" style={{ animationDelay: '0.1s' }}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -138,7 +138,7 @@ function Help() {
           </Card>
 
           {/* FAQ Card */}
-          <Card className="glass-card border-none animate-fade-in-up w-full flex-shrink-0" style={{ animationDelay: '0.2s' }}>
+          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm animate-fade-in-up w-full flex-shrink-0" style={{ animationDelay: '0.2s' }}>
             <CardHeader className="pb-2 sm:pb-3 md:pb-4 flex-shrink-0">
               <CardTitle className="flex items-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl">
                 <div className="p-1.5 sm:p-2 md:p-2.5 rounded-lg bg-primary/10">
@@ -155,7 +155,7 @@ function Help() {
                 {faqs.map((faq, index) => {
                   const Icon = faq.icon;
                   return (
-                    <AccordionItem key={index} value={`faq-${index}`} className="border border-border/50 rounded-lg sm:rounded-xl bg-background/50 hover:bg-background/70 transition-all duration-200 hover:shadow-md overflow-hidden w-full">
+                    <AccordionItem key={index} value={`faq-${index}`} className="border border-border/60 rounded-lg sm:rounded-xl bg-background/80 hover:border-primary/30 transition-all duration-200 hover:shadow-md overflow-hidden w-full">
                       <AccordionTrigger 
                         value={`faq-${index}`}
                         className="px-2 sm:px-3 md:px-4 lg:px-5 py-2.5 sm:py-3 md:py-4 lg:py-5 hover:no-underline group"
@@ -192,7 +192,7 @@ function Help() {
       {/* Privacy Policy Section */}
       {activeSection === 'privacy' && (
         <div className="flex-1 min-h-0 overflow-y-auto space-y-3 sm:space-y-4">
-          <Card className="glass-card border-none">
+          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -281,7 +281,7 @@ function Help() {
       {/* Terms of Service Section */}
       {activeSection === 'terms' && (
         <div className="flex-1 min-h-0 overflow-y-auto space-y-3 sm:space-y-4">
-          <Card className="glass-card border-none">
+          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -376,7 +376,7 @@ function Help() {
       {/* Legal Section */}
       {activeSection === 'legal' && (
         <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-y-hidden space-y-3 sm:space-y-4">
-          <Card className="glass-card border-none">
+          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <Scale className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -438,7 +438,7 @@ function Help() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card border-none border-yellow-500/20 bg-yellow-500/5">
+          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm border-yellow-500/30 bg-yellow-500/10">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
                 <AlertCircle className="h-5 w-5" />

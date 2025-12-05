@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
-  ChevronLeft, ChevronRight, X, Plus, Search, Filter, Calendar as CalendarIcon,
+  ChevronLeft, ChevronRight, X, Plus, Search, Calendar as CalendarIcon,
   Clock, MapPin, Bell, Trash2, Grid3x3, List, LayoutGrid,
   Circle, Settings
 } from 'lucide-react';
@@ -62,7 +62,6 @@ const CalendarView = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterCategory, setFilterCategory] = useState('all');
   const [showSearchResults, setShowSearchResults] = useState(false);
   
   const [eventForm, setEventForm] = useState({
@@ -188,10 +187,9 @@ const CalendarView = () => {
       const matchesSearch = !searchQuery || 
         event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (event.description && event.description.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesCategory = filterCategory === 'all' || event.category === filterCategory;
-      return matchesSearch && matchesCategory;
+      return matchesSearch;
     });
-  }, [events, searchQuery, filterCategory]);
+  }, [events, searchQuery]);
 
 
   const getEventsForDate = useCallback((date) => {
@@ -728,7 +726,7 @@ const CalendarView = () => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="w-full content-wide panel-stack pb-4 sm:pb-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
@@ -738,14 +736,14 @@ const CalendarView = () => {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
-          <Button onClick={handleToday} variant="outline" size="sm" className="text-xs sm:text-sm h-8 sm:h-9">
+          <Button onClick={handleToday} variant="outline" size="sm" className="text-xs sm:text-sm h-9 sm:h-9 w-full sm:w-auto">
             Today
           </Button>
-          <Button onClick={() => setIsSettingsOpen(true)} variant="outline" size="sm" className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+          <Button onClick={() => setIsSettingsOpen(true)} variant="outline" size="sm" className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-9 sm:h-9 w-full sm:w-auto">
             <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Settings</span>
           </Button>
-          <Button onClick={() => handleDateClick(new Date())} size="sm" className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9">
+          <Button onClick={() => handleDateClick(new Date())} size="sm" className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-9 sm:h-9 w-full sm:w-auto">
             <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">New Event</span>
             <span className="sm:hidden">New</span>
@@ -842,20 +840,7 @@ const CalendarView = () => {
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
-              <Select
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
-                className="w-full sm:w-[150px] h-9 sm:h-10 text-sm"
-              >
-                <option value="all">All Categories</option>
-                {EVENT_CATEGORIES.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
-                ))}
-              </Select>
-            </div>
-            <div className="flex items-center gap-0.5 sm:gap-1 border border-border rounded-lg p-0.5 sm:p-1">
+            <div className="flex items-center gap-0.5 sm:gap-1 border border-border rounded-lg p-0.5 sm:p-1 overflow-x-auto scrollbar-hide">
               <Button
                 variant={viewMode === VIEW_MODES.MONTH ? 'default' : 'ghost'}
                 size="sm"
@@ -1011,21 +996,23 @@ const CalendarView = () => {
             </CardHeader>
             <CardContent className="p-2 sm:p-6">
               {viewMode === VIEW_MODES.MONTH && (
-                <>
-                  <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-1 sm:mb-2">
-                    {displayWeekDays.map(day => (
-                      <div
-                        key={day}
-                        className="text-center text-xs sm:text-sm font-semibold text-muted-foreground py-1 sm:py-2"
-                      >
-                        {day}
-                      </div>
-                    ))}
+                <div className="overflow-x-auto pb-2">
+                  <div className="min-w-[560px] sm:min-w-0">
+                    <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-1 sm:mb-2">
+                      {displayWeekDays.map(day => (
+                        <div
+                          key={day}
+                          className="text-center text-xs sm:text-sm font-semibold text-muted-foreground py-1 sm:py-2"
+                        >
+                          {day}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-7 gap-1 sm:gap-2">
+                      {renderMonthView()}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-7 gap-1 sm:gap-2">
-                    {renderMonthView()}
-                  </div>
-                </>
+                </div>
               )}
               {viewMode === VIEW_MODES.WEEK && (
                 <div className="grid grid-cols-7 gap-0 border border-border rounded-lg overflow-hidden overflow-x-auto">
@@ -1108,9 +1095,9 @@ const CalendarView = () => {
               </div>
             )}
 
-            <div>
+            <div className="w-full">
               <label className="text-sm font-medium mb-3 block text-foreground">Category</label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full sm:max-w-xl">
                 {EVENT_CATEGORIES.map(cat => (
                   <button
                     key={cat.id}

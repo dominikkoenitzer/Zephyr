@@ -1,14 +1,13 @@
 // Ensure React loads first by importing it at the very top
-import React, { Suspense, lazy } from 'react'
-import ReactDOM from 'react-dom/client'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 // Import React Router after React
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 // Import Analytics after React
-import { Analytics as VercelAnalytics } from '@vercel/analytics/react'
-import App from './App'
-import ErrorFallback from './components/ErrorBoundary/ErrorFallback'
-import PageLoader from './components/ui/PageLoader'
-import './index.css'
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
+import { routes } from './routes/routes';
+import './index.css';
+import { themeService } from './services/themeService';
 
 // Initialize theme before React renders
 const initializeTheme = () => {
@@ -26,94 +25,14 @@ const initializeTheme = () => {
 
 // Apply theme immediately
 initializeTheme();
+// Clear any legacy garden theme and sync with current color mode
+themeService.initialize();
 
-// Lazy load pages for code-splitting
-const Dashboard = lazy(() => import('./pages/Dashboard'))
-const TasksPage = lazy(() => import('./pages/TasksPage'))
-const FocusTimer = lazy(() => import('./pages/FocusTimer'))
-const Calendar = lazy(() => import('./pages/Calendar'))
-const Notes = lazy(() => import('./pages/Notes'))
-const Journal = lazy(() => import('./pages/Journal'))
-const Settings = lazy(() => import('./pages/Settings'))
-const Help = lazy(() => import('./pages/Help'))
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-    errorElement: <ErrorFallback error={{ message: 'Page not found or an unexpected error occurred.' }} />,
-    children: [
-      {
-        path: '/',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <Dashboard />
-          </Suspense>
-        ),
-      },
-      {
-        path: '/tasks',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <TasksPage />
-          </Suspense>
-        ),
-      },
-      {
-        path: '/focus',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <FocusTimer />
-          </Suspense>
-        ),
-      },
-      {
-        path: '/calendar',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <Calendar />
-          </Suspense>
-        ),
-      },
-      {
-        path: '/notes',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <Notes />
-          </Suspense>
-        ),
-      },
-      {
-        path: '/journal',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <Journal />
-          </Suspense>
-        ),
-      },
-      {
-        path: '/settings',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <Settings />
-          </Suspense>
-        ),
-      },
-      {
-        path: '/help',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <Help />
-          </Suspense>
-        ),
-      },
-    ],
-  },
-])
+const router = createBrowserRouter(routes);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <RouterProvider router={router} />
     <VercelAnalytics />
   </React.StrictMode>
-)
+);

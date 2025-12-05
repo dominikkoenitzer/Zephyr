@@ -40,6 +40,16 @@
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.3);
     --glass-shadow: rgba(0, 0, 0, 0.1);
+
+    /* Layout tokens */
+    --layout-max: 1400px;
+    --layout-wide: 1680px;
+    --gutter-x: clamp(1rem, 3vw, 2.25rem);
+    --gutter-y: clamp(1rem, 2.5vw, 2rem);
+    --section-gap: clamp(1.25rem, 3vw, 2.5rem);
+    --panel-gap: clamp(0.75rem, 2vw, 1.5rem);
+    --sidebar-width: clamp(15rem, 18vw, 19rem);
+    --header-height: 4rem;
   }
 
   .dark {
@@ -128,132 +138,6 @@
     --accent: 15 50% 15%;
   }
 
-  /* Garden Themes */
-  [data-garden-theme="spring"] {
-    --primary: 142 76% 36%;
-    --accent: 142 50% 95%;
-    --background: 142 20% 98%;
-    --foreground: 142 30% 15%;
-    --muted: 142 15% 90%;
-    --border: 142 30% 85%;
-  }
-
-  .dark [data-garden-theme="spring"] {
-    --primary: 142 76% 50%;
-    --accent: 142 40% 15%;
-    --background: 142 30% 8%;
-    --foreground: 142 20% 95%;
-    --muted: 142 20% 20%;
-    --border: 142 20% 25%;
-  }
-
-  [data-garden-theme="summer"] {
-    --primary: 120 60% 45%;
-    --accent: 120 40% 95%;
-    --background: 120 15% 98%;
-    --foreground: 120 25% 12%;
-    --muted: 120 10% 92%;
-    --border: 120 25% 88%;
-  }
-
-  .dark [data-garden-theme="summer"] {
-    --primary: 120 60% 55%;
-    --accent: 120 35% 15%;
-    --background: 120 25% 6%;
-    --foreground: 120 15% 95%;
-    --muted: 120 20% 18%;
-    --border: 120 20% 22%;
-  }
-
-  [data-garden-theme="autumn"] {
-    --primary: 25 85% 50%;
-    --accent: 25 50% 96%;
-    --background: 25 20% 99%;
-    --foreground: 25 30% 12%;
-    --muted: 25 15% 94%;
-    --border: 25 30% 90%;
-  }
-
-  .dark [data-garden-theme="autumn"] {
-    --primary: 25 85% 60%;
-    --accent: 25 40% 15%;
-    --background: 25 30% 8%;
-    --foreground: 25 20% 95%;
-    --muted: 25 20% 20%;
-    --border: 25 20% 25%;
-  }
-
-  [data-garden-theme="forest"] {
-    --primary: 150 50% 35%;
-    --accent: 150 40% 96%;
-    --background: 150 15% 98%;
-    --foreground: 150 30% 10%;
-    --muted: 150 10% 93%;
-    --border: 150 25% 89%;
-  }
-
-  .dark [data-garden-theme="forest"] {
-    --primary: 150 50% 45%;
-    --accent: 150 35% 15%;
-    --background: 150 25% 5%;
-    --foreground: 150 15% 96%;
-    --muted: 150 20% 18%;
-    --border: 150 20% 22%;
-  }
-
-  [data-garden-theme="lavender"] {
-    --primary: 270 50% 60%;
-    --accent: 270 40% 97%;
-    --background: 270 15% 99%;
-    --foreground: 270 30% 12%;
-    --muted: 270 10% 95%;
-    --border: 270 25% 91%;
-  }
-
-  .dark [data-garden-theme="lavender"] {
-    --primary: 270 50% 70%;
-    --accent: 270 35% 15%;
-    --background: 270 25% 7%;
-    --foreground: 270 20% 96%;
-    --muted: 270 20% 19%;
-    --border: 270 20% 23%;
-  }
-
-  [data-garden-theme="rose"] {
-    --primary: 340 70% 55%;
-    --accent: 340 50% 97%;
-    --background: 340 15% 99%;
-    --foreground: 340 30% 12%;
-    --muted: 340 10% 95%;
-    --border: 340 25% 91%;
-  }
-
-  .dark [data-garden-theme="rose"] {
-    --primary: 340 70% 65%;
-    --accent: 340 35% 15%;
-    --background: 340 25% 7%;
-    --foreground: 340 20% 96%;
-    --muted: 340 20% 19%;
-    --border: 340 20% 23%;
-  }
-
-  [data-garden-theme="ocean"] {
-    --primary: 195 80% 50%;
-    --accent: 195 50% 96%;
-    --background: 195 15% 98%;
-    --foreground: 195 30% 12%;
-    --muted: 195 10% 93%;
-    --border: 195 25% 89%;
-  }
-
-  .dark [data-garden-theme="ocean"] {
-    --primary: 195 80% 60%;
-    --accent: 195 40% 15%;
-    --background: 195 25% 6%;
-    --foreground: 195 20% 95%;
-    --muted: 195 20% 18%;
-    --border: 195 20% 22%;
-  }
 }
 
 @layer base {
@@ -264,25 +148,12 @@
   }
   
   html {
-    height: 100%;
-    overflow: hidden;
-  }
-  
-  @media (min-width: 1024px) {
-    html {
-      overflow: hidden;
-    }
-  }
-  
-  @media (max-width: 1023px) {
-    html {
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
+    min-height: 100%;
+    overflow-x: hidden;
   }
   
   body {
-    height: 100%;
+    min-height: 100vh;
     margin: 0;
     padding: 0;
     background-color: hsl(var(--background));
@@ -290,36 +161,12 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-  
-  @media (min-width: 1024px) {
-    body {
-      overflow: hidden;
-    }
-  }
-  
-  @media (max-width: 1023px) {
-    body {
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
+    overflow-x: hidden;
   }
   
   #root {
-    height: 100vh;
-  }
-  
-  @media (min-width: 1024px) {
-    #root {
-      overflow: hidden;
-    }
-  }
-  
-  @media (max-width: 1023px) {
-    #root {
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   
   /* Smooth scrolling for all scrollable elements */
@@ -334,6 +181,47 @@
 }
 
 @layer utilities {
+  /* Responsive spacing utilities */
+  .px-responsive {
+    padding-left: var(--gutter-x);
+    padding-right: var(--gutter-x);
+  }
+  
+  .py-responsive {
+    padding-top: var(--gutter-y);
+    padding-bottom: var(--gutter-y);
+  }
+
+  .p-responsive {
+    padding: var(--gutter-y) var(--gutter-x);
+  }
+
+  .content-max {
+    width: 100%;
+    max-width: var(--layout-max);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .content-wide {
+    width: 100%;
+    max-width: var(--layout-wide);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .section-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--panel-gap);
+  }
+
+  .panel-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--panel-gap);
+  }
+
   /* Glassmorphism effect */
   .glass {
     background: var(--glass-bg);

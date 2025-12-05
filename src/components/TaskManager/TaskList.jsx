@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   Plus, Trash2, CheckCircle, Circle, ListTodo, Target, TrendingUp, 
-  Folder, FolderPlus, Edit2, Calendar, Tag, ArrowUpDown, 
-  X, Filter, Flag
+  Folder, FolderPlus, Edit2, Calendar, Tag, Flag,
+  X, Timer as TimerIcon
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -12,10 +13,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { localStorageService } from '../../services/localStorage';
 
-const PRIORITY_COLORS = {
-  high: 'text-red-500',
-  medium: 'text-yellow-500',
-  low: 'text-blue-500'
+const PRIORITY_STYLES = {
+  high: 'text-destructive bg-destructive/10 border border-destructive/30',
+  medium: 'text-amber-600 bg-amber-500/10 border border-amber-500/30',
+  low: 'text-primary bg-primary/10 border border-primary/30'
 };
 
 const PRIORITY_LABELS = {
@@ -24,34 +25,41 @@ const PRIORITY_LABELS = {
   low: 'Low'
 };
 
-const SORT_OPTIONS = [
-  { value: 'date', label: 'Date Created' },
-  { value: 'priority', label: 'Priority' },
-  { value: 'dueDate', label: 'Due Date' },
-  { value: 'title', label: 'Title' },
-  { value: 'status', label: 'Status' }
-];
-
 const TaskList = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [tasks, setTasks] = useState([]);
   const [folders, setFolders] = useState([]);
   const [newTask, setNewTask] = useState('');
   const [selectedFolder, setSelectedFolder] = useState(null);
-  const [sortBy, setSortBy] = useState('date');
-  const [sortOrder, setSortOrder] = useState('desc');
   const [showCompleted, setShowCompleted] = useState(true);
   const [editingTask, setEditingTask] = useState(null);
   const [newFolderName, setNewFolderName] = useState('');
   const [showFolderDialog, setShowFolderDialog] = useState(false);
-  const [filterPriority, setFilterPriority] = useState('all');
+  const [todayFolderId, setTodayFolderId] = useState(null);
+  const [hasCreatedToday, setHasCreatedToday] = useState(false);
 
-  // Load tasks and folders on mount
+// Load tasks and folders on mount
   useEffect(() => {
     const savedTasks = localStorageService.getTasks();
     const savedFolders = localStorageService.getFolders();
     setTasks(savedTasks);
     setFolders(savedFolders);
-  }, []);
+    
+    // Ensure a default "Today" folder exists to guide new users
+    if (savedFolders.length === 0 && !hasCreatedToday) {
+      const today = localStorageService.addFolder({ name: 'Today', color: '#38bdf8' });
+      setFolders([today]);
+      setTodayFolderId(today.id);
+      setSelectedFolder(today.id);
+      setHasCreatedToday(true);
+    } else {
+      const existingToday = savedFolders.find(f => f.name?.toLowerCase() === 'today');
+      if (existingToday) {
+        setTodayFolderId(existingToday.id);
+      }
+    }
+  }, [hasCreatedToday]);
 
 
   // Save folders whenever they change
@@ -60,6 +68,21 @@ const TaskList = () => {
       localStorageService.saveFolders(folders);
     }
   }, [folders]);
+
+  // Pick requested folder from query params (e.g., ?folder=today)
+  useEffect(() => {
+    const folderParam = searchParams.get('folder') || searchParams.get('t');
+    if (folderParam) {
+      if (folderParam === 'today' && todayFolderId) {
+        setSelectedFolder(todayFolderId);
+      } else {
+        const match = folders.find(f => f.id === folderParam);
+        if (match) {
+          setSelectedFolder(match.id);
+        }
+      }
+    }
+  }, [searchParams, folders, todayFolderId]);
 
   const addTask = (e) => {
     e.preventDefault();
@@ -71,6 +94,7 @@ const TaskList = () => {
       priority: 'medium',
       folderId: selectedFolder || null
     });
+    localStorageService.saveOnboarding({ taskAdded: true });
     
     // Reload tasks from localStorage to ensure consistency
     const allTasks = localStorageService.getTasks();
@@ -133,71 +157,22 @@ const TaskList = () => {
   };
 
   // Filter and sort tasks
-  const filteredAndSortedTasks = useMemo(() => {
-    let filtered = tasks.filter(task => {
-      // Filter by folder
+  const filteredTasks = useMemo(() => {
+    return tasks.filter(task => {
       if (selectedFolder !== null) {
         if (selectedFolder === 'none') {
           if (task.folderId !== null) return false;
-        } else {
-          if (task.folderId !== selectedFolder) return false;
+        } else if (task.folderId !== selectedFolder) {
+          return false;
         }
       }
-      
-      // Filter by completion status
       if (!showCompleted && task.completed) return false;
-      
-      // Filter by priority
-      if (filterPriority !== 'all' && task.priority !== filterPriority) return false;
-      
       return true;
     });
+  }, [tasks, selectedFolder, showCompleted]);
 
-    // Sort tasks
-    filtered.sort((a, b) => {
-      let comparison = 0;
-      
-      switch (sortBy) {
-        case 'priority': {
-          const priorityOrder = { high: 3, medium: 2, low: 1 };
-          comparison = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
-          break;
-        }
-        case 'dueDate': {
-          // Parse YYYY-MM-DD format as local date to avoid timezone issues
-          const parseLocalDate = (dateString) => {
-            if (!dateString) return new Date(0);
-            const parts = dateString.split('T')[0].split('-').map(Number);
-            return new Date(parts[0], parts[1] - 1, parts[2]);
-          };
-          const dateA = parseLocalDate(a.dueDate);
-          const dateB = parseLocalDate(b.dueDate);
-          comparison = dateA - dateB;
-          break;
-        }
-        case 'title':
-          comparison = a.title.localeCompare(b.title);
-          break;
-        case 'status':
-          comparison = (a.completed ? 1 : 0) - (b.completed ? 1 : 0);
-          break;
-        case 'date':
-        default: {
-          const createdA = new Date(a.createdAt || 0);
-          const createdB = new Date(b.createdAt || 0);
-          comparison = createdA - createdB;
-          break;
-        }
-      }
-      
-      return sortOrder === 'asc' ? comparison : -comparison;
-    });
-
-    return filtered;
-  }, [tasks, selectedFolder, showCompleted, sortBy, sortOrder, filterPriority]);
-
-  const activeTasks = filteredAndSortedTasks.filter(task => !task.completed);
-  const completedTasks = filteredAndSortedTasks.filter(task => task.completed);
+  const activeTasks = filteredTasks.filter(task => !task.completed);
+  const completedTasks = filteredTasks.filter(task => task.completed);
   const completedCount = tasks.filter(task => task.completed).length;
   const totalCount = tasks.length;
   const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
@@ -237,7 +212,7 @@ const TaskList = () => {
   return (
     <div className="w-full max-w-6xl mx-auto space-y-4 sm:space-y-6">
       {/* Header Card */}
-      <Card className="glass-card border-none animate-fade-in-up">
+      <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm animate-fade-in-up">
         <CardHeader>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex-1">
@@ -270,7 +245,7 @@ const TaskList = () => {
         {/* Sidebar - Folders & Filters */}
         <div className="space-y-3 sm:space-y-4 order-2 lg:order-1">
           {/* Folders */}
-          <Card className="glass-card border-none">
+          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -363,83 +338,33 @@ const TaskList = () => {
           </Card>
 
           {/* Filters & Sort */}
-          <Card className="glass-card border-none">
+          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
             <CardHeader className="pb-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-xl bg-primary/10">
-                  <Filter className="h-5 w-5 text-primary" />
+                  <CheckCircle className="h-5 w-5 text-primary" />
                 </div>
-                <CardTitle className="text-xl font-bold">Filters & Sort</CardTitle>
+                <CardTitle className="text-xl font-bold">Display</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Sort */}
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
-                  Sort By
-                </label>
-                <Select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full"
-                >
-                  {SORT_OPTIONS.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-              
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="w-full h-12 rounded-xl border-2 font-semibold hover:border-primary hover:bg-primary/5 hover:text-primary transition-all"
-              >
-                <ArrowUpDown className="h-5 w-5 mr-2" />
-                {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
-              </Button>
-
-              {/* Priority Filter */}
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Flag className="h-4 w-4 text-muted-foreground" />
-                  Priority
-                </label>
-                <Select
-                  value={filterPriority}
-                  onChange={(e) => setFilterPriority(e.target.value)}
-                  className="w-full"
-                >
-                  <option value="all">All Priorities</option>
-                  <option value="high">High</option>
-                  <option value="medium">Medium</option>
-                  <option value="low">Low</option>
-                </Select>
-              </div>
-
-              {/* Show Completed */}
-              <div className="pt-4 border-t-2 border-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                    <label className="text-sm font-semibold text-foreground">Show Completed</label>
-                  </div>
-                  <button
-                    onClick={() => setShowCompleted(!showCompleted)}
-                    className={`relative w-14 h-7 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 ${
-                      showCompleted ? 'bg-primary shadow-lg shadow-primary/30' : 'bg-muted-foreground/20'
-                    }`}
-                  >
-                    <span
-                      className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${
-                        showCompleted ? 'translate-x-7' : 'translate-x-0'
-                      }`}
-                    />
-                  </button>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                  <label className="text-sm font-semibold text-foreground">Show Completed</label>
                 </div>
+                <button
+                  onClick={() => setShowCompleted(!showCompleted)}
+                  className={`relative w-14 h-7 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 ${
+                    showCompleted ? 'bg-primary shadow-lg shadow-primary/30' : 'bg-muted-foreground/20'
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                      showCompleted ? 'translate-x-7' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
               </div>
             </CardContent>
           </Card>
@@ -448,7 +373,7 @@ const TaskList = () => {
         {/* Main Content */}
         <div className="lg:col-span-3 space-y-4 sm:space-y-6 order-1 lg:order-2">
           {/* Add Task Card */}
-          <Card className="glass-card border-none hover-lift">
+          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm hover-lift">
             <CardContent className="pt-4 sm:pt-6">
               <form onSubmit={addTask} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <div className="flex-1 relative">
@@ -470,7 +395,7 @@ const TaskList = () => {
 
           {/* Active Tasks */}
           {activeTasks.length > 0 && (
-            <Card className="glass-card border-none">
+            <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle className="text-xl font-semibold flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-primary" />
@@ -504,21 +429,21 @@ const TaskList = () => {
                             {task.title}
                           </span>
                           {task.priority && (
-                            <span className={`text-xs font-medium ${PRIORITY_COLORS[task.priority]}`}>
-                              <Flag className="h-3 w-3 inline mr-1" />
+                            <span className={`text-xs font-medium px-2 py-1 rounded-full inline-flex items-center gap-1 ${PRIORITY_STYLES[task.priority]}`}>
+                              <Flag className="h-3 w-3" />
                               {PRIORITY_LABELS[task.priority]}
                             </span>
                           )}
                           {folderName && (
                             <span 
-                              className="text-xs px-2 py-0.5 rounded-full text-white"
-                              style={{ backgroundColor: folderColor || '#3b82f6' }}
+                              className="text-xs px-2 py-0.5 rounded-full text-foreground bg-accent"
+                              style={{ backgroundColor: folderColor || undefined, color: folderColor ? '#0b1324' : undefined }}
                             >
                               {folderName}
                             </span>
                           )}
                           {dueDate && (
-                            <span className={`text-xs flex items-center gap-1 ${overdue ? 'text-red-500' : 'text-muted-foreground'}`}>
+                            <span className={`text-xs flex items-center gap-1 ${overdue ? 'text-destructive' : 'text-muted-foreground'}`}>
                               <Calendar className="h-3 w-3" />
                               {dueDate}
                             </span>
@@ -543,6 +468,15 @@ const TaskList = () => {
                       </div>
                       
                       <div className="flex items-center gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="p-2 h-auto text-muted-foreground hover:text-primary"
+                          onClick={() => navigate(`/focus?taskId=${task.id}&title=${encodeURIComponent(task.title)}&start=1`)}
+                        >
+                          <TimerIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
+                          Focus
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -569,7 +503,7 @@ const TaskList = () => {
 
           {/* Completed Tasks */}
           {completedTasks.length > 0 && showCompleted && (
-            <Card className="glass-card border-none">
+            <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-green-600 dark:text-green-500">
                   <CheckCircle className="h-5 w-5" />
@@ -610,8 +544,8 @@ const TaskList = () => {
           )}
 
           {/* Empty State */}
-          {filteredAndSortedTasks.length === 0 && (
-            <Card className="glass-card border-none text-center py-16">
+          {filteredTasks.length === 0 && (
+            <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm text-center py-16">
               <CardContent>
                 <div className="flex justify-center mb-4">
                   <div className="p-4 rounded-full bg-primary/10">
