@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
   Play, SkipForward, Settings, Clock, Target, Maximize2, X, 
@@ -37,6 +37,40 @@ const normalizePresetColor = (color) => {
   if (trimmed.startsWith('hsl(') || trimmed.startsWith('var(')) return trimmed;
   const lower = trimmed.toLowerCase();
   return LEGACY_PRESET_COLOR_MAP[lower] || trimmed;
+};
+
+const toHexColor = (inputColor) => {
+  try {
+    if (!inputColor || typeof inputColor !== 'string') return '#3b82f6';
+    const color = inputColor.trim();
+
+    if (/^#[0-9a-f]{6}$/i.test(color)) {
+      return color.toLowerCase();
+    }
+
+    if (/^#[0-9a-f]{3}$/i.test(color)) {
+      const [r, g, b] = color.slice(1).split('');
+      return `#${r}${r}${g}${g}${b}${b}`.toLowerCase();
+    }
+
+    if (typeof window === 'undefined' || typeof document === 'undefined' || !document.body) {
+      return '#3b82f6';
+    }
+
+    const el = document.createElement('div');
+    el.style.color = color;
+    document.body.appendChild(el);
+    const computed = window.getComputedStyle(el).color;
+    document.body.removeChild(el);
+
+    const match = computed.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if (!match) return '#3b82f6';
+
+    const toHex = (n) => Number.parseInt(n, 10).toString(16).padStart(2, '0');
+    return `#${toHex(match[1])}${toHex(match[2])}${toHex(match[3])}`;
+  } catch {
+    return '#3b82f6';
+  }
 };
 
 const DEFAULT_PRESETS = [
@@ -273,6 +307,7 @@ const PomodoroTimer = () => {
   const [, setStreak] = useState(localStorageService.getFocusStreak());
   const [, setNextPromptVisible] = useState(false);
   const [hasAutoStarted, setHasAutoStarted] = useState(false);
+  const [presetColorDraft, setPresetColorDraft] = useState('#3b82f6');
 
   const currentPreset = presets.find(p => p.id === selectedPreset) || presets[0];
   const workTime = currentPreset.workTime;
@@ -555,6 +590,11 @@ const PomodoroTimer = () => {
   const progress = ((currentSessionTime - timeLeft) / currentSessionTime) * 100;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
   const totalFocusTime = Math.floor((sessionsCompleted * workTime) / 60);
+  const editingPresetHex = useMemo(() => toHexColor(editingPreset?.color || THEME_COLOR_OPTIONS[0]), [editingPreset]);
+
+  useEffect(() => {
+    setPresetColorDraft(editingPresetHex);
+  }, [editingPresetHex]);
 
   const getSessionType = () => {
     if (isBreak) {
@@ -878,13 +918,18 @@ const PomodoroTimer = () => {
           </div>
 
           <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-            <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogContent className="w-[96vw] sm:max-w-3xl max-h-[92vh] overflow-y-auto p-0">
               <DialogHeader>
-                <DialogTitle>Edit Timer Preset</DialogTitle>
+                <div className="px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-border/60 bg-muted/30">
+                  <DialogTitle className="text-lg sm:text-xl">Edit Timer Preset</DialogTitle>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                    Fine-tune session timings and choose any custom color.
+                  </p>
+                </div>
               </DialogHeader>
               {editingPreset && (
-                <div className="space-y-6 py-4">
-                  <div>
+                <div className="px-4 sm:px-6 py-5 space-y-6">
+                  <div className="space-y-2">
                     <label className="text-sm font-medium mb-2 block text-foreground">Preset Name</label>
                     <Input
                       value={newPresetName}
@@ -894,7 +939,7 @@ const PomodoroTimer = () => {
                     />
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
                     <div>
                       <label className="text-sm font-medium mb-2 block text-foreground">Focus Time (min)</label>
                       <CustomNumberInput
@@ -908,6 +953,7 @@ const PomodoroTimer = () => {
                         }}
                       />
                     </div>
+
                     <div>
                       <label className="text-sm font-medium mb-2 block text-foreground">Short Break (min)</label>
                       <CustomNumberInput
@@ -921,6 +967,7 @@ const PomodoroTimer = () => {
                         }}
                       />
                     </div>
+
                     <div>
                       <label className="text-sm font-medium mb-2 block text-foreground">Long Break (min)</label>
                       <CustomNumberInput
@@ -934,6 +981,7 @@ const PomodoroTimer = () => {
                         }}
                       />
                     </div>
+
                     <div>
                       <label className="text-sm font-medium mb-2 block text-foreground">Sessions Until Long Break</label>
                       <CustomNumberInput
@@ -949,24 +997,49 @@ const PomodoroTimer = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium mb-2 block text-foreground">Color</label>
-                    <div className="grid grid-cols-6 gap-2">
-                      {THEME_COLOR_OPTIONS.map(color => (
-                        <button
-                          key={color}
-                          onClick={() => setEditingPreset({ ...editingPreset, color })}
-                          className={`
-                            w-full aspect-square rounded-lg border-2 transition-all
-                            ${editingPreset.color === color ? 'scale-110 border-foreground' : 'border-transparent hover:scale-105'}
-                          `}
-                          style={{ backgroundColor: color }}
+                  <div className="space-y-4 border border-border/60 rounded-xl p-3 sm:p-4 bg-background/70">
+                    <div className="flex items-center justify-between gap-3">
+                      <label className="text-sm font-medium text-foreground">Color</label>
+                      <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-2.5 py-1 text-xs text-muted-foreground">
+                        <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: editingPreset.color }} />
+                        Live preview
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-4 sm:gap-5 items-center">
+                      <div className="relative h-20 w-20 rounded-full p-1.5 bg-gradient-to-br from-primary/30 via-accent/30 to-muted/40 shadow-inner">
+                        <input
+                          type="color"
+                          value={editingPresetHex}
+                          onChange={(e) => setEditingPreset({ ...editingPreset, color: e.target.value })}
+                          className="h-full w-full cursor-pointer rounded-full border-2 border-background bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-0 [&::-moz-color-swatch]:border-0"
+                          aria-label="Choose preset color"
+                          title="Choose preset color"
                         />
-                      ))}
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Hex Value</label>
+                        <Input
+                          value={presetColorDraft}
+                          onChange={(e) => {
+                            const val = e.target.value.trim();
+                            setPresetColorDraft(val);
+                            if (/^#[0-9a-f]{6}$/i.test(val)) {
+                              setEditingPreset({ ...editingPreset, color: val.toLowerCase() });
+                            }
+                          }}
+                          placeholder="#3b82f6"
+                          className="w-full sm:max-w-[220px] font-mono uppercase"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Pick any color from the wheel or paste a hex value.
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex justify-end gap-2 pt-4 border-t border-border">
+                  <div className="flex justify-end gap-2 pt-4 border-t border-border sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 -mx-4 sm:-mx-6 px-4 sm:px-6 pb-1">
                     <Button
                       variant="outline"
                       onClick={() => {
