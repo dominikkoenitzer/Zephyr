@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { HelpCircle, Zap, Shield, FileText, Scale, AlertCircle, Timer, Settings, BarChart3, WifiOff, Trash2, Cloud } from 'lucide-react';
+import { HelpCircle, Zap, Shield, FileText, Scale, AlertCircle, Timer, Settings, WifiOff, Trash2, Cloud } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 
@@ -10,7 +10,7 @@ function Help() {
   const faqs = [
     {
       question: "How does the Pomodoro timer work?",
-      answer: "The Pomodoro Technique is a time management method that breaks work into focused intervals. In Zephyr, you work for 25 minutes (a 'pomodoro'), then take a 5-minute break. After completing 4 pomodoros, you get a longer 15-minute break. This cycle helps maintain focus, prevent burnout, and boost productivity. The timer automatically tracks your sessions and you can view your progress on the Dashboard.",
+      answer: "The Pomodoro Technique is a time management method that breaks work into focused intervals. In Zephyr, you work for 25 minutes (a 'pomodoro'), then take a 5-minute break. After completing 4 pomodoros, you get a longer 15-minute break. This cycle helps maintain focus, prevent burnout, and boost productivity. The timer automatically tracks your sessions so you can build consistent focus habits.",
       icon: Timer,
       iconColor: "text-primary",
       bgColor: "bg-primary/10"
@@ -24,8 +24,8 @@ function Help() {
     },
     {
       question: "How do I track my progress?",
-      answer: "Your Dashboard provides comprehensive progress tracking. It shows your daily focus time, completed pomodoros, active and completed tasks, and completion rates. You'll also see a weekly focus time chart and upcoming tasks/events. All progress is automatically saved and displayed in real-time. Visit the Dashboard anytime to see your productivity metrics and trends.",
-      icon: BarChart3,
+      answer: "Zephyr tracks progress across Focus Timer, Tasks, Calendar, and the unified Notes & Journal workspace. You can review your sessions, completed work, upcoming items, and writing history directly in each section. All progress is automatically saved and updated in real time.",
+      icon: FileText,
       iconColor: "text-primary",
       bgColor: "bg-accent/50"
     },
@@ -130,7 +130,7 @@ function Help() {
                   <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold flex-shrink-0 text-base sm:text-lg">4</div>
                   <div>
                     <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Track Your Progress</h4>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Check your Dashboard to see your productivity stats.</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Review your activity across Focus, Tasks, Calendar, and Notes & Journal.</p>
                   </div>
                 </div>
               </div>

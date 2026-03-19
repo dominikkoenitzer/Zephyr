@@ -3,9 +3,9 @@ import { useLocation } from 'react-router-dom';
 
 const pageMetadata = {
   '/': {
-    title: 'Dashboard | Zephyr - Flow Through Focus',
-    description: 'View your productivity dashboard with focus time, tasks, and progress tracking.',
-    keywords: 'productivity dashboard, focus tracking, task management, productivity metrics',
+    title: 'Notes & Journal | Zephyr - Capture Ideas and Reflect',
+    description: 'Write notes and journal entries in one place with Zephyr. Organize thoughts, track reflections, and stay focused.',
+    keywords: 'notes and journal, note taking, journaling app, personal knowledge, reflection',
   },
   '/tasks': {
     title: 'Tasks | Zephyr - Task Management & Organization',
@@ -23,9 +23,9 @@ const pageMetadata = {
     keywords: 'calendar app, event planning, schedule management, appointment calendar, productivity calendar',
   },
   '/notes': {
-    title: 'Notes | Zephyr - Note Taking & Organization',
-    description: 'Take, organize, and search your notes with Zephyr. Color-coded notes, folders, tags, and powerful search.',
-    keywords: 'note taking, notes app, note organizer, digital notes, productivity notes',
+    title: 'Notes & Journal | Zephyr - Note Taking and Reflection',
+    description: 'Take notes and journal in one unified workspace. Organize with tags, folders, and search.',
+    keywords: 'notes, journal, note taking, daily reflection, productivity notes',
   },
   '/journal': {
     title: 'Journal | Zephyr - Daily Journaling & Reflection',
