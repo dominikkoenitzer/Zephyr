@@ -1,4 +1,5 @@
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { Calendar, ChevronLeft, ChevronRight, X } from "lucide-react"
 import { cn } from "../../lib/utils"
 import { Button } from "./button"
@@ -61,12 +62,19 @@ const buildCalendarGrid = (monthDate) => {
 }
 
 const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props }, ref) => {
+  const rootRef = React.useRef(null)
+  const triggerRef = React.useRef(null)
   const parsedInitial = parseDateValue(value)
   const [isOpen, setIsOpen] = React.useState(false)
   const [selectedDate, setSelectedDate] = React.useState(parsedInitial)
   const [currentMonth, setCurrentMonth] = React.useState(
     parsedInitial ? new Date(parsedInitial.getFullYear(), parsedInitial.getMonth(), 1) : new Date()
   )
+  const [panelPosition, setPanelPosition] = React.useState({
+    top: 0,
+    left: 0,
+    width: 360,
+  })
 
   const days = React.useMemo(() => buildCalendarGrid(currentMonth), [currentMonth])
 
@@ -92,6 +100,56 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
       return () => document.removeEventListener("keydown", handleEscape)
     }
   }, [isOpen])
+
+  const setCombinedRef = React.useCallback(
+    (node) => {
+      rootRef.current = node
+      if (typeof ref === "function") {
+        ref(node)
+      } else if (ref) {
+        ref.current = node
+      }
+    },
+    [ref]
+  )
+
+  const updatePanelPosition = React.useCallback(() => {
+    if (!triggerRef.current || typeof window === "undefined") return
+
+    const rect = triggerRef.current.getBoundingClientRect()
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight
+    const width = Math.min(360, viewportWidth - 16)
+
+    let left = rect.left
+    if (left + width > viewportWidth - 8) {
+      left = viewportWidth - width - 8
+    }
+    left = Math.max(8, left)
+
+    const estimatedHeight = 430
+    let top = rect.bottom + 8
+    if (top + estimatedHeight > viewportHeight - 8) {
+      top = Math.max(8, rect.top - estimatedHeight - 8)
+    }
+
+    setPanelPosition({ top, left, width })
+  }, [])
+
+  React.useEffect(() => {
+    if (!isOpen) return
+
+    updatePanelPosition()
+
+    const handleReposition = () => updatePanelPosition()
+    window.addEventListener("resize", handleReposition)
+    window.addEventListener("scroll", handleReposition, true)
+
+    return () => {
+      window.removeEventListener("resize", handleReposition)
+      window.removeEventListener("scroll", handleReposition, true)
+    }
+  }, [isOpen, updatePanelPosition])
 
   const handleDateSelect = (date) => {
     const nextValue = formatDateForChange(date)
@@ -147,10 +205,11 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
   }
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative" ref={setCombinedRef}>
       <div
         role="button"
         tabIndex={0}
+        ref={triggerRef}
         onClick={openPicker}
         onKeyDown={handleTriggerKeyDown}
         className={cn(
@@ -181,14 +240,21 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
         )}
       </div>
 
-      {isOpen && (
+      {isOpen && typeof document !== "undefined" && createPortal(
         <>
           <div
             className="fixed inset-0 z-40"
             aria-hidden="true"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full left-0 z-50 mt-2 w-[360px] rounded-2xl border border-border/60 bg-background shadow-2xl ring-1 ring-border/60">
+          <div
+            className="fixed z-50 rounded-2xl border border-border/60 bg-background shadow-2xl ring-1 ring-border/60 max-h-[calc(100vh-1rem)] overflow-y-auto"
+            style={{
+              top: panelPosition.top,
+              left: panelPosition.left,
+              width: panelPosition.width,
+            }}
+          >
             <div className="flex items-center justify-between px-4 pt-4">
               <Button
                 variant="ghost"
@@ -261,7 +327,8 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
               </div>
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
     </div>
   )
