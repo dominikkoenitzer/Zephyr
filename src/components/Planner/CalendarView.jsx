@@ -8,7 +8,7 @@ import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
-import { Select } from '../ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Checkbox } from '../ui/checkbox';
 import { TimePicker } from '../ui/time-picker';
 import { localStorageService } from '../../services/localStorage';
@@ -180,6 +180,43 @@ const CalendarView = () => {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   };
 
+  const isEventOnDate = useCallback((event, date) => {
+    if (!event?.date) return false;
+
+    const eventStart = new Date(event.date);
+    const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const startDate = new Date(eventStart.getFullYear(), eventStart.getMonth(), eventStart.getDate());
+
+    if (targetDate < startDate) return false;
+
+    const recurrence = event.recurrence || 'none';
+    if (recurrence === 'none') {
+      return getDateKey(startDate) === getDateKey(targetDate);
+    }
+
+    if (recurrence === 'daily') {
+      return true;
+    }
+
+    if (recurrence === 'weekly') {
+      const diffDays = Math.floor((targetDate - startDate) / (1000 * 60 * 60 * 24));
+      return diffDays % 7 === 0;
+    }
+
+    if (recurrence === 'monthly') {
+      return targetDate.getDate() === startDate.getDate();
+    }
+
+    if (recurrence === 'yearly') {
+      return (
+        targetDate.getDate() === startDate.getDate() &&
+        targetDate.getMonth() === startDate.getMonth()
+      );
+    }
+
+    return false;
+  }, []);
+
   // Filter events based on search and category
   const filteredEvents = useMemo(() => {
     return events.filter(event => {
@@ -192,12 +229,8 @@ const CalendarView = () => {
 
 
   const getEventsForDate = useCallback((date) => {
-    const dateKey = getDateKey(date);
-    return filteredEvents.filter(event => {
-      const eventDate = event.date ? getDateKey(new Date(event.date)) : '';
-      return eventDate === dateKey;
-    });
-  }, [filteredEvents]);
+    return filteredEvents.filter(event => isEventOnDate(event, date));
+  }, [filteredEvents, isEventOnDate]);
 
   const getTasksForDate = useCallback((date) => {
     const dateKey = getDateKey(date);
@@ -1116,12 +1149,16 @@ const CalendarView = () => {
                   <label className="text-sm font-medium mb-2 block text-foreground">Repeat</label>
                   <Select
                     value={eventForm.recurrence}
-                    onChange={(e) => setEventForm({ ...eventForm, recurrence: e.target.value })}
-                    className="w-full"
+                    onValueChange={(value) => setEventForm({ ...eventForm, recurrence: value })}
                   >
+                    <SelectTrigger className="h-11 w-full rounded-xl border-border/70 bg-background/80 text-sm font-medium shadow-sm hover:border-primary/60">
+                      <SelectValue placeholder="No Repeat" />
+                    </SelectTrigger>
+                    <SelectContent>
                     {RECURRENCE_OPTIONS.map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                     ))}
+                    </SelectContent>
                   </Select>
                 </div>
               </div>
@@ -1247,99 +1284,124 @@ const CalendarView = () => {
 
       {/* Calendar Settings Dialog */}
       <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-        <DialogContent className="w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:max-w-3xl max-h-[90vh] overflow-y-auto p-0">
           <DialogHeader>
-            <DialogTitle>Calendar Settings</DialogTitle>
+            <div className="px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-border/60 bg-muted/30">
+              <DialogTitle className="text-lg sm:text-xl">Calendar Settings</DialogTitle>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                Configure how your calendar looks and behaves across all views.
+              </p>
+            </div>
           </DialogHeader>
-          <div className="space-y-6 py-4">
-            {/* First Day of Week */}
-            <div>
-              <label className="text-sm font-medium mb-2 block text-foreground">First Day of Week</label>
-              <Select
-                value={calendarSettings.firstDayOfWeek}
-                onChange={(e) => setCalendarSettings({ ...calendarSettings, firstDayOfWeek: parseInt(e.target.value) })}
-                className="w-full"
-              >
-                <option value={0}>Sunday</option>
-                <option value={1}>Monday</option>
-              </Select>
-            </div>
-
-            {/* Default View */}
-            <div>
-              <label className="text-sm font-medium mb-2 block text-foreground">Default View</label>
-              <Select
-                value={calendarSettings.defaultView}
-                onChange={(e) => setCalendarSettings({ ...calendarSettings, defaultView: e.target.value })}
-                className="w-full"
-              >
-                <option value="month">Month</option>
-                <option value="week">Week</option>
-                <option value="day">Day</option>
-                <option value="agenda">Agenda</option>
-              </Select>
-            </div>
-
-            {/* Time Format */}
-            <div>
-              <label className="text-sm font-medium mb-2 block text-foreground">Time Format</label>
-              <Select
-                value={calendarSettings.timeFormat}
-                onChange={(e) => setCalendarSettings({ ...calendarSettings, timeFormat: e.target.value })}
-                className="w-full"
-              >
-                <option value="12h">12 Hour (AM/PM)</option>
-                <option value="24h">24 Hour</option>
-              </Select>
-            </div>
-
-            {/* Event Density */}
-            <div>
-              <label className="text-sm font-medium mb-2 block text-foreground">Event Display Density</label>
-              <Select
-                value={calendarSettings.eventDensity}
-                onChange={(e) => setCalendarSettings({ ...calendarSettings, eventDensity: e.target.value })}
-                className="w-full"
-              >
-                <option value="compact">Compact</option>
-                <option value="normal">Normal</option>
-                <option value="comfortable">Comfortable</option>
-              </Select>
-            </div>
-
-            {/* Day View Hours */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block text-foreground">Day View Start Hour</label>
+          <div className="px-4 sm:px-6 py-5 space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">First Day of Week</label>
                 <Select
-                  value={calendarSettings.startHour}
-                  onChange={(e) => setCalendarSettings({ ...calendarSettings, startHour: parseInt(e.target.value) })}
-                  className="w-full"
+                  value={String(calendarSettings.firstDayOfWeek)}
+                  onValueChange={(value) => setCalendarSettings({ ...calendarSettings, firstDayOfWeek: parseInt(value, 10) })}
                 >
-                  {Array.from({ length: 24 }, (_, i) => (
-                    <option key={i} value={i}>
-                      {i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`}
-                    </option>
-                  ))}
+                  <SelectTrigger className="h-11 w-full rounded-xl border-border/70 bg-background/80 text-sm font-medium shadow-sm hover:border-primary/60">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">Sunday</SelectItem>
+                    <SelectItem value="1">Monday</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block text-foreground">Day View End Hour</label>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Default View</label>
                 <Select
-                  value={calendarSettings.endHour}
-                  onChange={(e) => setCalendarSettings({ ...calendarSettings, endHour: parseInt(e.target.value) })}
-                  className="w-full"
+                  value={calendarSettings.defaultView}
+                  onValueChange={(value) => setCalendarSettings({ ...calendarSettings, defaultView: value })}
                 >
-                  {Array.from({ length: 24 }, (_, i) => (
-                    <option key={i} value={i}>
-                      {i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`}
-                    </option>
-                  ))}
+                  <SelectTrigger className="h-11 w-full rounded-xl border-border/70 bg-background/80 text-sm font-medium shadow-sm hover:border-primary/60">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="month">Month</SelectItem>
+                    <SelectItem value="week">Week</SelectItem>
+                    <SelectItem value="day">Day</SelectItem>
+                    <SelectItem value="agenda">Agenda</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Time Format</label>
+                <Select
+                  value={calendarSettings.timeFormat}
+                  onValueChange={(value) => setCalendarSettings({ ...calendarSettings, timeFormat: value })}
+                >
+                  <SelectTrigger className="h-11 w-full rounded-xl border-border/70 bg-background/80 text-sm font-medium shadow-sm hover:border-primary/60">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="12h">12 Hour (AM/PM)</SelectItem>
+                    <SelectItem value="24h">24 Hour</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Event Display Density</label>
+                <Select
+                  value={calendarSettings.eventDensity}
+                  onValueChange={(value) => setCalendarSettings({ ...calendarSettings, eventDensity: value })}
+                >
+                  <SelectTrigger className="h-11 w-full rounded-xl border-border/70 bg-background/80 text-sm font-medium shadow-sm hover:border-primary/60">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="compact">Compact</SelectItem>
+                    <SelectItem value="normal">Normal</SelectItem>
+                    <SelectItem value="comfortable">Comfortable</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
             </div>
 
-            {/* Toggle Options */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 border border-border/60 rounded-xl p-3 sm:p-4 bg-background/70">
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Day View Start Hour</label>
+                <Select
+                  value={String(calendarSettings.startHour)}
+                  onValueChange={(value) => setCalendarSettings({ ...calendarSettings, startHour: parseInt(value, 10) })}
+                >
+                  <SelectTrigger className="h-11 w-full rounded-xl border-border/70 bg-background/80 text-sm font-medium shadow-sm hover:border-primary/60">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 24 }, (_, i) => (
+                    <SelectItem key={i} value={String(i)}>
+                      {i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`}
+                    </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Day View End Hour</label>
+                <Select
+                  value={String(calendarSettings.endHour)}
+                  onValueChange={(value) => setCalendarSettings({ ...calendarSettings, endHour: parseInt(value, 10) })}
+                >
+                  <SelectTrigger className="h-11 w-full rounded-xl border-border/70 bg-background/80 text-sm font-medium shadow-sm hover:border-primary/60">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 24 }, (_, i) => (
+                    <SelectItem key={i} value={String(i)}>
+                      {i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`}
+                    </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             <div className="space-y-3">
               <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/30 hover:bg-muted/50 transition-colors">
                 <div className="flex-1">
@@ -1386,7 +1448,7 @@ const CalendarView = () => {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-4 border-t border-border">
+            <div className="flex justify-end gap-2 pt-4 border-t border-border sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 -mx-4 sm:-mx-6 px-4 sm:px-6 pb-1">
               <Button
                 variant="outline"
                 onClick={() => setIsSettingsOpen(false)}

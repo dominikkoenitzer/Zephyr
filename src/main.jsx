@@ -28,7 +28,11 @@ initializeTheme();
 // Clear any legacy garden theme and sync with current color mode
 themeService.initialize();
 
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(routes, {
+  future: {
+    v7_startTransition: true,
+  },
+});
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
