@@ -1,5 +1,5 @@
-/* Import Inter font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* Import typography pair for a stronger visual voice */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -50,6 +50,8 @@
     --panel-gap: clamp(0.75rem, 2vw, 1.5rem);
     --sidebar-width: clamp(15rem, 18vw, 19rem);
     --header-height: 4rem;
+    --font-sans: 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-display: 'Space Grotesk', 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
   .dark {
@@ -150,6 +152,7 @@
   html {
     min-height: 100%;
     overflow-x: hidden;
+    font-size: clamp(16px, 0.7vw, 19px);
   }
   
   body {
@@ -158,10 +161,14 @@
     padding: 0;
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    background-image:
+      radial-gradient(1200px 500px at 0% -10%, hsl(var(--primary) / 0.06), transparent 60%),
+      radial-gradient(900px 420px at 100% -20%, hsl(var(--accent-foreground) / 0.04), transparent 60%);
+    background-attachment: fixed;
   }
   
   #root {
@@ -172,6 +179,38 @@
   /* Smooth scrolling for all scrollable elements */
   * {
     scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  /* Improve readability on very large monitors (QHD+/4K) */
+  @media (min-width: 2560px) {
+    :root {
+      --gutter-x: clamp(1.5rem, 3.4vw, 3rem);
+      --gutter-y: clamp(1.25rem, 2.8vw, 2.5rem);
+      --panel-gap: clamp(1rem, 1.6vw, 1.8rem);
+      --section-gap: clamp(1.5rem, 2.8vw, 3rem);
+      --layout-wide: 1820px;
+      --header-height: 4.25rem;
+    }
+
+    .text-xs {
+      font-size: 0.82rem;
+      line-height: 1.22rem;
+    }
+
+    .text-sm {
+      font-size: 0.96rem;
+      line-height: 1.42rem;
+    }
+
+    .text-base {
+      font-size: 1.06rem;
+      line-height: 1.7rem;
+    }
   }
   
   /* Disable smooth scroll for programmatic scrolling */

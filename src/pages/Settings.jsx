@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { notificationService } from '../services/notificationService';
 import { localStorageService } from '../services/localStorage';
+import PageHeader from '../components/Layout/PageHeader';
 
 function Settings() {
   const [notificationSettings, setNotificationSettings] = useState(notificationService.getSettings());
@@ -77,21 +78,10 @@ function Settings() {
 
   return (
     <div className="w-full max-w-screen-2xl mx-auto flex-1 panel-stack border border-border/40 rounded-2xl bg-gradient-to-b from-background via-card/80 to-card/90 p-responsive overflow-y-auto min-h-0 backdrop-blur">
-      {/* Header */}
-      <div className="space-y-2 sm:space-y-3 pb-2 sm:pb-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-xs font-semibold text-primary shadow-sm ring-1 ring-primary/20">
-          <Bell className="h-4 w-4" />
-          <span>Control center</span>
-        </div>
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
-            Settings
-          </h1>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Manage notifications, data, and personalization
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Settings"
+        description="Manage notifications, data, and personalization"
+      />
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--panel-gap)]">

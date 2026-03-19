@@ -3,8 +3,9 @@ import Journal from '../components/Journal/Journal';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
-import { BookOpen, Clock3, FileText, Flame, Layers3, Sparkles, Stars } from 'lucide-react';
+import { BookOpen, Clock3, FileText, Flame, Layers3, Stars } from 'lucide-react';
 import { localStorageService } from '../services/localStorage';
+import PageHeader from '../components/Layout/PageHeader';
 
 function NotesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -104,15 +105,11 @@ function NotesPage() {
         <div className="p-responsive space-y-4 sm:space-y-5 md:space-y-6">
           <div className="rounded-2xl border border-border/50 bg-card/55 backdrop-blur-sm p-4 sm:p-5 md:p-6 shadow-sm">
             <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
-              <div className="space-y-2">
-                <div className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-muted/40 px-2.5 py-1 text-xs text-muted-foreground">
-                  <Sparkles className="h-3.5 w-3.5 text-primary" />
-                  World-Class Writing Workspace
-                </div>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-foreground">Notes & Journal</h1>
-                <p className="text-sm md:text-base text-muted-foreground max-w-3xl leading-relaxed">
-                  One focused environment for capturing ideas, structuring knowledge, and building a daily reflection habit.
-                </p>
+              <div className="w-full">
+                <PageHeader
+                  title="Notes & Journal"
+                  description="One focused environment for capturing ideas, structuring knowledge, and building a daily reflection habit."
+                />
                 <p className="text-xs text-muted-foreground md:hidden">
                   {workspaceStats.notesCount} notes • {workspaceStats.journalCount} entries • {workspaceStats.streak} day streak
                 </p>

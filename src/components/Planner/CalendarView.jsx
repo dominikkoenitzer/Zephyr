@@ -759,14 +759,8 @@ const CalendarView = () => {
 
   return (
     <div className="w-full content-wide panel-stack pb-4 sm:pb-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">Calendar</h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-            Plan your schedule and organize your time
-          </p>
-        </div>
+      {/* Actions */}
+      <div className="flex items-center gap-2 flex-wrap w-full">
         <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
           <Button onClick={handleToday} variant="outline" size="sm" className="text-xs sm:text-sm h-9 sm:h-9 w-full sm:w-auto">
             Today
