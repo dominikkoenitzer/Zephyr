@@ -118,7 +118,7 @@ function Header({ onMenuClick }) {
                 navigate('/notes');
                 break;
               case 'journal':
-                navigate('/journal');
+                navigate('/notes');
                 break;
               case 'event':
                 // Navigate to calendar with the event's date

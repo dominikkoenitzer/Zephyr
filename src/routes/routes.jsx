@@ -1,14 +1,13 @@
 import { Suspense, lazy } from 'react';
+import { Navigate } from 'react-router-dom';
 import PageLoader from '../components/ui/PageLoader';
 import AppLayout from '../app/AppLayout';
 import ErrorFallback from '../components/ErrorBoundary/ErrorFallback';
 
-const Dashboard = lazy(() => import('../pages/Dashboard'));
 const TasksPage = lazy(() => import('../pages/TasksPage'));
 const FocusTimer = lazy(() => import('../pages/FocusTimer'));
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Notes = lazy(() => import('../pages/Notes'));
-const Journal = lazy(() => import('../pages/Journal'));
 const Settings = lazy(() => import('../pages/Settings'));
 const Help = lazy(() => import('../pages/Help'));
 
@@ -25,7 +24,7 @@ export const routes = [
     children: [
       {
         index: true,
-        element: withPageLoader(Dashboard),
+        element: <Navigate to="notes" replace />,
       },
       {
         path: 'tasks',
@@ -45,7 +44,7 @@ export const routes = [
       },
       {
         path: 'journal',
-        element: withPageLoader(Journal),
+        element: <Navigate to="/notes" replace />,
       },
       {
         path: 'settings',

@@ -333,7 +333,7 @@ class NotificationService {
           'journal',
           'Journal Reminder',
           "Don't forget to write in your journal today",
-          { type: 'navigate', path: '/journal' }
+          { type: 'navigate', path: '/notes' }
         );
       }
     }

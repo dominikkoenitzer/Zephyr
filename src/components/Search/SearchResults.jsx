@@ -22,7 +22,7 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
         // Could dispatch event to open note editor
         break;
       case 'journal':
-        navigate('/journal');
+        navigate('/notes');
         break;
       case 'event':
         // Navigate to calendar with the event's date

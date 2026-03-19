@@ -4,11 +4,9 @@ import {
   Timer, 
   CheckSquare, 
   Calendar, 
-  BarChart3, 
   Settings, 
   HelpCircle,
   X,
-  BookOpen,
   FileText,
   Sparkles,
   ChevronRight,
@@ -18,12 +16,10 @@ import { cn } from '../../lib/utils';
 import { themeService } from '../../services/themeService';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: BarChart3 },
   { name: 'Focus Timer', href: '/focus', icon: Timer },
   { name: 'Tasks', href: '/tasks', icon: CheckSquare },
   { name: 'Calendar', href: '/calendar', icon: Calendar },
-  { name: 'Notes', href: '/notes', icon: FileText },
-  { name: 'Journal', href: '/journal', icon: BookOpen },
+  { name: 'Notes & Journal', href: '/notes', icon: FileText },
   { name: 'Settings', href: '/settings', icon: Settings },
   { name: 'Help', href: '/help', icon: HelpCircle },
 ];
