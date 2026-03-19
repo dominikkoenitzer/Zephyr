@@ -11,7 +11,6 @@ import { Input } from '../ui/input';
 import { Select } from '../ui/select';
 import { Checkbox } from '../ui/checkbox';
 import { TimePicker } from '../ui/time-picker';
-import { CalendarPicker } from '../ui/calendar-picker';
 import { localStorageService } from '../../services/localStorage';
 
 const VIEW_MODES = {
@@ -1032,143 +1031,175 @@ const CalendarView = () => {
 
       {/* Event Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:max-w-3xl max-h-[90vh] overflow-y-auto p-0">
           <DialogHeader>
-            <DialogTitle>
-              {editingEvent ? 'Edit Event' : 'Create New Event'}
-            </DialogTitle>
+            <div className="px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-border/60 bg-muted/30">
+              <DialogTitle className="text-lg sm:text-xl flex items-center gap-2">
+                <CalendarIcon className="h-5 w-5 text-primary" />
+                {editingEvent ? 'Edit Event' : 'Create New Event'}
+              </DialogTitle>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                Capture the essentials first, then add details like location and reminders. The date is set from the day you selected.
+              </p>
+            </div>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block text-foreground">Event Title *</label>
-              <Input
-                id="event-title"
-                name="event-title"
-                placeholder="Enter event title"
-                value={eventForm.title}
-                onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
-                className="w-full"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block text-foreground">Date *</label>
-                <CalendarPicker
-                  value={eventForm.date}
-                  onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
-                  className="w-full"
+          <div className="px-4 sm:px-6 py-5 space-y-5 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
+              <div className="lg:col-span-2 space-y-2">
+                <label className="text-sm font-medium block text-foreground">Event Title *</label>
+                <Input
+                  id="event-title"
+                  name="event-title"
+                  placeholder="Enter event title"
+                  value={eventForm.title}
+                  onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
+                  className="w-full h-10"
                 />
               </div>
-              <div className="flex items-center gap-2 pt-0 sm:pt-8">
-                <input
-                  type="checkbox"
-                  id="allDay"
-                  checked={eventForm.allDay}
-                  onChange={(e) => setEventForm({ ...eventForm, allDay: e.target.checked })}
-                  className="w-4 h-4 rounded border-input"
-                />
-                <label htmlFor="allDay" className="text-sm font-medium text-foreground cursor-pointer">
-                  All Day Event
-                </label>
+              <div className="space-y-2">
+                <label className="text-sm font-medium block text-foreground">Selected Day</label>
+                <div className="h-10 rounded-xl border border-border/70 bg-background/80 px-3 flex items-center gap-2 text-sm font-medium text-foreground">
+                  <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                  {eventForm.date
+                    ? new Date(`${eventForm.date}T00:00:00`).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })
+                    : 'No date selected'}
+                </div>
               </div>
             </div>
 
-            {!eventForm.allDay && (
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block text-foreground">Start Time</label>
-                  <TimePicker
-                    value={eventForm.time}
-                    onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })}
-                    className="w-full"
-                  />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+              <div className="lg:col-span-2 border border-border/60 rounded-xl p-3 sm:p-4 space-y-4 bg-background/70">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    Time & Recurrence
+                  </div>
+                  <label htmlFor="allDay" className="text-xs sm:text-sm font-medium text-foreground cursor-pointer inline-flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="allDay"
+                      checked={eventForm.allDay}
+                      onChange={(e) => setEventForm({ ...eventForm, allDay: e.target.checked })}
+                      className="w-4 h-4 rounded border-input"
+                    />
+                    All Day Event
+                  </label>
                 </div>
+
+                {!eventForm.allDay && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block text-foreground">Start Time</label>
+                      <TimePicker
+                        value={eventForm.time}
+                        onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })}
+                        className="w-full"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block text-foreground">End Time</label>
+                      <TimePicker
+                        value={eventForm.endTime}
+                        onChange={(e) => setEventForm({ ...eventForm, endTime: e.target.value })}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <div>
-                  <label className="text-sm font-medium mb-2 block text-foreground">End Time</label>
-                  <TimePicker
-                    value={eventForm.endTime}
-                    onChange={(e) => setEventForm({ ...eventForm, endTime: e.target.value })}
+                  <label className="text-sm font-medium mb-2 block text-foreground">Repeat</label>
+                  <Select
+                    value={eventForm.recurrence}
+                    onChange={(e) => setEventForm({ ...eventForm, recurrence: e.target.value })}
                     className="w-full"
-                  />
+                  >
+                    {RECURRENCE_OPTIONS.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </Select>
                 </div>
               </div>
-            )}
 
-            <div className="w-full">
-              <label className="text-sm font-medium mb-3 block text-foreground">Category</label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full sm:max-w-xl">
+              <div className="border border-border/60 rounded-xl p-3 sm:p-4 bg-background/70">
+                <div className="flex items-center gap-2 text-sm font-semibold text-foreground mb-3">
+                  <Bell className="h-4 w-4 text-muted-foreground" />
+                  Alerts
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30">
+                  <Checkbox
+                    id="reminder"
+                    checked={eventForm.reminder}
+                    onCheckedChange={(checked) => setEventForm({ ...eventForm, reminder: checked })}
+                  />
+                  <label htmlFor="reminder" className="text-sm font-medium text-foreground cursor-pointer flex-1">
+                    Set Reminder
+                  </label>
+                </div>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Reminders will appear in your notification center.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium block text-foreground">Category</label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full">
                 {EVENT_CATEGORIES.map(cat => (
                   <button
                     key={cat.id}
                     type="button"
                     onClick={() => setEventForm({ ...eventForm, category: cat.id })}
                     className={`
-                      flex items-center gap-2 px-4 py-3 rounded-lg border-2 transition-all
-                      ${eventForm.category === cat.id 
-                        ? 'border-primary bg-primary/10 shadow-sm' 
+                      flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all
+                      ${eventForm.category === cat.id
+                        ? 'border-primary bg-primary/10 shadow-sm'
                         : 'border-border hover:border-primary/50 hover:bg-accent/50'
                       }
                     `}
                   >
                     <div
-                      className="w-3 h-3 rounded-full flex-shrink-0"
+                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                       style={{ backgroundColor: cat.color }}
                     />
-                    <span className="text-sm font-medium text-foreground">{cat.name}</span>
+                    <span className="text-sm font-medium text-foreground truncate">{cat.name}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium mb-2 block text-foreground">Repeat</label>
-              <Select
-                value={eventForm.recurrence}
-                onChange={(e) => setEventForm({ ...eventForm, recurrence: e.target.value })}
-                className="w-full"
-              >
-                {RECURRENCE_OPTIONS.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </Select>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
+              <div className="lg:col-span-1">
+                <label className="text-sm font-medium mb-2 block text-foreground">Location</label>
+                <div className="relative">
+                  <MapPin className="h-4 w-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Input
+                    id="event-location"
+                    name="event-location"
+                    placeholder="Enter location (optional)"
+                    value={eventForm.location}
+                    onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })}
+                    className="w-full pl-9"
+                  />
+                </div>
+              </div>
+              <div className="lg:col-span-2">
+                <label className="text-sm font-medium mb-2 block text-foreground">Description</label>
+                <textarea
+                  placeholder="Enter event description (optional)"
+                  value={eventForm.description}
+                  onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
+                  className="w-full min-h-[110px] px-3 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring resize-y"
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium mb-2 block text-foreground">Location</label>
-              <Input
-                id="event-location"
-                name="event-location"
-                placeholder="Enter location (optional)"
-                value={eventForm.location}
-                onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })}
-                className="w-full"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium mb-2 block text-foreground">Description</label>
-              <textarea
-                placeholder="Enter event description (optional)"
-                value={eventForm.description}
-                onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
-                className="w-full min-h-[100px] px-3 py-2 text-sm border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-              />
-            </div>
-
-            <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30">
-              <Checkbox
-                id="reminder"
-                checked={eventForm.reminder}
-                onCheckedChange={(checked) => setEventForm({ ...eventForm, reminder: checked })}
-              />
-              <label htmlFor="reminder" className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-2 flex-1">
-                <Bell className="h-4 w-4 text-muted-foreground" />
-                Set Reminder
-              </label>
-            </div>
-
-            <div className="flex justify-end gap-2 pt-4 border-t border-border">
+            <div className="flex justify-end gap-2 pt-4 border-t border-border/70 sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 -mx-4 sm:-mx-6 px-4 sm:px-6 pb-1">
               <Button
                 variant="outline"
                 onClick={() => {
