@@ -54,6 +54,10 @@ export const routes = [
         path: 'help',
         element: withPageLoader(Help),
       },
+      {
+        path: '*',
+        element: <Navigate to="/notes" replace />,
+      },
     ],
   },
 ];
