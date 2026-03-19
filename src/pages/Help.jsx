@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { HelpCircle, Zap, Shield, FileText, Scale, AlertCircle, Timer, Settings, WifiOff, Trash2, Cloud } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
+import PageHeader from '../components/Layout/PageHeader';
 
 function Help() {
   const [activeSection, setActiveSection] = useState('help');
@@ -61,14 +62,10 @@ function Help() {
 
   return (
     <div className="w-full flex-1 panel-stack border border-border/60 rounded-2xl bg-card/90 p-responsive overflow-y-auto min-h-0">
-      <div className="flex-shrink-0 space-y-2 sm:space-y-3 mb-2 sm:mb-3">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
-          Help & Support
-        </h1>
-        <p className="text-xs sm:text-sm md:text-base text-muted-foreground">
-          Everything you need to master Zephyr
-        </p>
-      </div>
+      <PageHeader
+        title="Help & Support"
+        description="Everything you need to master Zephyr"
+      />
 
       {/* Navigation Tabs */}
       <div className="flex-shrink-0 flex flex-wrap gap-1.5 sm:gap-2 border-b border-border/50 pb-2 sm:pb-3 overflow-x-auto mb-2 sm:mb-3">
