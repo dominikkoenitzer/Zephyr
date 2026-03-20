@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
+  House,
   Timer, 
   CheckSquare, 
   Calendar, 
@@ -16,6 +17,7 @@ import { cn } from '../../lib/utils';
 import { themeService } from '../../services/themeService';
 
 const navigation = [
+  { name: 'Home', href: '/', icon: House },
   { name: 'Focus Timer', href: '/focus', icon: Timer },
   { name: 'Tasks', href: '/tasks', icon: CheckSquare },
   { name: 'Calendar', href: '/calendar', icon: Calendar },
