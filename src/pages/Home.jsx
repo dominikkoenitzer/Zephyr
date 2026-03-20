@@ -24,13 +24,17 @@ const toDateKey = (date) => {
   return `${year}-${month}-${day}`;
 };
 
-const getLastSevenDays = () => {
+const getCurrentWeekMondayStart = () => {
   const days = [];
   const today = new Date();
+  const day = today.getDay();
+  const diffToMonday = day === 0 ? 6 : day - 1;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - diffToMonday);
 
-  for (let i = 6; i >= 0; i -= 1) {
-    const date = new Date(today);
-    date.setDate(today.getDate() - i);
+  for (let i = 0; i < 7; i += 1) {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
     days.push({
       key: toDateKey(date),
       day: date.toLocaleDateString('en-US', { weekday: 'short' }),
@@ -68,7 +72,7 @@ function Home() {
     };
   }, []);
 
-  const lastSevenDays = useMemo(() => getLastSevenDays(), []);
+  const lastSevenDays = useMemo(() => getCurrentWeekMondayStart(), []);
 
   const focusData = useMemo(() => {
     const totals = new Map(lastSevenDays.map(({ key }) => [key, 0]));
@@ -140,7 +144,7 @@ function Home() {
         <p className="text-xs sm:text-sm uppercase tracking-[0.14em] text-muted-foreground">Zephyr</p>
         <h1 className="mt-2 text-4xl sm:text-5xl md:text-6xl font-bold leading-[0.98] text-foreground">HOME</h1>
         <p className="mt-4 max-w-2xl text-sm sm:text-base text-muted-foreground">
-          A quick view of your last 7 days across focus, tasks, and writing.
+          A quick view of your current week (Monday to Sunday) across focus, tasks, and writing.
         </p>
 
         <div className="mt-8 space-y-8">
@@ -148,7 +152,7 @@ function Home() {
             <div className="rounded-xl border border-border/70 bg-card/80 p-4">
               <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Focus</p>
               <p className="mt-2 text-2xl font-semibold text-foreground">{totalFocusMinutes}m</p>
-              <p className="mt-1 text-xs text-muted-foreground">Last 7 days</p>
+              <p className="mt-1 text-xs text-muted-foreground">This week</p>
             </div>
             <div className="rounded-xl border border-border/70 bg-card/80 p-4">
               <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Tasks</p>
