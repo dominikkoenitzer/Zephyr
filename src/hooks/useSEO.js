@@ -3,9 +3,14 @@ import { useLocation } from 'react-router-dom';
 
 const pageMetadata = {
   '/': {
-    title: 'Notes & Journal | Zephyr - Capture Ideas and Reflect',
-    description: 'Write notes and journal entries in one place with Zephyr. Organize thoughts, track reflections, and stay focused.',
-    keywords: 'notes and journal, note taking, journaling app, personal knowledge, reflection',
+    title: 'Zephyr | Start Immediately, No Login Required',
+    description: 'Get started instantly with Zephyr. No login, no signup, local-first productivity for tasks, notes, calendar, and focus sessions.',
+    keywords: 'instant productivity app, no login productivity, local storage notes, tasks and focus timer, local-first planner',
+  },
+  '/home': {
+    title: 'Zephyr Home | Instant Local-First Workspace',
+    description: 'Start typing immediately in Zephyr. No account required, all your data is stored locally on your device.',
+    keywords: 'home dashboard, local-first app, no signup app, instant note taking, personal productivity home',
   },
   '/tasks': {
     title: 'Tasks | Zephyr - Task Management & Organization',

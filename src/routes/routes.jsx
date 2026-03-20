@@ -5,6 +5,7 @@ import AppLayout from '../app/AppLayout';
 import ErrorFallback from '../components/ErrorBoundary/ErrorFallback';
 
 const TasksPage = lazy(() => import('../pages/TasksPage'));
+const Home = lazy(() => import('../pages/Home'));
 const FocusTimer = lazy(() => import('../pages/FocusTimer'));
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Notes = lazy(() => import('../pages/Notes'));
@@ -24,7 +25,11 @@ export const routes = [
     children: [
       {
         index: true,
-        element: <Navigate to="notes" replace />,
+        element: withPageLoader(Home),
+      },
+      {
+        path: 'home',
+        element: withPageLoader(Home),
       },
       {
         path: 'tasks',
@@ -56,7 +61,7 @@ export const routes = [
       },
       {
         path: '*',
-        element: <Navigate to="/notes" replace />,
+        element: <Navigate to="/" replace />,
       },
     ],
   },
