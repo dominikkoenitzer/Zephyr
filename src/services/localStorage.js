@@ -1,5 +1,5 @@
 // localStorage service for data persistence
-const STORAGE_KEYS = {
+export const STORAGE_KEYS = {
   TIMER_STATE: 'zephyr_timer_state',
   TASKS: 'zephyr_tasks',
   FOCUS_SESSIONS: 'zephyr_focus_sessions',
@@ -14,6 +14,45 @@ const STORAGE_KEYS = {
   LAST_SESSION: 'zephyr_last_focus_session',
 };
 
+// Custom event broadcast on every write so views in the same tab can react
+// instantly (the native `storage` event only fires in *other* tabs).
+export const CHANGE_EVENT = 'zephyr:change';
+
+export function emitChange(key) {
+  try {
+    window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: { key } }));
+  } catch {
+    // Non-browser / SSR — nothing to broadcast.
+  }
+}
+
+export const DEFAULT_CALENDAR_SETTINGS = {
+  firstDayOfWeek: 0,
+  defaultView: 'month',
+  showWeekends: true,
+  showWeekNumbers: false,
+  timeFormat: '12h',
+  showMiniCalendar: true,
+  showTasks: true,
+  eventDensity: 'normal',
+  startHour: 0,
+  endHour: 23,
+};
+
+export const DEFAULT_SETTINGS = {
+  workDuration: 25,
+  shortBreakDuration: 5,
+  longBreakDuration: 15,
+  sessionsUntilLongBreak: 4,
+  soundEnabled: true,
+  notificationsEnabled: true,
+  theme: 'system',
+  calendar: DEFAULT_CALENDAR_SETTINGS,
+};
+
+// Always hand callers a fresh copy so they can't mutate the shared defaults.
+const clone = (value) => JSON.parse(JSON.stringify(value));
+
 class LocalStorageService {
   // Timer state management
   saveTimerState(state) {
@@ -22,6 +61,7 @@ class LocalStorageService {
         ...state,
         lastSaved: Date.now()
       }));
+      emitChange(STORAGE_KEYS.TIMER_STATE);
       return true;
     } catch (error) {
       console.error('Failed to save timer state:', error);
@@ -33,7 +73,7 @@ class LocalStorageService {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.TIMER_STATE);
       if (!data) return null;
-      
+
       const state = JSON.parse(data);
       // Calculate time elapsed since last save if timer was running
       if (state.isRunning && state.lastSaved) {
@@ -50,6 +90,7 @@ class LocalStorageService {
   clearTimerState() {
     try {
       localStorage.removeItem(STORAGE_KEYS.TIMER_STATE);
+      emitChange(STORAGE_KEYS.TIMER_STATE);
       return true;
     } catch (error) {
       console.error('Failed to clear timer state:', error);
@@ -64,6 +105,7 @@ class LocalStorageService {
         tasks,
         lastUpdated: Date.now()
       }));
+      emitChange(STORAGE_KEYS.TASKS);
       return true;
     } catch (error) {
       console.error('Failed to save tasks:', error);
@@ -75,7 +117,7 @@ class LocalStorageService {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.TASKS);
       if (!data) return [];
-      
+
       const parsed = JSON.parse(data);
       return parsed.tasks || [];
     } catch (error) {
@@ -133,6 +175,7 @@ class LocalStorageService {
         folders,
         lastUpdated: Date.now()
       }));
+      emitChange(STORAGE_KEYS.TASK_FOLDERS);
       return true;
     } catch (error) {
       console.error('Failed to save folders:', error);
@@ -144,7 +187,7 @@ class LocalStorageService {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.TASK_FOLDERS);
       if (!data) return [];
-      
+
       const parsed = JSON.parse(data);
       return parsed.folders || [];
     } catch (error) {
@@ -181,7 +224,7 @@ class LocalStorageService {
     const folders = this.getFolders();
     const filteredFolders = folders.filter(folder => folder.id !== folderId);
     this.saveFolders(filteredFolders);
-    
+
     // Move tasks from deleted folder to no folder
     const tasks = this.getTasks();
     tasks.forEach(task => {
@@ -201,8 +244,9 @@ class LocalStorageService {
         id: Date.now().toString(),
         date: new Date().toISOString()
       }];
-      
+
       localStorage.setItem(STORAGE_KEYS.FOCUS_SESSIONS, JSON.stringify(updatedSessions));
+      emitChange(STORAGE_KEYS.FOCUS_SESSIONS);
       return true;
     } catch (error) {
       console.error('Failed to save focus session:', error);
@@ -214,7 +258,7 @@ class LocalStorageService {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.FOCUS_SESSIONS);
       if (!data) return [];
-      
+
       return JSON.parse(data);
     } catch (error) {
       console.error('Failed to get focus sessions:', error);
@@ -225,6 +269,7 @@ class LocalStorageService {
   saveFocusSessions(sessions) {
     try {
       localStorage.setItem(STORAGE_KEYS.FOCUS_SESSIONS, JSON.stringify(sessions));
+      emitChange(STORAGE_KEYS.FOCUS_SESSIONS);
       return true;
     } catch (error) {
       console.error('Failed to save focus sessions:', error);
@@ -240,6 +285,7 @@ class LocalStorageService {
         lastDate: streak?.lastDate || null
       };
       localStorage.setItem(STORAGE_KEYS.FOCUS_STREAK, JSON.stringify(normalized));
+      emitChange(STORAGE_KEYS.FOCUS_STREAK);
       return normalized;
     } catch (error) {
       console.error('Failed to save focus streak:', error);
@@ -251,7 +297,7 @@ class LocalStorageService {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.FOCUS_STREAK);
       if (!data) return { count: 0, lastDate: null };
-      
+
       const parsed = JSON.parse(data);
       return {
         count: Math.max(0, parsed.count || 0),
@@ -269,6 +315,7 @@ class LocalStorageService {
       const existing = this.getOnboarding();
       const updated = { ...existing, ...progress, lastUpdated: Date.now() };
       localStorage.setItem(STORAGE_KEYS.ONBOARDING, JSON.stringify(updated));
+      emitChange(STORAGE_KEYS.ONBOARDING);
       return updated;
     } catch (error) {
       console.error('Failed to save onboarding:', error);
@@ -296,6 +343,7 @@ class LocalStorageService {
         completedAt: session?.completedAt || new Date().toISOString()
       };
       localStorage.setItem(STORAGE_KEYS.LAST_SESSION, JSON.stringify(payload));
+      emitChange(STORAGE_KEYS.LAST_SESSION);
       return payload;
     } catch (error) {
       console.error('Failed to save last session:', error);
@@ -320,6 +368,7 @@ class LocalStorageService {
         ...settings,
         lastUpdated: Date.now()
       }));
+      emitChange(STORAGE_KEYS.SETTINGS);
       return true;
     } catch (error) {
       console.error('Failed to save settings:', error);
@@ -330,60 +379,16 @@ class LocalStorageService {
   getSettings() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-      if (!data) return {
-        workDuration: 25,
-        shortBreakDuration: 5,
-        longBreakDuration: 15,
-        sessionsUntilLongBreak: 4,
-        soundEnabled: true,
-        notificationsEnabled: true,
-        theme: 'system',
-        calendar: {
-          firstDayOfWeek: 0,
-          defaultView: 'month',
-          showWeekends: true,
-          showWeekNumbers: false,
-          timeFormat: '12h',
-          showMiniCalendar: true,
-          showTasks: true,
-          eventDensity: 'normal',
-          startHour: 0,
-          endHour: 23
-        }
-      };
-      
+      if (!data) return clone(DEFAULT_SETTINGS);
+
       const parsed = JSON.parse(data);
       if (!parsed.calendar) {
-        parsed.calendar = {
-          firstDayOfWeek: 0,
-          defaultView: 'month',
-          showWeekends: true,
-          showWeekNumbers: false,
-          timeFormat: '12h',
-          showMiniCalendar: true,
-          showTasks: true,
-          eventDensity: 'normal',
-          startHour: 0,
-          endHour: 23
-        };
+        parsed.calendar = clone(DEFAULT_CALENDAR_SETTINGS);
       }
       return parsed;
     } catch (error) {
       console.error('Failed to get settings:', error);
-      return {
-        calendar: {
-          firstDayOfWeek: 0,
-          defaultView: 'month',
-          showWeekends: true,
-          showWeekNumbers: false,
-          timeFormat: '12h',
-          showMiniCalendar: true,
-          showTasks: true,
-          eventDensity: 'normal',
-          startHour: 0,
-          endHour: 23
-        }
-      };
+      return clone(DEFAULT_SETTINGS);
     }
   }
 
@@ -404,32 +409,10 @@ class LocalStorageService {
   getCalendarSettings() {
     try {
       const settings = this.getSettings();
-      return settings.calendar || {
-        firstDayOfWeek: 0,
-        defaultView: 'month',
-        showWeekends: true,
-        showWeekNumbers: false,
-        timeFormat: '12h',
-        showMiniCalendar: true,
-        showTasks: true,
-        eventDensity: 'normal',
-        startHour: 0,
-        endHour: 23
-      };
+      return settings.calendar || clone(DEFAULT_CALENDAR_SETTINGS);
     } catch (error) {
       console.error('Failed to get calendar settings:', error);
-      return {
-        firstDayOfWeek: 0,
-        defaultView: 'month',
-        showWeekends: true,
-        showWeekNumbers: false,
-        timeFormat: '12h',
-        showMiniCalendar: true,
-        showTasks: true,
-        eventDensity: 'normal',
-        startHour: 0,
-        endHour: 23
-      };
+      return clone(DEFAULT_CALENDAR_SETTINGS);
     }
   }
 
@@ -439,6 +422,7 @@ class LocalStorageService {
       const existing = this.getWellnessData();
       const updated = { ...existing, ...data, lastUpdated: Date.now() };
       localStorage.setItem(STORAGE_KEYS.WELLNESS, JSON.stringify(updated));
+      emitChange(STORAGE_KEYS.WELLNESS);
       return true;
     } catch (error) {
       console.error('Failed to save wellness data:', error);
@@ -450,7 +434,7 @@ class LocalStorageService {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.WELLNESS);
       if (!data) return {};
-      
+
       return JSON.parse(data);
     } catch (error) {
       console.error('Failed to get wellness data:', error);
@@ -465,6 +449,7 @@ class LocalStorageService {
         events,
         lastUpdated: Date.now()
       }));
+      emitChange(STORAGE_KEYS.CALENDAR_EVENTS);
       return true;
     } catch (error) {
       console.error('Failed to save calendar events:', error);
@@ -476,7 +461,7 @@ class LocalStorageService {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.CALENDAR_EVENTS);
       if (!data) return [];
-      
+
       const parsed = JSON.parse(data);
       return parsed.events || [];
     } catch (error) {
@@ -491,6 +476,7 @@ class LocalStorageService {
       Object.values(STORAGE_KEYS).forEach(key => {
         localStorage.removeItem(key);
       });
+      emitChange(null);
       return true;
     } catch (error) {
       console.error('Failed to clear all data:', error);
@@ -503,7 +489,7 @@ class LocalStorageService {
     try {
       const info = {};
       let totalSize = 0;
-      
+
       Object.entries(STORAGE_KEYS).forEach(([name, key]) => {
         const data = localStorage.getItem(key);
         const size = data ? new Blob([data]).size : 0;
@@ -513,7 +499,7 @@ class LocalStorageService {
         };
         totalSize += size;
       });
-      
+
       return {
         ...info,
         totalSize,
@@ -537,6 +523,7 @@ class LocalStorageService {
   saveNotes(notes) {
     try {
       localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
+      emitChange(STORAGE_KEYS.NOTES);
       return true;
     } catch (error) {
       console.error('Failed to save notes:', error);
@@ -581,7 +568,7 @@ class LocalStorageService {
       const notes = this.getNotes();
       const index = notes.findIndex(n => n.id === noteId);
       if (index === -1) return null;
-      
+
       notes[index] = {
         ...notes[index],
         ...updates,
@@ -611,6 +598,7 @@ class LocalStorageService {
   saveJournalEntries(entries) {
     try {
       localStorage.setItem(STORAGE_KEYS.JOURNAL_ENTRIES, JSON.stringify(entries));
+      emitChange(STORAGE_KEYS.JOURNAL_ENTRIES);
       return true;
     } catch (error) {
       console.error('Failed to save journal entries:', error);
@@ -633,7 +621,7 @@ class LocalStorageService {
       const entries = this.getJournalEntries();
       const date = entry.date || new Date().toISOString().split('T')[0];
       const existingIndex = entries.findIndex(e => e.date === date);
-      
+
       const newEntry = {
         id: entry.id || `journal-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         date,
@@ -649,7 +637,7 @@ class LocalStorageService {
       } else {
         entries.push(newEntry);
       }
-      
+
       this.saveJournalEntries(entries);
       return newEntry;
     } catch (error) {
@@ -663,7 +651,7 @@ class LocalStorageService {
       const entries = this.getJournalEntries();
       const index = entries.findIndex(e => e.id === entryId);
       if (index === -1) return null;
-      
+
       entries[index] = {
         ...entries[index],
         ...updates,
