@@ -20,9 +20,10 @@ pnpm dev        # Vite dev server on http://localhost:1000 (port + host preset i
 pnpm lint       # eslint with --max-warnings 0 — warnings fail the build, so keep it clean
 pnpm build      # vite build → dist/
 pnpm preview    # serve the production build
+pnpm test       # Vitest run (unit tests in src/**/*.test.{js,jsx})
 ```
 
-Always run `pnpm lint` and `pnpm build` before finishing — both are required to catch errors. There is **no test setup**; if you add tests, confirm the framework first.
+Always run `pnpm lint` and `pnpm build` before finishing — both are required to catch errors. Tests run on **Vitest + jsdom** (`vitest.config.js`); current coverage is the pure logic (`quickParse`, `localStorageService`, `searchService`). Prefer testing pure functions/services there; full UI flows are best checked by running the app.
 
 ## Architecture
 
