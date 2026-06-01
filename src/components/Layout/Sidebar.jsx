@@ -70,7 +70,7 @@ function Sidebar({ isMobile = false, onClose }) {
     return (
       <div className="fixed inset-0 z-50 lg:hidden">
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
-        <div className="fixed left-0 top-0 h-full w-[var(--sidebar-width)] bg-background/65 backdrop-blur-xl border-r border-border/50 animate-slide-in-from-left shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed left-0 top-0 h-full w-[var(--sidebar-width)] bg-background/95 backdrop-blur-xl border-r border-border/50 animate-slide-in-from-left shadow-2xl flex flex-col overflow-hidden">
           <div className="flex items-center justify-between p-4 sm:p-6 pb-4 sm:pb-6 flex-shrink-0">
             <div>
               <h1 className="text-2xl font-bold text-foreground">Zephyr</h1>
@@ -103,7 +103,7 @@ function Sidebar({ isMobile = false, onClose }) {
   }
 
   return (
-    <div className="hidden lg:flex lg:flex-col lg:w-[var(--sidebar-width)] lg:fixed lg:inset-y-0 z-30 bg-background/65 backdrop-blur-xl border-r border-border/50 shadow-lg overflow-hidden">
+    <div className="hidden lg:flex lg:flex-col lg:w-[var(--sidebar-width)] lg:fixed lg:inset-y-0 bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-lg overflow-hidden">
       <div className="flex flex-col h-full">
         <div className="flex-shrink-0 p-6 pb-4">
           <h1 className="text-2xl font-bold text-foreground mb-1">Zephyr</h1>

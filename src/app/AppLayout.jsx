@@ -28,10 +28,7 @@ function AppLayout() {
   const handleSidebarClose = () => setSidebarOpen(false);
 
   return (
-    <div className="relative min-h-dvh flex flex-col bg-background transition-colors duration-300 overflow-x-hidden">
-      {/* Full-page animated RGB gradient (sits behind all content) */}
-      <div className="app-rgb-bg" aria-hidden="true" />
-
+    <div className="min-h-dvh flex flex-col bg-background transition-colors duration-300 overflow-x-hidden">
       {/* Keyboard / screen-reader users can jump straight to the content */}
       <a
         href="#main-content"
@@ -49,7 +46,7 @@ function AppLayout() {
       )}
 
       {/* Main Content */}
-      <div className="relative z-10 lg:pl-[var(--sidebar-width)] flex-1 flex flex-col min-h-0">
+      <div className="lg:pl-[var(--sidebar-width)] flex-1 flex flex-col min-h-0">
         <Header onMenuClick={handleSidebarOpen} />
         <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col pt-[var(--header-height)] overflow-x-hidden overflow-y-auto lg:overflow-y-auto focus:outline-none">
           <div className="flex-1 w-full content-wide px-responsive py-responsive flex flex-col min-h-0 gap-[var(--panel-gap)]">
