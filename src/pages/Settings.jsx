@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { notificationService } from '../services/notificationService';
 import { localStorageService } from '../services/localStorage';
 import PageHeader from '../components/Layout/PageHeader';
+import PageContainer from '../components/Layout/PageContainer';
 
 function Settings() {
   const [notificationSettings, setNotificationSettings] = useState(notificationService.getSettings());
@@ -77,7 +78,7 @@ function Settings() {
 
 
   return (
-    <div className="w-full max-w-screen-2xl mx-auto flex-1 panel-stack border border-border/40 rounded-2xl bg-gradient-to-b from-background via-card/80 to-card/90 p-responsive overflow-y-auto min-h-0 backdrop-blur">
+    <PageContainer>
       <PageHeader
         title="Settings"
         description="Manage notifications, data, and personalization"
@@ -356,7 +357,7 @@ function Settings() {
         </DialogContent>
       </Dialog>
 
-    </div>
+    </PageContainer>
   );
 }
 

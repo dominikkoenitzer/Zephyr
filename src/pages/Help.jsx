@@ -4,6 +4,7 @@ import { HelpCircle, Zap, Shield, FileText, Scale, AlertCircle, Timer, Settings,
 import { Button } from '../components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import PageHeader from '../components/Layout/PageHeader';
+import PageContainer from '../components/Layout/PageContainer';
 
 function Help() {
   const [activeSection, setActiveSection] = useState('help');
@@ -61,7 +62,7 @@ function Help() {
   ];
 
   return (
-    <div className="w-full flex-1 panel-stack border border-border/60 rounded-2xl bg-card/90 p-responsive overflow-y-auto min-h-0">
+    <PageContainer>
       <PageHeader
         title="Help & Support"
         description="Everything you need to master Zephyr"
@@ -451,7 +452,7 @@ function Help() {
           </Card>
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }
 
