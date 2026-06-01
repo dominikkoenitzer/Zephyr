@@ -7,33 +7,33 @@
 
 @layer base {
   :root {
-    /* Zephyr Light Theme - Calm, Modern Palette */
-    --background: 210 30% 98%;
-    --foreground: 215 25% 15%;
+    /* Zephyr Light Theme - Clean, neutral, modern */
+    --background: 210 20% 99%;
+    --foreground: 220 25% 13%;
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card-foreground: 220 25% 13%;
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
-    
-    /* Primary: Serene Blue */
-    --primary: 213 94% 58%;
+    --popover-foreground: 220 25% 13%;
+
+    /* Primary: Clean Blue */
+    --primary: 217 91% 55%;
     --primary-foreground: 0 0% 100%;
-    
-    /* Secondary: Soft Purple */
-    --secondary: 250 70% 96%;
-    --secondary-foreground: 250 70% 30%;
-    
-    --muted: 210 30% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 213 94% 96%;
-    --accent-foreground: 213 94% 28%;
-    
-    --destructive: 0 84% 60%;
+
+    /* Secondary: Neutral */
+    --secondary: 220 16% 96%;
+    --secondary-foreground: 220 20% 25%;
+
+    --muted: 220 16% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 220 16% 95%;
+    --accent-foreground: 220 22% 20%;
+
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    
-    --border: 215 20% 90%;
-    --input: 215 20% 94%;
-    --ring: 213 94% 58%;
+
+    --border: 220 16% 91%;
+    --input: 220 16% 93%;
+    --ring: 217 91% 55%;
     --radius: 0.75rem;
     
     /* Glassmorphism variables */
@@ -55,33 +55,33 @@
   }
 
   .dark {
-    /* Zephyr Dark Theme - Deep, Elegant */
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 10%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 10%;
-    --popover-foreground: 210 40% 98%;
-    
-    /* Primary: Vibrant Blue */
-    --primary: 213 94% 65%;
-    --primary-foreground: 222 47% 6%;
-    
-    /* Secondary: Subtle Purple */
-    --secondary: 250 70% 20%;
-    --secondary-foreground: 250 70% 90%;
-    
-    --muted: 217 32% 18%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 32% 18%;
-    --accent-foreground: 213 94% 65%;
-    
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    
-    --border: 217 32% 18%;
-    --input: 217 32% 18%;
-    --ring: 213 94% 65%;
+    /* Zephyr Dark Theme - Clean neutral near-black */
+    --background: 222 18% 8%;
+    --foreground: 210 20% 96%;
+    --card: 222 16% 11%;
+    --card-foreground: 210 20% 96%;
+    --popover: 222 16% 11%;
+    --popover-foreground: 210 20% 96%;
+
+    /* Primary: Clean Blue */
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 8%;
+
+    /* Secondary: Neutral */
+    --secondary: 222 14% 18%;
+    --secondary-foreground: 210 20% 90%;
+
+    --muted: 222 14% 16%;
+    --muted-foreground: 215 14% 62%;
+    --accent: 222 14% 18%;
+    --accent-foreground: 210 20% 92%;
+
+    --destructive: 0 63% 45%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 222 14% 18%;
+    --input: 222 14% 18%;
+    --ring: 217 91% 60%;
     
     /* Glassmorphism variables for dark mode */
     --glass-bg: rgba(30, 41, 59, 0.7);
@@ -388,50 +388,3 @@
   }
 }
 
-/* Full-page animated RGB gradient — flowing "waves" with a continuous hue
-   cycle and a gentle pulse (think RGB RAM lighting). Fixed behind all content;
-   content surfaces sit above it at z-10. */
-.app-rgb-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    115deg,
-    hsl(330 90% 60%),
-    hsl(280 90% 62%),
-    hsl(220 92% 60%),
-    hsl(190 90% 55%),
-    hsl(150 80% 52%),
-    hsl(280 90% 62%),
-    hsl(330 90% 60%)
-  );
-  background-size: 300% 300%;
-  animation:
-    rgb-wave 16s ease-in-out infinite,
-    rgb-hue 22s linear infinite,
-    rgb-pulse 9s ease-in-out infinite;
-}
-
-@keyframes rgb-wave {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes rgb-hue {
-  from { filter: hue-rotate(0deg); }
-  to   { filter: hue-rotate(360deg); }
-}
-
-@keyframes rgb-pulse {
-  0%, 100% { opacity: 0.30; }
-  50%      { opacity: 0.48; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .app-rgb-bg {
-    animation: none;
-    opacity: 0.35;
-  }
-}
