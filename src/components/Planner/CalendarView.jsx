@@ -7,6 +7,7 @@ import { EmptyState } from '../ui/empty-state';
 import { cn } from '../../lib/utils';
 import { localStorageService } from '../../services/localStorage';
 import { useCalendarEvents } from '../../hooks/useStore';
+import { toast } from 'sonner';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = [
@@ -128,10 +129,19 @@ function CalendarView() {
 
   const remove = () => {
     if (!form.id) return;
+    const removed = events.find((e) => e.id === form.id);
     localStorageService.saveCalendarEvents(
       localStorageService.getCalendarEvents().filter((e) => e.id !== form.id)
     );
     setDialogOpen(false);
+    if (removed) {
+      toast('Event deleted', {
+        action: {
+          label: 'Undo',
+          onClick: () => localStorageService.saveCalendarEvents([...localStorageService.getCalendarEvents(), removed]),
+        },
+      });
+    }
   };
 
   const goPrev = () => setCurrent(new Date(current.getFullYear(), current.getMonth() - 1, 1));
@@ -264,6 +274,7 @@ function CalendarView() {
               <label htmlFor="ev-title" className="text-sm font-medium text-foreground">Title</label>
               <Input
                 id="ev-title"
+                autoFocus
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 placeholder="What's happening?"

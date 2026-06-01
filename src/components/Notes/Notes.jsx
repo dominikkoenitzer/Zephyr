@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { EmptyState } from '../ui/empty-state';
 import { localStorageService } from '../../services/localStorage';
 import { useNotes } from '../../hooks/useStore';
+import { toast } from 'sonner';
 
 const NOTE_COLORS = [
   { name: 'Blue', value: '#3b82f6' },
@@ -73,8 +74,17 @@ const Notes = () => {
 
   const remove = (id, e) => {
     e?.stopPropagation();
+    const removed = notes.find((n) => n.id === id);
     localStorageService.deleteNote(id);
     if (editing?.id === id) setEditing(null);
+    if (removed) {
+      toast('Note deleted', {
+        action: {
+          label: 'Undo',
+          onClick: () => localStorageService.saveNotes([...localStorageService.getNotes(), removed]),
+        },
+      });
+    }
   };
 
   const togglePin = (note, e) => {
@@ -220,6 +230,7 @@ const Notes = () => {
             <div className="space-y-4 py-1">
               <div className="flex items-center gap-2">
                 <Input
+                  autoFocus
                   value={editing.title}
                   onChange={(e) => setEditing({ ...editing, title: e.target.value })}
                   placeholder="Title"

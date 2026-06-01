@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Plus, Trash2, CheckCircle, Circle, ListTodo, Target, TrendingUp,
@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { EmptyState } from '../ui/empty-state';
 import { localStorageService } from '../../services/localStorage';
 import { parseQuickTask } from '../../lib/quickParse';
+import { toast } from 'sonner';
 
 const PRIORITY_STYLES = {
   high: 'text-destructive bg-destructive/10 border border-destructive/30',
@@ -40,6 +41,7 @@ const TaskList = () => {
   const [showFolderDialog, setShowFolderDialog] = useState(false);
   const [todayFolderId, setTodayFolderId] = useState(null);
   const [hasCreatedToday, setHasCreatedToday] = useState(false);
+  const newTaskInputRef = useRef(null);
 
 // Load tasks and folders on mount
   useEffect(() => {
@@ -93,7 +95,7 @@ const TaskList = () => {
     e.preventDefault();
     if (!newTask.trim()) return;
 
-    const task = localStorageService.addTask({
+    localStorageService.addTask({
       title: parsed.title,
       description: '',
       priority: parsed.priority || 'medium',
@@ -103,11 +105,10 @@ const TaskList = () => {
     });
     localStorageService.saveOnboarding({ taskAdded: true });
 
-    // Reload tasks from localStorage to ensure consistency
-    const allTasks = localStorageService.getTasks();
-    setTasks(allTasks);
+    // Keep the input focused so you can add several tasks in a row.
+    setTasks(localStorageService.getTasks());
     setNewTask('');
-    setEditingTask(task);
+    newTaskInputRef.current?.focus();
   };
 
   const addFolder = () => {
@@ -134,10 +135,20 @@ const TaskList = () => {
   };
 
   const deleteTask = (taskId) => {
+    const removed = tasks.find((t) => t.id === taskId);
     localStorageService.deleteTask(taskId);
-    // Reload tasks from localStorage to ensure consistency
-    const allTasks = localStorageService.getTasks();
-    setTasks(allTasks);
+    setTasks(localStorageService.getTasks());
+    if (removed) {
+      toast('Task deleted', {
+        action: {
+          label: 'Undo',
+          onClick: () => {
+            localStorageService.saveTasks([...localStorageService.getTasks(), removed]);
+            setTasks(localStorageService.getTasks());
+          },
+        },
+      });
+    }
   };
 
   const updateTask = (taskId, updates) => {
@@ -392,6 +403,7 @@ const TaskList = () => {
                 <div className="flex-1 relative">
                   <ListTodo className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                   <Input
+                    ref={newTaskInputRef}
                     placeholder="Add a task…"
                     value={newTask}
                     onChange={(e) => setNewTask(e.target.value)}
@@ -522,6 +534,7 @@ const TaskList = () => {
                           variant="ghost"
                           size="sm"
                           className="p-1.5 sm:p-2 h-auto text-muted-foreground hover:text-primary"
+                          aria-label="Edit task"
                           onClick={() => setEditingTask(task)}
                         >
                           <Edit2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -530,6 +543,7 @@ const TaskList = () => {
                           variant="ghost"
                           size="sm"
                           className="p-1.5 sm:p-2 h-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                          aria-label="Delete task"
                           onClick={() => deleteTask(task.id)}
                         >
                           <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -574,6 +588,7 @@ const TaskList = () => {
                       variant="ghost"
                       size="sm"
                       className="p-2 h-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      aria-label="Delete task"
                       onClick={() => deleteTask(task.id)}
                     >
                       <Trash2 className="h-4 w-4" />
