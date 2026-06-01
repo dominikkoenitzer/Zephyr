@@ -103,7 +103,7 @@ function Sidebar({ isMobile = false, onClose }) {
   }
 
   return (
-    <div className="hidden lg:flex lg:flex-col lg:w-[var(--sidebar-width)] lg:fixed lg:inset-y-0 bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-lg overflow-hidden">
+    <div className="hidden lg:flex lg:flex-col lg:w-[var(--sidebar-width)] lg:fixed lg:inset-y-0 z-30 bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-lg overflow-hidden">
       <div className="flex flex-col h-full">
         <div className="flex-shrink-0 p-6 pb-4">
           <h1 className="text-2xl font-bold text-foreground mb-1">Zephyr</h1>
