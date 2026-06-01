@@ -387,3 +387,58 @@
     }
   }
 }
+
+/* Ambient, focus-aligned background — subtle, constant motion so the canvas
+   never feels dead, but calm enough not to distract. Adapts to the active
+   theme via the primary/secondary tokens (incl. sound themes). */
+.app-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.app-aurora::before,
+.app-aurora::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform;
+}
+
+.app-aurora::before {
+  width: 44rem;
+  height: 44rem;
+  top: -12rem;
+  left: -10rem;
+  background: radial-gradient(circle, hsl(var(--primary) / 0.16), transparent 65%);
+  animation: aurora-drift-a 28s ease-in-out infinite alternate;
+}
+
+.app-aurora::after {
+  width: 40rem;
+  height: 40rem;
+  bottom: -14rem;
+  right: -10rem;
+  background: radial-gradient(circle, hsl(var(--secondary) / 0.45), transparent 65%);
+  animation: aurora-drift-b 34s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-drift-a {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(4rem, 3rem, 0) scale(1.12); }
+}
+
+@keyframes aurora-drift-b {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(-3.5rem, -4rem, 0) scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-aurora::before,
+  .app-aurora::after {
+    animation: none;
+  }
+}
