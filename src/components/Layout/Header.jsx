@@ -197,7 +197,7 @@ function Header({ onMenuClick }) {
                 id="header-search"
                 name="search"
                 ref={searchInputRef}
-                placeholder="Search notes, journal, events..."
+                placeholder="Search notes, tasks, events..."
                 className="pl-9 h-9 w-64 text-sm"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
