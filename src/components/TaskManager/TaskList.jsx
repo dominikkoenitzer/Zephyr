@@ -392,7 +392,7 @@ const TaskList = () => {
                 <div className="flex-1 relative">
                   <ListTodo className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                   <Input
-                    placeholder="Add a task — try “Email Sam tomorrow !high #work”"
+                    placeholder="Add a task…"
                     value={newTask}
                     onChange={(e) => setNewTask(e.target.value)}
                     className="pl-10 sm:pl-11 h-10 sm:h-12 text-sm sm:text-base"
