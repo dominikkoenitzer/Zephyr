@@ -388,57 +388,50 @@
   }
 }
 
-/* Ambient, focus-aligned background — subtle, constant motion so the canvas
-   never feels dead, but calm enough not to distract. Adapts to the active
-   theme via the primary/secondary tokens (incl. sound themes). */
-.app-aurora {
+/* Full-page animated RGB gradient — flowing "waves" with a continuous hue
+   cycle and a gentle pulse (think RGB RAM lighting). Fixed behind all content;
+   content surfaces sit above it at z-10. */
+.app-rgb-bg {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  overflow: hidden;
+  background: linear-gradient(
+    115deg,
+    hsl(330 90% 60%),
+    hsl(280 90% 62%),
+    hsl(220 92% 60%),
+    hsl(190 90% 55%),
+    hsl(150 80% 52%),
+    hsl(280 90% 62%),
+    hsl(330 90% 60%)
+  );
+  background-size: 300% 300%;
+  animation:
+    rgb-wave 16s ease-in-out infinite,
+    rgb-hue 22s linear infinite,
+    rgb-pulse 9s ease-in-out infinite;
 }
 
-.app-aurora::before,
-.app-aurora::after {
-  content: "";
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(90px);
-  will-change: transform;
+@keyframes rgb-wave {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-.app-aurora::before {
-  width: 44rem;
-  height: 44rem;
-  top: -12rem;
-  left: -10rem;
-  background: radial-gradient(circle, hsl(var(--primary) / 0.16), transparent 65%);
-  animation: aurora-drift-a 28s ease-in-out infinite alternate;
+@keyframes rgb-hue {
+  from { filter: hue-rotate(0deg); }
+  to   { filter: hue-rotate(360deg); }
 }
 
-.app-aurora::after {
-  width: 40rem;
-  height: 40rem;
-  bottom: -14rem;
-  right: -10rem;
-  background: radial-gradient(circle, hsl(var(--secondary) / 0.45), transparent 65%);
-  animation: aurora-drift-b 34s ease-in-out infinite alternate;
-}
-
-@keyframes aurora-drift-a {
-  from { transform: translate3d(0, 0, 0) scale(1); }
-  to   { transform: translate3d(4rem, 3rem, 0) scale(1.12); }
-}
-
-@keyframes aurora-drift-b {
-  from { transform: translate3d(0, 0, 0) scale(1); }
-  to   { transform: translate3d(-3.5rem, -4rem, 0) scale(1.1); }
+@keyframes rgb-pulse {
+  0%, 100% { opacity: 0.30; }
+  50%      { opacity: 0.48; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-aurora::before,
-  .app-aurora::after {
+  .app-rgb-bg {
     animation: none;
+    opacity: 0.35;
   }
 }
