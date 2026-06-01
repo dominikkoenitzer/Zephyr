@@ -41,6 +41,11 @@
     --glass-border: rgba(255, 255, 255, 0.3);
     --glass-shadow: rgba(0, 0, 0, 0.1);
 
+    /* Elevation shadows — dark-based so they read as real shadows in both modes */
+    --shadow-sm: 0 1px 2px hsl(220 25% 13% / 0.06);
+    --shadow-card: 0 1px 2px hsl(220 25% 13% / 0.05), 0 6px 18px hsl(220 25% 13% / 0.06);
+    --shadow-overlay: 0 20px 50px hsl(220 25% 13% / 0.18);
+
     /* Layout tokens */
     --layout-max: 1400px;
     --layout-wide: 1680px;
@@ -87,6 +92,11 @@
     --glass-bg: rgba(30, 41, 59, 0.7);
     --glass-border: rgba(255, 255, 255, 0.1);
     --glass-shadow: rgba(0, 0, 0, 0.3);
+
+    /* Elevation shadows — deeper, pure black for true dark-mode depth */
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.4);
+    --shadow-card: 0 1px 2px hsl(0 0% 0% / 0.3), 0 6px 18px hsl(0 0% 0% / 0.45);
+    --shadow-overlay: 0 24px 60px hsl(0 0% 0% / 0.6);
   }
 
   /* Sound Theme Overrides */
@@ -165,10 +175,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
-    background-image:
-      radial-gradient(1200px 500px at 0% -10%, hsl(var(--primary) / 0.06), transparent 60%),
-      radial-gradient(900px 420px at 100% -20%, hsl(var(--accent-foreground) / 0.04), transparent 60%);
-    background-attachment: fixed;
   }
   
   #root {
