@@ -1,4 +1,4 @@
-import { localStorageService } from './localStorage';
+import { localStorageService, emitChange } from './localStorage';
 
 const STORAGE_KEYS = {
   NOTIFICATIONS: 'zephyr_notifications',
@@ -16,10 +16,6 @@ const DEFAULT_SETTINGS = {
   events: {
     enabled: true,
     reminderTime: 15 // minutes before event
-  },
-  journal: {
-    enabled: false,
-    reminderTime: '20:00' // HH:mm format
   },
   timer: {
     enabled: true
@@ -83,6 +79,7 @@ class NotificationService {
       const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
       const filtered = notifications.filter(n => new Date(n.createdAt).getTime() > thirtyDaysAgo);
       localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(filtered));
+      emitChange(STORAGE_KEYS.NOTIFICATIONS);
       return true;
     } catch (error) {
       console.error('Failed to save notifications:', error);
@@ -100,7 +97,6 @@ class NotificationService {
     // Check if this notification type is enabled
     if (type === 'task' && !settings.tasks.enabled) return null;
     if (type === 'event' && !settings.events.enabled) return null;
-    if (type === 'journal' && !settings.journal.enabled) return null;
     if (type === 'timer' && !settings.timer.enabled) return null;
 
     const notification = {
@@ -271,7 +267,9 @@ class NotificationService {
     const reminderMinutes = settings.events.reminderTime || 15;
 
     events.forEach(event => {
-      if (!event.date || !event.reminder || event.allDay) return;
+      // Remind for any event that has a time set (controlled by the single
+      // Event Notifications setting — no per-event reminder toggle).
+      if (!event.date || !event.time) return;
 
       const eventDate = new Date(event.date);
       if (event.time) {
@@ -309,37 +307,6 @@ class NotificationService {
   }
 
   /**
-   * Check journal reminders
-   */
-  checkJournalReminders() {
-    const settings = this.getSettings();
-    if (!settings.enabled || !settings.journal.enabled) return;
-
-    const reminderTime = settings.journal.reminderTime || '20:00';
-    const [hours, minutes] = reminderTime.split(':').map(Number);
-    const now = new Date();
-    const reminderDate = new Date();
-    reminderDate.setHours(hours, minutes, 0, 0);
-
-    // Check if it's around reminder time (within 5 minutes)
-    const timeDiff = Math.abs(now - reminderDate);
-    if (timeDiff < 5 * 60 * 1000) {
-      // Check if journal entry already exists for today
-      const today = new Date().toISOString().split('T')[0];
-      const existingEntry = localStorageService.getJournalEntryByDate(today);
-      
-      if (!existingEntry) {
-        this.createNotification(
-          'journal',
-          'Journal Reminder',
-          "Don't forget to write in your journal today",
-          { type: 'navigate', path: '/notes' }
-        );
-      }
-    }
-  }
-
-  /**
    * Start checking for notifications at intervals
    */
   startChecking() {
@@ -349,13 +316,11 @@ class NotificationService {
     // Check immediately
     this.checkTaskDueDates();
     this.checkEventReminders();
-    this.checkJournalReminders();
 
     // Then check every minute
     this.checkInterval = setInterval(() => {
       this.checkTaskDueDates();
       this.checkEventReminders();
-      this.checkJournalReminders();
     }, 60000); // 1 minute
   }
 

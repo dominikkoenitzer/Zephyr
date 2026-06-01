@@ -3,19 +3,14 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   Line,
   LineChart,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
 import { localStorageService } from '../services/localStorage';
-
-const pieColors = ['hsl(var(--primary))', 'hsl(var(--muted-foreground) / 0.5)'];
 
 const toDateKey = (date) => {
   const year = date.getFullYear();
@@ -49,7 +44,6 @@ function Home() {
     tasks: [],
     focusSessions: [],
     notes: [],
-    journalEntries: [],
   });
 
   useEffect(() => {
@@ -58,7 +52,6 @@ function Home() {
         tasks: localStorageService.getTasks(),
         focusSessions: localStorageService.getFocusSessions(),
         notes: localStorageService.getNotes(),
-        journalEntries: localStorageService.getJournalEntries(),
       });
     };
 
@@ -115,16 +108,6 @@ function Home() {
     }));
   }, [lastSevenDays, snapshot.tasks]);
 
-  const notesData = useMemo(() => {
-    const notesCount = snapshot.notes.length;
-    const journalCount = snapshot.journalEntries.length;
-    return [
-      { name: 'Notes', value: notesCount },
-      { name: 'Journal', value: journalCount },
-    ];
-  }, [snapshot.journalEntries.length, snapshot.notes.length]);
-
-  const hasNotesData = notesData.some((item) => item.value > 0);
   const totalFocusMinutes = useMemo(
     () => focusData.reduce((sum, item) => sum + item.minutes, 0),
     [focusData]
@@ -134,7 +117,6 @@ function Home() {
     [tasksData]
   );
   const totalNotes = snapshot.notes.length;
-  const totalJournal = snapshot.journalEntries.length;
   const totalTasks = snapshot.tasks.length;
   const completionRate = totalTasks > 0 ? Math.round((totalTasksDone / totalTasks) * 100) : 0;
 
@@ -144,7 +126,7 @@ function Home() {
         <p className="text-xs sm:text-sm uppercase tracking-[0.14em] text-muted-foreground">Zephyr</p>
         <h1 className="mt-2 text-4xl sm:text-5xl md:text-6xl font-bold leading-[0.98] text-foreground">HOME</h1>
         <p className="mt-4 max-w-2xl text-sm sm:text-base text-muted-foreground">
-          A quick view of your current week (Monday to Sunday) across focus, tasks, and writing.
+          A quick view of your current week (Monday to Sunday) across focus, tasks, and notes.
         </p>
 
         <div className="mt-8 space-y-8">
@@ -165,9 +147,9 @@ function Home() {
               <p className="mt-1 text-xs text-muted-foreground">Of all tasks</p>
             </div>
             <div className="rounded-xl border border-border/70 bg-card/80 p-4">
-              <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Writing</p>
-              <p className="mt-2 text-2xl font-semibold text-foreground">{totalNotes + totalJournal}</p>
-              <p className="mt-1 text-xs text-muted-foreground">Notes + journal entries</p>
+              <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Notes</p>
+              <p className="mt-2 text-2xl font-semibold text-foreground">{totalNotes}</p>
+              <p className="mt-1 text-xs text-muted-foreground">Saved notes</p>
             </div>
           </div>
 
@@ -213,58 +195,6 @@ function Home() {
                       <Bar dataKey="done" radius={[8, 8, 0, 0]} fill="hsl(var(--primary))" />
                     </BarChart>
                   </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs sm:text-sm uppercase tracking-[0.12em] text-muted-foreground">Writing Split</p>
-            <div className="mt-3 grid gap-4 lg:grid-cols-[2fr_1fr]">
-              <div className="rounded-xl border border-border/70 bg-card/80 p-4">
-                <p className="mb-3 text-sm font-semibold text-foreground">Notes vs Journal</p>
-                <div className="h-64">
-                  {hasNotesData ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Tooltip
-                          contentStyle={{
-                            background: 'hsl(var(--card))',
-                            border: '1px solid hsl(var(--border))',
-                            borderRadius: '12px',
-                          }}
-                        />
-                        <Pie data={notesData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={100}>
-                          {notesData.map((entry, index) => (
-                            <Cell key={`cell-${entry.name}`} fill={pieColors[index % pieColors.length]} />
-                          ))}
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                      No notes or journal entries yet.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-border/70 bg-card/80 p-4">
-                <p className="text-sm font-semibold text-foreground">Counts</p>
-                <div className="mt-4 space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Notes</span>
-                    <span className="font-semibold text-foreground">{totalNotes}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Journal</span>
-                    <span className="font-semibold text-foreground">{totalJournal}</span>
-                  </div>
-                  <div className="h-px bg-border/70" />
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Total</span>
-                    <span className="font-semibold text-foreground">{totalNotes + totalJournal}</span>
-                  </div>
                 </div>
               </div>
             </div>
