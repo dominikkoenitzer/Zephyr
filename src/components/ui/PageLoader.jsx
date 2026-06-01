@@ -1,11 +1,14 @@
 const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-screen bg-background">
-    <div className="text-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-      <p className="text-muted-foreground">Loading...</p>
+  <div className="flex flex-1 items-center justify-center py-24" role="status" aria-live="polite">
+    <div className="flex flex-col items-center gap-3">
+      <div
+        className="h-9 w-9 animate-spin rounded-full border-2 border-muted border-t-primary"
+        aria-hidden="true"
+      />
+      <p className="text-sm text-muted-foreground">Loading…</p>
+      <span className="sr-only">Loading page</span>
     </div>
   </div>
 )
 
 export default PageLoader
-

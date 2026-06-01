@@ -71,7 +71,7 @@
       "@type": "WebApplication",
       "name": "Zephyr",
       "alternateName": "Zephyr - Flow Through Focus",
-      "description": "A free, local-first productivity app featuring a Pomodoro focus timer, task management, calendar, notes, and journal. No login required — your data stays on your device.",
+      "description": "A free, local-first productivity app featuring a Pomodoro focus timer, task management, a simple calendar, and notes. No login required — your data stays on your device.",
       "url": "https://zephyr.app",
       "applicationCategory": "ProductivityApplication",
       "operatingSystem": "Any (modern web browser)",
@@ -87,7 +87,7 @@
         "Pomodoro Timer",
         "Task Management",
         "Calendar & Events",
-        "Notes & Journal",
+        "Notes",
         "Focus Tracking",
         "Progress Analytics",
         "Offline Support"
@@ -104,6 +104,68 @@
           "url": "https://zephyr.app/android-icon-192x192.png"
         }
       }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Zephyr",
+      "alternateName": "Zephyr - Flow Through Focus",
+      "url": "https://zephyr.app",
+      "description": "Free, local-first productivity app: tasks, notes, a simple calendar, and a Pomodoro focus timer. No login, no signup — your data stays in your browser.",
+      "inLanguage": "en"
+    }
+    </script>
+
+    <!-- FAQ structured data (helps search & AI answer engines cite Zephyr) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Zephyr free, and do I need an account?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Zephyr is completely free and requires no account, signup, or login. It is a local-first app: all your data is stored in your browser on your device and is never sent to a server."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Zephyr work offline?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Zephyr is a Progressive Web App (PWA) designed to work completely offline. All your data — tasks, calendar events, notes, and timer sessions — is stored locally on your device, so you do not need an internet connection to use any features."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does the Pomodoro focus timer work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You work for 25 minutes (a 'pomodoro'), then take a 5-minute break. After 4 pomodoros you get a longer 15-minute break. Durations are customizable, and Zephyr automatically tracks your sessions so you can build consistent focus habits."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What can I do with tasks in Zephyr?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Create tasks with due dates, priorities, tags, and folders. Quick add understands natural language, so typing 'Email Sam tomorrow !high #work' automatically sets the due date, priority, and tag."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data private and backed up?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "All data is stored locally on your device and we have no access to it. There is no automatic cloud backup; you can export your notes from the Notes page, and you can clear everything anytime from Settings > Data Management."
+          }
+        }
+      ]
     }
     </script>
   </head>
