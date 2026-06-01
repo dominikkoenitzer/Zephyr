@@ -7,13 +7,14 @@ import SearchResults from '../Search/SearchResults';
 import NotificationCenter from '../Notifications/NotificationCenter';
 import { searchService } from '../../services/searchService';
 import { notificationService } from '../../services/notificationService';
+import { CHANGE_EVENT } from '../../services/localStorage';
 
 function Header({ onMenuClick }) {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [greeting, setGreeting] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState({ notes: [], journal: [], events: [], tasks: [] });
+  const [searchResults, setSearchResults] = useState({ notes: [], events: [], tasks: [] });
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -40,16 +41,22 @@ function Header({ onMenuClick }) {
     updateTime();
     const interval = setInterval(updateTime, 1000);
 
-    // Load notification count
+    // Load notification count. Updates instantly when notifications change
+    // (via the in-app change event), with a periodic refresh as a fallback
+    // for the service's time-based reminders.
     const loadNotificationCount = () => {
       setUnreadCount(notificationService.getUnreadCount());
     };
     loadNotificationCount();
-    const notificationInterval = setInterval(loadNotificationCount, 10000); // Check every 10 seconds
+    const notificationInterval = setInterval(loadNotificationCount, 10000);
+    window.addEventListener(CHANGE_EVENT, loadNotificationCount);
+    window.addEventListener('focus', loadNotificationCount);
 
     return () => {
       clearInterval(interval);
       clearInterval(notificationInterval);
+      window.removeEventListener(CHANGE_EVENT, loadNotificationCount);
+      window.removeEventListener('focus', loadNotificationCount);
     };
   }, []);
 
@@ -60,7 +67,7 @@ function Header({ onMenuClick }) {
       setShowSearchResults(true);
       setSelectedIndex(0);
     } else {
-      setSearchResults({ notes: [], journal: [], events: [], tasks: [] });
+      setSearchResults({ notes: [], events: [], tasks: [] });
       setShowSearchResults(false);
     }
   }, [searchQuery]);
@@ -103,7 +110,6 @@ function Header({ onMenuClick }) {
           // Navigate to selected result
           const allResults = [
             ...(searchResults.notes || []).map(r => ({ ...r, type: 'note' })),
-            ...(searchResults.journal || []).map(r => ({ ...r, type: 'journal' })),
             ...(searchResults.events || []).map(r => ({ ...r, type: 'event' })),
             ...(searchResults.tasks || []).map(r => ({ ...r, type: 'task' }))
           ];
@@ -115,9 +121,6 @@ function Header({ onMenuClick }) {
             // Navigate based on result type
             switch (selectedResult.type) {
               case 'note':
-                navigate('/notes');
-                break;
-              case 'journal':
                 navigate('/notes');
                 break;
               case 'event':
@@ -173,6 +176,7 @@ function Header({ onMenuClick }) {
             size="icon"
             className="lg:hidden h-9 w-9"
             onClick={onMenuClick}
+            aria-label="Open navigation menu"
           >
             <Menu className="h-5 w-5" />
           </Button>

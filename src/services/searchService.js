@@ -8,13 +8,12 @@ class SearchService {
    */
   searchAll(query) {
     if (!query || query.trim().length === 0) {
-      return { notes: [], journal: [], events: [], tasks: [] };
+      return { notes: [], events: [], tasks: [] };
     }
 
     const searchTerm = query.toLowerCase().trim();
     const results = {
       notes: [],
-      journal: [],
       events: [],
       tasks: []
     };
@@ -31,22 +30,6 @@ class SearchService {
           ...note,
           matchType: matchesTitle ? 'title' : matchesContent ? 'content' : 'tag',
           matchText: this.highlightMatch(note.title || note.content || '', searchTerm)
-        });
-      }
-    });
-
-    // Search Journal Entries
-    const journalEntries = localStorageService.getJournalEntries();
-    journalEntries.forEach(entry => {
-      const matchesContent = entry.content?.toLowerCase().includes(searchTerm);
-      const matchesTags = entry.tags?.some(tag => tag.toLowerCase().includes(searchTerm));
-      const matchesDate = entry.date?.toLowerCase().includes(searchTerm);
-      
-      if (matchesContent || matchesTags || matchesDate) {
-        results.journal.push({
-          ...entry,
-          matchType: matchesDate ? 'date' : matchesContent ? 'content' : 'tag',
-          matchText: this.highlightMatch(entry.content || entry.date || '', searchTerm)
         });
       }
     });
@@ -90,12 +73,6 @@ class SearchService {
       return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt);
     });
 
-    results.journal.sort((a, b) => {
-      if (a.matchType === 'date' && b.matchType !== 'date') return -1;
-      if (a.matchType !== 'date' && b.matchType === 'date') return 1;
-      return new Date(b.date) - new Date(a.date);
-    });
-
     results.events.sort((a, b) => {
       if (a.matchType === 'title' && b.matchType !== 'title') return -1;
       if (a.matchType !== 'title' && b.matchType === 'title') return 1;
@@ -129,9 +106,8 @@ class SearchService {
    * @returns {number} Total count
    */
   getTotalCount(results) {
-    return (results.notes?.length || 0) + 
-           (results.journal?.length || 0) + 
-           (results.events?.length || 0) + 
+    return (results.notes?.length || 0) +
+           (results.events?.length || 0) +
            (results.tasks?.length || 0);
   }
 }

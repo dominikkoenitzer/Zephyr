@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { 
-  Plus, Trash2, CheckCircle, Circle, ListTodo, Target, TrendingUp, 
+import {
+  Plus, Trash2, CheckCircle, Circle, ListTodo, Target, TrendingUp,
   Folder, FolderPlus, Edit2, Calendar, Tag, Flag,
-  X, Timer as TimerIcon
+  X, Timer as TimerIcon, CalendarClock, Sparkles
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -11,7 +11,9 @@ import { CalendarPicker } from '../ui/calendar-picker';
 import { Select } from '../ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { EmptyState } from '../ui/empty-state';
 import { localStorageService } from '../../services/localStorage';
+import { parseQuickTask } from '../../lib/quickParse';
 
 const PRIORITY_STYLES = {
   high: 'text-destructive bg-destructive/10 border border-destructive/30',
@@ -84,18 +86,23 @@ const TaskList = () => {
     }
   }, [searchParams, folders, todayFolderId]);
 
+  // Live, local "smart" parse of the quick-add input (date / priority / #tags).
+  const parsed = useMemo(() => parseQuickTask(newTask), [newTask]);
+
   const addTask = (e) => {
     e.preventDefault();
     if (!newTask.trim()) return;
-    
+
     const task = localStorageService.addTask({
-      title: newTask.trim(),
+      title: parsed.title,
       description: '',
-      priority: 'medium',
+      priority: parsed.priority || 'medium',
+      dueDate: parsed.dueDate || null,
+      tags: parsed.tags,
       folderId: selectedFolder || null
     });
     localStorageService.saveOnboarding({ taskAdded: true });
-    
+
     // Reload tasks from localStorage to ensure consistency
     const allTasks = localStorageService.getTasks();
     setTasks(allTasks);
@@ -211,29 +218,35 @@ const TaskList = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto space-y-4 sm:space-y-6">
-      {/* Header Card */}
+      {/* Progress summary */}
       <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm animate-fade-in-up">
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex-1">
-              <CardTitle className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 text-foreground">
-                Task Manager
-              </CardTitle>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                {totalCount > 0 
-                  ? `${completedCount} of ${totalCount} tasks completed (${completionRate}%)`
-                  : "Your journey to productivity starts here"}
-              </p>
+        <CardContent className="pt-5 sm:pt-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4 sm:gap-6">
+              <div>
+                <div className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{totalCount - completedCount}</div>
+                <div className="text-xs text-muted-foreground mt-1">Active</div>
+              </div>
+              <div className="h-8 w-px bg-border" />
+              <div>
+                <div className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{completedCount}</div>
+                <div className="text-xs text-muted-foreground mt-1">Completed</div>
+              </div>
             </div>
-            <div className="text-center sm:text-right">
-              <div className="text-3xl sm:text-4xl font-bold text-primary">{completionRate}%</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wide">Complete</div>
+            <div className="text-right">
+              <div className="text-3xl sm:text-4xl font-bold text-primary leading-none">{completionRate}%</div>
+              <div className="text-[11px] text-muted-foreground uppercase tracking-wide mt-1">Complete</div>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="w-full h-2.5 bg-muted rounded-full overflow-hidden">
-            <div 
+          <div
+            className="mt-4 w-full h-2 bg-muted rounded-full overflow-hidden"
+            role="progressbar"
+            aria-valuenow={completionRate}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Tasks completed"
+          >
+            <div
               className="h-full bg-primary transition-all duration-500 ease-out"
               style={{ width: `${completionRate}%` }}
             />
@@ -379,10 +392,11 @@ const TaskList = () => {
                 <div className="flex-1 relative">
                   <ListTodo className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                   <Input
-                    placeholder="What would you like to accomplish?"
+                    placeholder="Add a task — try “Email Sam tomorrow !high #work”"
                     value={newTask}
                     onChange={(e) => setNewTask(e.target.value)}
                     className="pl-10 sm:pl-11 h-10 sm:h-12 text-sm sm:text-base"
+                    aria-label="Add a task"
                   />
                 </div>
                 <Button type="submit" size="lg" className="w-full sm:w-auto px-4 sm:px-6 h-10 sm:h-12">
@@ -390,6 +404,33 @@ const TaskList = () => {
                   <span className="text-sm sm:text-base">Add Task</span>
                 </Button>
               </form>
+
+              {newTask.trim() && (parsed.dueDate || parsed.priority || parsed.tags.length > 0) && (
+                <div className="mt-3 flex items-center gap-2 flex-wrap text-xs animate-fade-in">
+                  <span className="inline-flex items-center gap-1 text-muted-foreground">
+                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    Detected:
+                  </span>
+                  {parsed.dueDate && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                      <CalendarClock className="h-3 w-3" />
+                      {formatDate(parsed.dueDate)}
+                    </span>
+                  )}
+                  {parsed.priority && (
+                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${PRIORITY_STYLES[parsed.priority]}`}>
+                      <Flag className="h-3 w-3" />
+                      {PRIORITY_LABELS[parsed.priority]}
+                    </span>
+                  )}
+                  {parsed.tags.map((tag) => (
+                    <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-muted text-muted-foreground">
+                      <Tag className="h-3 w-3" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -545,19 +586,15 @@ const TaskList = () => {
 
           {/* Empty State */}
           {filteredTasks.length === 0 && (
-            <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm text-center py-16">
-              <CardContent>
-                <div className="flex justify-center mb-4">
-                  <div className="p-4 rounded-full bg-primary/10">
-                    <Target className="h-12 w-12 text-primary" />
-                  </div>
-                </div>
-                <h3 className="text-2xl font-bold mb-2 text-foreground">No Tasks Found</h3>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  {selectedFolder !== null 
-                    ? "No tasks in this folder. Add a new task to get started."
-                    : "Add your first task above and begin your journey to peak productivity"}
-                </p>
+            <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
+              <CardContent className="p-0">
+                <EmptyState
+                  icon={Target}
+                  title="No tasks yet"
+                  description={selectedFolder !== null
+                    ? "No tasks in this folder. Add one above to get started."
+                    : "Add your first task above — type a due date, priority, or #tag and it'll be picked up automatically."}
+                />
               </CardContent>
             </Card>
           )}

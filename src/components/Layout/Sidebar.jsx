@@ -16,12 +16,17 @@ import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
 import { themeService } from '../../services/themeService';
 
-const navigation = [
+// Everyday tools — the primary, high-emphasis destinations.
+const primaryNavigation = [
   { name: 'Home', href: '/', icon: House },
-  { name: 'Focus Timer', href: '/focus', icon: Timer },
   { name: 'Tasks', href: '/tasks', icon: CheckSquare },
+  { name: 'Focus Timer', href: '/focus', icon: Timer },
   { name: 'Calendar', href: '/calendar', icon: Calendar },
-  { name: 'Notes & Journal', href: '/notes', icon: FileText },
+  { name: 'Notes', href: '/notes', icon: FileText },
+];
+
+// Utility — kept available but visually de-emphasised at the bottom.
+const secondaryNavigation = [
   { name: 'Settings', href: '/settings', icon: Settings },
   { name: 'Help', href: '/help', icon: HelpCircle },
 ];
@@ -83,9 +88,10 @@ function Sidebar({ isMobile = false, onClose }) {
             </Button>
           </div>
           <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 pb-4 sm:pb-6">
-            <SidebarContent 
-              navigation={navigation} 
-              location={location} 
+            <SidebarContent
+              primaryNavigation={primaryNavigation}
+              secondaryNavigation={secondaryNavigation}
+              location={location}
               onItemClick={onClose}
               colorMode={colorMode}
               onToggleColorMode={toggleColorMode}
@@ -104,9 +110,10 @@ function Sidebar({ isMobile = false, onClose }) {
           <p className="text-xs text-muted-foreground">Flow Through Focus</p>
         </div>
         <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6">
-          <SidebarContent 
-            navigation={navigation} 
-            location={location} 
+          <SidebarContent
+            primaryNavigation={primaryNavigation}
+            secondaryNavigation={secondaryNavigation}
+            location={location}
             colorMode={colorMode}
             onToggleColorMode={toggleColorMode}
           />
@@ -116,53 +123,61 @@ function Sidebar({ isMobile = false, onClose }) {
   );
 }
 
-function SidebarContent({ 
-  navigation, 
-  location, 
+function SidebarContent({
+  primaryNavigation,
+  secondaryNavigation,
+  location,
   onItemClick,
   colorMode,
   onToggleColorMode
 }) {
+  const renderLink = (item, { compact = false } = {}) => {
+    const Icon = item.icon;
+    const isActive = location.pathname === item.href;
+
+    return (
+      <Link
+        key={item.name}
+        to={item.href}
+        onClick={onItemClick}
+        aria-current={isActive ? 'page' : undefined}
+        className={cn(
+          "group flex items-center gap-3 px-3 rounded-lg text-sm font-medium transition-all duration-200 relative",
+          compact ? "py-2" : "py-2.5",
+          isActive
+            ? "text-foreground bg-accent"
+            : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+        )}
+      >
+        {isActive && (
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+        )}
+        <Icon className={cn(
+          "h-5 w-5 transition-colors",
+          isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+        )} />
+        <span className="flex-1">{item.name}</span>
+        {isActive && !compact && (
+          <ChevronRight className="h-4 w-4 text-primary" />
+        )}
+      </Link>
+    );
+  };
+
   return (
     <div className="flex flex-col min-h-full">
-      <nav className="flex-1 space-y-1">
-        {navigation.map((item) => {
-          const Icon = item.icon;
-          const isActive = location.pathname === item.href;
-          
-          return (
-            <Link
-              key={item.name}
-              to={item.href}
-              onClick={onItemClick}
-              className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 relative",
-                isActive 
-                  ? "text-foreground bg-accent" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-              )}
-            >
-              {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
-              )}
-              <Icon className={cn(
-                "h-5 w-5 transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-              )} />
-              <span className="flex-1">{item.name}</span>
-              {isActive && (
-                <ChevronRight className="h-4 w-4 text-primary" />
-              )}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 space-y-1" aria-label="Primary">
+        {primaryNavigation.map((item) => renderLink(item))}
       </nav>
-      
-      <div className="mt-auto pt-4 border-t border-border/50 space-y-3">
+
+      <div className="mt-auto pt-4 border-t border-border/50 space-y-1">
+        <nav className="space-y-1" aria-label="Settings and help">
+          {secondaryNavigation.map((item) => renderLink(item, { compact: true }))}
+        </nav>
         <Button
           variant="ghost"
           onClick={onToggleColorMode}
-          className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-lg transition-all"
+          className="w-full justify-start text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-lg transition-all"
         >
           <Sparkles className="mr-3 h-4 w-4" />
           {colorMode === 'dark' ? 'Light Mode' : 'Dark Mode'}

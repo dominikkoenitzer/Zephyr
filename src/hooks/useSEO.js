@@ -28,14 +28,9 @@ const pageMetadata = {
     keywords: 'calendar app, event planning, schedule management, appointment calendar, productivity calendar',
   },
   '/notes': {
-    title: 'Notes & Journal | Zephyr - Note Taking and Reflection',
-    description: 'Take notes and journal in one unified workspace. Organize with tags, folders, and search.',
-    keywords: 'notes, journal, note taking, daily reflection, productivity notes',
-  },
-  '/journal': {
-    title: 'Journal | Zephyr - Daily Journaling & Reflection',
-    description: 'Reflect and journal your thoughts with Zephyr. Daily journaling, mood tracking, and personal growth.',
-    keywords: 'journal app, daily journal, journaling, reflection, mood tracking, personal journal',
+    title: 'Notes | Zephyr - Simple, Local-First Note Taking',
+    description: 'Capture and organize your notes with tags and instant search. Local-first and no login required.',
+    keywords: 'notes, note taking, productivity notes, local-first notes',
   },
   '/settings': {
     title: 'Settings | Zephyr - Customize Your Experience',
@@ -87,10 +82,13 @@ export const useSEO = () => {
       ogTag.setAttribute('content', content);
     };
     
+    const siteImage = 'https://zephyr.app/android-icon-192x192.png';
+    updateOGTag('og:type', 'website');
     updateOGTag('og:title', metadata.title);
     updateOGTag('og:description', metadata.description);
     updateOGTag('og:url', `https://zephyr.app${location.pathname}`);
-    
+    updateOGTag('og:image', siteImage);
+
     // Update Twitter Card tags
     const updateTwitterTag = (name, content) => {
       let twitterTag = document.querySelector(`meta[name="${name}"]`);
@@ -101,9 +99,10 @@ export const useSEO = () => {
       }
       twitterTag.setAttribute('content', content);
     };
-    
+
     updateTwitterTag('twitter:title', metadata.title);
     updateTwitterTag('twitter:description', metadata.description);
+    updateTwitterTag('twitter:image', siteImage);
     
     // Update canonical URL
     let canonicalLink = document.querySelector('link[rel="canonical"]');
