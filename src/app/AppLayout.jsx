@@ -29,8 +29,8 @@ function AppLayout() {
 
   return (
     <div className="relative min-h-dvh flex flex-col bg-background transition-colors duration-300 overflow-x-hidden">
-      {/* Ambient, calming background effect (sits behind all content) */}
-      <div className="app-aurora" aria-hidden="true" />
+      {/* Full-page animated RGB gradient (sits behind all content) */}
+      <div className="app-rgb-bg" aria-hidden="true" />
 
       {/* Keyboard / screen-reader users can jump straight to the content */}
       <a
