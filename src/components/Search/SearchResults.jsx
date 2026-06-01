@@ -1,12 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { FileText, BookOpen, Calendar, CheckSquare, ArrowRight } from 'lucide-react';
+import { FileText, Calendar, CheckSquare, ArrowRight } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }) => {
   const navigate = useNavigate();
-  const totalCount = (results.notes?.length || 0) + 
-                     (results.journal?.length || 0) + 
-                     (results.events?.length || 0) + 
+  const totalCount = (results.notes?.length || 0) +
+                     (results.events?.length || 0) +
                      (results.tasks?.length || 0);
 
   if (!query || query.trim().length === 0 || totalCount === 0) {
@@ -20,9 +19,6 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
       case 'note':
         navigate('/notes');
         // Could dispatch event to open note editor
-        break;
-      case 'journal':
-        navigate('/notes');
         break;
       case 'event':
         // Navigate to calendar with the event's date
@@ -95,50 +91,6 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
                     {note.tags && note.tags.length > 0 && (
                       <div className="flex items-center gap-1 mt-1 flex-wrap">
                         {note.tags.slice(0, 3).map(tag => (
-                          <span key={tag} className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {results.journal && results.journal.length > 0 && (
-          <div className="mb-2">
-            <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Journal ({results.journal.length})
-            </div>
-            {results.journal.slice(0, 5).map((entry) => {
-              const index = currentIndex++;
-              return (
-                <button
-                  key={entry.id}
-                  onClick={() => handleResultClick('journal', entry)}
-                  onMouseEnter={() => onSelectIndex(index)}
-                  className={cn(
-                    "w-full flex items-start gap-3 px-3 py-2 rounded-md text-left transition-colors",
-                    selectedIndex === index
-                      ? "bg-accent"
-                      : "hover:bg-accent/50"
-                  )}
-                >
-                  <BookOpen className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-foreground">
-                      {formatDate(entry.date)}
-                    </div>
-                    <div className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-                      {entry.content || 'No content'}
-                    </div>
-                    {entry.tags && entry.tags.length > 0 && (
-                      <div className="flex items-center gap-1 mt-1 flex-wrap">
-                        {entry.tags.slice(0, 3).map(tag => (
                           <span key={tag} className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
                             #{tag}
                           </span>

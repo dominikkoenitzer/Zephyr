@@ -281,7 +281,7 @@ function Settings() {
                   <ul className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3 ml-4 sm:ml-6 list-disc space-y-1 sm:space-y-2">
                     <li>Tasks and task folders</li>
                     <li>Calendar events</li>
-                    <li>Notes and journals</li>
+                    <li>Notes</li>
                     <li>Focus timer sessions and presets</li>
                     <li>Wellness data</li>
                     <li>Settings and preferences</li>
