@@ -1,14 +1,46 @@
-# robots.txt for Zephyr
+# robots.txt for Zephyr — https://zephyr.app
+# Search and AI crawlers are welcome.
+
 User-agent: *
+Allow: /
+
+# --- AI / LLM crawlers (explicitly allowed for AI search & answer engines) ---
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: CCBot
 Allow: /
 
 # Sitemap
 Sitemap: https://zephyr.app/sitemap.xml
-
-# Disallow admin or private routes if any
-# Disallow: /admin
-# Disallow: /private
-
-# Crawl-delay (optional, helps prevent server overload)
-Crawl-delay: 1
-
+# AI/LLM guide: https://zephyr.app/llms.txt
