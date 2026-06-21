@@ -1,9 +1,10 @@
 # Dependencies
 node_modules
 
-# Package manager locks (pnpm only)
+# Package manager locks (Bun only — bun.lock is committed)
 package-lock.json
 yarn.lock
+pnpm-lock.yaml
 
 # Build output
 dist
