@@ -15,6 +15,7 @@ No login, no signup, no backend. Your data never leaves your browser.
 ![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6-646cff?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38bdf8?logo=tailwindcss&logoColor=white)
+![Bun](https://img.shields.io/badge/Bun-1.3-fbf0df?logo=bun&logoColor=black)
 
 **[→ Try it live at zephyr.punds.ch](https://zephyr.punds.ch)**
 
@@ -94,12 +95,13 @@ Every duration is adjustable, and you can save your own custom presets. Complete
 - **[Tailwind CSS 3](https://tailwindcss.com/)** + **[Radix UI](https://www.radix-ui.com/)** primitives (shadcn-style)
 - **[lucide-react](https://lucide.dev/)** icons · **[sonner](https://sonner.emilkowal.ski/)** toasts
 - **[Vitest](https://vitest.dev/)** + jsdom for unit tests
+- **[Bun](https://bun.sh/)** as the runtime, package manager, and script runner
 - **[Vercel](https://vercel.com/)** hosting + `@vercel/analytics`
 - **No backend** — state lives in the browser via `localStorage`
 
 ## Getting started
 
-**Prerequisites:** [Node.js](https://nodejs.org/) 20+ and [pnpm](https://pnpm.io/) (this project is pnpm-only).
+**Prerequisites:** [Bun](https://bun.sh/) 1.1.39+ (this repo pins `1.3.14` via `.bun-version`). Bun is the runtime and package manager — no separate Node.js install is required.
 
 ```bash
 # Clone
@@ -107,10 +109,10 @@ git clone https://github.com/dominikkoenitzer/Zephyr.git
 cd Zephyr
 
 # Install dependencies
-pnpm install
+bun install
 
 # Start the dev server → http://localhost:1000
-pnpm dev
+bun run dev
 ```
 
 That's it — no `.env`, no database, no API keys.
@@ -119,11 +121,11 @@ That's it — no `.env`, no database, no API keys.
 
 | Command | Description |
 |---|---|
-| `pnpm dev` | Start the Vite dev server on [http://localhost:1000](http://localhost:1000) |
-| `pnpm build` | Production build to `dist/` |
-| `pnpm preview` | Serve the production build locally |
-| `pnpm lint` | Run ESLint (`--max-warnings 0` — warnings fail) |
-| `pnpm test` | Run the Vitest unit suite |
+| `bun run dev` | Start the Vite dev server on [http://localhost:1000](http://localhost:1000) |
+| `bun run build` | Production build to `dist/` |
+| `bun run preview` | Serve the production build locally |
+| `bun run lint` | Run ESLint (`--max-warnings 0` — warnings fail) |
+| `bun run test` | Run the Vitest unit suite |
 
 ## Project structure
 
@@ -179,9 +181,9 @@ Two GitHub Actions workflows are included:
 Issues and pull requests are welcome. Before opening a PR:
 
 ```bash
-pnpm lint    # must pass with zero warnings
-pnpm test
-pnpm build
+bun run lint    # must pass with zero warnings
+bun run test
+bun run build
 ```
 
 Please keep features minimal and aligned with the local-first, no-backend design.
