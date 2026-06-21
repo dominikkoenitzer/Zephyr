@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Zephyr (package name `breeze-flow`) is a **local-first, no-login productivity app**: tasks, notes, a simple calendar, and a Pomodoro focus timer. There is **no backend** — every piece of user data lives in the browser's `localStorage`. Deployed on Vercel.
+Zephyr (package name `zephyr`) is a **local-first, no-login productivity app**: tasks, notes, a simple calendar, and a Pomodoro focus timer. There is **no backend** — every piece of user data lives in the browser's `localStorage`. Deployed on Vercel.
 
 > The Journal feature was removed in favor of a simpler app; the Calendar was intentionally pared down to basic events (title, date, optional time, optional note — no categories/recurrence/per-event reminders). `localStorageService` still contains journal helper methods, but nothing in the UI uses them. Keep new features minimal and avoid re-adding that complexity unless asked.
 
@@ -12,18 +12,18 @@ Stack: React 18 + Vite 6 (`@vitejs/plugin-react-swc`), React Router v6, Tailwind
 
 ## Commands
 
-Package manager is **pnpm only** (do not introduce npm/yarn lockfiles).
+Package manager is **Bun only** (do not introduce npm/yarn/pnpm lockfiles). The Bun version is pinned in `.bun-version`.
 
 ```bash
-pnpm install
-pnpm dev        # Vite dev server on http://localhost:1000 (port + host preset in vite.config.js)
-pnpm lint       # eslint with --max-warnings 0 — warnings fail the build, so keep it clean
-pnpm build      # vite build → dist/
-pnpm preview    # serve the production build
-pnpm test       # Vitest run (unit tests in src/**/*.test.{js,jsx})
+bun install
+bun run dev        # Vite dev server on http://localhost:1000 (port + host preset in vite.config.js)
+bun run lint       # eslint with --max-warnings 0 — warnings fail the build, so keep it clean
+bun run build      # vite build → dist/
+bun run preview    # serve the production build
+bun run test       # Vitest run (unit tests in src/**/*.test.{js,jsx})
 ```
 
-Always run `pnpm lint` and `pnpm build` before finishing — both are required to catch errors. Tests run on **Vitest + jsdom** (`vitest.config.js`); current coverage is the pure logic (`quickParse`, `localStorageService`, `searchService`). Prefer testing pure functions/services there; full UI flows are best checked by running the app.
+Always run `bun run lint` and `bun run build` before finishing — both are required to catch errors. Tests run on **Vitest + jsdom** (`vitest.config.js`); current coverage is the pure logic (`quickParse`, `localStorageService`, `searchService`). Prefer testing pure functions/services there; full UI flows are best checked by running the app.
 
 ## Architecture
 
@@ -63,7 +63,7 @@ Structure: `src/pages/` are route-level screens; `src/components/<Feature>/` hol
 
 ## Conventions
 
-- Functional components and hooks only. ESLint flat config (`eslint.config.js`) has `react/prop-types` off and treats `react-refresh/only-export-components` as a warning — and `--max-warnings 0` means warnings still fail `pnpm lint`.
+- Functional components and hooks only. ESLint flat config (`eslint.config.js`) has `react/prop-types` off and treats `react-refresh/only-export-components` as a warning — and `--max-warnings 0` means warnings still fail `bun run lint`.
 - Keep browser-only APIs (Web Audio, `localStorage`, `matchMedia`, `document`) behind effects or guards — though note services are intentionally instantiated at import time.
 - Don't edit generated output in `dist/`; source is under `src/`.
 - Keep env files, logs, caches, and editor cruft out of version control (follow `.gitignore`).
