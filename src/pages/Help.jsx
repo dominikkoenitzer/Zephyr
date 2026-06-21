@@ -40,14 +40,14 @@ function Help() {
     },
     {
       question: "Is my data backed up?",
-      answer: "Zephyr stores all data locally on your device—we don't have access to your data. Currently, there's no automatic cloud backup. To back up your data, you can manually export your notes using the Import/Export buttons on the Notes page. We recommend regularly exporting important information if you want to preserve it. Cloud sync and automatic backup features may be available in future updates.",
+      answer: "Zephyr stores all data locally on your device—we don't have access to your data. Currently, there's no automatic cloud backup. There's currently no automatic cloud backup and no built-in export, so your data lives only in this browser. Clearing your browser's site data for Zephyr will permanently remove it, so if something is important, copy it somewhere safe — for example, paste a note's text into another app. Cloud sync may come in a future update.",
       icon: Cloud,
       iconColor: "text-primary",
       bgColor: "bg-accent/60"
     },
     {
       question: "How do I clear all my data?",
-      answer: "To clear all your data, go to Settings > Data Management. Click the 'Clear All Local Storage' button. You'll be asked to confirm this action as it permanently deletes all tasks, events, notes, timer sessions, settings, and preferences. This action cannot be undone and will reload the page. Make sure to export any important data before clearing if needed.",
+      answer: "To clear all your data, go to Settings > Data Management. Click the 'Clear All Local Storage' button. You'll be asked to confirm this action as it permanently deletes all tasks, events, notes, timer sessions, settings, and preferences. This action cannot be undone and will reload the page. Since Zephyr has no export feature, manually copy anything you want to keep before clearing.",
       icon: Trash2,
       iconColor: "text-destructive",
       bgColor: "bg-destructive/10"
