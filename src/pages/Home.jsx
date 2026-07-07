@@ -79,7 +79,7 @@ function Home() {
     <section className="w-full flex-1 min-h-0 overflow-y-auto">
       <div className="max-w-5xl py-2 sm:py-4">
         <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">{dateLabel}</p>
-        <h1 className="mt-1 text-3xl sm:text-4xl font-bold text-foreground">{greeting}</h1>
+        <h1 className="mt-1 text-3xl sm:text-4xl font-bold text-shimmer">{greeting}</h1>
         <p className="mt-2 text-sm text-muted-foreground">Here’s your day at a glance.</p>
 
         {/* Stats */}
