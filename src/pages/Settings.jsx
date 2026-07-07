@@ -229,7 +229,7 @@ function Settings() {
                     This will permanently delete all data stored locally in your browser, including:
                   </p>
                   <ul className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3 ml-4 sm:ml-6 list-disc space-y-1 sm:space-y-2">
-                    <li>Tasks and task folders</li>
+                    <li>Tasks</li>
                     <li>Notes</li>
                     <li>Focus timer sessions and presets</li>
                     <li>Settings and preferences</li>
