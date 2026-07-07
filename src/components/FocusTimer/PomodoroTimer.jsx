@@ -303,6 +303,7 @@ const PomodoroTimer = () => {
   const [circumference, setCircumference] = useState(2 * Math.PI * 180);
   const prevPresetRef = useRef(selectedPreset);
   const prevIsBreakRef = useRef(isBreak);
+  const originalTitleRef = useRef(null);
   const [sessionTask, setSessionTask] = useState(null);
   const [, setStreak] = useState(localStorageService.getFocusStreak());
   const [, setNextPromptVisible] = useState(false);
@@ -533,6 +534,19 @@ const PomodoroTimer = () => {
       Notification.requestPermission();
     }
   }, []);
+
+  // Show the countdown in the browser tab while a session is running, so
+  // the timer stays visible when you switch tabs to do the actual work.
+  // (Navigating to another route re-runs useSEO, which resets the title.)
+  useEffect(() => {
+    if (isRunning) {
+      if (originalTitleRef.current === null) originalTitleRef.current = document.title;
+      document.title = `${formatTime(timeLeft)} · ${isBreak ? 'Break' : 'Focus'} — Zephyr`;
+    } else if (originalTitleRef.current !== null) {
+      document.title = originalTitleRef.current;
+      originalTitleRef.current = null;
+    }
+  }, [isRunning, timeLeft, isBreak]);
 
   useEffect(() => {
     if (isFullScreen) {
