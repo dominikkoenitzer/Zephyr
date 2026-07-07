@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { m } from 'motion/react';
 import { FileText, CheckSquare, ArrowRight } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -29,7 +30,11 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
   let currentIndex = 0;
 
   return (
-    <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-lg shadow-lg max-h-[500px] overflow-y-auto z-50">
+    <m.div
+      initial={{ opacity: 0, y: -6, scale: 0.99 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.16, ease: 'easeOut' }}
+      className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-lg shadow-lg max-h-[500px] overflow-y-auto z-50">
       <div className="p-2">
         {results.notes && results.notes.length > 0 && (
           <div className="mb-2">
@@ -123,7 +128,7 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
           </div>
         )}
       </div>
-    </div>
+    </m.div>
   );
 };
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { m, AnimatePresence } from 'motion/react';
 import {
   Plus, Trash2, CheckCircle, Circle, ListTodo, Target, TrendingUp,
   Folder, FolderPlus, Edit2, Calendar, Tag, Flag,
@@ -456,16 +457,22 @@ const TaskList = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
+                <AnimatePresence initial={false}>
                 {activeTasks.map((task) => {
                   const folderName = getFolderName(task.folderId);
                   const folderColor = getFolderColor(task.folderId);
                   const dueDate = formatDate(task.dueDate);
                   const overdue = isOverdue(task.dueDate);
-                  
+
                   return (
-                    <div
+                    <m.div
                       key={task.id}
-                      className="flex items-start sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-background/80 backdrop-blur-sm border border-border rounded-lg transition-all duration-200 hover:shadow-sm hover:border-primary/20 group"
+                      layout
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.15 } }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 40 }}
+                      className="flex items-start sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-background/80 backdrop-blur-sm border border-border rounded-lg transition-colors duration-200 hover:shadow-sm hover:border-primary/20 group"
                     >
                       <Button
                         variant="ghost"
@@ -549,9 +556,10 @@ const TaskList = () => {
                           <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </Button>
                       </div>
-                    </div>
+                    </m.div>
                   );
                 })}
+                </AnimatePresence>
               </CardContent>
             </Card>
           )}
@@ -566,9 +574,15 @@ const TaskList = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
+                <AnimatePresence initial={false}>
                 {completedTasks.map((task) => (
-                  <div
+                  <m.div
                     key={task.id}
+                    layout
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.15 } }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 40 }}
                     className="flex items-center gap-3 p-4 bg-muted/30 border border-border rounded-lg"
                   >
                     <Button
@@ -593,8 +607,9 @@ const TaskList = () => {
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                  </div>
+                  </m.div>
                 ))}
+                </AnimatePresence>
               </CardContent>
             </Card>
           )}
