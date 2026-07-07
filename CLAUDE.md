@@ -12,6 +12,8 @@ Stack: React 18 + Vite 6 (`@vitejs/plugin-react-swc`), React Router v6, Tailwind
 
 Animations use **motion** (`motion/react`) behind `LazyMotion` with `strict` mode in `AppLayout` — always animate with the `m.` components (`m.div`), never `motion.div` (strict mode throws). `MotionConfig reducedMotion="user"` is set globally, so respect it and don't hand-roll reduced-motion checks.
 
+The full-viewport WebGL aurora backdrop (`src/components/ui/AuroraBackground.jsx`, built on **ogl**) is lazy-loaded from `AppLayout`, theme-aware, and skips rendering under `prefers-reduced-motion` or when WebGL is unavailable. Keep it the only WebGL surface — don't add more canvases.
+
 ## Commands
 
 Package manager is **Bun only** (do not introduce npm/yarn/pnpm lockfiles). The Bun version is pinned in `.bun-version`.
