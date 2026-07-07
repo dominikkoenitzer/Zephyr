@@ -203,7 +203,7 @@ const FullScreenMode = ({
               stroke="currentColor"
               strokeWidth="3"
               fill="none"
-              className="text-muted/20"
+              className="text-muted-foreground/25"
             />
             <circle
               cx="50%"
@@ -777,7 +777,7 @@ const PomodoroTimer = () => {
                   stroke="currentColor"
                   strokeWidth="3"
                   fill="none"
-                  className="text-muted/20"
+                  className="text-muted-foreground/25"
                 />
                 <circle
                   cx="50%"

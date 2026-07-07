@@ -9,7 +9,6 @@ import {
   HelpCircle,
   X,
   FileText,
-  Wind,
   Sun,
   Moon,
 } from 'lucide-react';
@@ -140,14 +139,9 @@ function Sidebar({ isMobile = false, onClose }) {
 
 function BrandMark() {
   return (
-    <div className="flex items-center gap-3 min-w-0">
-      <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand shadow-brand">
-        <Wind className="h-5 w-5 text-white" />
-      </span>
-      <div className="min-w-0">
-        <h1 className="text-xl font-bold leading-tight text-foreground">Zephyr</h1>
-        <p className="text-[11px] text-muted-foreground truncate">Flow Through Focus</p>
-      </div>
+    <div className="min-w-0">
+      <h1 className="text-2xl font-bold leading-tight text-foreground">Zephyr</h1>
+      <p className="text-xs text-muted-foreground truncate mt-0.5">Flow Through Focus</p>
     </div>
   );
 }
