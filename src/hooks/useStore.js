@@ -41,11 +41,9 @@ export function useStoreValue(read) {
 const readTasks = () => localStorageService.getTasks();
 const readFolders = () => localStorageService.getFolders();
 const readNotes = () => localStorageService.getNotes();
-const readEvents = () => localStorageService.getCalendarEvents();
 const readSettings = () => localStorageService.getSettings();
 
 export const useTasks = () => useStoreValue(readTasks);
 export const useFolders = () => useStoreValue(readFolders);
 export const useNotes = () => useStoreValue(readNotes);
-export const useCalendarEvents = () => useStoreValue(readEvents);
 export const useSettings = () => useStoreValue(readSettings);

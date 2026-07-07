@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell, Volume2, CheckSquare, Calendar, Timer, Trash2, AlertTriangle } from 'lucide-react';
+import { Bell, Volume2, CheckSquare, Timer, Trash2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Checkbox } from '../components/ui/checkbox';
@@ -28,12 +28,6 @@ function Settings() {
   const handleTaskSettingsChange = (updates) => {
     handleNotificationSettingsChange({
       tasks: { ...notificationSettings.tasks, ...updates }
-    });
-  };
-
-  const handleEventSettingsChange = (updates) => {
-    handleNotificationSettingsChange({
-      events: { ...notificationSettings.events, ...updates }
     });
   };
 
@@ -184,51 +178,6 @@ function Settings() {
               </div>
             </div>
 
-            {/* Event Notifications */}
-            <div className="relative rounded-xl border border-border/60 bg-background/80 hover:border-primary/30 hover:shadow-md transition-colors">
-              <div className="relative p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/15 border border-primary/20 text-primary">
-                      <Calendar className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-foreground">Event Notifications</h4>
-                      <p className="text-xs text-muted-foreground mt-0.5">Never miss an important event</p>
-                    </div>
-                  </div>
-                  <Checkbox
-                    checked={notificationSettings.events.enabled}
-                    onCheckedChange={(checked) => handleEventSettingsChange({ enabled: checked })}
-                  />
-                </div>
-                {notificationSettings.events.enabled && (
-                  <div className="mt-4 pt-4 border-t border-border/50">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-foreground mb-1">Reminder Time</p>
-                        <p className="text-xs text-muted-foreground">Minutes before event starts</p>
-                      </div>
-                      <Select
-                        value={String(notificationSettings.events.reminderTime)}
-                        onValueChange={(value) => handleEventSettingsChange({ reminderTime: parseInt(value) })}
-                      >
-                        <SelectTrigger className="w-32">
-                          <SelectValue placeholder="Select reminder" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="5">5 min</SelectItem>
-                          <SelectItem value="15">15 min</SelectItem>
-                          <SelectItem value="30">30 min</SelectItem>
-                          <SelectItem value="60">1 hour</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
             {/* Timer Notifications */}
             <div className="relative rounded-xl border border-border/50 bg-background/30 hover:bg-background/40 transition-colors">
               <div className="relative p-5">
@@ -281,10 +230,8 @@ function Settings() {
                   </p>
                   <ul className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3 ml-4 sm:ml-6 list-disc space-y-1 sm:space-y-2">
                     <li>Tasks and task folders</li>
-                    <li>Calendar events</li>
                     <li>Notes</li>
                     <li>Focus timer sessions and presets</li>
-                    <li>Wellness data</li>
                     <li>Settings and preferences</li>
                     <li>Notification history</li>
                   </ul>
@@ -326,10 +273,9 @@ function Settings() {
             <DialogDescription className="pt-2">
               Are you sure you want to clear all local storage data? This will permanently delete:
               <ul className="list-disc ml-6 mt-2 space-y-1 text-sm">
-                <li>All tasks, events, notes, and journal entries</li>
+                <li>All tasks and notes</li>
                 <li>All settings and preferences</li>
                 <li>All timer sessions and presets</li>
-                <li>All wellness tracking data</li>
               </ul>
               <p className="mt-3 font-semibold text-destructive">
                 This action cannot be undone. The page will reload after clearing.

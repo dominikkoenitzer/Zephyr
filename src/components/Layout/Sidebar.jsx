@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
+import {
   House,
-  Timer, 
-  CheckSquare, 
-  Calendar, 
-  Settings, 
+  Timer,
+  CheckSquare,
+  Settings,
   HelpCircle,
   X,
   FileText,
@@ -21,7 +20,6 @@ const primaryNavigation = [
   { name: 'Home', href: '/', icon: House },
   { name: 'Tasks', href: '/tasks', icon: CheckSquare },
   { name: 'Focus Timer', href: '/focus', icon: Timer },
-  { name: 'Calendar', href: '/calendar', icon: Calendar },
   { name: 'Notes', href: '/notes', icon: FileText },
 ];
 
