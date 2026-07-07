@@ -97,6 +97,13 @@ export default defineConfig({
             return 'motion-vendor';
           }
 
+          // ogl (WebGL, no React dependency) is only imported by the
+          // lazy-loaded AuroraBackground — return undefined so Rollup keeps
+          // it in that async chunk instead of the eagerly-loaded vendor.
+          if (id.includes('node_modules/ogl')) {
+            return undefined;
+          }
+
           // React core libraries - must load first and be in a single chunk
           // Check for react, react-dom, and any react-* packages
           if (id.includes('node_modules/react/') ||
