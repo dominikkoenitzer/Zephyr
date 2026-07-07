@@ -91,7 +91,7 @@ function Help() {
       {activeSection === 'help' && (
         <div className="flex-1 min-h-0 overflow-y-auto space-y-2 sm:space-y-3 md:space-y-4 pr-1">
           {/* Quick Start Card */}
-          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm animate-fade-in-up flex-shrink-0" style={{ animationDelay: '0.1s' }}>
+          <Card className=" animate-fade-in-up flex-shrink-0" style={{ animationDelay: '0.1s' }}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -136,7 +136,7 @@ function Help() {
           </Card>
 
           {/* FAQ Card */}
-          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm animate-fade-in-up w-full flex-shrink-0" style={{ animationDelay: '0.2s' }}>
+          <Card className=" animate-fade-in-up w-full flex-shrink-0" style={{ animationDelay: '0.2s' }}>
             <CardHeader className="pb-2 sm:pb-3 md:pb-4 flex-shrink-0">
               <CardTitle className="flex items-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl">
                 <div className="p-1.5 sm:p-2 md:p-2.5 rounded-lg bg-primary/10">
@@ -190,7 +190,7 @@ function Help() {
       {/* Privacy Policy Section */}
       {activeSection === 'privacy' && (
         <div className="flex-1 min-h-0 overflow-y-auto space-y-3 sm:space-y-4">
-          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
+          <Card className="">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -277,7 +277,7 @@ function Help() {
       {/* Terms of Service Section */}
       {activeSection === 'terms' && (
         <div className="flex-1 min-h-0 overflow-y-auto space-y-3 sm:space-y-4">
-          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
+          <Card className="">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -372,7 +372,7 @@ function Help() {
       {/* Legal Section */}
       {activeSection === 'legal' && (
         <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-y-hidden space-y-3 sm:space-y-4">
-          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
+          <Card className="">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <Scale className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -434,7 +434,7 @@ function Help() {
             </CardContent>
           </Card>
 
-          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm border-yellow-500/30 bg-yellow-500/10">
+          <Card className=" border-yellow-500/30 bg-yellow-500/10">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
                 <AlertCircle className="h-5 w-5" />

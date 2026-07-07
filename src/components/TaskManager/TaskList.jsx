@@ -40,54 +40,27 @@ const TaskList = () => {
   const [editingTask, setEditingTask] = useState(null);
   const [newFolderName, setNewFolderName] = useState('');
   const [showFolderDialog, setShowFolderDialog] = useState(false);
-  const [todayFolderId, setTodayFolderId] = useState(null);
-  const [hasCreatedToday, setHasCreatedToday] = useState(false);
   const newTaskInputRef = useRef(null);
 
-// Load tasks and folders on mount
+  // Load tasks and folders on mount. Folders are persisted by the service
+  // on every mutation, so there is no save-on-change effect here (one used
+  // to exist and could race the initial load, wiping folders).
   useEffect(() => {
-    const savedTasks = localStorageService.getTasks();
-    const savedFolders = localStorageService.getFolders();
-    setTasks(savedTasks);
-    setFolders(savedFolders);
-    
-    // Ensure a default "Today" folder exists to guide new users
-    if (savedFolders.length === 0 && !hasCreatedToday) {
-      const today = localStorageService.addFolder({ name: 'Today', color: '#38bdf8' });
-      setFolders([today]);
-      setTodayFolderId(today.id);
-      setSelectedFolder(today.id);
-      setHasCreatedToday(true);
-    } else {
-      const existingToday = savedFolders.find(f => f.name?.toLowerCase() === 'today');
-      if (existingToday) {
-        setTodayFolderId(existingToday.id);
-      }
-    }
-  }, [hasCreatedToday]);
+    setTasks(localStorageService.getTasks());
+    setFolders(localStorageService.getFolders());
+  }, []);
 
-
-  // Save folders whenever they change
-  useEffect(() => {
-    if (folders.length > 0 || localStorageService.getFolders().length > 0) {
-      localStorageService.saveFolders(folders);
-    }
-  }, [folders]);
-
-  // Pick requested folder from query params (e.g., ?folder=today)
+  // Pick requested folder from query params (e.g., ?folder=<id> or ?folder=today)
   useEffect(() => {
     const folderParam = searchParams.get('folder') || searchParams.get('t');
-    if (folderParam) {
-      if (folderParam === 'today' && todayFolderId) {
-        setSelectedFolder(todayFolderId);
-      } else {
-        const match = folders.find(f => f.id === folderParam);
-        if (match) {
-          setSelectedFolder(match.id);
-        }
-      }
+    if (!folderParam) return;
+    const match =
+      folders.find(f => f.id === folderParam) ||
+      (folderParam === 'today' && folders.find(f => f.name?.toLowerCase() === 'today'));
+    if (match) {
+      setSelectedFolder(match.id);
     }
-  }, [searchParams, folders, todayFolderId]);
+  }, [searchParams, folders]);
 
   // Live, local "smart" parse of the quick-add input (date / priority / #tags).
   const parsed = useMemo(() => parseQuickTask(newTask), [newTask]);
@@ -231,7 +204,7 @@ const TaskList = () => {
   return (
     <div className="w-full max-w-6xl mx-auto space-y-4 sm:space-y-6">
       {/* Progress summary */}
-      <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm animate-fade-in-up">
+      <Card className=" animate-fade-in-up">
         <CardContent className="pt-5 sm:pt-6">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4 sm:gap-6">
@@ -246,7 +219,7 @@ const TaskList = () => {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-3xl sm:text-4xl font-bold text-primary leading-none">{completionRate}%</div>
+              <div className="text-3xl sm:text-4xl font-bold text-brand leading-none">{completionRate}%</div>
               <div className="text-[11px] text-muted-foreground uppercase tracking-wide mt-1">Complete</div>
             </div>
           </div>
@@ -259,7 +232,7 @@ const TaskList = () => {
             aria-label="Tasks completed"
           >
             <div
-              className="h-full bg-primary transition-all duration-500 ease-out"
+              className="h-full bg-brand transition-all duration-500 ease-out"
               style={{ width: `${completionRate}%` }}
             />
           </div>
@@ -270,7 +243,7 @@ const TaskList = () => {
         {/* Sidebar - Folders & Filters */}
         <div className="space-y-3 sm:space-y-4 order-2 lg:order-1">
           {/* Folders */}
-          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
+          <Card className="">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -363,7 +336,7 @@ const TaskList = () => {
           </Card>
 
           {/* Filters & Sort */}
-          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
+          <Card className="">
             <CardHeader className="pb-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-xl bg-primary/10">
@@ -398,7 +371,7 @@ const TaskList = () => {
         {/* Main Content */}
         <div className="lg:col-span-3 space-y-4 sm:space-y-6 order-1 lg:order-2">
           {/* Add Task Card */}
-          <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm hover-lift">
+          <Card className=" hover-lift">
             <CardContent className="pt-4 sm:pt-6">
               <form onSubmit={addTask} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <div className="flex-1 relative">
@@ -449,7 +422,7 @@ const TaskList = () => {
 
           {/* Active Tasks */}
           {activeTasks.length > 0 && (
-            <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
+            <Card className="">
               <CardHeader>
                 <CardTitle className="text-xl font-semibold flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-primary" />
@@ -566,7 +539,7 @@ const TaskList = () => {
 
           {/* Completed Tasks */}
           {completedTasks.length > 0 && showCompleted && (
-            <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
+            <Card className="">
               <CardHeader>
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-green-600 dark:text-green-500">
                   <CheckCircle className="h-5 w-5" />
@@ -616,7 +589,7 @@ const TaskList = () => {
 
           {/* Empty State */}
           {filteredTasks.length === 0 && (
-            <Card className="border border-border/60 bg-card/90 rounded-2xl shadow-sm">
+            <Card className="">
               <CardContent className="p-0">
                 <EmptyState
                   icon={Target}
