@@ -9,8 +9,9 @@ import {
   HelpCircle,
   X,
   FileText,
-  Sparkles,
-  ChevronRight,
+  Wind,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
@@ -83,14 +84,11 @@ function Sidebar({ isMobile = false, onClose }) {
           transition={{ type: 'spring', stiffness: 380, damping: 36 }}
           className="fixed left-0 top-0 h-full w-[var(--sidebar-width)] bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-2xl flex flex-col overflow-hidden">
           <div className="flex items-center justify-between p-4 sm:p-6 pb-4 sm:pb-6 flex-shrink-0">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Zephyr</h1>
-              <p className="text-xs text-muted-foreground mt-0.5">Flow Through Focus</p>
-            </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={onClose} 
+            <BrandMark />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
               className="h-8 w-8"
               aria-label="Close sidebar"
               title="Close sidebar"
@@ -118,8 +116,7 @@ function Sidebar({ isMobile = false, onClose }) {
     <div className="hidden lg:flex lg:flex-col lg:w-[var(--sidebar-width)] lg:fixed lg:inset-y-0 bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-lg overflow-hidden">
       <div className="flex flex-col h-full">
         <div className="flex-shrink-0 p-6 pb-4">
-          <h1 className="text-2xl font-bold text-foreground mb-1">Zephyr</h1>
-          <p className="text-xs text-muted-foreground">Flow Through Focus</p>
+          <BrandMark />
         </div>
         <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6">
           <SidebarContent
@@ -131,6 +128,20 @@ function Sidebar({ isMobile = false, onClose }) {
             variant="desktop"
           />
         </div>
+      </div>
+    </div>
+  );
+}
+
+function BrandMark() {
+  return (
+    <div className="flex items-center gap-3 min-w-0">
+      <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand shadow-brand">
+        <Wind className="h-5 w-5 text-white" />
+      </span>
+      <div className="min-w-0">
+        <h1 className="text-xl font-bold leading-tight text-foreground">Zephyr</h1>
+        <p className="text-[11px] text-muted-foreground truncate">Flow Through Focus</p>
       </div>
     </div>
   );
@@ -156,31 +167,28 @@ function SidebarContent({
         onClick={onItemClick}
         aria-current={isActive ? 'page' : undefined}
         className={cn(
-          "group flex items-center gap-3 px-3 rounded-lg text-sm font-medium transition-all duration-200 relative",
+          "group relative flex items-center gap-3 px-3.5 rounded-xl text-sm font-medium transition-colors duration-200",
           compact ? "py-2" : "py-2.5",
           isActive
-            ? "text-foreground bg-accent"
+            ? "text-primary"
             : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
         )}
       >
         {isActive && (
           <m.div
-            // Shared layoutId per sidebar instance makes the pill glide
-            // between nav items instead of jumping. No CSS transform here —
-            // Motion owns the transform during layout animations.
+            // Shared layoutId per sidebar instance makes the active pill
+            // glide between nav items instead of jumping. No CSS transform
+            // here — Motion owns the transform during layout animations.
             layoutId={`sidebar-active-pill-${variant}`}
             transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-            className="absolute left-0 top-[calc(50%-0.75rem)] w-1 h-6 bg-primary rounded-r-full"
+            className="absolute inset-0 rounded-xl bg-primary/10 border border-primary/20"
           />
         )}
         <Icon className={cn(
-          "h-5 w-5 transition-colors",
+          "relative h-5 w-5 transition-colors",
           isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
         )} />
-        <span className="flex-1">{item.name}</span>
-        {isActive && !compact && (
-          <ChevronRight className="h-4 w-4 text-primary" />
-        )}
+        <span className="relative flex-1">{item.name}</span>
       </Link>
     );
   };
@@ -198,9 +206,9 @@ function SidebarContent({
         <Button
           variant="ghost"
           onClick={onToggleColorMode}
-          className="w-full justify-start text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-lg transition-all"
+          className="w-full justify-start text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-xl transition-all"
         >
-          <Sparkles className="mr-3 h-4 w-4" />
+          {colorMode === 'dark' ? <Sun className="mr-3 h-4 w-4" /> : <Moon className="mr-3 h-4 w-4" />}
           {colorMode === 'dark' ? 'Light Mode' : 'Dark Mode'}
         </Button>
       </div>

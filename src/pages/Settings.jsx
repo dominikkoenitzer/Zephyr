@@ -81,7 +81,7 @@ function Settings() {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--panel-gap)]">
         {/* Notifications Card */}
-        <Card className="border border-border/30 bg-background/80 rounded-2xl shadow-lg h-fit backdrop-blur">
+        <Card className="h-fit">
         <CardHeader className="pb-3 sm:pb-4">
           <CardTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl text-foreground">
             <div className="p-1.5 sm:p-2 rounded-lg bg-primary/15 text-primary shadow-sm ring-1 ring-primary/20">
@@ -210,7 +210,7 @@ function Settings() {
       </Card>
 
         {/* Data Management Card */}
-        <Card className="border border-border/30 bg-background/80 rounded-2xl shadow-lg h-fit backdrop-blur">
+        <Card className="h-fit">
           <CardHeader className="pb-4 sm:pb-6">
             <CardTitle className="flex items-center gap-2 sm:gap-4 text-lg sm:text-xl md:text-2xl">
               <div className="p-2 sm:p-3 rounded-lg bg-destructive/15 shadow-sm ring-1 ring-destructive/20">
