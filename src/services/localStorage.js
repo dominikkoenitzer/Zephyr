@@ -6,7 +6,8 @@ export const STORAGE_KEYS = {
   FOCUS_STREAK: 'zephyr_focus_streak',
   SETTINGS: 'zephyr_settings',
   WELLNESS: 'zephyr_wellness',
-  // Calendar was removed; key stays listed so clearAllData wipes old data.
+  // Calendar and task folders were removed; keys stay listed so
+  // clearAllData wipes old data.
   CALENDAR_EVENTS: 'zephyr_calendar_events',
   TASK_FOLDERS: 'zephyr_task_folders',
   NOTES: 'zephyr_notes',
@@ -119,7 +120,6 @@ class LocalStorageService {
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
       completed: false,
-      folderId: null,
       priority: 'medium',
       tags: [],
       dueDate: null,
@@ -153,73 +153,6 @@ class LocalStorageService {
     const tasks = this.getTasks();
     const filteredTasks = tasks.filter(task => task.id !== taskId);
     this.saveTasks(filteredTasks);
-  }
-
-  // Task folders management
-  saveFolders(folders) {
-    try {
-      localStorage.setItem(STORAGE_KEYS.TASK_FOLDERS, JSON.stringify({
-        folders,
-        lastUpdated: Date.now()
-      }));
-      emitChange(STORAGE_KEYS.TASK_FOLDERS);
-      return true;
-    } catch (error) {
-      console.error('Failed to save folders:', error);
-      return false;
-    }
-  }
-
-  getFolders() {
-    try {
-      const data = localStorage.getItem(STORAGE_KEYS.TASK_FOLDERS);
-      if (!data) return [];
-
-      const parsed = JSON.parse(data);
-      return parsed.folders || [];
-    } catch (error) {
-      console.error('Failed to get folders:', error);
-      return [];
-    }
-  }
-
-  addFolder(folder) {
-    const folders = this.getFolders();
-    const newFolder = {
-      id: Date.now().toString(),
-      name: folder.name || 'New Folder',
-      color: folder.color || '#3b82f6',
-      createdAt: new Date().toISOString()
-    };
-    folders.push(newFolder);
-    this.saveFolders(folders);
-    return newFolder;
-  }
-
-  updateFolder(folderId, updates) {
-    const folders = this.getFolders();
-    const folderIndex = folders.findIndex(folder => folder.id === folderId);
-    if (folderIndex !== -1) {
-      folders[folderIndex] = { ...folders[folderIndex], ...updates, updatedAt: new Date().toISOString() };
-      this.saveFolders(folders);
-      return folders[folderIndex];
-    }
-    return null;
-  }
-
-  deleteFolder(folderId) {
-    const folders = this.getFolders();
-    const filteredFolders = folders.filter(folder => folder.id !== folderId);
-    this.saveFolders(filteredFolders);
-
-    // Move tasks from deleted folder to no folder
-    const tasks = this.getTasks();
-    tasks.forEach(task => {
-      if (task.folderId === folderId) {
-        task.folderId = null;
-      }
-    });
-    this.saveTasks(tasks);
   }
 
   // Focus sessions tracking

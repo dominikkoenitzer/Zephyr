@@ -39,11 +39,9 @@ export function useStoreValue(read) {
 
 // Stable module-level readers so each hook subscribes once.
 const readTasks = () => localStorageService.getTasks();
-const readFolders = () => localStorageService.getFolders();
 const readNotes = () => localStorageService.getNotes();
 const readSettings = () => localStorageService.getSettings();
 
 export const useTasks = () => useStoreValue(readTasks);
-export const useFolders = () => useStoreValue(readFolders);
 export const useNotes = () => useStoreValue(readNotes);
 export const useSettings = () => useStoreValue(readSettings);

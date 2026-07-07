@@ -52,7 +52,7 @@ Most productivity apps want an account, a subscription, and a copy of your data 
 
 | | Feature | What it does |
 |---|---|---|
-| ✅ | **Tasks** | Due dates, priorities, `#tags`, and color-coded folders. [Natural-language quick add](#natural-language-quick-add) understands plain English as you type. |
+| ✅ | **Tasks** | Due dates, priorities, and `#tags`. [Natural-language quick add](#natural-language-quick-add) understands plain English as you type. |
 | ⏱️ | **Focus Timer** | A Pomodoro timer with four built-in [presets](#focus-presets) (plus your own), fully customizable durations, automatic session tracking, and a day-streak counter. |
 | 📝 | **Notes** | Quick capture with `#tags`, eight accent colors, pinning, and instant search. Plain-text and friction-free. |
 | 🏠 | **Home dashboard** | A weekly overview — active tasks, tasks completed this week, focus minutes, total notes — plus what's due today. |
@@ -151,7 +151,7 @@ src/
 
 Zephyr has no Redux, Zustand, or Context store. Application state lives in **singleton service classes** under `src/services/`, each persisting to `localStorage` (all keys prefixed `zephyr_`):
 
-- **`localStorage.js`** — the canonical data store for tasks, folders, notes, focus sessions, the streak, and settings. It owns the schema and the add/update/delete helpers.
+- **`localStorage.js`** — the canonical data store for tasks, notes, focus sessions, the streak, and settings. It owns the schema and the add/update/delete helpers.
 - **`searchService.js`** — unified search across notes and tasks (wired into <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> + <kbd>K</kbd>).
 - **`notificationService.js`** — polls for task due dates and plays a Web Audio chime.
 - **`themeService.js`** — light/dark via a class on `<html>`, applied before React renders to avoid a flash.

@@ -6,7 +6,7 @@ Zephyr is an installable Progressive Web App (PWA) that works offline. It is des
 
 ## Features
 
-- [Tasks](https://zephyr.punds.ch/tasks): Create tasks with due dates, priorities, #tags, and folders. Supports natural-language quick add, e.g. "Email Sam tomorrow !high #work" automatically sets the due date, priority, and tag.
+- [Tasks](https://zephyr.punds.ch/tasks): Create tasks with due dates, priorities, and #tags. Supports natural-language quick add, e.g. "Email Sam tomorrow !high #work" automatically sets the due date, priority, and tag.
 - [Focus Timer](https://zephyr.punds.ch/focus): A Pomodoro timer with customizable work and break durations, presets (Pomodoro, Short Focus, Deep Work, Meditation), automatic session tracking, and a daily streak.
 - [Notes](https://zephyr.punds.ch/notes): Capture and organize notes with #tags, accent colors, pinning, and instant search.
 - [Home](https://zephyr.punds.ch/): A weekly overview of focus minutes, completed tasks, tasks due today, and notes.

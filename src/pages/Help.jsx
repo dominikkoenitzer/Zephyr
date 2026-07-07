@@ -221,7 +221,7 @@ function Help() {
                   on your device. This includes:
                 </p>
                 <ul className="list-disc ml-6 space-y-1 mb-4">
-                  <li>Task lists and task folders</li>
+                  <li>Task lists</li>
                   <li>Notes</li>
                   <li>Focus timer sessions and presets</li>
                   <li>Application settings and preferences</li>
