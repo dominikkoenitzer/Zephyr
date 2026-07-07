@@ -397,7 +397,7 @@
   }
 
   .shadow-brand {
-    box-shadow: 0 8px 24px hsl(var(--primary) / 0.35), 0 2px 8px hsl(var(--brand-violet) / 0.25);
+    box-shadow: 0 2px 8px hsl(var(--primary) / 0.25), 0 1px 3px hsl(var(--brand-violet) / 0.15);
   }
 
   /* Frosted panel — translucent so the aurora glows through. */
