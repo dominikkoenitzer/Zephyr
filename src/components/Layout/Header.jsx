@@ -116,7 +116,7 @@ function Header({ onMenuClick }) {
             const selectedResult = allResults[selectedIndex];
             setShowSearchResults(false);
             setSearchQuery('');
-            navigate(selectedResult.type === 'note' ? '/notes' : '/tasks');
+            navigate(selectedResult.type === 'note' ? `/notes?open=${selectedResult.id}` : '/tasks');
           }
         }
       }

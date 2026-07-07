@@ -585,12 +585,25 @@ const PomodoroTimer = () => {
 
   const resetTimer = () => {
     setIsRunning(false);
-    const currentTime = isBreak 
+    const currentTime = isBreak
       ? (sessionsCompleted % sessionsUntilLongBreak === 0 ? longBreakTime : breakTime)
       : workTime;
     setTimeLeft(currentTime);
     setNextPromptVisible(false);
   };
+
+  // Space starts/pauses the timer (unless you're typing somewhere).
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.code !== 'Space' || e.repeat) return;
+      const tag = e.target.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON' || e.target.isContentEditable) return;
+      e.preventDefault();
+      toggleTimer();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  });
 
   const skipSession = () => {
     setIsRunning(false);

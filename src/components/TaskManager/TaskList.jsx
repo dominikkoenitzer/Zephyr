@@ -150,6 +150,7 @@ const TaskList = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const diffDays = Math.round((date - today) / 86400000);
+    if (diffDays === -1) return 'Yesterday';
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Tomorrow';
     if (diffDays > 1 && diffDays < 7) return date.toLocaleDateString('en-US', { weekday: 'long' });
@@ -181,6 +182,7 @@ const TaskList = () => {
                 placeholder='Add a task — try "Email Sam tomorrow !high #work"'
                 value={newTask}
                 onChange={(e) => setNewTask(e.target.value)}
+                onKeyDown={(e) => e.key === 'Escape' && setNewTask('')}
                 className="pl-12 pr-14 h-14 text-base rounded-2xl bg-card/60 backdrop-blur-xl border-border/50 shadow-[var(--shadow-card)]"
                 aria-label="Add a task"
               />
@@ -257,13 +259,15 @@ const TaskList = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.15 } }}
                       transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-                      className="flex items-start sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-card/70 backdrop-blur-xl border border-border/60 rounded-xl transition-colors duration-200 hover:shadow-sm hover:border-primary/30 group"
+                      onClick={() => setEditingTask(task)}
+                      className="flex items-start sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-card/70 backdrop-blur-xl border border-border/60 rounded-xl transition-colors duration-200 hover:shadow-sm hover:border-primary/30 group cursor-pointer"
                     >
                       <Button
                         variant="ghost"
                         size="sm"
+                        aria-label="Mark task complete"
                         className="p-0 h-auto hover:bg-transparent flex-shrink-0 mt-0.5 sm:mt-0"
-                        onClick={() => toggleTask(task.id)}
+                        onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
                       >
                         <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground hover:text-primary transition-colors" />
                       </Button>
@@ -309,7 +313,7 @@ const TaskList = () => {
                           variant="outline"
                           size="sm"
                           className="p-2 h-auto text-muted-foreground hover:text-primary"
-                          onClick={() => navigate(`/focus?taskId=${task.id}&title=${encodeURIComponent(task.title)}&start=1`)}
+                          onClick={(e) => { e.stopPropagation(); navigate(`/focus?taskId=${task.id}&title=${encodeURIComponent(task.title)}&start=1`); }}
                         >
                           <TimerIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
                           Focus
@@ -319,7 +323,7 @@ const TaskList = () => {
                           size="sm"
                           className="p-1.5 sm:p-2 h-auto text-muted-foreground hover:text-primary"
                           aria-label="Edit task"
-                          onClick={() => setEditingTask(task)}
+                          onClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
                         >
                           <Edit2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </Button>
@@ -328,7 +332,7 @@ const TaskList = () => {
                           size="sm"
                           className="p-1.5 sm:p-2 h-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                           aria-label="Delete task"
-                          onClick={() => deleteTask(task.id)}
+                          onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
                         >
                           <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </Button>

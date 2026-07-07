@@ -16,6 +16,7 @@ import {
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
 import { themeService } from '../../services/themeService';
+import { useTasks } from '../../hooks/useStore';
 
 // Everyday tools — the primary, high-emphasis destinations.
 const primaryNavigation = [
@@ -34,6 +35,8 @@ const secondaryNavigation = [
 function Sidebar({ isMobile = false, onClose }) {
   const location = useLocation();
   const [colorMode, setColorMode] = useState('light');
+  const [tasks] = useTasks();
+  const activeTaskCount = tasks.filter((t) => !t.completed).length;
 
   useEffect(() => {
     themeService.initialize();
@@ -105,6 +108,7 @@ function Sidebar({ isMobile = false, onClose }) {
               colorMode={colorMode}
               onToggleColorMode={toggleColorMode}
               variant="mobile"
+              activeTaskCount={activeTaskCount}
             />
           </div>
         </m.div>
@@ -126,6 +130,7 @@ function Sidebar({ isMobile = false, onClose }) {
             colorMode={colorMode}
             onToggleColorMode={toggleColorMode}
             variant="desktop"
+            activeTaskCount={activeTaskCount}
           />
         </div>
       </div>
@@ -154,7 +159,8 @@ function SidebarContent({
   onItemClick,
   colorMode,
   onToggleColorMode,
-  variant = 'desktop'
+  variant = 'desktop',
+  activeTaskCount = 0
 }) {
   const renderLink = (item, { compact = false } = {}) => {
     const Icon = item.icon;
@@ -189,6 +195,11 @@ function SidebarContent({
           isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
         )} />
         <span className="relative flex-1">{item.name}</span>
+        {item.href === '/tasks' && activeTaskCount > 0 && (
+          <span className="relative ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/15 px-1.5 text-[11px] font-semibold text-primary">
+            {activeTaskCount}
+          </span>
+        )}
       </Link>
     );
   };
