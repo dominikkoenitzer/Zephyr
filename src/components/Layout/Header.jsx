@@ -14,7 +14,7 @@ function Header({ onMenuClick }) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [greeting, setGreeting] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState({ notes: [], events: [], tasks: [] });
+  const [searchResults, setSearchResults] = useState({ notes: [], tasks: [] });
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -67,7 +67,7 @@ function Header({ onMenuClick }) {
       setShowSearchResults(true);
       setSelectedIndex(0);
     } else {
-      setSearchResults({ notes: [], events: [], tasks: [] });
+      setSearchResults({ notes: [], tasks: [] });
       setShowSearchResults(false);
     }
   }, [searchQuery]);
@@ -110,33 +110,13 @@ function Header({ onMenuClick }) {
           // Navigate to selected result
           const allResults = [
             ...(searchResults.notes || []).map(r => ({ ...r, type: 'note' })),
-            ...(searchResults.events || []).map(r => ({ ...r, type: 'event' })),
             ...(searchResults.tasks || []).map(r => ({ ...r, type: 'task' }))
           ];
           if (allResults[selectedIndex]) {
             const selectedResult = allResults[selectedIndex];
             setShowSearchResults(false);
             setSearchQuery('');
-            
-            // Navigate based on result type
-            switch (selectedResult.type) {
-              case 'note':
-                navigate('/notes');
-                break;
-              case 'event':
-                // Navigate to calendar with the event's date
-                if (selectedResult.date) {
-                  const eventDate = new Date(selectedResult.date);
-                  const dateStr = eventDate.toISOString().split('T')[0];
-                  navigate(`/calendar?date=${dateStr}`);
-                } else {
-                  navigate('/calendar');
-                }
-                break;
-              case 'task':
-                navigate('/tasks');
-                break;
-            }
+            navigate(selectedResult.type === 'note' ? '/notes' : '/tasks');
           }
         }
       }
@@ -197,7 +177,7 @@ function Header({ onMenuClick }) {
                 id="header-search"
                 name="search"
                 ref={searchInputRef}
-                placeholder="Search notes, tasks, events..."
+                placeholder="Search notes and tasks..."
                 className="pl-9 h-9 w-64 text-sm"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}

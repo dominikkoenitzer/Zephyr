@@ -8,13 +8,12 @@ class SearchService {
    */
   searchAll(query) {
     if (!query || query.trim().length === 0) {
-      return { notes: [], events: [], tasks: [] };
+      return { notes: [], tasks: [] };
     }
 
     const searchTerm = query.toLowerCase().trim();
     const results = {
       notes: [],
-      events: [],
       tasks: []
     };
 
@@ -30,23 +29,6 @@ class SearchService {
           ...note,
           matchType: matchesTitle ? 'title' : matchesContent ? 'content' : 'tag',
           matchText: this.highlightMatch(note.title || note.content || '', searchTerm)
-        });
-      }
-    });
-
-    // Search Calendar Events
-    const events = localStorageService.getCalendarEvents();
-    events.forEach(event => {
-      const matchesTitle = event.title?.toLowerCase().includes(searchTerm);
-      const matchesDescription = event.description?.toLowerCase().includes(searchTerm);
-      const matchesLocation = event.location?.toLowerCase().includes(searchTerm);
-      const matchesCategory = event.category?.toLowerCase().includes(searchTerm);
-      
-      if (matchesTitle || matchesDescription || matchesLocation || matchesCategory) {
-        results.events.push({
-          ...event,
-          matchType: matchesTitle ? 'title' : matchesDescription ? 'description' : matchesLocation ? 'location' : 'category',
-          matchText: this.highlightMatch(event.title || event.description || '', searchTerm)
         });
       }
     });
@@ -71,12 +53,6 @@ class SearchService {
       if (a.matchType === 'title' && b.matchType !== 'title') return -1;
       if (a.matchType !== 'title' && b.matchType === 'title') return 1;
       return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt);
-    });
-
-    results.events.sort((a, b) => {
-      if (a.matchType === 'title' && b.matchType !== 'title') return -1;
-      if (a.matchType !== 'title' && b.matchType === 'title') return 1;
-      return new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt);
     });
 
     results.tasks.sort((a, b) => {
@@ -107,7 +83,6 @@ class SearchService {
    */
   getTotalCount(results) {
     return (results.notes?.length || 0) +
-           (results.events?.length || 0) +
            (results.tasks?.length || 0);
   }
 }
