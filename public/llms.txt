@@ -15,6 +15,7 @@ Zephyr is an installable Progressive Web App (PWA) that works offline. It is des
 
 - Free to use, no signup or login required.
 - Local-first: all data is stored in the browser via localStorage; nothing is uploaded to any server.
+- Backup: export all data as a JSON file and restore it on any device (Settings > Data Management).
 - Works offline as an installable PWA.
 - Unified Ctrl/Cmd+K search across tasks and notes.
 - Topics: productivity, time management, pomodoro technique, task manager, to-do list, note taking.

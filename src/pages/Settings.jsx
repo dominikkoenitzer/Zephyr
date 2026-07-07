@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Bell, Volume2, CheckSquare, Timer, Trash2, AlertTriangle } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Bell, Volume2, CheckSquare, Timer, Trash2, AlertTriangle, Download, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Checkbox } from '../components/ui/checkbox';
@@ -11,9 +11,57 @@ import { localStorageService } from '../services/localStorage';
 import PageHeader from '../components/Layout/PageHeader';
 import PageContainer from '../components/Layout/PageContainer';
 
+// Non-"zephyr"-prefixed keys that still belong to the app's data.
+const EXTRA_BACKUP_KEYS = ['focusTimerPresets', 'selectedFocusPreset', 'theme'];
+const isBackupKey = (key) => key.startsWith('zephyr') || EXTRA_BACKUP_KEYS.includes(key);
+
 function Settings() {
   const [notificationSettings, setNotificationSettings] = useState(notificationService.getSettings());
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const importInputRef = useRef(null);
+
+  const handleExport = () => {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (isBackupKey(key)) data[key] = localStorage.getItem(key);
+    }
+    const backup = { app: 'zephyr', version: 1, exportedAt: new Date().toISOString(), data };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `zephyr-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Backup downloaded');
+  };
+
+  const handleImportFile = (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow picking the same file again later
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const backup = JSON.parse(reader.result);
+        if (backup?.app !== 'zephyr' || typeof backup.data !== 'object' || backup.data === null) {
+          toast.error('That file is not a Zephyr backup.');
+          return;
+        }
+        Object.entries(backup.data).forEach(([key, value]) => {
+          if (isBackupKey(key) && typeof value === 'string') {
+            localStorage.setItem(key, value);
+          }
+        });
+        toast.success('Backup restored. Reloading…');
+        setTimeout(() => window.location.reload(), 1200);
+      } catch {
+        toast.error('Could not read that backup file.');
+      }
+    };
+    reader.readAsText(file);
+  };
 
   const handleNotificationSettingsChange = (updates) => {
     const newSettings = { ...notificationSettings, ...updates };
@@ -220,6 +268,38 @@ function Settings() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6">
+            {/* Backup & restore */}
+            <div className="p-4 sm:p-6 rounded-xl bg-background/70 border border-border/60 space-y-4">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <Download className="h-5 w-5 sm:h-6 sm:w-6 text-primary mt-1 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-base sm:text-lg text-foreground mb-1 sm:mb-2">Backup &amp; Restore</h3>
+                  <p className="text-sm sm:text-base text-muted-foreground">
+                    Download all your data as a single file, or restore a backup on any device.
+                    Everything stays local — nothing is uploaded.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <Button variant="outline" onClick={handleExport}>
+                  <Download className="h-4 w-4 mr-1.5" />
+                  Export data
+                </Button>
+                <Button variant="outline" onClick={() => importInputRef.current?.click()}>
+                  <Upload className="h-4 w-4 mr-1.5" />
+                  Import backup
+                </Button>
+                <input
+                  ref={importInputRef}
+                  type="file"
+                  accept="application/json,.json"
+                  className="hidden"
+                  aria-label="Import a Zephyr backup file"
+                  onChange={handleImportFile}
+                />
+              </div>
+            </div>
+
             <div className="p-4 sm:p-6 rounded-xl bg-background/80 border border-border/60 space-y-4 sm:space-y-6">
               <div className="flex items-start gap-3 sm:gap-4">
                 <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-destructive mt-1 flex-shrink-0" />

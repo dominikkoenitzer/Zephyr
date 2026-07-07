@@ -107,7 +107,34 @@ const TaskList = () => {
     return updatedTask;
   };
 
-  const activeTasks = tasks.filter(task => !task.completed);
+  const saveEdit = () => {
+    if (!editingTask?.title?.trim()) return;
+    const updates = {
+      title: editingTask.title.trim(),
+      description: editingTask.description?.trim() || '',
+      priority: editingTask.priority || 'medium',
+      dueDate: editingTask.dueDate
+        ? (editingTask.dueDate.includes('T')
+            ? editingTask.dueDate.split('T')[0]
+            : editingTask.dueDate)
+        : null
+    };
+    if (updateTask(editingTask.id, updates)) {
+      setEditingTask(null);
+    }
+  };
+
+  // Active tasks sort by due date (soonest first, undated last), then
+  // priority — so what needs attention is always at the top.
+  const PRIORITY_RANK = { high: 0, medium: 1, low: 2 };
+  const activeTasks = tasks
+    .filter(task => !task.completed)
+    .sort((a, b) => {
+      const da = (a.dueDate || '9999').split('T')[0];
+      const db = (b.dueDate || '9999').split('T')[0];
+      if (da !== db) return da < db ? -1 : 1;
+      return (PRIORITY_RANK[a.priority] ?? 1) - (PRIORITY_RANK[b.priority] ?? 1);
+    });
   const completedTasks = tasks.filter(task => task.completed);
   const completedCount = completedTasks.length;
   const totalCount = tasks.length;
@@ -118,6 +145,15 @@ const TaskList = () => {
     // Parse YYYY-MM-DD format as local date to avoid timezone issues
     const dateParts = dateString.split('T')[0].split('-').map(Number);
     const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+
+    // Near dates read as words, not numbers.
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffDays = Math.round((date - today) / 86400000);
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Tomorrow';
+    if (diffDays > 1 && diffDays < 7) return date.toLocaleDateString('en-US', { weekday: 'long' });
+
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined });
   };
 
@@ -380,7 +416,16 @@ const TaskList = () => {
             <DialogHeader>
               <DialogTitle>Edit Task</DialogTitle>
             </DialogHeader>
-            <div className="space-y-5 py-2">
+            <div
+              className="space-y-5 py-2"
+              onKeyDown={(e) => {
+                // Enter in a text field (or Ctrl/Cmd+Enter anywhere) saves.
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey || e.target.tagName === 'INPUT')) {
+                  e.preventDefault();
+                  saveEdit();
+                }
+              }}
+            >
               <div className="space-y-2">
                 <label className="text-sm font-medium block text-foreground">Title</label>
                 <Input
@@ -423,30 +468,7 @@ const TaskList = () => {
                 />
               </div>
               <div className="flex gap-2">
-                <Button 
-                  onClick={() => {
-                    if (!editingTask.title?.trim()) {
-                      return;
-                    }
-                    
-                    const updates = {
-                      title: editingTask.title.trim(),
-                      description: editingTask.description?.trim() || '',
-                      priority: editingTask.priority || 'medium',
-                      dueDate: editingTask.dueDate
-                        ? (editingTask.dueDate.includes('T') 
-                            ? editingTask.dueDate.split('T')[0] 
-                            : editingTask.dueDate)
-                        : null
-                    };
-                    
-                    const updated = updateTask(editingTask.id, updates);
-                    if (updated) {
-                      setEditingTask(null);
-                    }
-                  }}
-                  className="flex-1"
-                >
+                <Button onClick={saveEdit} className="flex-1">
                   Save Changes
                 </Button>
                 <Button 
