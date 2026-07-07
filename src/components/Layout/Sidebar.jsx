@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { m } from 'motion/react';
 import {
   House,
   Timer,
@@ -67,8 +68,20 @@ function Sidebar({ isMobile = false, onClose }) {
   if (isMobile) {
     return (
       <div className="fixed inset-0 z-50 lg:hidden">
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
-        <div className="fixed left-0 top-0 h-full w-[var(--sidebar-width)] bg-background/95 backdrop-blur-xl border-r border-border/50 animate-slide-in-from-left shadow-2xl flex flex-col overflow-hidden">
+        <m.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm"
+          onClick={onClose}
+        />
+        <m.div
+          initial={{ x: '-100%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '-100%' }}
+          transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+          className="fixed left-0 top-0 h-full w-[var(--sidebar-width)] bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-2xl flex flex-col overflow-hidden">
           <div className="flex items-center justify-between p-4 sm:p-6 pb-4 sm:pb-6 flex-shrink-0">
             <div>
               <h1 className="text-2xl font-bold text-foreground">Zephyr</h1>
@@ -93,9 +106,10 @@ function Sidebar({ isMobile = false, onClose }) {
               onItemClick={onClose}
               colorMode={colorMode}
               onToggleColorMode={toggleColorMode}
+              variant="mobile"
             />
           </div>
-        </div>
+        </m.div>
       </div>
     );
   }
@@ -114,6 +128,7 @@ function Sidebar({ isMobile = false, onClose }) {
             location={location}
             colorMode={colorMode}
             onToggleColorMode={toggleColorMode}
+            variant="desktop"
           />
         </div>
       </div>
@@ -127,7 +142,8 @@ function SidebarContent({
   location,
   onItemClick,
   colorMode,
-  onToggleColorMode
+  onToggleColorMode,
+  variant = 'desktop'
 }) {
   const renderLink = (item, { compact = false } = {}) => {
     const Icon = item.icon;
@@ -148,7 +164,14 @@ function SidebarContent({
         )}
       >
         {isActive && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+          <m.div
+            // Shared layoutId per sidebar instance makes the pill glide
+            // between nav items instead of jumping. No CSS transform here —
+            // Motion owns the transform during layout animations.
+            layoutId={`sidebar-active-pill-${variant}`}
+            transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+            className="absolute left-0 top-[calc(50%-0.75rem)] w-1 h-6 bg-primary rounded-r-full"
+          />
         )}
         <Icon className={cn(
           "h-5 w-5 transition-colors",

@@ -8,7 +8,9 @@ Zephyr (package name `zephyr`) is a **local-first, no-login productivity app**: 
 
 > The Journal and Calendar features were both removed in favor of a simpler app. `localStorageService` still contains journal helper methods and legacy storage keys (`zephyr_journal_entries`, `zephyr_calendar_events` — kept so `clearAllData` wipes old data), but nothing in the UI uses them. `/journal` redirects to `/notes` and `/calendar` redirects to `/tasks`. Keep new features minimal and do not re-add that complexity unless asked.
 
-Stack: React 18 + Vite 6 (`@vitejs/plugin-react-swc`), React Router v6, Tailwind CSS 3, Radix UI primitives (shadcn-style), recharts, lucide-react, sonner (toasts), `@vercel/analytics`.
+Stack: React 18 + Vite 6 (`@vitejs/plugin-react-swc`), React Router v6, Tailwind CSS 3, Radix UI primitives (shadcn-style), motion (animations), recharts, lucide-react, sonner (toasts), `@vercel/analytics`.
+
+Animations use **motion** (`motion/react`) behind `LazyMotion` with `strict` mode in `AppLayout` — always animate with the `m.` components (`m.div`), never `motion.div` (strict mode throws). `MotionConfig reducedMotion="user"` is set globally, so respect it and don't hand-roll reduced-motion checks.
 
 ## Commands
 
@@ -58,7 +60,7 @@ Structure: `src/pages/` are route-level screens; `src/components/<Feature>/` hol
 
 `vite.config.js` contains **hand-tuned, fragile logic** — do not casually refactor it:
 
-- A custom `manualChunks` splits vendors into `react-vendor`, `router-vendor`, `radix-vendor`, `charts-vendor`, `icons-vendor`, `utils-vendor`, and a catch-all `vendor`. The intent is that **everything React-dependent lands in `react-vendor` so it loads first**.
+- A custom `manualChunks` splits vendors into `react-vendor`, `router-vendor`, `radix-vendor`, `motion-vendor`, `charts-vendor`, `icons-vendor`, `utils-vendor`, and a catch-all `vendor`. The intent is that **everything React-dependent lands in `react-vendor` so it loads first**. The `motion-vendor` check must stay *before* the react checks — motion ships `dist/react.mjs` paths that would otherwise be split across chunks.
 - The custom `fixChunkLoading` plugin rewrites the `react-vendor` `modulepreload` link into a real `<script>` tag in `index.html` to guarantee React executes before other chunks. Keep this plugin and the chunking logic intact; breaking load order causes runtime "React is undefined" failures.
 
 ## Conventions
