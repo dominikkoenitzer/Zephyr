@@ -7,17 +7,18 @@
 
 @layer base {
   :root {
-    /* Zephyr Light Theme - Clean, neutral, modern */
-    --background: 210 20% 99%;
-    --foreground: 220 25% 13%;
+    /* Zephyr Light Theme - airy, cool, glassy */
+    --background: 220 40% 97%;
+    --foreground: 224 30% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 220 25% 13%;
+    --card-foreground: 224 30% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 13%;
+    --popover-foreground: 224 30% 12%;
 
-    /* Primary: Clean Blue */
+    /* Primary: Clean Blue; brand gradient runs primary → violet */
     --primary: 217 91% 55%;
     --primary-foreground: 0 0% 100%;
+    --brand-violet: 262 83% 58%;
 
     /* Secondary: Neutral */
     --secondary: 220 16% 96%;
@@ -31,10 +32,10 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 16% 91%;
-    --input: 220 16% 93%;
+    --border: 220 20% 90%;
+    --input: 220 20% 92%;
     --ring: 217 91% 55%;
-    --radius: 0.75rem;
+    --radius: 1rem;
     
     /* Glassmorphism variables */
     --glass-bg: rgba(255, 255, 255, 0.7);
@@ -60,33 +61,34 @@
   }
 
   .dark {
-    /* Zephyr Dark Theme - Clean neutral near-black */
-    --background: 222 18% 8%;
-    --foreground: 210 20% 96%;
-    --card: 222 16% 11%;
-    --card-foreground: 210 20% 96%;
-    --popover: 222 16% 11%;
-    --popover-foreground: 210 20% 96%;
+    /* Zephyr Dark Theme - deep blue-black, tuned to the aurora */
+    --background: 226 35% 6%;
+    --foreground: 214 30% 96%;
+    --card: 226 30% 9%;
+    --card-foreground: 214 30% 96%;
+    --popover: 226 30% 9%;
+    --popover-foreground: 214 30% 96%;
 
-    /* Primary: Clean Blue */
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 8%;
+    /* Primary: Clean Blue; brand gradient runs primary → violet */
+    --primary: 217 91% 62%;
+    --primary-foreground: 226 47% 8%;
+    --brand-violet: 262 83% 66%;
 
     /* Secondary: Neutral */
-    --secondary: 222 14% 18%;
-    --secondary-foreground: 210 20% 90%;
+    --secondary: 226 22% 16%;
+    --secondary-foreground: 214 25% 90%;
 
-    --muted: 222 14% 16%;
-    --muted-foreground: 215 14% 62%;
-    --accent: 222 14% 18%;
-    --accent-foreground: 210 20% 92%;
+    --muted: 226 22% 14%;
+    --muted-foreground: 220 16% 64%;
+    --accent: 226 24% 16%;
+    --accent-foreground: 214 25% 92%;
 
-    --destructive: 0 63% 45%;
+    --destructive: 0 63% 48%;
     --destructive-foreground: 210 20% 98%;
 
-    --border: 222 14% 18%;
-    --input: 222 14% 18%;
-    --ring: 217 91% 60%;
+    --border: 226 22% 17%;
+    --input: 226 22% 17%;
+    --ring: 217 91% 62%;
     
     /* Glassmorphism variables for dark mode */
     --glass-bg: rgba(30, 41, 59, 0.7);
@@ -376,9 +378,34 @@
   .gradient-primary {
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(250 70% 60%) 100%);
   }
-  
+
   .gradient-accent {
     background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--primary) / 0.1) 100%);
+  }
+
+  /* Brand gradient — the one gradient used everywhere (buttons, icon
+     chips, active states) so the UI reads as one system. */
+  .bg-brand {
+    background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--brand-violet)) 100%);
+  }
+
+  .text-brand {
+    background-image: linear-gradient(120deg, hsl(var(--primary)) 0%, hsl(var(--brand-violet)) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .shadow-brand {
+    box-shadow: 0 8px 24px hsl(var(--primary) / 0.35), 0 2px 8px hsl(var(--brand-violet) / 0.25);
+  }
+
+  /* Frosted panel — translucent so the aurora glows through. */
+  .glass {
+    background-color: hsl(var(--card) / 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.6);
   }
 
   /* Toast animation */
