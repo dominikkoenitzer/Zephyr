@@ -1,4 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { m, AnimatePresence } from 'motion/react';
 import { Plus, Search, Pin, PinOff, Trash2, Save, X, FileText, Sparkles } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -63,6 +64,16 @@ const Notes = () => {
   const [draft, setDraft] = useState('');
   const [draftColor, setDraftColor] = useState(NOTE_COLORS[0].value);
   const captureRef = useRef(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Deep link from search results: /notes?open=<id> opens that note's editor.
+  useEffect(() => {
+    const openId = searchParams.get('open');
+    if (!openId) return;
+    const note = notes.find((n) => n.id === openId);
+    if (note) setEditing({ ...note, tags: note.tags || [] });
+    setSearchParams({}, { replace: true });
+  }, [searchParams, notes, setSearchParams]);
 
   const allTags = useMemo(() => [...new Set(notes.flatMap((n) => n.tags || []))], [notes]);
 
@@ -224,6 +235,7 @@ const Notes = () => {
               e.preventDefault();
               saveCapture();
             }
+            if (e.key === 'Escape') setDraft('');
           }}
           rows={draft ? 4 : 2}
           placeholder="Jot something down… first line becomes the title, #tags work"
