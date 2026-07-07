@@ -1,46 +1,43 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
+const SITE_URL = 'https://zephyr.punds.ch';
+
 const pageMetadata = {
   '/': {
-    title: 'Zephyr | Start Immediately, No Login Required',
-    description: 'Get started instantly with Zephyr. No login, no signup, local-first productivity for tasks, notes, calendar, and focus sessions.',
-    keywords: 'instant productivity app, no login productivity, local storage notes, tasks and focus timer, local-first planner',
+    title: 'Zephyr — Free Tasks, Notes & Pomodoro Timer. No Login.',
+    description: 'Zephyr is a free, local-first productivity app: tasks, notes, and a Pomodoro focus timer. No login, no signup — your data stays in your browser and it works offline.',
+    keywords: 'free productivity app, no login to do list, pomodoro timer, notes app, local-first app, offline productivity',
   },
   '/home': {
-    title: 'Zephyr Home | Instant Local-First Workspace',
-    description: 'Start typing immediately in Zephyr. No account required, all your data is stored locally on your device.',
-    keywords: 'home dashboard, local-first app, no signup app, instant note taking, personal productivity home',
+    title: 'Home | Zephyr — Your Day at a Glance',
+    description: 'See active tasks, tasks due today, weekly focus minutes, and notes in one simple local-first dashboard. No account required.',
+    keywords: 'productivity dashboard, local-first app, no signup app, daily overview, personal productivity home',
   },
   '/tasks': {
-    title: 'Tasks | Zephyr - Task Management & Organization',
-    description: 'Manage and organize your tasks with folders, priorities, and due dates. Stay productive with Zephyr task management.',
-    keywords: 'task management, to-do list, task organizer, productivity tasks, task tracking',
+    title: 'Tasks | Zephyr — To-Do List with Natural-Language Quick Add',
+    description: 'Manage tasks with folders, priorities, #tags, and due dates. Type "Email Sam tomorrow !high #work" and Zephyr fills in the rest — no login required.',
+    keywords: 'task management, to-do list, natural language task input, task organizer, free task app',
   },
   '/focus': {
-    title: 'Focus Timer | Zephyr - Pomodoro & Focus Sessions',
-    description: 'Boost your focus with Zephyr Pomodoro timer. Customizable focus sessions, breaks, and productivity tracking.',
-    keywords: 'pomodoro timer, focus timer, productivity timer, time management, focus sessions',
-  },
-  '/calendar': {
-    title: 'Calendar | Zephyr - Event Planning & Scheduling',
-    description: 'Plan and manage your events, meetings, and appointments with Zephyr calendar. Stay organized and never miss important dates.',
-    keywords: 'calendar app, event planning, schedule management, appointment calendar, productivity calendar',
+    title: 'Focus Timer | Zephyr — Pomodoro & Deep Work Sessions',
+    description: 'A customizable Pomodoro timer with presets for deep work and meditation, automatic session tracking, and a daily streak. Free and offline-capable.',
+    keywords: 'pomodoro timer, focus timer, deep work timer, productivity timer, time management',
   },
   '/notes': {
-    title: 'Notes | Zephyr - Simple, Local-First Note Taking',
-    description: 'Capture and organize your notes with tags and instant search. Local-first and no login required.',
-    keywords: 'notes, note taking, productivity notes, local-first notes',
+    title: 'Notes | Zephyr — Simple, Local-First Note Taking',
+    description: 'Capture notes with #tags, colors, pinning, and instant search. Everything stays in your browser — private, free, and no login required.',
+    keywords: 'notes app, note taking, local-first notes, private notes, free notes app',
   },
   '/settings': {
-    title: 'Settings | Zephyr - Customize Your Experience',
-    description: 'Customize Zephyr settings, preferences, and data management. Personalize your productivity experience.',
-    keywords: 'app settings, preferences, customization, productivity settings',
+    title: 'Settings | Zephyr — Notifications & Data Management',
+    description: 'Control notifications and manage your locally stored data. Zephyr keeps everything on your device.',
+    keywords: 'app settings, notification preferences, data management, productivity settings',
   },
   '/help': {
-    title: 'Help & Support | Zephyr - FAQs & Documentation',
-    description: 'Get help with Zephyr. Find answers to frequently asked questions, privacy policy, and terms of service.',
-    keywords: 'help, support, FAQ, documentation, user guide, productivity app help',
+    title: 'Help & FAQ | Zephyr — Guides, Privacy Policy & Terms',
+    description: 'Quick start guide, frequently asked questions, privacy policy, and terms of service for Zephyr, the free local-first productivity app.',
+    keywords: 'help, support, FAQ, documentation, privacy policy, productivity app help',
   },
 };
 
@@ -49,6 +46,9 @@ export const useSEO = () => {
 
   useEffect(() => {
     const metadata = pageMetadata[location.pathname] || pageMetadata['/'];
+    // /home renders the same screen as / — canonicalize it to the root so
+    // search engines don't index duplicate content.
+    const canonicalPath = location.pathname === '/home' ? '/' : location.pathname;
     
     // Update document title
     document.title = metadata.title;
@@ -82,11 +82,11 @@ export const useSEO = () => {
       ogTag.setAttribute('content', content);
     };
     
-    const siteImage = 'https://zephyr.app/android-icon-192x192.png';
+    const siteImage = `${SITE_URL}/android-icon-192x192.png`;
     updateOGTag('og:type', 'website');
     updateOGTag('og:title', metadata.title);
     updateOGTag('og:description', metadata.description);
-    updateOGTag('og:url', `https://zephyr.app${location.pathname}`);
+    updateOGTag('og:url', `${SITE_URL}${canonicalPath}`);
     updateOGTag('og:image', siteImage);
 
     // Update Twitter Card tags
@@ -111,7 +111,7 @@ export const useSEO = () => {
       canonicalLink.setAttribute('rel', 'canonical');
       document.head.appendChild(canonicalLink);
     }
-    canonicalLink.setAttribute('href', `https://zephyr.app${location.pathname}`);
+    canonicalLink.setAttribute('href', `${SITE_URL}${canonicalPath}`);
     
   }, [location.pathname]);
 };

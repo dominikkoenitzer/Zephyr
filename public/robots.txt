@@ -1,4 +1,4 @@
-# robots.txt for Zephyr — https://zephyr.app
+# robots.txt for Zephyr — https://zephyr.punds.ch
 # Search and AI crawlers are welcome.
 
 User-agent: *
@@ -42,5 +42,5 @@ User-agent: CCBot
 Allow: /
 
 # Sitemap
-Sitemap: https://zephyr.app/sitemap.xml
-# AI/LLM guide: https://zephyr.app/llms.txt
+Sitemap: https://zephyr.punds.ch/sitemap.xml
+# AI/LLM guide: https://zephyr.punds.ch/llms.txt
