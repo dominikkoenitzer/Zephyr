@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
-import { Plus, Search, Pin, PinOff, Trash2, Save, X, FileText } from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
+import { m, AnimatePresence } from 'motion/react';
+import { Plus, Search, Pin, PinOff, Trash2, Save, X, FileText, Sparkles } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
@@ -20,12 +21,38 @@ const NOTE_COLORS = [
   { name: 'Indigo', value: '#6366f1' },
 ];
 
-const emptyNote = () => ({ id: null, title: '', content: '', tags: [], color: NOTE_COLORS[0].value, pinned: false });
-
 const chipClass = (active) =>
   `text-xs px-3 py-1 rounded-full border transition-colors ${
     active ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:bg-accent/50'
   }`;
+
+// Turn free-typed capture text into a note: first line becomes the title,
+// the rest is content, and #tags anywhere are extracted (same convention
+// as the tasks quick add).
+const parseCapture = (raw) => {
+  const tags = [];
+  const cleaned = raw
+    .replace(/(^|\s)#([\p{L}\d_-]+)/gu, (match, lead, tag) => {
+      const t = tag.toLowerCase();
+      if (!tags.includes(t)) tags.push(t);
+      return lead;
+    })
+    .replace(/[ \t]{2,}/g, ' ');
+  const lines = cleaned.split('\n');
+  const firstIdx = lines.findIndex((l) => l.trim());
+  if (firstIdx === -1) return { title: '', content: '', tags };
+  const title = lines[firstIdx].trim().slice(0, 120);
+  const content = lines.slice(firstIdx + 1).join('\n').trim();
+  return { title, content, tags };
+};
+
+const cardMotion = {
+  layout: true,
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, scale: 0.97, transition: { duration: 0.15 } },
+  transition: { type: 'spring', stiffness: 500, damping: 40 },
+};
 
 const Notes = () => {
   const [notes] = useNotes();
@@ -33,6 +60,9 @@ const Notes = () => {
   const [filterTag, setFilterTag] = useState('');
   const [editing, setEditing] = useState(null);
   const [tagDraft, setTagDraft] = useState('');
+  const [draft, setDraft] = useState('');
+  const [draftColor, setDraftColor] = useState(NOTE_COLORS[0].value);
+  const captureRef = useRef(null);
 
   const allTags = useMemo(() => [...new Set(notes.flatMap((n) => n.tags || []))], [notes]);
 
@@ -55,7 +85,24 @@ const Notes = () => {
       });
   }, [notes, query, filterTag]);
 
-  const openNew = () => setEditing(emptyNote());
+  const pinnedNotes = visible.filter((n) => n.pinned);
+  const otherNotes = visible.filter((n) => !n.pinned);
+
+  const draftParsed = useMemo(() => parseCapture(draft), [draft]);
+
+  const saveCapture = () => {
+    if (!draftParsed.title && !draftParsed.content) return;
+    localStorageService.addNote({
+      title: draftParsed.title || 'Untitled note',
+      content: draftParsed.content,
+      tags: draftParsed.tags,
+      color: draftColor,
+      pinned: false,
+    });
+    setDraft('');
+    captureRef.current?.focus();
+  };
+
   const openEdit = (note) => setEditing({ ...note, tags: note.tags || [] });
 
   const save = () => {
@@ -101,43 +148,154 @@ const Notes = () => {
 
   const removeTag = (t) => setEditing({ ...editing, tags: editing.tags.filter((x) => x !== t) });
 
+  const renderNote = (note) => (
+    <m.div key={note.id} {...cardMotion}>
+      <Card
+        onClick={() => openEdit(note)}
+        className="group h-full cursor-pointer hover-lift"
+        style={{ borderLeft: `4px solid ${note.color}` }}
+      >
+        <CardHeader className="pb-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              {note.pinned && <Pin className="h-4 w-4 text-primary flex-shrink-0" />}
+              <CardTitle className="text-base font-semibold truncate">{note.title || 'Untitled note'}</CardTitle>
+            </div>
+            <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                aria-label={note.pinned ? 'Unpin note' : 'Pin note'}
+                onClick={(e) => togglePin(note, e)}
+              >
+                {note.pinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-destructive"
+                aria-label="Delete note"
+                onClick={(e) => remove(note.id, e)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground line-clamp-3 mb-3 whitespace-pre-wrap">
+            {note.content || 'No content'}
+          </p>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1 flex-wrap min-w-0">
+              {(note.tags || []).slice(0, 3).map((tag) => (
+                <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+            <span className="text-xs text-muted-foreground flex-shrink-0">
+              {new Date(note.updatedAt || note.createdAt).toLocaleDateString()}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    </m.div>
+  );
+
+  const renderGrid = (list) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <AnimatePresence initial={false}>{list.map(renderNote)}</AnimatePresence>
+    </div>
+  );
+
   return (
-    <div className="space-y-4">
-      {/* Search + new */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className="relative flex-1 min-w-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            id="notes-search"
-            name="notes-search"
-            placeholder="Search notes..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-9 h-10"
-          />
-        </div>
-        <Button onClick={openNew} className="flex-shrink-0">
-          <Plus className="h-4 w-4 mr-1.5" />
-          New note
-        </Button>
+    <div className="w-full max-w-5xl mx-auto space-y-5">
+      {/* Quick capture — type a thought, hit Ctrl+Enter, done */}
+      <div className="rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xl shadow-[var(--shadow-card)] focus-within:border-primary/40 transition-colors">
+        <textarea
+          ref={captureRef}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+              e.preventDefault();
+              saveCapture();
+            }
+          }}
+          rows={draft ? 4 : 2}
+          placeholder="Jot something down… first line becomes the title, #tags work"
+          aria-label="Quick capture a note"
+          className="w-full resize-none bg-transparent px-4 pt-3.5 pb-1 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+        />
+        {draft.trim() && (
+          <div className="flex items-center justify-between gap-3 flex-wrap px-3.5 pb-3 animate-fade-in">
+            <div className="flex items-center gap-2 flex-wrap min-w-0">
+              {draftParsed.tags.length > 0 && (
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <Sparkles className="h-3.5 w-3.5 text-primary" />
+                  {draftParsed.tags.map((t) => `#${t}`).join(' ')}
+                </span>
+              )}
+              <div className="flex items-center gap-1.5">
+                {NOTE_COLORS.map((c) => (
+                  <button
+                    key={c.value}
+                    type="button"
+                    onClick={() => setDraftColor(c.value)}
+                    aria-label={c.name}
+                    title={c.name}
+                    className={`h-4 w-4 rounded-full border transition-transform ${
+                      draftColor === c.value ? 'scale-125 border-foreground' : 'border-transparent hover:scale-110'
+                    }`}
+                    style={{ backgroundColor: c.value }}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:inline text-[11px] text-muted-foreground">Ctrl+Enter</span>
+              <Button size="sm" onClick={saveCapture}>
+                <Plus className="h-4 w-4 mr-1" />
+                Save note
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Tag filter — only when tags exist */}
-      {allTags.length > 0 && (
-        <div className="flex items-center gap-2 flex-wrap">
-          <button type="button" onClick={() => setFilterTag('')} className={chipClass(filterTag === '')}>
-            All
-          </button>
-          {allTags.map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              onClick={() => setFilterTag(filterTag === tag ? '' : tag)}
-              className={chipClass(filterTag === tag)}
-            >
-              #{tag}
-            </button>
-          ))}
+      {/* Search + tag filter */}
+      {(notes.length > 0 || query) && (
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="notes-search"
+              name="notes-search"
+              placeholder="Search notes..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="pl-9 h-10 rounded-full bg-card/60"
+            />
+          </div>
+          {allTags.length > 0 && (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <button type="button" onClick={() => setFilterTag('')} className={chipClass(filterTag === '')}>
+                All
+              </button>
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setFilterTag(filterTag === tag ? '' : tag)}
+                  className={chipClass(filterTag === tag)}
+                >
+                  #{tag}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -148,75 +306,33 @@ const Notes = () => {
             <EmptyState
               icon={FileText}
               title={query || filterTag ? 'No matching notes' : 'No notes yet'}
-              description={query || filterTag ? 'Try a different search or tag.' : 'Create your first note to get started.'}
-              action={
-                !query && !filterTag ? (
-                  <Button onClick={openNew}>
-                    <Plus className="h-4 w-4 mr-1.5" />
-                    New note
-                  </Button>
-                ) : undefined
+              description={
+                query || filterTag
+                  ? 'Try a different search or tag.'
+                  : 'Type in the box above and press Ctrl+Enter — that’s the whole flow.'
               }
             />
           </CardContent>
         </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {visible.map((note) => (
-            <Card
-              key={note.id}
-              onClick={() => openEdit(note)}
-              className="group cursor-pointer hover-lift"
-              style={{ borderLeft: `4px solid ${note.color}` }}
-            >
-              <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    {note.pinned && <Pin className="h-4 w-4 text-primary flex-shrink-0" />}
-                    <CardTitle className="text-base font-semibold truncate">{note.title || 'Untitled note'}</CardTitle>
-                  </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      aria-label={note.pinned ? 'Unpin note' : 'Pin note'}
-                      onClick={(e) => togglePin(note, e)}
-                    >
-                      {note.pinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive"
-                      aria-label="Delete note"
-                      onClick={(e) => remove(note.id, e)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground line-clamp-3 mb-3 whitespace-pre-wrap">
-                  {note.content || 'No content'}
-                </p>
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1 flex-wrap min-w-0">
-                    {(note.tags || []).slice(0, 3).map((tag) => (
-                      <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                  <span className="text-xs text-muted-foreground flex-shrink-0">
-                    {new Date(note.updatedAt || note.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      ) : pinnedNotes.length > 0 ? (
+        <div className="space-y-5">
+          <section>
+            <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Pinned · {pinnedNotes.length}
+            </h2>
+            {renderGrid(pinnedNotes)}
+          </section>
+          {otherNotes.length > 0 && (
+            <section>
+              <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Others · {otherNotes.length}
+              </h2>
+              {renderGrid(otherNotes)}
+            </section>
+          )}
         </div>
+      ) : (
+        renderGrid(otherNotes)
       )}
 
       {/* Edit dialog */}
@@ -224,7 +340,7 @@ const Notes = () => {
         <DialogContent className="w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing?.id ? 'Edit note' : 'New note'}</DialogTitle>
-            <DialogDescription>Add a title, write your note, and optionally tag it.</DialogDescription>
+            <DialogDescription>Add a title, write your note, and optionally tag it. Ctrl+Enter saves.</DialogDescription>
           </DialogHeader>
           {editing && (
             <div className="space-y-4 py-1">
@@ -249,6 +365,12 @@ const Notes = () => {
               <textarea
                 value={editing.content}
                 onChange={(e) => setEditing({ ...editing, content: e.target.value })}
+                onKeyDown={(e) => {
+                  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    save();
+                  }
+                }}
                 placeholder="Write your note here..."
                 className="w-full min-h-[240px] px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
               />
