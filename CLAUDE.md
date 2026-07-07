@@ -64,6 +64,7 @@ Structure: `src/pages/` are route-level screens; `src/components/<Feature>/` hol
 
 - A custom `manualChunks` splits vendors into `react-vendor`, `router-vendor`, `radix-vendor`, `motion-vendor`, `charts-vendor`, `icons-vendor`, `utils-vendor`, and a catch-all `vendor`. The intent is that **everything React-dependent lands in `react-vendor` so it loads first**. The `motion-vendor` check must stay *before* the react checks — motion ships `dist/react.mjs` paths that would otherwise be split across chunks.
 - The custom `fixChunkLoading` plugin rewrites the `react-vendor` `modulepreload` link into a real `<script>` tag in `index.html` to guarantee React executes before other chunks. Keep this plugin and the chunking logic intact; breaking load order causes runtime "React is undefined" failures.
+- `VitePWA` generates the service worker (`dist/sw.js`) that makes offline actually work. It uses the hand-written `public/manifest.webmanifest` (`manifest: false`) and must not be given chunking responsibilities. `vercel.json` serves `/sw.js` with `no-cache` so updates roll out.
 
 ## Conventions
 
