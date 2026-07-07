@@ -1,26 +1,27 @@
 # Zephyr
 
-> Zephyr is a free, local-first productivity web app for tasks, notes, a simple calendar, and a Pomodoro focus timer. It runs entirely in the browser with no login or signup — all data is stored locally on the user's device and is never sent to a server.
+> Zephyr is a free, local-first productivity web app for tasks, notes, and a Pomodoro focus timer. It runs entirely in the browser with no login or signup — all data is stored locally on the user's device and is never sent to a server.
 
 Zephyr is an installable Progressive Web App (PWA) that works offline. It is designed for fast, distraction-free personal productivity. There is no account system and no cloud storage; privacy is a core design goal. Made by Dominik Könitzer.
 
 ## Features
 
-- [Tasks](https://zephyr.app/tasks): Create tasks with due dates, priorities, #tags, and folders. Supports natural-language quick add, e.g. "Email Sam tomorrow !high #work" automatically sets the due date, priority, and tag.
-- [Focus Timer](https://zephyr.app/focus): A Pomodoro timer with customizable work and break durations, presets, and automatic session tracking.
-- [Calendar](https://zephyr.app/calendar): A simple month calendar for basic events — title, date, optional time, and an optional note.
-- [Notes](https://zephyr.app/notes): Capture and organize notes with tags and instant search.
-- [Home](https://zephyr.app/): A weekly overview of focus minutes, completed tasks, and notes.
+- [Tasks](https://zephyr.punds.ch/tasks): Create tasks with due dates, priorities, #tags, and folders. Supports natural-language quick add, e.g. "Email Sam tomorrow !high #work" automatically sets the due date, priority, and tag.
+- [Focus Timer](https://zephyr.punds.ch/focus): A Pomodoro timer with customizable work and break durations, presets (Pomodoro, Short Focus, Deep Work, Meditation), automatic session tracking, and a daily streak.
+- [Notes](https://zephyr.punds.ch/notes): Capture and organize notes with #tags, accent colors, pinning, and instant search.
+- [Home](https://zephyr.punds.ch/): A weekly overview of focus minutes, completed tasks, tasks due today, and notes.
 
 ## Key facts
 
 - Free to use, no signup or login required.
 - Local-first: all data is stored in the browser via localStorage; nothing is uploaded to any server.
 - Works offline as an installable PWA.
-- Topics: productivity, time management, pomodoro technique, task manager, note taking, calendar.
+- Unified Ctrl/Cmd+K search across tasks and notes.
+- Topics: productivity, time management, pomodoro technique, task manager, to-do list, note taking.
 
 ## More
 
-- [Help & FAQ](https://zephyr.app/help)
-- [Settings](https://zephyr.app/settings)
-- [Sitemap](https://zephyr.app/sitemap.xml)
+- [Help & FAQ](https://zephyr.punds.ch/help)
+- [Settings](https://zephyr.punds.ch/settings)
+- [Sitemap](https://zephyr.punds.ch/sitemap.xml)
+- [Source code](https://github.com/dominikkoenitzer/Zephyr)

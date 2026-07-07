@@ -1,7 +1,7 @@
 {
   "name": "Zephyr - Flow Through Focus",
   "short_name": "Zephyr",
-  "description": "Productivity app with Pomodoro timer, task management, calendar, notes, and journal features",
+  "description": "Free, local-first productivity app with tasks, notes, and a Pomodoro focus timer. No login required.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -50,6 +50,13 @@
       "short_name": "Tasks",
       "description": "Manage your tasks",
       "url": "/tasks",
+      "icons": [{ "src": "/favicon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Notes",
+      "short_name": "Notes",
+      "description": "Capture a note",
+      "url": "/notes",
       "icons": [{ "src": "/favicon-192x192.png", "sizes": "192x192" }]
     }
   ]
