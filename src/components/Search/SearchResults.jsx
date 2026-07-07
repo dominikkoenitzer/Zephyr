@@ -12,9 +12,10 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
     return null;
   }
 
-  const handleResultClick = (type) => {
+  const handleResultClick = (type, item) => {
     onClose();
-    navigate(type === 'note' ? '/notes' : '/tasks');
+    // Notes deep-link straight into the editor for the clicked note.
+    navigate(type === 'note' ? `/notes?open=${item.id}` : '/tasks');
   };
 
   const formatDate = (dateString) => {
