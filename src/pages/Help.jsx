@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { HelpCircle, Zap, Shield, FileText, Scale, AlertCircle, Timer, Settings, WifiOff, Trash2, Cloud } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { cn } from '../lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import PageHeader from '../components/Layout/PageHeader';
 import PageContainer from '../components/Layout/PageContainer';
@@ -72,17 +72,24 @@ function Help() {
       <div className="flex-shrink-0 flex flex-wrap gap-1.5 sm:gap-2 border-b border-border/50 pb-2 sm:pb-3 overflow-x-auto mb-2 sm:mb-3">
         {sections.map((section) => {
           const Icon = section.icon;
+          const isActive = activeSection === section.id;
           return (
-            <Button
+            <button
               key={section.id}
-              variant={activeSection === section.id ? 'default' : 'ghost'}
+              type="button"
               onClick={() => setActiveSection(section.id)}
-              className="gap-1.5 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3"
+              aria-pressed={isActive}
+              className={cn(
+                'inline-flex items-center gap-1.5 sm:gap-2 rounded-full border h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm font-medium transition-colors',
+                isActive
+                  ? 'border-primary/30 bg-primary/10 text-primary'
+                  : 'border-transparent text-muted-foreground hover:bg-accent/50 hover:text-foreground'
+              )}
             >
               <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">{section.label}</span>
               <span className="sm:hidden">{section.label.split(' ')[0]}</span>
-            </Button>
+            </button>
           );
         })}
       </div>
