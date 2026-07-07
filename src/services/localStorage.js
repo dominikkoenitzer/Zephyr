@@ -6,6 +6,7 @@ export const STORAGE_KEYS = {
   FOCUS_STREAK: 'zephyr_focus_streak',
   SETTINGS: 'zephyr_settings',
   WELLNESS: 'zephyr_wellness',
+  // Calendar was removed; key stays listed so clearAllData wipes old data.
   CALENDAR_EVENTS: 'zephyr_calendar_events',
   TASK_FOLDERS: 'zephyr_task_folders',
   NOTES: 'zephyr_notes',
@@ -26,19 +27,6 @@ export function emitChange(key) {
   }
 }
 
-export const DEFAULT_CALENDAR_SETTINGS = {
-  firstDayOfWeek: 0,
-  defaultView: 'month',
-  showWeekends: true,
-  showWeekNumbers: false,
-  timeFormat: '12h',
-  showMiniCalendar: true,
-  showTasks: true,
-  eventDensity: 'normal',
-  startHour: 0,
-  endHour: 23,
-};
-
 export const DEFAULT_SETTINGS = {
   workDuration: 25,
   shortBreakDuration: 5,
@@ -47,7 +35,6 @@ export const DEFAULT_SETTINGS = {
   soundEnabled: true,
   notificationsEnabled: true,
   theme: 'system',
-  calendar: DEFAULT_CALENDAR_SETTINGS,
 };
 
 // Always hand callers a fresh copy so they can't mutate the shared defaults.
@@ -381,38 +368,10 @@ class LocalStorageService {
       const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
       if (!data) return clone(DEFAULT_SETTINGS);
 
-      const parsed = JSON.parse(data);
-      if (!parsed.calendar) {
-        parsed.calendar = clone(DEFAULT_CALENDAR_SETTINGS);
-      }
-      return parsed;
+      return JSON.parse(data);
     } catch (error) {
       console.error('Failed to get settings:', error);
       return clone(DEFAULT_SETTINGS);
-    }
-  }
-
-  saveCalendarSettings(calendarSettings) {
-    try {
-      const currentSettings = this.getSettings();
-      const updatedSettings = {
-        ...currentSettings,
-        calendar: calendarSettings
-      };
-      return this.saveSettings(updatedSettings);
-    } catch (error) {
-      console.error('Failed to save calendar settings:', error);
-      return false;
-    }
-  }
-
-  getCalendarSettings() {
-    try {
-      const settings = this.getSettings();
-      return settings.calendar || clone(DEFAULT_CALENDAR_SETTINGS);
-    } catch (error) {
-      console.error('Failed to get calendar settings:', error);
-      return clone(DEFAULT_CALENDAR_SETTINGS);
     }
   }
 
@@ -439,34 +398,6 @@ class LocalStorageService {
     } catch (error) {
       console.error('Failed to get wellness data:', error);
       return {};
-    }
-  }
-
-  // Calendar events management
-  saveCalendarEvents(events) {
-    try {
-      localStorage.setItem(STORAGE_KEYS.CALENDAR_EVENTS, JSON.stringify({
-        events,
-        lastUpdated: Date.now()
-      }));
-      emitChange(STORAGE_KEYS.CALENDAR_EVENTS);
-      return true;
-    } catch (error) {
-      console.error('Failed to save calendar events:', error);
-      return false;
-    }
-  }
-
-  getCalendarEvents() {
-    try {
-      const data = localStorage.getItem(STORAGE_KEYS.CALENDAR_EVENTS);
-      if (!data) return [];
-
-      const parsed = JSON.parse(data);
-      return parsed.events || [];
-    } catch (error) {
-      console.error('Failed to get calendar events:', error);
-      return [];
     }
   }
 

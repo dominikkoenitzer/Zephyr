@@ -1,59 +1,29 @@
 import { useNavigate } from 'react-router-dom';
-import { FileText, Calendar, CheckSquare, ArrowRight } from 'lucide-react';
+import { FileText, CheckSquare, ArrowRight } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }) => {
   const navigate = useNavigate();
   const totalCount = (results.notes?.length || 0) +
-                     (results.events?.length || 0) +
                      (results.tasks?.length || 0);
 
   if (!query || query.trim().length === 0 || totalCount === 0) {
     return null;
   }
 
-  const handleResultClick = (type, item) => {
+  const handleResultClick = (type) => {
     onClose();
-    
-    switch (type) {
-      case 'note':
-        navigate('/notes');
-        // Could dispatch event to open note editor
-        break;
-      case 'event':
-        // Navigate to calendar with the event's date
-        if (item.date) {
-          const eventDate = new Date(item.date);
-          const dateStr = eventDate.toISOString().split('T')[0];
-          navigate(`/calendar?date=${dateStr}`);
-        } else {
-          navigate('/calendar');
-        }
-        break;
-      case 'task':
-        navigate('/tasks');
-        break;
-    }
+    navigate(type === 'note' ? '/notes' : '/tasks');
   };
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
       day: 'numeric',
       year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
     });
-  };
-
-  const formatEventDate = (dateString, time) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const dateStr = date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric'
-    });
-    return time ? `${dateStr} at ${time}` : dateStr;
   };
 
   let currentIndex = 0;
@@ -95,46 +65,6 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
                             #{tag}
                           </span>
                         ))}
-                      </div>
-                    )}
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {results.events && results.events.length > 0 && (
-          <div className="mb-2">
-            <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Events ({results.events.length})
-            </div>
-            {results.events.slice(0, 5).map((event) => {
-              const index = currentIndex++;
-              return (
-                <button
-                  key={event.id}
-                  onClick={() => handleResultClick('event', event)}
-                  onMouseEnter={() => onSelectIndex(index)}
-                  className={cn(
-                    "w-full flex items-start gap-3 px-3 py-2 rounded-md text-left transition-colors",
-                    selectedIndex === index
-                      ? "bg-accent"
-                      : "hover:bg-accent/50"
-                  )}
-                >
-                  <Calendar className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-foreground truncate">
-                      {event.title}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      {formatEventDate(event.date, event.time)}
-                    </div>
-                    {event.location && (
-                      <div className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-                        📍 {event.location}
                       </div>
                     )}
                   </div>
