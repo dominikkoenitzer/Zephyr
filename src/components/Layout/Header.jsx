@@ -148,7 +148,7 @@ function Header({ onMenuClick }) {
   };
 
   return (
-    <header className="fixed top-0 right-0 left-0 lg:left-[var(--sidebar-width)] z-40 h-[var(--header-height)] bg-background/80 backdrop-blur-xl border-b border-border/50">
+    <header className="fixed top-0 right-0 left-0 lg:left-[var(--sidebar-width)] z-40 h-[var(--header-height)] bg-background/60 backdrop-blur-2xl border-b border-border/40">
       <div className="flex items-center justify-between h-full px-responsive">
         <div className="flex items-center gap-6">
           <Button
@@ -172,13 +172,13 @@ function Header({ onMenuClick }) {
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-2">
             <div className="relative" ref={searchContainerRef}>
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
               <Input
                 id="header-search"
                 name="search"
                 ref={searchInputRef}
                 placeholder="Search notes and tasks..."
-                className="pl-9 h-9 w-64 text-sm"
+                className="pl-10 pr-12 h-9 w-64 lg:w-72 text-sm rounded-full bg-background/60 border-border/60 focus-visible:ring-primary/40"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => {
@@ -187,6 +187,9 @@ function Header({ onMenuClick }) {
                   }
                 }}
               />
+              <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 hidden lg:inline-flex items-center gap-0.5 rounded-md border border-border/60 bg-muted/60 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                ⌘K
+              </kbd>
               {showSearchResults && searchQuery.trim().length > 0 && (
                 <SearchResults
                   results={searchResults}
