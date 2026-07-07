@@ -6,7 +6,7 @@
 
 ### Flow Through Focus
 
-A free, **local-first** productivity app — tasks, notes, a simple calendar, and a Pomodoro focus timer.
+A free, **local-first** productivity app — tasks, notes, and a Pomodoro focus timer.
 No login, no signup, no backend. Your data never leaves your browser.
 
 [![CI](https://github.com/dominikkoenitzer/Zephyr/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Zephyr/actions/workflows/ci.yml)
@@ -43,7 +43,7 @@ No login, no signup, no backend. Your data never leaves your browser.
 
 Most productivity apps want an account, a subscription, and a copy of your data on their servers. Zephyr wants none of that.
 
-- **Local-first** — every task, note, event, and focus session lives in your browser's `localStorage`. Nothing is ever uploaded.
+- **Local-first** — every task, note, and focus session lives in your browser's `localStorage`. Nothing is ever uploaded.
 - **No login** — open the app and start. There is no sign-up flow because there is no server.
 - **Works offline** — Zephyr is an installable Progressive Web App (PWA). Install it and it keeps working without a connection.
 - **Fast & distraction-free** — a clean, keyboard-friendly interface with light and dark themes.
@@ -54,11 +54,10 @@ Most productivity apps want an account, a subscription, and a copy of your data 
 |---|---|---|
 | ✅ | **Tasks** | Due dates, priorities, `#tags`, and color-coded folders. [Natural-language quick add](#natural-language-quick-add) understands plain English as you type. |
 | ⏱️ | **Focus Timer** | A Pomodoro timer with four built-in [presets](#focus-presets) (plus your own), fully customizable durations, automatic session tracking, and a day-streak counter. |
-| 📅 | **Calendar** | A clean month view for simple events — title, date, optional time, and an optional note. Deliberately minimal: no categories, recurrence, or per-event clutter. |
 | 📝 | **Notes** | Quick capture with `#tags`, eight accent colors, pinning, and instant search. Plain-text and friction-free. |
-| 🏠 | **Home dashboard** | A weekly overview — active tasks, tasks completed this week, focus minutes, total notes — plus what's due today and your next event. |
-| 🔎 | **Unified search** | Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> to search across tasks, notes, and events from anywhere. |
-| 🔔 | **Notifications** | Optional in-app reminders for upcoming due dates and timed events, plus a chime when a focus session ends. All toggleable. |
+| 🏠 | **Home dashboard** | A weekly overview — active tasks, tasks completed this week, focus minutes, total notes — plus what's due today. |
+| 🔎 | **Unified search** | Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> to search across tasks and notes from anywhere. |
+| 🔔 | **Notifications** | Optional in-app reminders for upcoming due dates, plus a chime when a focus session ends. All toggleable. |
 | 🌗 | **Light & dark themes** | A theme toggle in the sidebar; your preference is remembered. |
 
 ## Natural-language quick add
@@ -135,7 +134,6 @@ src/
 ├── components/
 │   ├── FocusTimer/ # Pomodoro timer
 │   ├── Notes/      # Notes
-│   ├── Planner/    # Calendar
 │   ├── Search/     # Cmd/Ctrl+K search
 │   ├── TaskManager/# Tasks & quick add
 │   ├── Layout/     # Sidebar, Header, PageHeader
@@ -151,12 +149,12 @@ src/
 
 Zephyr has no Redux, Zustand, or Context store. Application state lives in **singleton service classes** under `src/services/`, each persisting to `localStorage` (all keys prefixed `zephyr_`):
 
-- **`localStorage.js`** — the canonical data store for tasks, folders, notes, calendar events, focus sessions, the streak, and settings. It owns the schema and the add/update/delete helpers.
-- **`searchService.js`** — unified search across notes, events, and tasks (wired into <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> + <kbd>K</kbd>).
-- **`notificationService.js`** — polls for due dates and timed events and plays a Web Audio chime.
+- **`localStorage.js`** — the canonical data store for tasks, folders, notes, focus sessions, the streak, and settings. It owns the schema and the add/update/delete helpers.
+- **`searchService.js`** — unified search across notes and tasks (wired into <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> + <kbd>K</kbd>).
+- **`notificationService.js`** — polls for task due dates and plays a Web Audio chime.
 - **`themeService.js`** — light/dark via a class on `<html>`, applied before React renders to avoid a flash.
 
-Every write broadcasts a `zephyr:change` event. Reactive hooks in **`src/hooks/useStore.js`** (`useTasks`, `useNotes`, `useCalendarEvents`, …) subscribe to it — plus the native `storage` event for cross-tab sync — so views update live without a global store. Routes are defined in `src/routes/routes.jsx`, lazy-loaded, and wrapped in a Suspense loader.
+Every write broadcasts a `zephyr:change` event. Reactive hooks in **`src/hooks/useStore.js`** (`useTasks`, `useNotes`, …) subscribe to it — plus the native `storage` event for cross-tab sync — so views update live without a global store. Routes are defined in `src/routes/routes.jsx`, lazy-loaded, and wrapped in a Suspense loader.
 
 ## Privacy
 

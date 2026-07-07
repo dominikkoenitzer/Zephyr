@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { CheckSquare, Timer, Calendar, FileText, ArrowRight } from 'lucide-react';
+import { CheckSquare, Timer, FileText, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { useTasks, useNotes, useCalendarEvents, useStoreValue } from '../hooks/useStore';
+import { useTasks, useNotes, useStoreValue } from '../hooks/useStore';
 import { localStorageService } from '../services/localStorage';
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -17,25 +17,17 @@ const weekStart = () => {
   return d;
 };
 
-const formatTime = (time) => {
-  if (!time) return '';
-  const [h, m] = time.split(':').map(Number);
-  return `${h % 12 || 12}:${pad(m)} ${h >= 12 ? 'PM' : 'AM'}`;
-};
-
 const readSessions = () => localStorageService.getFocusSessions();
 
 const QUICK_LINKS = [
   { to: '/tasks', icon: CheckSquare, label: 'Tasks', desc: 'Plan & track your work' },
   { to: '/focus', icon: Timer, label: 'Focus Timer', desc: 'Start a Pomodoro session' },
-  { to: '/calendar', icon: Calendar, label: 'Calendar', desc: 'See what’s coming up' },
   { to: '/notes', icon: FileText, label: 'Notes', desc: 'Capture your ideas' },
 ];
 
 function Home() {
   const [tasks] = useTasks();
   const [notes] = useNotes();
-  const [events] = useCalendarEvents();
   const [sessions] = useStoreValue(readSessions);
 
   const now = new Date();
@@ -65,12 +57,6 @@ function Home() {
     [tasks, todayKey]
   );
 
-  const nextEvent = useMemo(() => {
-    return [...events]
-      .filter((e) => e?.date && dayKey(e.date) >= todayKey)
-      .sort((a, b) => (dayKey(a.date) + (a.time || '')).localeCompare(dayKey(b.date) + (b.time || '')))[0];
-  }, [events, todayKey]);
-
   const statTiles = [
     { label: 'Active tasks', value: stats.active },
     { label: 'Done this week', value: stats.doneThisWeek },
@@ -96,63 +82,34 @@ function Home() {
         </div>
 
         {/* Today */}
-        <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <CheckSquare className="h-4 w-4 text-primary" />
-                Due today
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {dueToday.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Nothing due today — enjoy the breathing room.</p>
-              ) : (
-                <ul className="space-y-1.5">
-                  {dueToday.map((t) => (
-                    <li key={t.id}>
-                      <Link to="/tasks" className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-accent/40">
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
-                        <span className="truncate text-sm text-foreground">{t.title}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-primary" />
-                Next event
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {nextEvent ? (
-                <Link to="/calendar" className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-accent/40">
-                  <span className="flex h-10 w-10 flex-col items-center justify-center rounded-md bg-primary/10 text-primary flex-shrink-0">
-                    <span className="text-[10px] uppercase leading-none">
-                      {new Date(`${dayKey(nextEvent.date)}T00:00:00`).toLocaleDateString('en-US', { month: 'short' })}
-                    </span>
-                    <span className="text-sm font-semibold leading-none">{new Date(`${dayKey(nextEvent.date)}T00:00:00`).getDate()}</span>
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium text-foreground">{nextEvent.title}</span>
-                    {nextEvent.time && <span className="block text-xs text-muted-foreground">{formatTime(nextEvent.time)}</span>}
-                  </span>
-                </Link>
-              ) : (
-                <p className="text-sm text-muted-foreground">No upcoming events.</p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="mt-6">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <CheckSquare className="h-4 w-4 text-primary" />
+              Due today
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {dueToday.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Nothing due today — enjoy the breathing room.</p>
+            ) : (
+              <ul className="space-y-1.5">
+                {dueToday.map((t) => (
+                  <li key={t.id}>
+                    <Link to="/tasks" className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-accent/40">
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                      <span className="truncate text-sm text-foreground">{t.title}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Quick links */}
         <h2 className="mt-8 mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Jump back in</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
           {QUICK_LINKS.map((l) => {
             const Icon = l.icon;
             return (

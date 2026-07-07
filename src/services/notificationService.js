@@ -13,10 +13,6 @@ const DEFAULT_SETTINGS = {
     dueDateReminder: 1, // days before due date
     overdue: true
   },
-  events: {
-    enabled: true,
-    reminderTime: 15 // minutes before event
-  },
   timer: {
     enabled: true
   }
@@ -96,7 +92,6 @@ class NotificationService {
 
     // Check if this notification type is enabled
     if (type === 'task' && !settings.tasks.enabled) return null;
-    if (type === 'event' && !settings.events.enabled) return null;
     if (type === 'timer' && !settings.timer.enabled) return null;
 
     const notification = {
@@ -256,57 +251,6 @@ class NotificationService {
   }
 
   /**
-   * Check calendar events for reminders
-   */
-  checkEventReminders() {
-    const settings = this.getSettings();
-    if (!settings.enabled || !settings.events.enabled) return;
-
-    const events = localStorageService.getCalendarEvents();
-    const now = new Date();
-    const reminderMinutes = settings.events.reminderTime || 15;
-
-    events.forEach(event => {
-      // Remind for any event that has a time set (controlled by the single
-      // Event Notifications setting — no per-event reminder toggle).
-      if (!event.date || !event.time) return;
-
-      const eventDate = new Date(event.date);
-      if (event.time) {
-        const [hours, minutes] = event.time.split(':').map(Number);
-        eventDate.setHours(hours, minutes, 0, 0);
-      } else {
-        eventDate.setHours(0, 0, 0, 0);
-      }
-
-      const reminderTime = new Date(eventDate.getTime() - (reminderMinutes * 60 * 1000));
-      const timeUntilEvent = eventDate - now;
-      const timeUntilReminder = reminderTime - now;
-
-      // Event starting now
-      if (timeUntilEvent >= 0 && timeUntilEvent < 5 * 60 * 1000) {
-        this.createNotification(
-          'event',
-          'Event Starting Now',
-          `${event.title} is starting now`,
-          { type: 'navigate', path: '/calendar' },
-          { eventId: event.id }
-        );
-      }
-      // Reminder time
-      else if (timeUntilReminder >= 0 && timeUntilReminder < 2 * 60 * 1000) {
-        this.createNotification(
-          'event',
-          'Event Reminder',
-          `${event.title} starts in ${reminderMinutes} minutes`,
-          { type: 'navigate', path: '/calendar' },
-          { eventId: event.id }
-        );
-      }
-    });
-  }
-
-  /**
    * Start checking for notifications at intervals
    */
   startChecking() {
@@ -315,12 +259,10 @@ class NotificationService {
 
     // Check immediately
     this.checkTaskDueDates();
-    this.checkEventReminders();
 
     // Then check every minute
     this.checkInterval = setInterval(() => {
       this.checkTaskDueDates();
-      this.checkEventReminders();
     }, 60000); // 1 minute
   }
 

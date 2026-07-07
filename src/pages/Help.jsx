@@ -26,14 +26,14 @@ function Help() {
     },
     {
       question: "How do I track my progress?",
-      answer: "Zephyr tracks progress across Focus Timer, Tasks, Calendar, and Notes. You can review your sessions, completed work, and upcoming items directly in each section. All progress is automatically saved and updated in real time.",
+      answer: "Zephyr tracks progress across Focus Timer, Tasks, and Notes. You can review your sessions, completed work, and upcoming items directly in each section. All progress is automatically saved and updated in real time.",
       icon: FileText,
       iconColor: "text-primary",
       bgColor: "bg-accent/50"
     },
     {
       question: "Does Zephyr work offline?",
-      answer: "Yes! Zephyr is a Progressive Web App (PWA) designed to work completely offline. All your data—tasks, calendar events, notes, and timer sessions—is stored locally on your device using browser storage. You don't need an internet connection to use any features. This ensures your data remains private and accessible even without internet access.",
+      answer: "Yes! Zephyr is a Progressive Web App (PWA) designed to work completely offline. All your data—tasks, notes, and timer sessions—is stored locally on your device using browser storage. You don't need an internet connection to use any features. This ensures your data remains private and accessible even without internet access.",
       icon: WifiOff,
       iconColor: "text-primary",
       bgColor: "bg-accent/60"
@@ -47,7 +47,7 @@ function Help() {
     },
     {
       question: "How do I clear all my data?",
-      answer: "To clear all your data, go to Settings > Data Management. Click the 'Clear All Local Storage' button. You'll be asked to confirm this action as it permanently deletes all tasks, events, notes, timer sessions, settings, and preferences. This action cannot be undone and will reload the page. Since Zephyr has no export feature, manually copy anything you want to keep before clearing.",
+      answer: "To clear all your data, go to Settings > Data Management. Click the 'Clear All Local Storage' button. You'll be asked to confirm this action as it permanently deletes all tasks, notes, timer sessions, settings, and preferences. This action cannot be undone and will reload the page. Since Zephyr has no export feature, manually copy anything you want to keep before clearing.",
       icon: Trash2,
       iconColor: "text-destructive",
       bgColor: "bg-destructive/10"
@@ -128,7 +128,7 @@ function Help() {
                   <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold flex-shrink-0 text-base sm:text-lg">4</div>
                   <div>
                     <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Track Your Progress</h4>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Review your activity across Focus, Tasks, Calendar, and Notes.</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Review your activity across Focus, Tasks, and Notes.</p>
                   </div>
                 </div>
               </div>
@@ -210,15 +210,13 @@ function Help() {
 
                 <h3 className="font-semibold text-foreground text-base mb-2">2. Local Data Storage</h3>
                 <p className="mb-4">
-                  All your tasks, calendar events, notes, timer sessions, and settings are stored exclusively
+                  All your tasks, notes, timer sessions, and settings are stored exclusively
                   on your device. This includes:
                 </p>
                 <ul className="list-disc ml-6 space-y-1 mb-4">
                   <li>Task lists and task folders</li>
-                  <li>Calendar events and reminders</li>
                   <li>Notes</li>
                   <li>Focus timer sessions and presets</li>
-                  <li>Wellness tracking data</li>
                   <li>Application settings and preferences</li>
                   <li>Notification history</li>
                 </ul>

@@ -1,19 +1,15 @@
-import { FileText, BookOpen, Calendar, CheckSquare, Timer, X } from 'lucide-react';
+import { FileText, CheckSquare, Timer, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
 
 const NOTIFICATION_ICONS = {
   task: CheckSquare,
-  event: Calendar,
-  journal: BookOpen,
   timer: Timer,
   note: FileText
 };
 
 const NOTIFICATION_COLORS = {
   task: 'text-blue-500',
-  event: 'text-orange-500',
-  journal: 'text-purple-500',
   timer: 'text-green-500',
   note: 'text-indigo-500'
 };

@@ -18,9 +18,10 @@ describe('searchService', () => {
     expect(searchService.getTotalCount(res)).toBe(2);
   });
 
-  it('no longer returns a journal group (journal removed)', () => {
+  it('no longer returns journal or events groups (features removed)', () => {
     const res = searchService.searchAll('anything');
     expect(res.journal).toBeUndefined();
+    expect(res.events).toBeUndefined();
   });
 
   it('returns nothing for a blank query', () => {

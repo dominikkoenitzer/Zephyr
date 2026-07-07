@@ -7,7 +7,6 @@ import ErrorFallback from '../components/ErrorBoundary/ErrorFallback';
 const TasksPage = lazy(() => import('../pages/TasksPage'));
 const Home = lazy(() => import('../pages/Home'));
 const FocusTimer = lazy(() => import('../pages/FocusTimer'));
-const Calendar = lazy(() => import('../pages/Calendar'));
 const Notes = lazy(() => import('../pages/Notes'));
 const Settings = lazy(() => import('../pages/Settings'));
 const Help = lazy(() => import('../pages/Help'));
@@ -40,16 +39,16 @@ export const routes = [
         element: withPageLoader(FocusTimer),
       },
       {
-        path: 'calendar',
-        element: withPageLoader(Calendar),
-      },
-      {
         path: 'notes',
         element: withPageLoader(Notes),
       },
       {
         path: 'journal',
         element: <Navigate to="/notes" replace />,
+      },
+      {
+        path: 'calendar',
+        element: <Navigate to="/tasks" replace />,
       },
       {
         path: 'settings',

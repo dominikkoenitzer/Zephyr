@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { localStorageService, CHANGE_EVENT, DEFAULT_CALENDAR_SETTINGS } from './localStorage';
+import { localStorageService, CHANGE_EVENT, DEFAULT_SETTINGS } from './localStorage';
 
 beforeEach(() => {
   localStorage.clear();
@@ -46,9 +46,9 @@ describe('localStorageService — change events', () => {
 describe('localStorageService — settings', () => {
   it('returns a fresh copy of the defaults that callers cannot mutate', () => {
     const a = localStorageService.getSettings();
-    a.calendar.showWeekends = !a.calendar.showWeekends;
+    a.workDuration = a.workDuration + 99;
     const b = localStorageService.getSettings();
-    expect(b.calendar.showWeekends).toBe(DEFAULT_CALENDAR_SETTINGS.showWeekends);
+    expect(b.workDuration).toBe(DEFAULT_SETTINGS.workDuration);
   });
 });
 
