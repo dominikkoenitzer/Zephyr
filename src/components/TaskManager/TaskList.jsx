@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { m, AnimatePresence } from 'motion/react';
 import {
   Plus, Trash2, CheckCircle, Circle, ListTodo, Target,
-  FolderPlus, Edit2, Calendar, Tag, Flag, ChevronDown,
-  X, Timer as TimerIcon, CalendarClock, Sparkles
+  Edit2, Calendar, Tag, Flag, ChevronDown,
+  Timer as TimerIcon, CalendarClock, Sparkles
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
@@ -12,7 +12,7 @@ import { Input } from '../ui/input';
 import { CalendarPicker } from '../ui/calendar-picker';
 import { Select } from '../ui/select';
 import { Card, CardContent } from '../ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { EmptyState } from '../ui/empty-state';
 import { localStorageService } from '../../services/localStorage';
 import { parseQuickTask } from '../../lib/quickParse';
@@ -30,46 +30,18 @@ const PRIORITY_LABELS = {
   low: 'Low'
 };
 
-const folderChipClass = (active) =>
-  cn(
-    'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-    active
-      ? 'border-primary/30 bg-primary/10 text-primary'
-      : 'border-border/60 text-muted-foreground hover:bg-accent/50 hover:text-foreground'
-  );
-
 const TaskList = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [tasks, setTasks] = useState([]);
-  const [folders, setFolders] = useState([]);
   const [newTask, setNewTask] = useState('');
-  const [selectedFolder, setSelectedFolder] = useState(null);
   const [showCompleted, setShowCompleted] = useState(true);
   const [editingTask, setEditingTask] = useState(null);
-  const [newFolderName, setNewFolderName] = useState('');
-  const [showFolderDialog, setShowFolderDialog] = useState(false);
   const newTaskInputRef = useRef(null);
 
-  // Load tasks and folders on mount. Folders are persisted by the service
-  // on every mutation, so there is no save-on-change effect here (one used
-  // to exist and could race the initial load, wiping folders).
+  // Load tasks on mount
   useEffect(() => {
     setTasks(localStorageService.getTasks());
-    setFolders(localStorageService.getFolders());
   }, []);
-
-  // Pick requested folder from query params (e.g., ?folder=<id> or ?folder=today)
-  useEffect(() => {
-    const folderParam = searchParams.get('folder') || searchParams.get('t');
-    if (!folderParam) return;
-    const match =
-      folders.find(f => f.id === folderParam) ||
-      (folderParam === 'today' && folders.find(f => f.name?.toLowerCase() === 'today'));
-    if (match) {
-      setSelectedFolder(match.id);
-    }
-  }, [searchParams, folders]);
 
   // Live, local "smart" parse of the quick-add input (date / priority / #tags).
   const parsed = useMemo(() => parseQuickTask(newTask), [newTask]);
@@ -83,8 +55,7 @@ const TaskList = () => {
       description: '',
       priority: parsed.priority || 'medium',
       dueDate: parsed.dueDate || null,
-      tags: parsed.tags,
-      folderId: selectedFolder || null
+      tags: parsed.tags
     });
     localStorageService.saveOnboarding({ taskAdded: true });
 
@@ -92,14 +63,6 @@ const TaskList = () => {
     setTasks(localStorageService.getTasks());
     setNewTask('');
     newTaskInputRef.current?.focus();
-  };
-
-  const addFolder = () => {
-    if (!newFolderName.trim()) return;
-    const folder = localStorageService.addFolder({ name: newFolderName });
-    setFolders(prev => [...prev, folder]);
-    setNewFolderName('');
-    setShowFolderDialog(false);
   };
 
   const toggleTask = (taskId) => {
@@ -144,43 +107,11 @@ const TaskList = () => {
     return updatedTask;
   };
 
-  const deleteFolder = (folderId) => {
-    localStorageService.deleteFolder(folderId);
-    // Reload folders from localStorage to ensure consistency
-    const allFolders = localStorageService.getFolders();
-    setFolders(allFolders);
-    if (selectedFolder === folderId) {
-      setSelectedFolder(null);
-    }
-    // Reload tasks to update folder references
-    const allTasks = localStorageService.getTasks();
-    setTasks(allTasks);
-  };
-
-  // Tasks scoped to the selected folder. Completed visibility is handled by
-  // the collapsible Completed section, not by filtering.
-  const filteredTasks = useMemo(() => {
-    if (selectedFolder === null) return tasks;
-    return tasks.filter(task => task.folderId === selectedFolder);
-  }, [tasks, selectedFolder]);
-
-  const activeTasks = filteredTasks.filter(task => !task.completed);
-  const completedTasks = filteredTasks.filter(task => task.completed);
-  const completedCount = tasks.filter(task => task.completed).length;
+  const activeTasks = tasks.filter(task => !task.completed);
+  const completedTasks = tasks.filter(task => task.completed);
+  const completedCount = completedTasks.length;
   const totalCount = tasks.length;
   const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-
-  const getFolderName = (folderId) => {
-    if (!folderId) return null;
-    const folder = folders.find(f => f.id === folderId);
-    return folder ? folder.name : null;
-  };
-
-  const getFolderColor = (folderId) => {
-    if (!folderId) return null;
-    const folder = folders.find(f => f.id === folderId);
-    return folder ? folder.color : null;
-  };
 
   const formatDate = (dateString) => {
     if (!dateString) return null;
@@ -255,97 +186,30 @@ const TaskList = () => {
             )}
           </div>
 
-          {/* Folder filters + inline progress */}
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <button
-                type="button"
-                onClick={() => setSelectedFolder(null)}
-                className={folderChipClass(selectedFolder === null)}
-              >
-                All tasks
-              </button>
-              {folders.map((folder) => (
-                <span key={folder.id} className="group/chip relative inline-flex">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedFolder(selectedFolder === folder.id ? null : folder.id)}
-                    className={folderChipClass(selectedFolder === folder.id)}
-                  >
-                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: folder.color }} />
-                    {folder.name}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => deleteFolder(folder.id)}
-                    aria-label={`Delete folder ${folder.name}`}
-                    className="absolute -top-1.5 -right-1.5 hidden group-hover/chip:flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-white"
-                  >
-                    <X className="h-2.5 w-2.5" />
-                  </button>
-                </span>
-              ))}
-              <Dialog open={showFolderDialog} onOpenChange={setShowFolderDialog}>
-                <DialogTrigger asChild>
-                  <button type="button" className={folderChipClass(false)}>
-                    <FolderPlus className="h-3.5 w-3.5" />
-                    New folder
-                  </button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Create New Folder</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <Input
-                      placeholder="Folder name"
-                      value={newFolderName}
-                      onChange={(e) => setNewFolderName(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && addFolder()}
-                      className="w-full h-11 text-base"
-                    />
-                    <div className="flex gap-2">
-                      <Button onClick={addFolder} className="flex-1">Create Folder</Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowFolderDialog(false)}
-                        className="flex-1"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-            {totalCount > 0 && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground" title={`${completionRate}% complete`}>
-                <span>{completedCount}/{totalCount} done</span>
-                <div
-                  className="h-1.5 w-24 rounded-full bg-muted overflow-hidden"
-                  role="progressbar"
-                  aria-valuenow={completionRate}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-label="Tasks completed"
-                >
-                  <div className="h-full bg-brand transition-all duration-500 ease-out" style={{ width: `${completionRate}%` }} />
-                </div>
-              </div>
-            )}
-          </div>
-
           {/* Active Tasks */}
           {activeTasks.length > 0 && (
             <section>
-              <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                Active · {activeTasks.length}
-              </h2>
+              <div className="mb-2 flex items-center justify-between gap-3 px-1">
+                <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Active · {activeTasks.length}
+                </h2>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground" title={`${completionRate}% complete`}>
+                  <span>{completedCount}/{totalCount} done</span>
+                  <div
+                    className="h-1.5 w-24 rounded-full bg-muted overflow-hidden"
+                    role="progressbar"
+                    aria-valuenow={completionRate}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label="Tasks completed"
+                  >
+                    <div className="h-full bg-brand transition-all duration-500 ease-out" style={{ width: `${completionRate}%` }} />
+                  </div>
+                </div>
+              </div>
               <div className="space-y-2">
                 <AnimatePresence initial={false}>
                 {activeTasks.map((task) => {
-                  const folderName = getFolderName(task.folderId);
-                  const folderColor = getFolderColor(task.folderId);
                   const dueDate = formatDate(task.dueDate);
                   const overdue = isOverdue(task.dueDate);
 
@@ -377,14 +241,6 @@ const TaskList = () => {
                             <span className={`text-xs font-medium px-2 py-1 rounded-full inline-flex items-center gap-1 ${PRIORITY_STYLES[task.priority]}`}>
                               <Flag className="h-3 w-3" />
                               {PRIORITY_LABELS[task.priority]}
-                            </span>
-                          )}
-                          {folderName && (
-                            <span 
-                              className="text-xs px-2 py-0.5 rounded-full text-foreground bg-accent"
-                              style={{ backgroundColor: folderColor || undefined, color: folderColor ? '#0b1324' : undefined }}
-                            >
-                              {folderName}
                             </span>
                           )}
                           {dueDate && (
@@ -505,15 +361,13 @@ const TaskList = () => {
           )}
 
           {/* Empty State */}
-          {filteredTasks.length === 0 && (
+          {tasks.length === 0 && (
             <Card className="border-dashed">
               <CardContent className="p-0">
                 <EmptyState
                   icon={Target}
                   title="No tasks yet"
-                  description={selectedFolder !== null
-                    ? "No tasks in this folder. Add one above to get started."
-                    : "Add your first task above — type a due date, priority, or #tag and it'll be picked up automatically."}
+                  description="Add your first task above — type a due date, priority, or #tag and it'll be picked up automatically."
                 />
               </CardContent>
             </Card>
@@ -558,19 +412,6 @@ const TaskList = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium block text-foreground">Folder</label>
-                <Select
-                  value={editingTask.folderId || ''}
-                  onChange={(e) => setEditingTask({ ...editingTask, folderId: e.target.value || null })}
-                  className="w-full"
-                >
-                  <option value="">No Folder</option>
-                  {folders.map(folder => (
-                    <option key={folder.id} value={folder.id}>{folder.name}</option>
-                  ))}
-                </Select>
-              </div>
-              <div className="space-y-2">
                 <label className="text-sm font-medium block text-foreground">Due Date</label>
                 <CalendarPicker
                   value={editingTask.dueDate ? editingTask.dueDate.split('T')[0] : ''}
@@ -592,8 +433,7 @@ const TaskList = () => {
                       title: editingTask.title.trim(),
                       description: editingTask.description?.trim() || '',
                       priority: editingTask.priority || 'medium',
-                      folderId: editingTask.folderId || null,
-                      dueDate: editingTask.dueDate 
+                      dueDate: editingTask.dueDate
                         ? (editingTask.dueDate.includes('T') 
                             ? editingTask.dueDate.split('T')[0] 
                             : editingTask.dueDate)
