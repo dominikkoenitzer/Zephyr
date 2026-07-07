@@ -1,9 +1,20 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { m } from 'motion/react';
 import { CheckSquare, Timer, FileText, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { useTasks, useNotes, useStoreValue } from '../hooks/useStore';
 import { localStorageService } from '../services/localStorage';
+
+// Stagger-in for the stat tiles and quick links.
+const staggerGrid = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.055, delayChildren: 0.05 } },
+};
+const riseIn = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] } },
+};
 
 const pad = (n) => String(n).padStart(2, '0');
 const toKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -72,14 +83,14 @@ function Home() {
         <p className="mt-2 text-sm text-muted-foreground">Here’s your day at a glance.</p>
 
         {/* Stats */}
-        <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <m.div variants={staggerGrid} initial="hidden" animate="show" className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-3">
           {statTiles.map((s) => (
-            <div key={s.label} className="rounded-xl border border-border/70 bg-card/80 p-4">
+            <m.div key={s.label} variants={riseIn} className="rounded-xl border border-border/70 bg-card/80 p-4">
               <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">{s.label}</p>
               <p className="mt-2 text-2xl font-semibold text-foreground">{s.value}</p>
-            </div>
+            </m.div>
           ))}
-        </div>
+        </m.div>
 
         {/* Today */}
         <Card className="mt-6">
@@ -109,27 +120,28 @@ function Home() {
 
         {/* Quick links */}
         <h2 className="mt-8 mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Jump back in</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        <m.div variants={staggerGrid} initial="hidden" animate="show" className="grid grid-cols-2 lg:grid-cols-3 gap-3">
           {QUICK_LINKS.map((l) => {
             const Icon = l.icon;
             return (
-              <Link
-                key={l.to}
-                to={l.to}
-                className="group rounded-xl border border-border/70 bg-card/80 p-4 transition-colors hover:border-primary/40 hover:bg-accent/40"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
-                </div>
-                <p className="mt-3 font-semibold text-foreground">{l.label}</p>
-                <p className="text-xs text-muted-foreground">{l.desc}</p>
-              </Link>
+              <m.div key={l.to} variants={riseIn} whileHover={{ y: -4 }} whileTap={{ scale: 0.97 }}>
+                <Link
+                  to={l.to}
+                  className="group block h-full rounded-xl border border-border/70 bg-card/80 p-4 transition-colors hover:border-primary/40 hover:bg-accent/40"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:text-primary" />
+                  </div>
+                  <p className="mt-3 font-semibold text-foreground">{l.label}</p>
+                  <p className="text-xs text-muted-foreground">{l.desc}</p>
+                </Link>
+              </m.div>
             );
           })}
-        </div>
+        </m.div>
       </div>
     </section>
   );

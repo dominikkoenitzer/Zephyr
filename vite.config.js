@@ -88,9 +88,18 @@ export default defineConfig({
       output: {
         // Ensure deterministic chunk names and prevent multiple react-vendor chunks
         manualChunks(id) {
+          // Motion / framer-motion (+ motion-dom, motion-utils). Must be
+          // checked BEFORE the react checks: motion ships files like
+          // motion/dist/react.mjs that would otherwise match the generic
+          // "/react" pattern and split the library across chunks.
+          if (id.includes('node_modules/motion') ||
+              id.includes('node_modules/framer-motion')) {
+            return 'motion-vendor';
+          }
+
           // React core libraries - must load first and be in a single chunk
           // Check for react, react-dom, and any react-* packages
-          if (id.includes('node_modules/react/') || 
+          if (id.includes('node_modules/react/') ||
               id.includes('node_modules/react-dom/') ||
               id.includes('node_modules/react-error-boundary') ||
               id.includes('node_modules/react-') ||
