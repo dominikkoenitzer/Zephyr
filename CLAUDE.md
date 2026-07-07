@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Zephyr (package name `zephyr`) is a **local-first, no-login productivity app**: tasks, notes, and a Pomodoro focus timer. There is **no backend** — every piece of user data lives in the browser's `localStorage`. Deployed on Vercel at **https://zephyr.punds.ch** (use this domain for all canonical/OG/sitemap URLs).
 
-> The Journal and Calendar features were both removed in favor of a simpler app. `localStorageService` still contains journal helper methods and legacy storage keys (`zephyr_journal_entries`, `zephyr_calendar_events` — kept so `clearAllData` wipes old data), but nothing in the UI uses them. `/journal` redirects to `/notes` and `/calendar` redirects to `/tasks`. Keep new features minimal and do not re-add that complexity unless asked.
+> The Journal, Calendar, and task-folder features were all removed in favor of a simpler app. `localStorageService` still contains journal helper methods and legacy storage keys (`zephyr_journal_entries`, `zephyr_calendar_events`, `zephyr_task_folders` — kept so `clearAllData` wipes old data), but nothing in the UI uses them. `/journal` redirects to `/notes` and `/calendar` redirects to `/tasks`. Keep new features minimal and do not re-add that complexity unless asked.
 
 Stack: React 18 + Vite 6 (`@vitejs/plugin-react-swc`), React Router v6, Tailwind CSS 3, Radix UI primitives (shadcn-style), motion (animations), recharts, lucide-react, sonner (toasts), `@vercel/analytics`.
 
@@ -35,12 +35,12 @@ Always run `bun run lint` and `bun run build` before finishing — both are requ
 
 There is no Redux/Zustand/Context store. Application state lives in **singleton service classes** under `src/services/`, each persisting to `localStorage` (all keys prefixed `zephyr_`):
 
-- **`localStorage.js`** (`localStorageService`) — the canonical data store: tasks, task folders, notes, focus sessions, focus streak, settings, wellness, onboarding (plus legacy journal helpers). Provides the add/update/delete helpers (`addTask`, `updateNote`, etc.) that assign IDs and timestamps. Treat this as the schema; read it before changing any data shape.
+- **`localStorage.js`** (`localStorageService`) — the canonical data store: tasks, notes, focus sessions, focus streak, settings, wellness, onboarding (plus legacy journal helpers). Provides the add/update/delete helpers (`addTask`, `updateNote`, etc.) that assign IDs and timestamps. Treat this as the schema; read it before changing any data shape.
 - **`searchService.js`** — unified search across notes/tasks, reading from `localStorageService`. Wired into the header search (Cmd/Ctrl+K).
 - **`notificationService.js`** — its own `localStorage` keys; polls every 60s for task due dates and plays a Web Audio chime. Started/stopped by the app shell.
 - **`themeService.js`** — light/dark via a class on `<html>`. Simplified (legacy "garden" themes are actively stripped out on init).
 
-Every write goes through the service, which broadcasts a `zephyr:change` `CustomEvent` (see `emitChange` in `localStorage.js`). The reactive hooks in **`src/hooks/useStore.js`** (`useTasks`, `useNotes`, `useFolders`, `useSettings`) subscribe to that event plus the native `storage` (other tabs) and `focus` events, so views update live without a global store. **Prefer these hooks for new read-and-display code** instead of hand-wiring `focus`/`storage` listeners. The native `storage` event only fires in *other* tabs, which is why the in-app `zephyr:change` event exists for same-tab updates — any new service that writes outside `localStorageService` (e.g. `notificationService`) should call `emitChange` too.
+Every write goes through the service, which broadcasts a `zephyr:change` `CustomEvent` (see `emitChange` in `localStorage.js`). The reactive hooks in **`src/hooks/useStore.js`** (`useTasks`, `useNotes`, `useSettings`) subscribe to that event plus the native `storage` (other tabs) and `focus` events, so views update live without a global store. **Prefer these hooks for new read-and-display code** instead of hand-wiring `focus`/`storage` listeners. The native `storage` event only fires in *other* tabs, which is why the in-app `zephyr:change` event exists for same-tab updates — any new service that writes outside `localStorageService` (e.g. `notificationService`) should call `emitChange` too.
 
 ### App shell and routing
 

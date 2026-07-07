@@ -16,7 +16,7 @@ const pageMetadata = {
   },
   '/tasks': {
     title: 'Tasks | Zephyr — To-Do List with Natural-Language Quick Add',
-    description: 'Manage tasks with folders, priorities, #tags, and due dates. Type "Email Sam tomorrow !high #work" and Zephyr fills in the rest — no login required.',
+    description: 'Manage tasks with priorities, #tags, and due dates. Type "Email Sam tomorrow !high #work" and Zephyr fills in the rest — no login required.',
     keywords: 'task management, to-do list, natural language task input, task organizer, free task app',
   },
   '/focus': {
