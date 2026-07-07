@@ -512,21 +512,38 @@ const PomodoroTimer = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Keep a ref of the latest timeLeft so the ticking effect can anchor to
+  // wall-clock time without re-running on every second.
+  const timeLeftRef = useRef(timeLeft);
   useEffect(() => {
-    let interval;
-    if (isRunning && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            handleComplete();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    timeLeftRef.current = timeLeft;
+  }, [timeLeft]);
+
+  useEffect(() => {
+    if (!isRunning) return undefined;
+
+    // Anchor the session to a wall-clock end time. Browsers throttle
+    // setInterval in background tabs, so remaining time is computed from
+    // Date.now() on every tick instead of counted down — no drift.
+    const endAt = Date.now() + timeLeftRef.current * 1000;
+    let completed = false;
+    const tick = () => {
+      if (completed) return;
+      const remaining = Math.max(0, Math.round((endAt - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      if (remaining === 0) {
+        completed = true;
+        handleComplete();
+      }
+    };
+
+    const interval = setInterval(tick, 1000);
+    // Resync the display the moment the tab becomes visible again.
+    document.addEventListener('visibilitychange', tick);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', tick);
+    };
   }, [isRunning, handleComplete]);
 
   useEffect(() => {
