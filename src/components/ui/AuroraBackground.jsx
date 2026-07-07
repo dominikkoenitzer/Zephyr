@@ -89,7 +89,7 @@ const THEMES = {
   },
   light: {
     colors: [hex('#60a5fa'), hex('#a78bfa'), hex('#22d3ee')],
-    intensity: 0.32,
+    intensity: 0.25,
   },
 };
 
