@@ -392,5 +392,35 @@
       opacity: 1;
     }
   }
+
+  /* Animated gradient text (React Bits-style shiny text) */
+  .text-shimmer {
+    background: linear-gradient(
+      100deg,
+      hsl(var(--foreground)) 0%,
+      hsl(var(--foreground)) 35%,
+      hsl(var(--primary)) 50%,
+      hsl(var(--foreground)) 65%,
+      hsl(var(--foreground)) 100%
+    );
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: text-shimmer 7s ease-in-out infinite;
+  }
+
+  @keyframes text-shimmer {
+    0% { background-position: 125% 0; }
+    100% { background-position: -125% 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .text-shimmer {
+      animation: none;
+      background: none;
+      color: hsl(var(--foreground));
+    }
+  }
 }
 

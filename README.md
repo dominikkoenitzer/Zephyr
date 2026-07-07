@@ -93,6 +93,7 @@ Every duration is adjustable, and you can save your own custom presets. Complete
 - **[React Router v6](https://reactrouter.com/)** with lazy-loaded routes
 - **[Tailwind CSS 3](https://tailwindcss.com/)** + **[Radix UI](https://www.radix-ui.com/)** primitives (shadcn-style)
 - **[Motion](https://motion.dev/)** for animations (page transitions, layout animations, micro-interactions — respects reduced-motion)
+- **[ogl](https://github.com/oframe/ogl)** for the WebGL aurora backdrop (lazy-loaded, theme-aware, disabled under reduced-motion)
 - **[lucide-react](https://lucide.dev/)** icons · **[sonner](https://sonner.emilkowal.ski/)** toasts
 - **[Vitest](https://vitest.dev/)** + jsdom for unit tests
 - **[Bun](https://bun.sh/)** as the runtime, package manager, and script runner
