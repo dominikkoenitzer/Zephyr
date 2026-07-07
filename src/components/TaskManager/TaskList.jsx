@@ -203,7 +203,7 @@ const TaskList = () => {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-5">
+    <div className="w-full space-y-5">
           {/* Quick add — the primary action, front and center */}
           <div>
             <form onSubmit={addTask} className="relative">
@@ -357,7 +357,7 @@ const TaskList = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.15 } }}
                       transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-                      className="flex items-start sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-background/80 backdrop-blur-sm border border-border rounded-lg transition-colors duration-200 hover:shadow-sm hover:border-primary/20 group"
+                      className="flex items-start sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-card/70 backdrop-blur-xl border border-border/60 rounded-xl transition-colors duration-200 hover:shadow-sm hover:border-primary/30 group"
                     >
                       <Button
                         variant="ghost"
@@ -472,7 +472,7 @@ const TaskList = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.15 } }}
                     transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-                    className="flex items-center gap-3 p-4 bg-muted/30 border border-border rounded-lg"
+                    className="flex items-center gap-3 p-4 bg-card/40 backdrop-blur-xl border border-border/50 rounded-xl"
                   >
                     <Button
                       variant="ghost"
