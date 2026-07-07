@@ -216,6 +216,7 @@ const Notes = () => {
       <div className="rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xl shadow-[var(--shadow-card)] focus-within:border-primary/40 transition-colors">
         <textarea
           ref={captureRef}
+          autoFocus
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
