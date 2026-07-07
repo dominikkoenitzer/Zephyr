@@ -82,7 +82,7 @@ export const useSEO = () => {
       ogTag.setAttribute('content', content);
     };
     
-    const siteImage = `${SITE_URL}/android-icon-192x192.png`;
+    const siteImage = `${SITE_URL}/og-image.png`;
     updateOGTag('og:type', 'website');
     updateOGTag('og:title', metadata.title);
     updateOGTag('og:description', metadata.description);
