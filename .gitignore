@@ -43,3 +43,10 @@ lerna-debug.log*
 # Coverage
 coverage
 .vercel
+
+# AI agent tooling (local only)
+CLAUDE.md
+AGENTS.md
+.claude/
+.agents/
+skills-lock.json
