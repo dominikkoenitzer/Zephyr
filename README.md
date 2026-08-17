@@ -193,7 +193,9 @@ Please keep features minimal and aligned with the local-first, no-backend design
 
 ## Author
 
-Made by **[Dominik Könitzer](https://github.com/dominikkoenitzer)**.
+**Dominik Könitzer** — software engineer in Zürich, Switzerland.
+
+[dk.punds.ch](https://dk.punds.ch) · [CV](https://dk.punds.ch/cv) · [@dominikkoenitzer](https://github.com/dominikkoenitzer) · [dominik.koenitzer@gmail.com](mailto:dominik.koenitzer@gmail.com)
 
 <div align="center">
 
