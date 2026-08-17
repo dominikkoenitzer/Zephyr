@@ -19,6 +19,9 @@ No login, no signup, no backend. Your data never leaves your browser.
 
 **[→ Try it live at zephyr.punds.ch](https://zephyr.punds.ch)**
 
+
+<img src="docs/screenshot.png" alt="Zephyr — tasks, notes and a Pomodoro focus timer" width="880" />
+
 </div>
 
 ---
