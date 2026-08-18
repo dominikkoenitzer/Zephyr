@@ -62,7 +62,7 @@ const CustomNumberInput = React.forwardRef(({
         type="button"
         variant="outline"
         size="icon"
-        className="h-9 w-9 rounded-md flex-shrink-0"
+        className="h-9 w-9 rounded-md shrink-0"
         onClick={handleDecrement}
         disabled={displayValue <= min}
       >
@@ -88,7 +88,7 @@ const CustomNumberInput = React.forwardRef(({
         type="button"
         variant="outline"
         size="icon"
-        className="h-9 w-9 rounded-md flex-shrink-0"
+        className="h-9 w-9 rounded-md shrink-0"
         onClick={handleIncrement}
         disabled={displayValue >= max}
       >

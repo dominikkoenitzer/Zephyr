@@ -90,10 +90,10 @@ function Home() {
               <m.div
                 key={s.label}
                 variants={riseIn}
-                className="rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xl p-4 sm:p-5 shadow-[var(--shadow-card)]"
+                className="rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xl p-4 sm:p-5 shadow-(--shadow-card)"
               >
                 <div className="flex items-center gap-2.5">
-                  <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand text-white shadow-brand">
+                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand text-white shadow-brand">
                     <Icon className="h-4 w-4" />
                   </span>
                   <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">{s.label}</p>
@@ -120,7 +120,7 @@ function Home() {
                 {dueToday.map((t) => (
                   <li key={t.id}>
                     <Link to="/tasks" className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-accent/40">
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                       <span className="truncate text-sm text-foreground">{t.title}</span>
                     </Link>
                   </li>
@@ -139,7 +139,7 @@ function Home() {
               <m.div key={l.to} variants={riseIn} whileHover={{ y: -4 }} whileTap={{ scale: 0.97 }}>
                 <Link
                   to={l.to}
-                  className="group block h-full rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xl p-5 shadow-[var(--shadow-card)] transition-colors hover:border-primary/40"
+                  className="group block h-full rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xl p-5 shadow-(--shadow-card) transition-colors hover:border-primary/40"
                 >
                   <div className="flex items-center justify-between">
                     <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand text-white shadow-brand">

@@ -56,7 +56,7 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
                       : "hover:bg-accent/50"
                   )}
                 >
-                  <FileText className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <FileText className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-foreground truncate">
                       {note.title || 'Untitled Note'}
@@ -74,7 +74,7 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
                       </div>
                     )}
                   </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
                 </button>
               );
             })}
@@ -100,7 +100,7 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
                       : "hover:bg-accent/50"
                   )}
                 >
-                  <CheckSquare className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <CheckSquare className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-foreground truncate">
                       {task.title}
@@ -116,7 +116,7 @@ const SearchResults = ({ results, query, onClose, selectedIndex, onSelectIndex }
                       </div>
                     )}
                   </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
                 </button>
               );
             })}

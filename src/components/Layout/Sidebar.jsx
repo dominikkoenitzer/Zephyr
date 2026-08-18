@@ -84,8 +84,8 @@ function Sidebar({ isMobile = false, onClose }) {
           animate={{ x: 0 }}
           exit={{ x: '-100%' }}
           transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-          className="fixed left-0 top-0 h-full w-[var(--sidebar-width)] bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-2xl flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between p-4 sm:p-6 pb-4 sm:pb-6 flex-shrink-0">
+          className="fixed left-0 top-0 h-full w-(--sidebar-width) bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-2xl flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between p-4 sm:p-6 pb-4 sm:pb-6 shrink-0">
             <BrandMark />
             <Button
               variant="ghost"
@@ -118,7 +118,7 @@ function Sidebar({ isMobile = false, onClose }) {
   return (
     <div className="hidden lg:flex lg:flex-col lg:w-[var(--sidebar-width)] lg:fixed lg:inset-y-0 bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-lg overflow-hidden">
       <div className="flex flex-col h-full">
-        <div className="flex-shrink-0 p-6 pb-4">
+        <div className="shrink-0 p-6 pb-4">
           <BrandMark />
         </div>
         <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6">

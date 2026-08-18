@@ -148,7 +148,7 @@ function Header({ onMenuClick }) {
   };
 
   return (
-    <header className="fixed top-0 right-0 left-0 lg:left-[var(--sidebar-width)] z-40 h-[var(--header-height)] bg-background/60 backdrop-blur-2xl border-b border-border/40">
+    <header className="fixed top-0 right-0 left-0 lg:left-[var(--sidebar-width)] z-40 h-(--header-height) bg-background/60 backdrop-blur-2xl border-b border-border/40">
       <div className="flex items-center justify-between h-full px-responsive">
         <div className="flex items-center gap-6">
           <Button
