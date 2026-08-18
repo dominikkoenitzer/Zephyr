@@ -183,7 +183,7 @@ const TaskList = () => {
                 value={newTask}
                 onChange={(e) => setNewTask(e.target.value)}
                 onKeyDown={(e) => e.key === 'Escape' && setNewTask('')}
-                className="pl-12 pr-14 h-14 text-base rounded-2xl bg-card/60 backdrop-blur-xl border-border/50 shadow-[var(--shadow-card)]"
+                className="pl-12 pr-14 h-14 text-base rounded-2xl bg-card/60 backdrop-blur-xl border-border/50 shadow-(--shadow-card)"
                 aria-label="Add a task"
               />
               <Button
@@ -266,7 +266,7 @@ const TaskList = () => {
                         variant="ghost"
                         size="sm"
                         aria-label="Mark task complete"
-                        className="p-0 h-auto hover:bg-transparent flex-shrink-0 mt-0.5 sm:mt-0"
+                        className="p-0 h-auto hover:bg-transparent shrink-0 mt-0.5 sm:mt-0"
                         onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
                       >
                         <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground hover:text-primary transition-colors" />
@@ -308,7 +308,7 @@ const TaskList = () => {
                         )}
                       </div>
                       
-                      <div className="flex items-center gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                      <div className="flex items-center gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                         <Button
                           variant="outline"
                           size="sm"

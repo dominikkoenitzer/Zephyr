@@ -115,7 +115,7 @@ const PresetSettingsDialog = ({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-4 sm:gap-5 items-center">
-              <div className="relative h-20 w-20 rounded-full p-1.5 bg-gradient-to-br from-primary/30 via-accent/30 to-muted/40 shadow-inner">
+              <div className="relative h-20 w-20 rounded-full p-1.5 bg-linear-to-br from-primary/30 via-accent/30 to-muted/40 shadow-inner">
                 <input
                   type="color"
                   value={colorHex}

@@ -69,7 +69,7 @@ function Help() {
       />
 
       {/* Navigation Tabs */}
-      <div className="flex-shrink-0 flex flex-wrap gap-1.5 sm:gap-2 border-b border-border/50 pb-2 sm:pb-3 overflow-x-auto mb-2 sm:mb-3">
+      <div className="shrink-0 flex flex-wrap gap-1.5 sm:gap-2 border-b border-border/50 pb-2 sm:pb-3 overflow-x-auto mb-2 sm:mb-3">
         {sections.map((section) => {
           const Icon = section.icon;
           const isActive = activeSection === section.id;
@@ -98,7 +98,7 @@ function Help() {
       {activeSection === 'help' && (
         <div className="flex-1 min-h-0 overflow-y-auto space-y-2 sm:space-y-3 md:space-y-4 pr-1">
           {/* Quick Start Card */}
-          <Card className=" animate-fade-in-up flex-shrink-0" style={{ animationDelay: '0.1s' }}>
+          <Card className=" animate-fade-in-up shrink-0" style={{ animationDelay: '0.1s' }}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -108,7 +108,7 @@ function Help() {
             <CardContent className="space-y-3 sm:space-y-4">
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex gap-3 sm:gap-4 items-start">
-                  <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold flex-shrink-0 text-base sm:text-lg">1</div>
+                  <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">1</div>
                   <div>
                     <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Set Your Priorities</h4>
                     <p className="text-xs sm:text-sm text-muted-foreground">Head to the Tasks page and add what you want to accomplish today.</p>
@@ -116,7 +116,7 @@ function Help() {
                 </div>
                 
                 <div className="flex gap-3 sm:gap-4 items-start">
-                  <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold flex-shrink-0 text-base sm:text-lg">2</div>
+                  <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">2</div>
                   <div>
                     <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Start a Focus Session</h4>
                     <p className="text-xs sm:text-sm text-muted-foreground">Click the Focus Timer and press play to begin your first 25-minute session.</p>
@@ -124,7 +124,7 @@ function Help() {
                 </div>
                 
                 <div className="flex gap-3 sm:gap-4 items-start">
-                  <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold flex-shrink-0 text-base sm:text-lg">3</div>
+                  <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">3</div>
                   <div>
                     <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Take Breaks</h4>
                     <p className="text-xs sm:text-sm text-muted-foreground">When the timer completes, enjoy your well-earned break. Stretch, hydrate, breathe!</p>
@@ -132,7 +132,7 @@ function Help() {
                 </div>
                 
                 <div className="flex gap-3 sm:gap-4 items-start">
-                  <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold flex-shrink-0 text-base sm:text-lg">4</div>
+                  <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">4</div>
                   <div>
                     <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Track Your Progress</h4>
                     <p className="text-xs sm:text-sm text-muted-foreground">Review your activity across Focus, Tasks, and Notes.</p>
@@ -143,13 +143,13 @@ function Help() {
           </Card>
 
           {/* FAQ Card */}
-          <Card className=" animate-fade-in-up w-full flex-shrink-0" style={{ animationDelay: '0.2s' }}>
-            <CardHeader className="pb-2 sm:pb-3 md:pb-4 flex-shrink-0">
+          <Card className=" animate-fade-in-up w-full shrink-0" style={{ animationDelay: '0.2s' }}>
+            <CardHeader className="pb-2 sm:pb-3 md:pb-4 shrink-0">
               <CardTitle className="flex items-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl">
                 <div className="p-1.5 sm:p-2 md:p-2.5 rounded-lg bg-primary/10">
                   <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary" />
                 </div>
-                <span className="break-words">Frequently Asked Questions</span>
+                <span className="wrap-break-word">Frequently Asked Questions</span>
               </CardTitle>
               <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1 sm:mt-2">
                 Find answers to common questions about Zephyr
@@ -166,11 +166,11 @@ function Help() {
                         className="px-2 sm:px-3 md:px-4 lg:px-5 py-2.5 sm:py-3 md:py-4 lg:py-5 hover:no-underline group"
                       >
                         <div className="flex items-start gap-2 sm:gap-3 md:gap-4 w-full text-left">
-                          <div className={`p-1.5 sm:p-2 md:p-2.5 lg:p-3 rounded-lg ${faq.bgColor} group-hover:scale-110 transition-transform duration-200 flex-shrink-0`}>
+                          <div className={`p-1.5 sm:p-2 md:p-2.5 lg:p-3 rounded-lg ${faq.bgColor} group-hover:scale-110 transition-transform duration-200 shrink-0`}>
                             <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 ${faq.iconColor} transition-colors duration-200`} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-xs sm:text-sm md:text-base text-foreground group-hover:text-primary transition-colors duration-200 pr-1 sm:pr-2 break-words leading-tight sm:leading-normal">
+                            <h3 className="font-semibold text-xs sm:text-sm md:text-base text-foreground group-hover:text-primary transition-colors duration-200 pr-1 sm:pr-2 wrap-break-word leading-tight sm:leading-normal">
                               {faq.question}
                             </h3>
                           </div>
@@ -179,7 +179,7 @@ function Help() {
                       <AccordionContent value={`faq-${index}`} className="px-2 sm:px-3 md:px-4 lg:px-5 pb-2.5 sm:pb-3 md:pb-4 lg:pb-5">
                         <div className="pl-0 sm:pl-10 md:pl-12 lg:pl-14">
                           <div className="pt-2 border-t border-border/30">
-                            <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed pt-2 sm:pt-3 break-words">
+                            <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed pt-2 sm:pt-3 wrap-break-word">
                               {faq.answer}
                             </p>
                           </div>

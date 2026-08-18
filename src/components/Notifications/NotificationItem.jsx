@@ -50,7 +50,7 @@ const NotificationItem = ({ notification, onRead, onDelete, onClick }) => {
         }
       }}
     >
-      <div className={cn("p-1.5 sm:p-2 rounded-lg bg-background flex-shrink-0", iconColor)}>
+      <div className={cn("p-1.5 sm:p-2 rounded-lg bg-background shrink-0", iconColor)}>
         <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
       </div>
       
@@ -72,7 +72,7 @@ const NotificationItem = ({ notification, onRead, onDelete, onClick }) => {
           </div>
           
           {!notification.read && (
-            <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-primary flex-shrink-0 mt-0.5 sm:mt-1" />
+            <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-primary shrink-0 mt-0.5 sm:mt-1" />
           )}
         </div>
       </div>
@@ -80,7 +80,7 @@ const NotificationItem = ({ notification, onRead, onDelete, onClick }) => {
       <Button
         variant="ghost"
         size="icon"
-        className="h-6 w-6 sm:h-7 sm:w-7 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0"
+        className="h-6 w-6 sm:h-7 sm:w-7 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0"
         onClick={(e) => {
           e.stopPropagation();
           onDelete(notification.id);

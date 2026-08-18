@@ -169,10 +169,10 @@ const Notes = () => {
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
-              {note.pinned && <Pin className="h-4 w-4 text-primary flex-shrink-0" />}
+              {note.pinned && <Pin className="h-4 w-4 text-primary shrink-0" />}
               <CardTitle className="text-base font-semibold truncate">{note.title || 'Untitled note'}</CardTitle>
             </div>
-            <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0">
+            <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
               <Button
                 variant="ghost"
                 size="icon"
@@ -206,7 +206,7 @@ const Notes = () => {
                 </span>
               ))}
             </div>
-            <span className="text-xs text-muted-foreground flex-shrink-0">
+            <span className="text-xs text-muted-foreground shrink-0">
               {new Date(note.updatedAt || note.createdAt).toLocaleDateString()}
             </span>
           </div>
@@ -224,7 +224,7 @@ const Notes = () => {
   return (
     <div className="w-full max-w-5xl mx-auto space-y-5">
       {/* Quick capture — type a thought, hit Ctrl+Enter, done */}
-      <div className="rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xl shadow-[var(--shadow-card)] focus-within:border-primary/40 transition-colors">
+      <div className="rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xl shadow-(--shadow-card) focus-within:border-primary/40 transition-colors">
         <textarea
           ref={captureRef}
           autoFocus

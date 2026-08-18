@@ -36,7 +36,7 @@ const FullScreenMode = ({
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
+    <div className="fixed inset-0 z-100 bg-background flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
         <Button
           variant="ghost"

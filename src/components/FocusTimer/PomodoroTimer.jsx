@@ -62,8 +62,8 @@ const PomodoroTimer = () => {
   }
 
   return (
-    <div className="w-full content-wide px-responsive py-responsive space-y-[var(--section-gap)]">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--panel-gap)]">
+    <div className="w-full content-wide px-responsive py-responsive space-y-(--section-gap)">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-(--panel-gap)">
         <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
@@ -213,9 +213,9 @@ const PomodoroTimer = () => {
                     onClick={() => handlePresetChange(preset.id)}
                   >
                     {typeof Icon === 'function' ? (
-                      <Icon className="h-4 w-4 flex-shrink-0" style={{ color: isSelected ? preset.color : undefined }} />
+                      <Icon className="h-4 w-4 shrink-0" style={{ color: isSelected ? preset.color : undefined }} />
                     ) : (
-                      <TimerIcon className="h-4 w-4 flex-shrink-0" style={{ color: isSelected ? preset.color : undefined }} />
+                      <TimerIcon className="h-4 w-4 shrink-0" style={{ color: isSelected ? preset.color : undefined }} />
                     )}
                     <div className="flex-1 text-left min-w-0">
                       <div className="text-sm font-medium text-foreground truncate">{preset.name}</div>
@@ -225,7 +225,7 @@ const PomodoroTimer = () => {
                     </div>
                     {isSelected && (
                       <div 
-                        className="h-2 w-2 rounded-full flex-shrink-0"
+                        className="h-2 w-2 rounded-full shrink-0"
                         style={{ backgroundColor: preset.color }}
                       />
                     )}
