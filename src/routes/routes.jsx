@@ -1,15 +1,9 @@
-import { Suspense, lazy } from 'react';
+import { Suspense } from 'react';
 import { Navigate } from 'react-router-dom';
 import PageLoader from '../components/ui/PageLoader';
 import AppLayout from '../app/AppLayout';
 import ErrorFallback from '../components/ErrorBoundary/ErrorFallback';
-
-const TasksPage = lazy(() => import('../pages/TasksPage'));
-const Home = lazy(() => import('../pages/Home'));
-const FocusTimer = lazy(() => import('../pages/FocusTimer'));
-const Notes = lazy(() => import('../pages/Notes'));
-const Settings = lazy(() => import('../pages/Settings'));
-const Help = lazy(() => import('../pages/Help'));
+import { FocusTimer, Help, Home, Notes, Settings, TasksPage } from './pages';
 
 const withPageLoader = (Component) => (
   <Suspense fallback={<PageLoader />}>
