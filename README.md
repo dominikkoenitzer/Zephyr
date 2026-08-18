@@ -14,7 +14,7 @@ No login, no signup, no backend. Your data never leaves your browser.
 [![PWA](https://img.shields.io/badge/PWA-installable-5a0fc8?logo=pwa&logoColor=white)](https://zephyr.punds.ch)
 ![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6-646cff?logo=vite&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38bdf8?logo=tailwindcss&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss&logoColor=white)
 ![Bun](https://img.shields.io/badge/Bun-1.3-fbf0df?logo=bun&logoColor=black)
 
 **[→ Try it live at zephyr.punds.ch](https://zephyr.punds.ch)**
@@ -94,7 +94,7 @@ Every duration is adjustable, and you can save your own custom presets. Complete
 
 - **[React 18](https://react.dev/)** + **[Vite 6](https://vite.dev/)** (via `@vitejs/plugin-react-swc`)
 - **[React Router v6](https://reactrouter.com/)** with lazy-loaded routes
-- **[Tailwind CSS 3](https://tailwindcss.com/)** + **[Radix UI](https://www.radix-ui.com/)** primitives (shadcn-style)
+- **[Tailwind CSS 4](https://tailwindcss.com/)** + **[Radix UI](https://www.radix-ui.com/)** primitives (shadcn-style)
 - **[Motion](https://motion.dev/)** for animations (page transitions, layout animations, micro-interactions — respects reduced-motion)
 - **[ogl](https://github.com/oframe/ogl)** for the WebGL aurora backdrop (lazy-loaded, theme-aware, disabled under reduced-motion)
 - **[lucide-react](https://lucide.dev/)** icons · **[sonner](https://sonner.emilkowal.ski/)** toasts
