@@ -127,7 +127,7 @@ function Settings() {
       />
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--panel-gap)]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-(--panel-gap)">
         {/* Notifications Card */}
         <Card className="h-fit">
         <CardHeader className="pb-3 sm:pb-4">
@@ -154,7 +154,7 @@ function Settings() {
             
             <div className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-background/70 border border-border/60 hover:border-primary/30 hover:shadow-sm transition-colors">
               <div className="flex-1 flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
-                <Volume2 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
+                <Volume2 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0" />
                 <div className="min-w-0">
                   <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Notification Sound</h3>
                   <p className="text-xs sm:text-sm text-muted-foreground">Play sound when notifications arrive</p>
@@ -271,7 +271,7 @@ function Settings() {
             {/* Backup & restore */}
             <div className="p-4 sm:p-6 rounded-xl bg-background/70 border border-border/60 space-y-4">
               <div className="flex items-start gap-3 sm:gap-4">
-                <Download className="h-5 w-5 sm:h-6 sm:w-6 text-primary mt-1 flex-shrink-0" />
+                <Download className="h-5 w-5 sm:h-6 sm:w-6 text-primary mt-1 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-base sm:text-lg text-foreground mb-1 sm:mb-2">Backup &amp; Restore</h3>
                   <p className="text-sm sm:text-base text-muted-foreground">
@@ -302,7 +302,7 @@ function Settings() {
 
             <div className="p-4 sm:p-6 rounded-xl bg-background/80 border border-border/60 space-y-4 sm:space-y-6">
               <div className="flex items-start gap-3 sm:gap-4">
-                <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-destructive mt-1 flex-shrink-0" />
+                <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-destructive mt-1 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-base sm:text-lg text-foreground mb-1 sm:mb-2">Clear All Local Storage</h3>
                   <p className="text-sm sm:text-base text-muted-foreground mb-2 sm:mb-3">
