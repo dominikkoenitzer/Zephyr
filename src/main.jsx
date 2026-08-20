@@ -28,11 +28,9 @@ initializeTheme();
 // Clear any legacy garden theme and sync with current color mode
 themeService.initialize();
 
-const router = createBrowserRouter(routes, {
-  future: {
-    v7_startTransition: true,
-  },
-});
+// v7_startTransition was a v6 opt-in; it is the behaviour in v7 and passing
+// the flag now only earns a deprecation warning.
+const router = createBrowserRouter(routes);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

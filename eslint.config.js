@@ -9,7 +9,7 @@ export default [
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 2022,
       globals: globals.browser,
       parserOptions: {
         ecmaVersion: 'latest',
@@ -17,7 +17,7 @@ export default [
         sourceType: 'module',
       },
     },
-    settings: { react: { version: '18.3' } },
+    settings: { react: { version: 'detect' } },
     plugins: {
       react,
       'react-hooks': reactHooks,
@@ -34,6 +34,14 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+      /*
+       * The React Compiler rules that arrived with eslint-plugin-react-hooks v7
+       * are on as errors. They found real things here: a ref written during
+       * render in useStore, a notification list read before its loader was
+       * declared, and six effects that copied derived or persisted values into
+       * state one render too late. Fix the file rather than adding a disable
+       * comment.
+       */
     },
   },
 ]

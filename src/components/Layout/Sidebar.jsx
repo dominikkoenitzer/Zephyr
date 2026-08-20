@@ -33,23 +33,24 @@ const secondaryNavigation = [
 
 function Sidebar({ isMobile = false, onClose }) {
   const location = useLocation();
-  const [colorMode, setColorMode] = useState('light');
+  const [colorMode, setColorMode] = useState(() =>
+    themeService.getCurrentColorMode()
+  );
   const [tasks] = useTasks();
   const activeTaskCount = tasks.filter((t) => !t.completed).length;
 
+  // The mode is read straight into state above, so the only job here is to
+  // follow later changes. The observer is attached before initialize() runs so
+  // that a class it rewrites is still seen.
   useEffect(() => {
-    themeService.initialize();
-    setColorMode(themeService.getCurrentColorMode());
-
-    // Listen for color mode changes
     const observer = new MutationObserver(() => {
       setColorMode(themeService.getCurrentColorMode());
     });
-    
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['class']
     });
+    themeService.initialize();
 
     return () => observer.disconnect();
   }, []);

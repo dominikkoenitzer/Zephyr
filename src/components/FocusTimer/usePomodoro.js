@@ -12,6 +12,74 @@ export const formatTime = (seconds) => {
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
 
+const PRESETS_KEY = 'focusTimerPresets';
+const SELECTED_PRESET_KEY = 'selectedFocusPreset';
+
+/** Saved presets, defaults first so a custom one can never shadow them. */
+function readPresets() {
+  const saved = localStorage.getItem(PRESETS_KEY);
+  if (!saved) return [...DEFAULT_PRESETS];
+  try {
+    const parsed = JSON.parse(saved).map((p) => ({
+      ...p,
+      color: normalizePresetColor(p.color),
+    }));
+    const defaultIds = DEFAULT_PRESETS.map((p) => p.id);
+    return [...DEFAULT_PRESETS, ...parsed.filter((p) => !defaultIds.includes(p.id))];
+  } catch (error) {
+    console.error('Failed to load presets:', error);
+    return [...DEFAULT_PRESETS];
+  }
+}
+
+/**
+ * The persisted timer, resolved against the wall clock so a session that ran
+ * out while the tab was closed comes back finished rather than frozen.
+ *
+ * Read before the first render rather than from a mount effect: the effect
+ * painted a default 25:00 first, and it restored the preset after the timer,
+ * which made the preset-change effect below reset the clock it had just
+ * restored.
+ */
+function readPersistedTimer() {
+  const presets = readPresets();
+  const selectedPreset = localStorage.getItem(SELECTED_PRESET_KEY) || 'pomodoro';
+  const preset = presets.find((p) => p.id === selectedPreset) || presets[0];
+  const base = {
+    presets,
+    selectedPreset,
+    timeLeft: preset.workTime,
+    isRunning: false,
+    isBreak: false,
+    sessionsCompleted: 0,
+    sessionTask: null,
+    expiredWhileAway: false,
+  };
+
+  const state = localStorageService.getTimerState();
+  if (!state) return base;
+
+  const restored = {
+    ...base,
+    isBreak: state.isBreak || false,
+    sessionsCompleted: state.pomodorosCompleted || 0,
+    sessionTask: state.focusTask || null,
+  };
+
+  if (state.isRunning && state.lastSaved) {
+    const elapsed = Math.floor((Date.now() - state.lastSaved) / 1000);
+    const timeLeft = Math.max(0, state.timeLeft - elapsed);
+    return {
+      ...restored,
+      timeLeft,
+      isRunning: timeLeft > 0,
+      expiredWhileAway: timeLeft === 0 && state.timeLeft > 0,
+    };
+  }
+
+  return { ...restored, timeLeft: state.timeLeft || preset.workTime };
+}
+
 /**
  * All of the focus timer's state and behaviour: the countdown, session
  * bookkeeping, persistence to localStorage, the tab title, the fullscreen flag
@@ -25,27 +93,39 @@ export const formatTime = (seconds) => {
  */
 export function usePomodoro() {
   const [searchParams] = useSearchParams();
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
-  const [isRunning, setIsRunning] = useState(false);
-  const [isBreak, setIsBreak] = useState(false);
-  const [sessionsCompleted, setSessionsCompleted] = useState(0);
-  const [selectedPreset, setSelectedPreset] = useState('pomodoro');
-  const [presets, setPresets] = useState(DEFAULT_PRESETS);
+  const [restored] = useState(readPersistedTimer);
+  const [timeLeft, setTimeLeft] = useState(restored.timeLeft);
+  const [isRunning, setIsRunning] = useState(restored.isRunning);
+  const [isBreak, setIsBreak] = useState(restored.isBreak);
+  const [sessionsCompleted, setSessionsCompleted] = useState(
+    restored.sessionsCompleted
+  );
+  const [selectedPreset, setSelectedPreset] = useState(restored.selectedPreset);
+  const [presets, setPresets] = useState(restored.presets);
+  const [sessionTask, setSessionTask] = useState(restored.sessionTask);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [editingPreset, setEditingPreset] = useState(null);
   const [newPresetName, setNewPresetName] = useState('');
+  const editingPresetHex = useMemo(
+    () => toHexColor(editingPreset?.color || THEME_COLOR_OPTIONS[0]),
+    [editingPreset]
+  );
+  // The colour picker's draft follows whichever preset is open. Reset during
+  // render rather than from an effect, so the picker never shows the previous
+  // preset's colour for a frame.
+  const [presetColorDraft, setPresetColorDraft] = useState(editingPresetHex);
+  const [colorDraftFor, setColorDraftFor] = useState(editingPresetHex);
+  if (colorDraftFor !== editingPresetHex) {
+    setColorDraftFor(editingPresetHex);
+    setPresetColorDraft(editingPresetHex);
+  }
   const timerContainerRef = useRef(null);
   const [circumference, setCircumference] = useState(2 * Math.PI * 180);
   const prevPresetRef = useRef(selectedPreset);
   const prevIsBreakRef = useRef(isBreak);
   const originalTitleRef = useRef(null);
-  const [sessionTask, setSessionTask] = useState(null);
-  const [, setStreak] = useState(localStorageService.getFocusStreak());
-  const [, setNextPromptVisible] = useState(false);
   const [hasAutoStarted, setHasAutoStarted] = useState(false);
-  const [presetColorDraft, setPresetColorDraft] = useState('#3b82f6');
 
   const currentPreset = presets.find(p => p.id === selectedPreset) || presets[0];
   const workTime = currentPreset.workTime;
@@ -75,8 +155,7 @@ export function usePomodoro() {
       }
     }
 
-    const updated = localStorageService.saveFocusStreak({ count: nextCount, lastDate: todayKey });
-    setStreak(updated);
+    localStorageService.saveFocusStreak({ count: nextCount, lastDate: todayKey });
   };
 
 
@@ -106,8 +185,6 @@ export function usePomodoro() {
         task: sessionTask,
         completedAt: new Date().toISOString()
       });
-      setNextPromptVisible(true);
-      
       notificationService.createNotification(
         'timer',
         'Session Complete',
@@ -124,106 +201,62 @@ export function usePomodoro() {
     setIsRunning(false);
   }, [isBreak, sessionsCompleted, breakTime, longBreakTime, workTime, sessionsUntilLongBreak, selectedPreset, sessionTask]);
 
+  // A session that ran out while the tab was closed still owes its completion
+  // work: the streak, the session log and the notification.
+  const expiredWhileAwayRef = useRef(restored.expiredWhileAway);
   useEffect(() => {
-    const state = localStorageService.getTimerState();
-    if (state) {
-      try {
-        if (state.isRunning && state.lastSaved) {
-          const timeElapsed = Math.floor((Date.now() - state.lastSaved) / 1000);
-          const newTimeLeft = Math.max(0, state.timeLeft - timeElapsed);
-          setTimeLeft(newTimeLeft);
-          
-          if (newTimeLeft === 0 && state.timeLeft > 0) {
-            handleComplete();
-            setIsRunning(false);
-          } else {
-            setIsRunning(state.isRunning);
-          }
-        } else {
-          setTimeLeft(state.timeLeft || workTime);
-          setIsRunning(false);
-        }
-        
-        setIsBreak(state.isBreak || false);
-        setSessionsCompleted(state.pomodorosCompleted || 0);
-        if (state.focusTask) {
-          setSessionTask(state.focusTask);
-        }
-      } catch (error) {
-        console.error('Failed to load timer state:', error);
-      }
-    }
-    
-    const savedPresets = localStorage.getItem('focusTimerPresets');
-    if (savedPresets) {
-      try {
-        const parsed = JSON.parse(savedPresets).map(p => ({
-          ...p,
-          color: normalizePresetColor(p.color),
-        }));
-        // Merge with defaults, ensuring defaults come first
-        const defaultIds = DEFAULT_PRESETS.map(p => p.id);
-        const customPresets = parsed.filter(p => !defaultIds.includes(p.id));
-        setPresets([...DEFAULT_PRESETS, ...customPresets]);
-      } catch (error) {
-        console.error('Failed to load presets:', error);
-      }
-    } else {
-      setPresets([...DEFAULT_PRESETS]);
-    }
-    
-    const savedPreset = localStorage.getItem('selectedFocusPreset');
-    if (savedPreset) {
-      setSelectedPreset(savedPreset);
-    }
-    
-    setIsInitialized(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (!expiredWhileAwayRef.current) return;
+    expiredWhileAwayRef.current = false;
+    handleComplete();
+  }, [handleComplete]);
 
   useEffect(() => {
-    if (isInitialized) {
-      const state = {
-        timeLeft,
-        isRunning,
-        isBreak,
-        pomodorosCompleted: sessionsCompleted,
-        workTime,
-        breakTime,
-        longBreakTime,
-        focusTask: sessionTask,
-      };
-      localStorageService.saveTimerState(state);
-    }
-  }, [timeLeft, isRunning, isBreak, sessionsCompleted, workTime, breakTime, longBreakTime, sessionTask, isInitialized]);
+    localStorageService.saveTimerState({
+      timeLeft,
+      isRunning,
+      isBreak,
+      pomodorosCompleted: sessionsCompleted,
+      workTime,
+      breakTime,
+      longBreakTime,
+      focusTask: sessionTask,
+    });
+  }, [timeLeft, isRunning, isBreak, sessionsCompleted, workTime, breakTime, longBreakTime, sessionTask]);
 
-  // Handle inbound intent (task -> focus, resume, auto-start)
-  useEffect(() => {
-    if (!isInitialized) return;
+  // Inbound intent (task -> focus, resume, auto-start). Answered during render
+  // so the session name and a `start=1` countdown are already right in the
+  // first paint after the navigation; handledIntent records which query string
+  // this render answered so it runs once per arrival.
+  const intent = searchParams.toString();
+  const [handledIntent, setHandledIntent] = useState(null);
+  if (intent !== handledIntent) {
+    setHandledIntent(intent);
 
     const titleParam = searchParams.get('title');
     const taskId = searchParams.get('taskId');
-    const resume = searchParams.get('resume') === '1';
-    const autoStartFlag = searchParams.get('start') === '1';
 
     if (titleParam) {
       setSessionTask({
         id: taskId || null,
         title: decodeURIComponent(titleParam)
       });
-    } else if (resume) {
+    } else if (searchParams.get('resume') === '1') {
       const last = localStorageService.getLastSession();
       if (last?.task) {
         setSessionTask(last.task);
       }
     }
 
-    if (autoStartFlag && !hasAutoStarted) {
+    if (searchParams.get('start') === '1' && !hasAutoStarted) {
       setIsRunning(true);
       setHasAutoStarted(true);
-      localStorageService.saveOnboarding({ focusStarted: true });
     }
-  }, [isInitialized, searchParams, hasAutoStarted]);
+  }
+
+  // The onboarding flag is a write to storage, so it waits for the commit.
+  useEffect(() => {
+    if (hasAutoStarted) localStorageService.saveOnboarding({ focusStarted: true });
+  }, [hasAutoStarted]);
 
   useEffect(() => {
     // Only reset timer when preset changes or session type changes (work <-> break)
@@ -326,7 +359,6 @@ export function usePomodoro() {
   const toggleTimer = () => {
     if (!isRunning) {
       localStorageService.saveOnboarding({ focusStarted: true });
-      setNextPromptVisible(false);
     }
     setIsRunning(!isRunning);
   };
@@ -337,7 +369,6 @@ export function usePomodoro() {
       ? (sessionsCompleted % sessionsUntilLongBreak === 0 ? longBreakTime : breakTime)
       : workTime;
     setTimeLeft(currentTime);
-    setNextPromptVisible(false);
   };
 
   // Space starts/pauses the timer (unless you're typing somewhere).
@@ -355,7 +386,6 @@ export function usePomodoro() {
 
   const skipSession = () => {
     setIsRunning(false);
-    setNextPromptVisible(false);
     handleComplete();
   };
 
@@ -365,12 +395,6 @@ export function usePomodoro() {
   const progress = ((currentSessionTime - timeLeft) / currentSessionTime) * 100;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
   const totalFocusTime = Math.floor((sessionsCompleted * workTime) / 60);
-  const editingPresetHex = useMemo(() => toHexColor(editingPreset?.color || THEME_COLOR_OPTIONS[0]), [editingPreset]);
-
-  useEffect(() => {
-    setPresetColorDraft(editingPresetHex);
-  }, [editingPresetHex]);
-
   const getSessionType = () => {
     if (isBreak) {
       return sessionsCompleted % sessionsUntilLongBreak === 0 

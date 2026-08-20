@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Settings, CheckCheck } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -6,24 +6,26 @@ import NotificationItem from './NotificationItem';
 import { notificationService } from '../../services/notificationService';
 
 const NotificationCenter = ({ onClose }) => {
-  const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  // Seeded from the service rather than filled in by an effect, so the panel
+  // opens on its real contents instead of flashing the empty state first.
+  const [notifications, setNotifications] = useState(() =>
+    notificationService.getNotifications()
+  );
+  const [unreadCount, setUnreadCount] = useState(() =>
+    notificationService.getUnreadCount()
+  );
   const navigate = useNavigate();
 
-  useEffect(() => {
-    loadNotifications();
-    
-    // Refresh notifications every 30 seconds
-    const interval = setInterval(loadNotifications, 30000);
-    
-    return () => clearInterval(interval);
+  const loadNotifications = useCallback(() => {
+    setNotifications(notificationService.getNotifications());
+    setUnreadCount(notificationService.getUnreadCount());
   }, []);
 
-  const loadNotifications = () => {
-    const allNotifications = notificationService.getNotifications();
-    setNotifications(allNotifications);
-    setUnreadCount(notificationService.getUnreadCount());
-  };
+  // Only keeps the seeded list fresh while the panel stays open.
+  useEffect(() => {
+    const interval = setInterval(loadNotifications, 30000);
+    return () => clearInterval(interval);
+  }, [loadNotifications]);
 
   const handleRead = (notificationId) => {
     notificationService.markAsRead(notificationId);
