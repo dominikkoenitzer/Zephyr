@@ -147,6 +147,7 @@ function Settings() {
                 <p className="text-xs sm:text-sm text-muted-foreground">Master switch for all notifications</p>
               </div>
               <Checkbox
+                aria-label="Enable notifications"
                 checked={notificationSettings.enabled}
                 onCheckedChange={(checked) => handleNotificationSettingsChange({ enabled: checked })}
               />
@@ -161,6 +162,7 @@ function Settings() {
                 </div>
               </div>
               <Checkbox
+                aria-label="Notification sound"
                 checked={notificationSettings.soundEnabled}
                 onCheckedChange={(checked) => handleNotificationSettingsChange({ soundEnabled: checked })}
               />
@@ -185,6 +187,7 @@ function Settings() {
                     </div>
                   </div>
                   <Checkbox
+                    aria-label="Task notifications"
                     checked={notificationSettings.tasks.enabled}
                     onCheckedChange={(checked) => handleTaskSettingsChange({ enabled: checked })}
                   />
@@ -200,7 +203,7 @@ function Settings() {
                         value={String(notificationSettings.tasks.dueDateReminder)}
                         onValueChange={(value) => handleTaskSettingsChange({ dueDateReminder: parseInt(value) })}
                       >
-                        <SelectTrigger className="w-32">
+                        <SelectTrigger aria-label="Due date reminder" className="w-32">
                           <SelectValue placeholder="Select reminder" />
                         </SelectTrigger>
                         <SelectContent>
@@ -217,6 +220,7 @@ function Settings() {
                         <p className="text-xs text-muted-foreground">Notify about overdue tasks</p>
                       </div>
                       <Checkbox
+                        aria-label="Overdue tasks"
                         checked={notificationSettings.tasks.overdue}
                         onCheckedChange={(checked) => handleTaskSettingsChange({ overdue: checked })}
                       />
@@ -240,6 +244,7 @@ function Settings() {
                     </div>
                   </div>
                   <Checkbox
+                    aria-label="Timer notifications"
                     checked={notificationSettings.timer.enabled}
                     onCheckedChange={(checked) => handleNotificationSettingsChange({ 
                       timer: { ...notificationSettings.timer, enabled: checked }
@@ -315,7 +320,7 @@ function Settings() {
                     <li>Settings and preferences</li>
                     <li>Notification history</li>
                   </ul>
-                  <p className="text-sm sm:text-base text-destructive font-semibold mt-3 sm:mt-4">
+                  <p className="text-sm sm:text-base text-destructive-strong font-semibold mt-3 sm:mt-4">
                     This action cannot be undone. The page will reload after clearing.
                   </p>
                 </div>
@@ -357,7 +362,7 @@ function Settings() {
                 <li>All settings and preferences</li>
                 <li>All timer sessions and presets</li>
               </ul>
-              <p className="mt-3 font-semibold text-destructive">
+              <p className="mt-3 font-semibold text-destructive-strong">
                 This action cannot be undone. The page will reload after clearing.
               </p>
             </DialogDescription>

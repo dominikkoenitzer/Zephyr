@@ -241,6 +241,7 @@ const PomodoroTimer = () => {
                     <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         type="button"
+                        aria-label={`Edit ${preset.name}`}
                         className="h-7 w-7 flex items-center justify-center rounded hover:bg-background transition-colors"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -254,6 +255,7 @@ const PomodoroTimer = () => {
                       {!isDefault && (
                         <button
                           type="button"
+                          aria-label={`Delete ${preset.name}`}
                           className="h-7 w-7 flex items-center justify-center rounded hover:bg-background transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();

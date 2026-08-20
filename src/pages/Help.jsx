@@ -82,7 +82,9 @@ function Help() {
               className={cn(
                 'inline-flex items-center gap-1.5 sm:gap-2 rounded-full border h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm font-medium transition-colors',
                 isActive
-                  ? 'border-primary/30 bg-primary/10 text-primary'
+                  // Solid rather than tinted: primary-on-primary/10 lands at
+                  // 4.07:1, under the 4.5 needed at this size.
+                  ? 'border-primary bg-primary text-primary-foreground'
                   : 'border-transparent text-muted-foreground hover:bg-accent/50 hover:text-foreground'
               )}
             >
