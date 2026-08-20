@@ -248,8 +248,31 @@ layer(base);
      beat a positioning utility — the task "+" button is `absolute` inside its
      input, and a plain `position: relative` here dropped it out of the field.
      `:where()` has zero specificity, so `absolute`/`fixed` still win. */
-  :where(.btn-shine) {
+  :where(.btn-shine, .btn-glow) {
     position: relative;
+  }
+
+  /* Pointer-tracking highlight. It lives on ::before rather than in the
+     element's own `background-image`, because `.bg-brand` is itself a gradient
+     and an inline background would erase it. `border-radius: inherit` means no
+     `overflow: hidden` is needed, so the focus ring stays unclipped. */
+  .btn-glow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      circle 68px at var(--glow-x, -300px) var(--glow-y, -300px),
+      rgb(255 255 255 / 0.3),
+      transparent 70%
+    );
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-glow::before {
+      display: none;
+    }
   }
 
   .btn-shine::after {
