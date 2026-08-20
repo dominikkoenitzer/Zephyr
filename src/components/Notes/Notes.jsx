@@ -67,13 +67,21 @@ const Notes = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Deep link from search results: /notes?open=<id> opens that note's editor.
-  useEffect(() => {
-    const openId = searchParams.get('open');
-    if (!openId) return;
-    const note = notes.find((n) => n.id === openId);
+  // Adjusted during render rather than from an effect so the editor is already
+  // open on the first paint; openHandled tracks which id this render answered,
+  // and falls back to null when the param is stripped so the same note can be
+  // opened again later.
+  const openId = searchParams.get('open');
+  const [openHandled, setOpenHandled] = useState(null);
+  if (openId !== openHandled) {
+    setOpenHandled(openId);
+    const note = openId ? notes.find((n) => n.id === openId) : null;
     if (note) setEditing({ ...note, tags: note.tags || [] });
-    setSearchParams({}, { replace: true });
-  }, [searchParams, notes, setSearchParams]);
+  }
+
+  useEffect(() => {
+    if (openId) setSearchParams({}, { replace: true });
+  }, [openId, setSearchParams]);
 
   const allTags = useMemo(() => [...new Set(notes.flatMap((n) => n.tags || []))], [notes]);
 
