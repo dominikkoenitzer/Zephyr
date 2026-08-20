@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, Bell, Search } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -9,12 +9,19 @@ import { searchService } from '../../services/searchService';
 import { notificationService } from '../../services/notificationService';
 import { CHANGE_EVENT } from '../../services/localStorage';
 
+const EMPTY_RESULTS = { notes: [], tasks: [] };
+
 function Header({ onMenuClick }) {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [greeting, setGreeting] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState({ notes: [], tasks: [] });
+  // Derived, not stored: the results are a pure function of the query, and an
+  // effect that copied them into state only bought a second render per keypress.
+  const searchResults = useMemo(
+    () => (searchQuery.trim() ? searchService.searchAll(searchQuery) : EMPTY_RESULTS),
+    [searchQuery]
+  );
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -59,18 +66,6 @@ function Header({ onMenuClick }) {
       window.removeEventListener('focus', loadNotificationCount);
     };
   }, []);
-
-  useEffect(() => {
-    if (searchQuery.trim().length > 0) {
-      const results = searchService.searchAll(searchQuery);
-      setSearchResults(results);
-      setShowSearchResults(true);
-      setSelectedIndex(0);
-    } else {
-      setSearchResults({ notes: [], tasks: [] });
-      setShowSearchResults(false);
-    }
-  }, [searchQuery]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -180,7 +175,12 @@ function Header({ onMenuClick }) {
                 placeholder="Search notes and tasks..."
                 className="pl-10 pr-12 h-9 w-64 lg:w-72 text-sm rounded-full bg-background/60 border-border/60 focus-visible:ring-primary/40"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchQuery(value);
+                  setShowSearchResults(value.trim().length > 0);
+                  setSelectedIndex(0);
+                }}
                 onFocus={() => {
                   if (searchQuery.trim().length > 0) {
                     setShowSearchResults(true);

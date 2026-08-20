@@ -138,29 +138,26 @@ export default defineConfig({
             return undefined;
           }
 
+          // React Router (depends on React) - separate chunk but loads after
+          // react-vendor. Checked BEFORE the react-* catch-all below, which
+          // would otherwise swallow react-router into react-vendor. Router v7
+          // absorbed @remix-run/router, so this rule is the whole router now.
+          if (id.includes('node_modules/react-router')) {
+            return 'router-vendor';
+          }
+
           // React core libraries - must load first and be in a single chunk
           // Check for react, react-dom, and any react-* packages
           if (id.includes('node_modules/react/') ||
               id.includes('node_modules/react-dom/') ||
-              id.includes('node_modules/react-error-boundary') ||
               id.includes('node_modules/react-') ||
               (id.includes('node_modules') && id.includes('/react'))) {
             return 'react-vendor';
           }
           
-          // React Router (depends on React) - separate chunk but loads after react-vendor
-          if (id.includes('node_modules/react-router')) {
-            return 'router-vendor';
-          }
-          
           // Radix UI components (depends on React)
           if (id.includes('node_modules/@radix-ui')) {
             return 'radix-vendor';
-          }
-          
-          // Charts library (recharts is large, depends on React)
-          if (id.includes('node_modules/recharts')) {
-            return 'charts-vendor';
           }
           
           // Icons library (lucide-react can be large, depends on React)
@@ -181,14 +178,6 @@ export default defineConfig({
             return 'react-vendor';
           }
 
-          // Core router runtime + its lodash helpers
-          if (
-            id.includes('node_modules/@remix-run/router') ||
-            id.includes('node_modules/lodash')
-          ) {
-            return 'router-vendor';
-          }
-          
           // Utility libraries (small, can be grouped) - non-React dependencies only
           if (
             id.includes('node_modules/clsx') ||

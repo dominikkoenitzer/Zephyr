@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { m, AnimatePresence } from 'motion/react';
 import {
@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { EmptyState } from '../ui/empty-state';
 import { localStorageService } from '../../services/localStorage';
 import { parseQuickTask } from '../../lib/quickParse';
+import { useTasks } from '../../hooks/useStore';
 import { toast } from 'sonner';
 
 const PRIORITY_STYLES = {
@@ -32,16 +33,13 @@ const PRIORITY_LABELS = {
 
 const TaskList = () => {
   const navigate = useNavigate();
-  const [tasks, setTasks] = useState([]);
+  // Every write below goes through localStorageService, which broadcasts the
+  // change, so the list re-reads itself — here and in any other open tab.
+  const [tasks] = useTasks();
   const [newTask, setNewTask] = useState('');
   const [showCompleted, setShowCompleted] = useState(true);
   const [editingTask, setEditingTask] = useState(null);
   const newTaskInputRef = useRef(null);
-
-  // Load tasks on mount
-  useEffect(() => {
-    setTasks(localStorageService.getTasks());
-  }, []);
 
   // Live, local "smart" parse of the quick-add input (date / priority / #tags).
   const parsed = useMemo(() => parseQuickTask(newTask), [newTask]);
@@ -60,7 +58,6 @@ const TaskList = () => {
     localStorageService.saveOnboarding({ taskAdded: true });
 
     // Keep the input focused so you can add several tasks in a row.
-    setTasks(localStorageService.getTasks());
     setNewTask('');
     newTaskInputRef.current?.focus();
   };
@@ -68,29 +65,19 @@ const TaskList = () => {
   const toggleTask = (taskId) => {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
-      const updatedTask = localStorageService.updateTask(taskId, {
-        completed: !task.completed
-      });
-      
-      if (updatedTask) {
-        // Reload tasks from localStorage to ensure consistency
-        const allTasks = localStorageService.getTasks();
-        setTasks(allTasks);
-      }
+      localStorageService.updateTask(taskId, { completed: !task.completed });
     }
   };
 
   const deleteTask = (taskId) => {
     const removed = tasks.find((t) => t.id === taskId);
     localStorageService.deleteTask(taskId);
-    setTasks(localStorageService.getTasks());
     if (removed) {
       toast('Task deleted', {
         action: {
           label: 'Undo',
           onClick: () => {
             localStorageService.saveTasks([...localStorageService.getTasks(), removed]);
-            setTasks(localStorageService.getTasks());
           },
         },
       });
@@ -98,13 +85,7 @@ const TaskList = () => {
   };
 
   const updateTask = (taskId, updates) => {
-    const updatedTask = localStorageService.updateTask(taskId, updates);
-    if (updatedTask) {
-      // Reload tasks from localStorage to ensure consistency
-      const allTasks = localStorageService.getTasks();
-      setTasks(allTasks);
-    }
-    return updatedTask;
+    return localStorageService.updateTask(taskId, updates);
   };
 
   const saveEdit = () => {

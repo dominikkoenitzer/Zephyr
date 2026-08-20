@@ -15,15 +15,20 @@ import { localStorageService, CHANGE_EVENT } from '../services/localStorage';
  */
 export function useStoreValue(read) {
   // Keep the latest getter without making it an effect dependency, so passing
-  // an inline arrow doesn't re-subscribe on every render.
+  // an inline arrow doesn't re-subscribe on every render. The refresh happens
+  // after commit because a ref written during render is invisible to the
+  // listeners that already closed over it.
   const readRef = useRef(read);
-  readRef.current = read;
+  useEffect(() => {
+    readRef.current = read;
+  });
 
   const [value, setValue] = useState(() => read());
   const refresh = useCallback(() => setValue(readRef.current()), []);
 
+  // No refresh on mount: useState already seeded the value from the same
+  // getter this render, so calling it here only bought a second render.
   useEffect(() => {
-    refresh();
     window.addEventListener(CHANGE_EVENT, refresh);
     window.addEventListener('storage', refresh);
     window.addEventListener('focus', refresh);
