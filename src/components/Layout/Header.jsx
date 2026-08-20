@@ -13,8 +13,6 @@ const EMPTY_RESULTS = { notes: [], tasks: [] };
 
 function Header({ onMenuClick }) {
   const navigate = useNavigate();
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [greeting, setGreeting] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   // Derived, not stored: the results are a pure function of the query, and an
   // effect that copied them into state only bought a second render per keypress.
@@ -31,23 +29,6 @@ function Header({ onMenuClick }) {
   const notificationContainerRef = useRef(null);
 
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(now);
-      
-      const hour = now.getHours();
-      if (hour < 12) {
-        setGreeting('Good Morning');
-      } else if (hour < 17) {
-        setGreeting('Good Afternoon');
-      } else {
-        setGreeting('Good Evening');
-      }
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-
     // Load notification count. Updates instantly when notifications change
     // (via the in-app change event), with a periodic refresh as a fallback
     // for the service's time-based reminders.
@@ -60,7 +41,6 @@ function Header({ onMenuClick }) {
     window.addEventListener('focus', loadNotificationCount);
 
     return () => {
-      clearInterval(interval);
       clearInterval(notificationInterval);
       window.removeEventListener(CHANGE_EVENT, loadNotificationCount);
       window.removeEventListener('focus', loadNotificationCount);
@@ -126,22 +106,6 @@ function Header({ onMenuClick }) {
     };
   }, [searchQuery, searchResults, showSearchResults, selectedIndex, navigate]);
 
-  const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
-  };
-
-  const formatDate = (date) => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
   return (
     <header className="fixed top-0 right-0 left-0 lg:left-[var(--sidebar-width)] z-40 h-(--header-height) bg-background/60 backdrop-blur-2xl border-b border-border/40">
       <div className="flex items-center justify-between h-full px-responsive">
@@ -155,15 +119,8 @@ function Header({ onMenuClick }) {
           >
             <Menu className="h-5 w-5" />
           </Button>
-          
-          <div className="hidden md:block">
-            <div className="text-sm font-medium text-foreground">{greeting}</div>
-            <div className="text-xs text-muted-foreground">
-              {formatDate(currentTime)} • {formatTime(currentTime)}
-            </div>
-          </div>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-2">
             <div className="relative" ref={searchContainerRef}>
