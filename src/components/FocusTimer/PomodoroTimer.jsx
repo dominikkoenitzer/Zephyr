@@ -168,6 +168,7 @@ const PomodoroTimer = () => {
             
             <Button
               onClick={resetTimer}
+              aria-label="Reset timer"
               variant="ghost"
               size="sm"
               className="h-8 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm text-muted-foreground hover:text-foreground"
@@ -178,6 +179,7 @@ const PomodoroTimer = () => {
 
             <Button
               onClick={skipSession}
+              aria-label="Skip session"
               variant="ghost"
               size="sm"
               className="h-8 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm text-muted-foreground hover:text-foreground"
