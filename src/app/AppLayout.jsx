@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { LazyMotion, domMax, MotionConfig, AnimatePresence, m } from 'motion/react';
 import Header from '../components/Layout/Header';
@@ -7,9 +7,6 @@ import { Toaster } from '../components/ui/toast';
 import { themeService } from '../services/themeService';
 import { notificationService } from '../services/notificationService';
 import { useSEO } from '../hooks/useSEO';
-
-// WebGL aurora backdrop — lazy so ogl + the shader never block first paint.
-const AuroraBackground = lazy(() => import('../components/ui/AuroraBackground'));
 
 function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -35,13 +32,7 @@ function AppLayout() {
   return (
     <LazyMotion features={domMax} strict>
       <MotionConfig reducedMotion="user">
-        {/* `isolate` creates a stacking context so the -z-10 aurora canvas
-            paints above this div's own background but below all content. */}
-        <div className="min-h-dvh flex flex-col bg-background transition-colors duration-300 overflow-x-hidden isolate">
-          <Suspense fallback={null}>
-            <AuroraBackground />
-          </Suspense>
-
+        <div className="min-h-dvh flex flex-col bg-background transition-colors duration-300 overflow-x-hidden">
           {/* Keyboard / screen-reader users can jump straight to the content */}
           <a
             href="#main-content"
