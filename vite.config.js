@@ -112,7 +112,9 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
-    minify: 'esbuild',
+    // oxc is Vite 8's own minifier. 'esbuild' still works but only if esbuild
+    // is installed, and Vite 8 no longer brings it.
+    minify: 'oxc',
     cssMinify: true,
     sourcemap: false,
     // Report compressed sizes
@@ -226,12 +228,8 @@ export default defineConfig({
       'react',
       'react-dom',
       'react-router-dom',
-      'react-error-boundary',
     ],
     exclude: ['@vercel/analytics'],
-    esbuildOptions: {
-      target: 'esnext',
-    },
   },
 })
 
