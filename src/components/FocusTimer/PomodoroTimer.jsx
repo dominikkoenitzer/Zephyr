@@ -149,9 +149,9 @@ const PomodoroTimer = () => {
               className={`
                 h-14 w-14 sm:h-16 sm:w-16 rounded-full transition-all duration-300
                 flex items-center justify-center relative
-                ${isRunning 
-                  ? 'bg-foreground/10 hover:bg-foreground/15' 
-                  : 'hover:scale-105 active:scale-95'
+                ${isRunning
+                  ? 'bg-foreground/10 hover:bg-foreground/15'
+                  : 'btn-shine hover:scale-105 active:scale-95'
                 }
               `}
               style={isRunning ? {} : { backgroundColor: currentPreset.color }}

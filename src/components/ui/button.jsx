@@ -9,11 +9,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        // Filled variants carry the sweep; it needs a solid surface to read against.
         default: "btn-shine bg-brand text-white shadow-brand hover:brightness-110",
-        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        outline: "border border-input/80 bg-background/70 backdrop-blur shadow-sm hover:bg-accent/55 hover:text-accent-foreground",
-        secondary: "bg-secondary/85 text-secondary-foreground shadow-sm hover:bg-secondary",
-        ghost: "hover:bg-accent/55 hover:text-accent-foreground",
+        destructive: "btn-shine bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        secondary: "btn-shine bg-secondary/85 text-secondary-foreground shadow-sm hover:bg-secondary",
+        // `outline` and `ghost` are 33 of the ~35 buttons in the app, so this is
+        // the hover state that actually gets seen: the surface firms up and the
+        // edge picks up the brand colour instead of only tinting the background.
+        outline:
+          "border border-input/80 bg-background/70 backdrop-blur shadow-sm hover:border-primary/45 hover:bg-accent/60 hover:text-accent-foreground hover:shadow-md",
+        ghost:
+          "hover:bg-accent/70 hover:text-accent-foreground hover:shadow-sm",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
