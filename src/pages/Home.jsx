@@ -42,7 +42,10 @@ function Home() {
   const [sessions] = useStoreValue(readSessions);
 
   const now = new Date();
-  const greeting = now.getHours() < 12 ? 'Good morning' : now.getHours() < 18 ? 'Good afternoon' : 'Good evening';
+  // Before 5am still reads as "evening" — at 00:19 "Good morning" is just wrong.
+  const hour = now.getHours();
+  const greeting =
+    hour < 5 ? 'Good evening' : hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
   const dateLabel = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   const todayKey = toKey(now);
 
@@ -77,7 +80,7 @@ function Home() {
 
   return (
     <section className="w-full flex-1 min-h-0 overflow-y-auto">
-      <div className="max-w-5xl mx-auto py-2 sm:py-4">
+      <div className="page-width py-2 sm:py-4">
         <p className="text-xs font-medium uppercase tracking-[0.18em] text-primary">{dateLabel}</p>
         <h1 className="mt-2 text-4xl sm:text-5xl lg:text-6xl font-bold text-shimmer">{greeting}</h1>
         <p className="mt-3 text-base text-muted-foreground">Here’s your day at a glance.</p>
