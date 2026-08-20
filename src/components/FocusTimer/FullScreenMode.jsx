@@ -134,6 +134,7 @@ const FullScreenMode = ({
           
           <Button
             onClick={onReset}
+            aria-label="Reset timer"
             variant="ghost"
             size="sm"
             className="h-9 sm:h-10 px-3 sm:px-4 text-xs sm:text-sm text-muted-foreground hover:text-foreground"
@@ -144,6 +145,7 @@ const FullScreenMode = ({
 
           <Button
             onClick={onSkip}
+            aria-label="Skip session"
             variant="ghost"
             size="sm"
             className="h-9 sm:h-10 px-3 sm:px-4 text-xs sm:text-sm text-muted-foreground hover:text-foreground"
