@@ -4,7 +4,7 @@ import PageContainer from '../components/Layout/PageContainer';
 
 function TasksPage() {
   return (
-    <PageContainer className="max-w-3xl">
+    <PageContainer>
       <PageHeader
         title="Tasks"
         description="Organize your work and stay productive"
