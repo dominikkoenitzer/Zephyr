@@ -237,6 +237,47 @@ layer(base);
     gap: var(--panel-gap);
   }
 
+  /* Light sweeps across the button once on hover. Pure CSS so it costs nothing
+     and still runs on a Button that motion is not driving (the asChild case). */
+  .btn-shine {
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* The sweep needs the button to be a containing block, but this must not
+     beat a positioning utility — the task "+" button is `absolute` inside its
+     input, and a plain `position: relative` here dropped it out of the field.
+     `:where()` has zero specificity, so `absolute`/`fixed` still win. */
+  :where(.btn-shine) {
+    position: relative;
+  }
+
+  .btn-shine::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      110deg,
+      transparent 25%,
+      rgb(255 255 255 / 0.38) 50%,
+      transparent 75%
+    );
+    transform: translateX(-100%);
+  }
+
+  .btn-shine:hover::after,
+  .btn-shine:focus-visible::after {
+    transform: translateX(100%);
+    transition: transform 0.75s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-shine::after {
+      display: none;
+    }
+  }
+
   /* Glassmorphism effect */
   .glass {
     background: var(--glass-bg);
