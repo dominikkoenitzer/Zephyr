@@ -12,8 +12,8 @@ No login, no signup, no backend. Your data never leaves your browser.
 [![CI](https://github.com/dominikkoenitzer/Zephyr/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Zephyr/actions/workflows/ci.yml)
 [![Live](https://img.shields.io/badge/live-zephyr.punds.ch-0ea5e9?logo=vercel&logoColor=white)](https://zephyr.punds.ch)
 [![PWA](https://img.shields.io/badge/PWA-installable-5a0fc8?logo=pwa&logoColor=white)](https://zephyr.punds.ch)
-![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-6-646cff?logo=vite&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss&logoColor=white)
 ![Bun](https://img.shields.io/badge/Bun-1.3-fbf0df?logo=bun&logoColor=black)
 
@@ -92,8 +92,8 @@ Every duration is adjustable, and you can save your own custom presets. Complete
 
 ## Tech stack
 
-- **[React 18](https://react.dev/)** + **[Vite 6](https://vite.dev/)** (via `@vitejs/plugin-react-swc`)
-- **[React Router v6](https://reactrouter.com/)** with lazy-loaded routes
+- **[React 19](https://react.dev/)** + **[Vite 8](https://vite.dev/)** (via `@vitejs/plugin-react-swc`)
+- **[React Router v7](https://reactrouter.com/)** with lazy-loaded routes
 - **[Tailwind CSS 4](https://tailwindcss.com/)** + **[Radix UI](https://www.radix-ui.com/)** primitives (shadcn-style)
 - **[Motion](https://motion.dev/)** for animations (page transitions, layout animations, micro-interactions — respects reduced-motion)
 - **[ogl](https://github.com/oframe/ogl)** for the WebGL aurora backdrop (lazy-loaded, theme-aware, disabled under reduced-motion)
