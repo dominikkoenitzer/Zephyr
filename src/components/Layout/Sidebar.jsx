@@ -117,7 +117,10 @@ function Sidebar({ isMobile = false, onClose }) {
   }
 
   return (
-    <div className="hidden lg:flex lg:flex-col lg:w-[var(--sidebar-width)] lg:fixed lg:inset-y-0 bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-lg overflow-hidden">
+    <aside
+      aria-label="Sidebar"
+      className="hidden lg:flex lg:flex-col lg:w-[var(--sidebar-width)] lg:fixed lg:inset-y-0 bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-lg overflow-hidden"
+    >
       <div className="flex flex-col h-full">
         <div className="shrink-0 p-6 pb-4">
           <BrandMark />
@@ -134,14 +137,16 @@ function Sidebar({ isMobile = false, onClose }) {
           />
         </div>
       </div>
-    </div>
+    </aside>
   );
 }
 
 function BrandMark() {
   return (
     <div className="min-w-0">
-      <h1 className="text-2xl font-bold leading-tight text-foreground">Zephyr</h1>
+      {/* The app name, not a page heading: every route already renders its own
+          h1 in PageHeader, and a second one here outranked it. */}
+      <p className="text-2xl font-bold leading-tight text-foreground">Zephyr</p>
       <p className="text-xs text-muted-foreground truncate mt-0.5">Flow Through Focus</p>
     </div>
   );

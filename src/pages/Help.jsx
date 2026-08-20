@@ -112,7 +112,7 @@ function Help() {
                 <div className="flex gap-3 sm:gap-4 items-start">
                   <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">1</div>
                   <div>
-                    <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Set Your Priorities</h4>
+                    <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Set Your Priorities</h3>
                     <p className="text-xs sm:text-sm text-muted-foreground">Head to the Tasks page and add what you want to accomplish today.</p>
                   </div>
                 </div>
@@ -120,7 +120,7 @@ function Help() {
                 <div className="flex gap-3 sm:gap-4 items-start">
                   <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">2</div>
                   <div>
-                    <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Start a Focus Session</h4>
+                    <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Start a Focus Session</h3>
                     <p className="text-xs sm:text-sm text-muted-foreground">Click the Focus Timer and press play to begin your first 25-minute session.</p>
                   </div>
                 </div>
@@ -128,7 +128,7 @@ function Help() {
                 <div className="flex gap-3 sm:gap-4 items-start">
                   <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">3</div>
                   <div>
-                    <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Take Breaks</h4>
+                    <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Take Breaks</h3>
                     <p className="text-xs sm:text-sm text-muted-foreground">When the timer completes, enjoy your well-earned break. Stretch, hydrate, breathe!</p>
                   </div>
                 </div>
@@ -136,7 +136,7 @@ function Help() {
                 <div className="flex gap-3 sm:gap-4 items-start">
                   <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">4</div>
                   <div>
-                    <h4 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Track Your Progress</h4>
+                    <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Track Your Progress</h3>
                     <p className="text-xs sm:text-sm text-muted-foreground">Review your activity across Focus, Tasks, and Notes.</p>
                   </div>
                 </div>
