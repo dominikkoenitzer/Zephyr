@@ -19,10 +19,12 @@ import { parseQuickTask } from '../../lib/quickParse';
 import { useTasks } from '../../hooks/useStore';
 import { toast } from 'sonner';
 
+// One text colour per chip cannot clear 4.5:1 against a tint on a light card
+// and on a dark one, so amber and blue are picked per scheme.
 const PRIORITY_STYLES = {
-  high: 'text-destructive bg-destructive/10 border border-destructive/30',
-  medium: 'text-amber-600 bg-amber-500/10 border border-amber-500/30',
-  low: 'text-primary bg-primary/10 border border-primary/30'
+  high: 'text-destructive-strong bg-destructive/10 border border-destructive/30',
+  medium: 'text-amber-700 dark:text-amber-400 bg-amber-500/10 border border-amber-500/30',
+  low: 'text-blue-700 dark:text-blue-300 bg-primary/10 border border-primary/30'
 };
 
 const PRIORITY_LABELS = {
@@ -265,7 +267,7 @@ const TaskList = () => {
                             </span>
                           )}
                           {dueDate && (
-                            <span className={`text-xs flex items-center gap-1 ${overdue ? 'text-destructive' : 'text-muted-foreground'}`}>
+                            <span className={`text-xs flex items-center gap-1 ${overdue ? 'text-destructive-strong' : 'text-muted-foreground'}`}>
                               <Calendar className="h-3 w-3" />
                               {dueDate}
                             </span>
