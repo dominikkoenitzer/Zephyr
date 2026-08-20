@@ -1,6 +1,6 @@
 import {
   Play, SkipForward, Maximize2, RotateCcw, Plus, Trash2, Edit2,
-  Timer as TimerIcon,
+  Target, Timer as TimerIcon,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { DEFAULT_PRESETS } from './presets';
@@ -23,6 +23,7 @@ const PomodoroTimer = () => {
     skipSession,
     sessionsCompleted,
     totalFocusTime,
+    sessionTask,
     presets,
     selectedPreset,
     currentPreset,
@@ -74,6 +75,14 @@ const PomodoroTimer = () => {
               <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 {currentPreset.name}
               </p>
+              {sessionTask?.title && (
+                <p className="mt-1.5 flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80">
+                  <Target className="h-3.5 w-3.5 shrink-0 text-primary" />
+                  <span className="truncate max-w-[14rem] sm:max-w-sm">
+                    {sessionTask.title}
+                  </span>
+                </p>
+              )}
             </div>
             <Button
               variant="ghost"

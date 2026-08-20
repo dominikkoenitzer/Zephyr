@@ -503,6 +503,7 @@ export function usePomodoro() {
     // Session bookkeeping
     sessionsCompleted,
     totalFocusTime,
+    sessionTask,
 
     // Presets
     presets,
