@@ -232,7 +232,7 @@ const Notes = () => {
   return (
     <div className="w-full max-w-5xl mx-auto space-y-5">
       {/* Quick capture — type a thought, hit Ctrl+Enter, done */}
-      <div className="rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xl shadow-(--shadow-card) focus-within:border-primary/40 transition-colors">
+      <div className="rounded-xl border border-border bg-card focus-within:border-primary/40 transition-colors">
         <textarea
           ref={captureRef}
           autoFocus
@@ -322,7 +322,7 @@ const Notes = () => {
 
       {/* Notes */}
       {visible.length === 0 ? (
-        <Card className="border-dashed">
+        <Card className="border-0 bg-transparent">
           <CardContent className="p-0">
             <EmptyState
               icon={FileText}

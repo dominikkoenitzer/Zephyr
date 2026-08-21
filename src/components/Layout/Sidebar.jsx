@@ -85,7 +85,7 @@ function Sidebar({ isMobile = false, onClose }) {
           animate={{ x: 0 }}
           exit={{ x: '-100%' }}
           transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-          className="fixed left-0 top-0 h-full w-(--sidebar-width) bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-2xl flex flex-col overflow-hidden">
+          className="fixed left-0 top-0 h-full w-(--sidebar-width) bg-background border-r border-border shadow-xl flex flex-col overflow-hidden">
           <div className="flex items-center justify-between p-4 sm:p-6 pb-4 sm:pb-6 shrink-0">
             <BrandMark />
             <Button
@@ -119,7 +119,7 @@ function Sidebar({ isMobile = false, onClose }) {
   return (
     <aside
       aria-label="Sidebar"
-      className="hidden lg:flex lg:flex-col lg:w-[var(--sidebar-width)] lg:fixed lg:inset-y-0 bg-background/95 backdrop-blur-xl border-r border-border/50 shadow-lg overflow-hidden"
+      className="hidden lg:flex lg:flex-col lg:w-[var(--sidebar-width)] lg:fixed lg:inset-y-0 bg-background border-r border-border overflow-hidden"
     >
       <div className="flex flex-col h-full">
         <div className="shrink-0 p-6 pb-4">
