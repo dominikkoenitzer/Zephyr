@@ -6,7 +6,7 @@
 
 ### Flow Through Focus
 
-A free, **local-first** productivity app — tasks, notes, and a Pomodoro focus timer.
+A free, **local-first** productivity app — a to-do list and a Pomodoro focus timer.
 No login, no signup, no backend. Your data never leaves your browser.
 
 [![CI](https://github.com/dominikkoenitzer/Zephyr/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Zephyr/actions/workflows/ci.yml)
@@ -20,7 +20,7 @@ No login, no signup, no backend. Your data never leaves your browser.
 **[→ Try it live at zephyr.punds.ch](https://zephyr.punds.ch)**
 
 
-<img src="docs/screenshot.png" alt="Zephyr — tasks, notes and a Pomodoro focus timer" width="880" />
+<img src="docs/screenshot.png" alt="Zephyr — a to-do list and a Pomodoro focus timer" width="880" />
 
 </div>
 
@@ -31,6 +31,7 @@ No login, no signup, no backend. Your data never leaves your browser.
 - [Why Zephyr](#why-zephyr)
 - [Features](#features)
 - [Natural-language quick add](#natural-language-quick-add)
+- [Command palette & keyboard](#command-palette--keyboard)
 - [Focus presets](#focus-presets)
 - [Tech stack](#tech-stack)
 - [Getting started](#getting-started)
@@ -46,22 +47,25 @@ No login, no signup, no backend. Your data never leaves your browser.
 
 Most productivity apps want an account, a subscription, and a copy of your data on their servers. Zephyr wants none of that.
 
-- **Local-first** — every task, note, and focus session lives in your browser's `localStorage`. Nothing is ever uploaded.
+- **Local-first** — every task and focus session lives in your browser's `localStorage`. Nothing is ever uploaded.
 - **No login** — open the app and start. There is no sign-up flow because there is no server.
-- **Works offline** — Zephyr is an installable Progressive Web App (PWA). Install it and it keeps working without a connection.
-- **Fast & distraction-free** — a clean, keyboard-friendly interface with light and dark themes.
+- **Works offline** — Zephyr is an installable Progressive Web App (PWA). Install it and it keeps working without a connection; when a new version ships it asks before reloading rather than swapping itself out mid-session.
+- **Fast & distraction-free** — two screens, a keyboard-first interface, and light, dark or system themes.
+- **Small on purpose** — notes, a journal and a calendar all lived here once and were removed. What is left is the part people actually used.
 
 ## Features
 
 | | Feature | What it does |
 |---|---|---|
-| ✅ | **Tasks** | Due dates, priorities, and `#tags`. [Natural-language quick add](#natural-language-quick-add) understands plain English as you type. |
-| ⏱️ | **Focus Timer** | A Pomodoro timer with four built-in [presets](#focus-presets) (plus your own), fully customizable durations, automatic session tracking, and a day-streak counter. |
-| 📝 | **Notes** | Quick capture with `#tags`, eight accent colors, pinning, and instant search. Plain-text and friction-free. |
-| 🏠 | **Home dashboard** | A weekly overview — active tasks, tasks completed this week, focus minutes, total notes — plus what's due today. |
-| 🔎 | **Unified search** | Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> to search across tasks and notes from anywhere. |
+| ✅ | **Tasks** | Due dates, priorities, and `#tags`. [Natural-language quick add](#natural-language-quick-add) understands plain English as you type. Filter by due window or tag, and the list groups itself into Overdue / Today / Tomorrow / This week / Later. |
+| ⏱️ | **Focus Timer** | A Pomodoro timer with four built-in [presets](#focus-presets) (plus your own), fully customizable durations, session tracking, and a day streak that tells you when it is about to lapse. |
+| 🏠 | **Home** | The week at a glance — active tasks, tasks completed, focus minutes, sessions — plus what's due today. |
+| ⌘ | **Command palette** | <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> from anywhere — including a phone — searches your tasks and runs any command: new task, start a session, switch theme, export a backup. |
+| ⌨️ | **Keyboard-first** | [Single-key shortcuts](#command-palette--keyboard) for everything you do often, and <kbd>?</kbd> prints the map. |
+| ↩️ | **Undo** | Deleting a task or clearing completed ones offers an Undo that restores them in place. |
 | 🔔 | **Notifications** | Optional in-app reminders for upcoming due dates, plus a chime when a focus session ends. All toggleable. |
-| 🌗 | **Light & dark themes** | A theme toggle in the sidebar; your preference is remembered. |
+| 🌗 | **Light, dark, or system** | Pick a scheme or follow the OS — it changes live when your system does, and every open tab follows. |
+| 💾 | **Backup & restore** | Export everything to one JSON file and import it on any device. Settings shows how much storage Zephyr is using. |
 
 ## Natural-language quick add
 
@@ -78,6 +82,22 @@ Email Sam tomorrow !high #work
 | **Date** | `today`, `tonight`, `tomorrow`, `next monday`, `friday`, `in 3 days`, `aug 5`, `12/25`, `2026-08-05` | Due date |
 | **Priority** | `!high` · `!med` · `!low` (also `!h`/`!m`/`!l`, `!1`/`!2`/`!3`, `p1`/`p2`/`p3`) | Priority |
 | **Tag** | `#work`, `#family` | Tags (lowercased, de-duplicated) |
+
+## Command palette & keyboard
+
+Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> (or <kbd>/</kbd>) anywhere to open the palette. It searches your tasks *and* runs commands — so a task is two keystrokes away from being opened, and a focus session is two from being started.
+
+Single keys work whenever you're not typing in a field:
+
+| Key | Does |
+|---|---|
+| <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> · <kbd>/</kbd> | Command palette |
+| <kbd>N</kbd> | New task |
+| <kbd>T</kbd> | Cycle light → dark → system |
+| <kbd>G</kbd> then <kbd>H</kbd>/<kbd>T</kbd>/<kbd>F</kbd>/<kbd>S</kbd> | Go to Home / Tasks / Focus / Settings |
+| <kbd>?</kbd> | The full list |
+
+On the focus timer: <kbd>Space</kbd> starts and pauses, <kbd>R</kbd> resets, <kbd>S</kbd> skips, <kbd>F</kbd> goes full screen.
 
 ## Focus presets
 
@@ -96,7 +116,6 @@ Every duration is adjustable, and you can save your own custom presets. Complete
 - **[React Router v7](https://reactrouter.com/)** with lazy-loaded routes
 - **[Tailwind CSS 4](https://tailwindcss.com/)** + **[Radix UI](https://www.radix-ui.com/)** primitives (shadcn-style)
 - **[Motion](https://motion.dev/)** for animations (page transitions, layout animations, micro-interactions — respects reduced-motion)
-- **[ogl](https://github.com/oframe/ogl)** for the WebGL aurora backdrop (lazy-loaded, theme-aware, disabled under reduced-motion)
 - **[lucide-react](https://lucide.dev/)** icons · **[sonner](https://sonner.emilkowal.ski/)** toasts
 - **[Vitest](https://vitest.dev/)** + jsdom for unit tests
 - **[Bun](https://bun.sh/)** as the runtime, package manager, and script runner
@@ -127,7 +146,7 @@ That's it — no `.env`, no database, no API keys.
 |---|---|
 | `bun run dev` | Start the Vite dev server on [http://localhost:1000](http://localhost:1000) |
 | `bun run build` | Production build to `dist/` |
-| `bun run preview` | Serve the production build locally |
+| `bun run preview` | Serve the production build, also on [http://localhost:1000](http://localhost:1000) |
 | `bun run lint` | Run ESLint (`--max-warnings 0` — warnings fail) |
 | `bun run test` | Run the Vitest unit suite |
 
@@ -135,16 +154,16 @@ That's it — no `.env`, no database, no API keys.
 
 ```
 src/
-├── app/            # AppLayout — the sidebar + header shell
+├── app/            # AppLayout — the shell around the top bar
 ├── components/
+│   ├── CommandPalette/ # Cmd/Ctrl+K search and commands
 │   ├── FocusTimer/ # Pomodoro timer
-│   ├── Notes/      # Notes
-│   ├── Search/     # Cmd/Ctrl+K search
-│   ├── TaskManager/# Tasks & quick add
-│   ├── Layout/     # Sidebar, Header, PageHeader
+│   ├── Shortcuts/  # The printed keyboard map
+│   ├── TaskManager/# Tasks, filters & quick add
+│   ├── Layout/     # TopBar (the whole navigation), PageHeader
 │   └── ui/         # Reusable shadcn-style primitives
-├── hooks/          # useStore (reactive data hooks), useSEO
-├── lib/            # quickParse (NL parser), utils
+├── hooks/          # useStore (reactive data hooks), useAppShortcuts, useTheme, useSEO
+├── lib/            # quickParse (NL parser), taskFilters, shortcuts, backup, utils
 ├── pages/          # Route-level screens
 ├── routes/         # routes.jsx (lazy-loaded route table)
 └── services/       # localStorage, search, notification, theme (singletons)
@@ -154,10 +173,10 @@ src/
 
 Zephyr has no Redux, Zustand, or Context store. Application state lives in **singleton service classes** under `src/services/`, each persisting to `localStorage` (all keys prefixed `zephyr_`):
 
-- **`localStorage.js`** — the canonical data store for tasks, notes, focus sessions, the streak, and settings. It owns the schema and the add/update/delete helpers.
-- **`searchService.js`** — unified search across notes and tasks (wired into <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> + <kbd>K</kbd>).
+- **`localStorage.js`** — the canonical data store for tasks, focus sessions, the streak, and settings. It owns the schema and the add/update/delete helpers.
+- **`searchService.js`** — task search by title, description and `#tag` (wired into the <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> + <kbd>K</kbd> palette).
 - **`notificationService.js`** — polls for task due dates and plays a Web Audio chime.
-- **`themeService.js`** — light/dark via a class on `<html>`, applied before React renders to avoid a flash.
+- **`themeService.js`** — light/dark/system via a class on `<html>`, applied before React renders to avoid a flash, and kept in step with the OS media query while the preference is "system".
 
 Every write broadcasts a `zephyr:change` event. Reactive hooks in **`src/hooks/useStore.js`** (`useTasks`, `useNotes`, …) subscribe to it — plus the native `storage` event for cross-tab sync — so views update live without a global store. Routes are defined in `src/routes/routes.jsx`, lazy-loaded, and wrapped in a Suspense loader.
 
