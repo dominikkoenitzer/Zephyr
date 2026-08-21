@@ -1,14 +1,23 @@
+/**
+ * The masthead every route shares. Same emphasis as the home page: the title
+ * is set larger and tighter than a dashboard usually allows, and nothing around
+ * it competes — no rule, no eyebrow, no panel.
+ */
 function PageHeader({ title, description, actions }) {
   return (
-    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 sm:gap-4 mb-5 sm:mb-8">
+    <header className="mb-12 flex flex-col gap-6 sm:mb-14 md:flex-row md:items-end md:justify-between">
       <div className="min-w-0">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">{title}</h1>
+        <h1 className="text-[2.5rem] font-semibold leading-[0.95] tracking-[-0.035em] text-foreground sm:text-5xl lg:text-6xl">
+          {title}
+        </h1>
         {description && (
-          <p className="text-sm md:text-base text-muted-foreground mt-1.5 leading-relaxed">{description}</p>
+          <p className="mt-4 max-w-xl text-base text-muted-foreground">{description}</p>
         )}
       </div>
-      {actions ? <div className="w-full md:w-auto flex items-center gap-2 flex-wrap">{actions}</div> : null}
-    </div>
+      {actions ? (
+        <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:shrink-0">{actions}</div>
+      ) : null}
+    </header>
   );
 }
 

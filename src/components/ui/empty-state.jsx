@@ -11,17 +11,19 @@ import { cn } from "../../lib/utils"
  */
 function EmptyState({ icon: Icon, title, description, action, className }) {
   return (
-    <div className={cn("flex flex-col items-center justify-center text-center px-6 py-12 sm:py-16", className)}>
+    // Set left and quiet: no coloured chip, no centred box. It reads as a line
+    // of copy on the page rather than as a placeholder panel.
+    <div className={cn("py-12 sm:py-16", className)}>
       {Icon && (
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-          <Icon className="h-8 w-8" aria-hidden="true" />
-        </div>
+        <Icon className="mb-5 h-6 w-6 text-muted-foreground" aria-hidden="true" strokeWidth={1.5} />
       )}
-      <h2 className="text-lg sm:text-xl font-semibold text-foreground">{title}</h2>
+      <h2 className="text-2xl font-semibold tracking-[-0.02em] text-foreground sm:text-3xl">
+        {title}
+      </h2>
       {description && (
-        <p className="mt-1.5 max-w-md text-sm text-muted-foreground leading-relaxed">{description}</p>
+        <p className="mt-3 max-w-lg text-base leading-relaxed text-muted-foreground">{description}</p>
       )}
-      {action && <div className="mt-5">{action}</div>}
+      {action && <div className="mt-7">{action}</div>}
     </div>
   )
 }
