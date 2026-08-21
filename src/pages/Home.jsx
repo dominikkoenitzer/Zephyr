@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { m } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
-import { useTasks, useNotes, useStoreValue } from '../hooks/useStore';
+import { useTasks, useStoreValue } from '../hooks/useStore';
 import { localStorageService } from '../services/localStorage';
 
 // Stagger-in for the stat tiles and quick links.
@@ -31,13 +31,11 @@ const readSessions = () => localStorageService.getFocusSessions();
 
 const QUICK_LINKS = [
   { to: '/tasks', label: 'Tasks', desc: 'Plan and track your work' },
-  { to: '/focus', label: 'Focus Timer', desc: 'Start a Pomodoro session' },
-  { to: '/notes', label: 'Notes', desc: 'Capture your ideas' },
+  { to: '/focus', label: 'Focus', desc: 'Start a Pomodoro session' },
 ];
 
 function Home() {
   const [tasks] = useTasks();
-  const [notes] = useNotes();
   const [sessions] = useStoreValue(readSessions);
 
   const now = new Date();
@@ -61,9 +59,9 @@ function Home() {
       active: tasks.filter((t) => !t.completed).length,
       doneThisWeek,
       focusMin: Math.round(focusSeconds / 60),
-      notes: notes.length,
+      sessions: sessions.filter((s) => new Date(s.date).getTime() >= start).length,
     };
-  }, [tasks, notes, sessions]);
+  }, [tasks, sessions]);
 
   const dueToday = useMemo(
     () => tasks.filter((t) => !t.completed && dayKey(t.dueDate) === todayKey).slice(0, 5),
@@ -74,7 +72,7 @@ function Home() {
     { label: 'Active tasks', value: stats.active },
     { label: 'Done this week', value: stats.doneThisWeek },
     { label: 'Focus this week', value: `${stats.focusMin}m` },
-    { label: 'Notes', value: stats.notes },
+    { label: 'Sessions this week', value: stats.sessions },
   ];
 
   return (
@@ -84,7 +82,7 @@ function Home() {
             a dashboard would normally allow, and the date sits above it as a
             small tracked line. Everything below stays quiet so this reads as a
             decision rather than as decoration. */}
-        <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+        <p className="text-[12px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
           {dateLabel}
         </p>
         <h1 className="mt-3 text-[2.5rem] font-semibold leading-[0.95] tracking-[-0.035em] text-foreground sm:text-6xl lg:text-7xl">
@@ -109,7 +107,7 @@ function Home() {
               <dd className="text-4xl font-semibold tabular-nums tracking-[-0.03em] text-foreground sm:text-[2.75rem]">
                 {s.value}
               </dd>
-              <dt className="mt-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              <dt className="mt-2.5 text-[12px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
                 {s.label}
               </dt>
             </m.div>
@@ -118,7 +116,7 @@ function Home() {
 
         {/* Today */}
         <section className="mt-14 border-t border-border pt-8">
-          <h2 className="text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+          <h2 className="text-[12px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
             Due today
           </h2>
           {dueToday.length === 0 ? (
@@ -134,7 +132,7 @@ function Home() {
                     className="flex items-center gap-3 py-3 text-foreground transition-colors hover:text-primary"
                   >
                     <span className="h-1 w-1 shrink-0 rounded-full bg-muted-foreground" />
-                    <span className="truncate text-[15px]">{t.title}</span>
+                    <span className="truncate text-[16px]">{t.title}</span>
                   </Link>
                 </li>
               ))}

@@ -9,23 +9,9 @@ import { routes } from './routes/routes';
 import './index.css';
 import { themeService } from './services/themeService';
 
-// Initialize theme before React renders
-const initializeTheme = () => {
-  const savedTheme = localStorage.getItem('theme') || 'system';
-  const root = document.documentElement;
-  root.classList.remove('dark', 'light');
-  
-  if (savedTheme === 'system') {
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    root.classList.add(systemTheme);
-  } else {
-    root.classList.add(savedTheme);
-  }
-};
-
-// Apply theme immediately
-initializeTheme();
-// Clear any legacy garden theme and sync with current color mode
+// Paint the stored theme before React renders, so there is no flash of the
+// wrong scheme. This also starts following the OS while the preference is
+// "system".
 themeService.initialize();
 
 // v7_startTransition was a v6 opt-in; it is the behaviour in v7 and passing

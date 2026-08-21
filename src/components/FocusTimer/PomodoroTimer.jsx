@@ -1,12 +1,22 @@
+import { useMemo } from 'react';
 import {
-  Play, SkipForward, Maximize2, RotateCcw, Plus, Trash2, Edit2,
-  Target, Timer as TimerIcon,
+  Play, SkipForward, Maximize2, RotateCcw, Plus, Trash2, Edit2, Target,
 } from 'lucide-react';
+import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { useStoreValue, useTasks } from '../../hooks/useStore';
+import { localStorageService } from '../../services/localStorage';
+import { activeStreak, streakAtRisk } from '../../lib/streak';
+import { sortByUrgency } from '../../lib/taskFilters';
 import { DEFAULT_PRESETS } from './presets';
 import FullScreenMode from './FullScreenMode';
 import PresetSettingsDialog from './PresetSettingsDialog';
 import { formatTime, usePomodoro } from './usePomodoro';
+
+const NO_TASK = 'none';
+
+const readStreak = () => localStorageService.getFocusStreak();
 
 const PomodoroTimer = () => {
   const {
@@ -24,6 +34,7 @@ const PomodoroTimer = () => {
     sessionsCompleted,
     totalFocusTime,
     sessionTask,
+    setSessionTask,
     presets,
     selectedPreset,
     currentPreset,
@@ -45,6 +56,31 @@ const PomodoroTimer = () => {
     setIsFullScreen,
   } = usePomodoro();
 
+  // The streak has been counted since the timer shipped and shown nowhere.
+  const [streak] = useStoreValue(readStreak);
+  const streakDays = activeStreak(streak);
+  const atRisk = streakAtRisk(streak);
+
+  // What you can point this session at. A task picked earlier stays listed
+  // even after it is completed, so the picker never blanks out mid-session.
+  const [tasks] = useTasks();
+  const taskOptions = useMemo(() => {
+    const active = sortByUrgency(tasks.filter((t) => !t.completed));
+    if (sessionTask?.id && !active.some((t) => t.id === sessionTask.id)) {
+      return [{ id: sessionTask.id, title: sessionTask.title }, ...active];
+    }
+    return active;
+  }, [tasks, sessionTask]);
+
+  const chooseTask = (value) => {
+    if (value === NO_TASK) {
+      setSessionTask(null);
+      return;
+    }
+    const task = taskOptions.find((t) => t.id === value);
+    if (task) setSessionTask({ id: task.id, title: task.title });
+  };
+
   if (isFullScreen) {
     return (
       <FullScreenMode
@@ -63,26 +99,47 @@ const PomodoroTimer = () => {
   }
 
   return (
-    <div className="w-full content-wide px-responsive py-responsive space-y-(--section-gap)">
+    <div className="w-full space-y-(--section-gap)">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-(--panel-gap)">
         <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
-                {sessionType.text}
+          {/* Header — the bar already carries the page's name, so the state
+              of the session is set as an eyebrow rather than a second title. */}
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h2 className="flex flex-wrap items-center gap-x-2.5 text-[12px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                <span className={isRunning ? 'text-foreground' : undefined}>{sessionType.text}</span>
+                <span aria-hidden="true">·</span>
+                <span>{currentPreset.name}</span>
               </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                {currentPreset.name}
-              </p>
-              {sessionTask?.title && (
-                <p className="mt-1.5 flex items-center gap-1.5 text-xs sm:text-sm text-foreground/80">
-                  <Target className="h-3.5 w-3.5 shrink-0 text-primary" />
-                  <span className="truncate max-w-[14rem] sm:max-w-sm">
-                    {sessionTask.title}
-                  </span>
+              {/* What this session is for. Previously this could only be set
+                  by arriving from a task's Focus button; now it is a picker,
+                  and finishing the session offers to tick the task off. */}
+              {sessionTask?.title && !sessionTask.id ? (
+                <p className="mt-2 flex items-center gap-1.5 text-[16px] text-foreground">
+                  <Target className="h-3.5 w-3.5 shrink-0 text-primary-strong" />
+                  <span className="truncate max-w-[14rem] sm:max-w-sm">{sessionTask.title}</span>
                 </p>
-              )}
+              ) : taskOptions.length > 0 || sessionTask?.id ? (
+                <div className="mt-1.5 flex items-center gap-1.5">
+                  <Target className="h-3.5 w-3.5 shrink-0 text-primary-strong" aria-hidden="true" />
+                  <Select value={sessionTask?.id || NO_TASK} onValueChange={chooseTask}>
+                    <SelectTrigger
+                      aria-label="Task for this session"
+                      className="h-8 w-[min(20rem,60vw)] rounded-none border-0 border-b border-transparent bg-transparent px-0 text-[16px] text-foreground hover:border-border focus:ring-0 data-[state=open]:border-border"
+                    >
+                      <SelectValue placeholder="Focus on…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={NO_TASK}>No specific task</SelectItem>
+                      {taskOptions.map((task) => (
+                        <SelectItem key={task.id} value={task.id}>
+                          {task.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : null}
             </div>
             <Button
               variant="ghost"
@@ -200,99 +257,128 @@ const PomodoroTimer = () => {
           )}
         </div>
 
-        <div className="space-y-3 sm:space-y-4">
-          {/* Presets */}
-          <div className="space-y-1.5 sm:space-y-2">
-            <h3 className="text-xs sm:text-sm font-medium text-muted-foreground px-1">Presets</h3>
-            <div className="space-y-1.5">
-              {presets.map(preset => {
-                const defaultPreset = DEFAULT_PRESETS.find(dp => dp.id === preset.id);
-                const Icon = defaultPreset ? defaultPreset.icon : (preset.icon || TimerIcon);
+        <div className="space-y-8">
+          {/* Presets — the same hairline rows the task list uses */}
+          <div>
+            <h3 className="mb-1 flex items-center gap-3 text-[12px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              <span>Presets</span>
+              <span className="h-px flex-1 bg-border" aria-hidden="true" />
+            </h3>
+            <ul className="divide-y divide-border">
+              {presets.map((preset) => {
+                const defaultPreset = DEFAULT_PRESETS.find((dp) => dp.id === preset.id);
                 const isSelected = selectedPreset === preset.id;
                 const isDefault = !!defaultPreset;
-                
+
                 return (
-                  <div
-                    key={preset.id}
-                    className={`
-                      w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors cursor-pointer group
-                      ${isSelected 
-                        ? 'bg-accent' 
-                        : 'hover:bg-accent/50'
-                      }
-                    `}
-                    onClick={() => handlePresetChange(preset.id)}
-                  >
-                    {typeof Icon === 'function' ? (
-                      <Icon className="h-4 w-4 shrink-0" style={{ color: isSelected ? preset.color : undefined }} />
-                    ) : (
-                      <TimerIcon className="h-4 w-4 shrink-0" style={{ color: isSelected ? preset.color : undefined }} />
-                    )}
-                    <div className="flex-1 text-left min-w-0">
-                      <div className="text-sm font-medium text-foreground truncate">{preset.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {Math.floor(preset.workTime / 60)} min
-                      </div>
-                    </div>
-                    {isSelected && (
-                      <div 
-                        className="h-2 w-2 rounded-full shrink-0"
-                        style={{ backgroundColor: preset.color }}
+                  <li key={preset.id} className="group/preset">
+                    <div
+                      onClick={() => handlePresetChange(preset.id)}
+                      className="flex cursor-pointer items-center gap-3 py-2.5"
+                    >
+                      <span
+                        className="h-2 w-2 shrink-0 rounded-full transition-colors"
+                        style={{ backgroundColor: isSelected ? preset.color : 'transparent' }}
+                        aria-hidden="true"
                       />
-                    )}
-                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        type="button"
-                        aria-label={`Edit ${preset.name}`}
-                        className="h-7 w-7 flex items-center justify-center rounded hover:bg-background transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingPreset(preset);
-                          setNewPresetName(preset.name);
-                          setIsSettingsOpen(true);
-                        }}
+                      <span
+                        className={cn(
+                          'min-w-0 flex-1 truncate text-[16px] transition-colors',
+                          isSelected ? 'text-foreground' : 'text-muted-foreground group-hover/preset:text-foreground'
+                        )}
                       >
-                        <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
-                      </button>
-                      {!isDefault && (
-                        <button
-                          type="button"
-                          aria-label={`Delete ${preset.name}`}
-                          className="h-7 w-7 flex items-center justify-center rounded hover:bg-background transition-colors"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeletePreset(preset.id);
-                          }}
-                        >
-                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                        </button>
-                      )}
+                        {preset.name}
+                      </span>
+
+                      <span className="relative shrink-0">
+                        <span className="block text-[13px] tabular-nums text-muted-foreground transition-opacity sm:group-hover/preset:opacity-0 sm:group-focus-within/preset:opacity-0">
+                          {Math.floor(preset.workTime / 60)} min
+                        </span>
+                        <span className="pointer-events-none absolute -top-1.5 right-0 hidden items-center gap-0.5 opacity-0 transition-opacity sm:flex sm:group-hover/preset:pointer-events-auto sm:group-hover/preset:opacity-100 sm:group-focus-within/preset:pointer-events-auto sm:group-focus-within/preset:opacity-100">
+                          <button
+                            type="button"
+                            aria-label={`Edit ${preset.name}`}
+                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingPreset(preset);
+                              setNewPresetName(preset.name);
+                              setIsSettingsOpen(true);
+                            }}
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                          </button>
+                          {!isDefault && (
+                            <button
+                              type="button"
+                              aria-label={`Delete ${preset.name}`}
+                              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeletePreset(preset.id);
+                              }}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                        </span>
+                      </span>
                     </div>
-                  </div>
+                  </li>
                 );
               })}
-              
-              <button
-                onClick={handleCreatePreset}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent/50 transition-colors text-sm text-muted-foreground hover:text-foreground"
-              >
-                <Plus className="h-4 w-4" />
-                New Preset
-              </button>
-            </div>
+            </ul>
+
+            <button
+              type="button"
+              onClick={handleCreatePreset}
+              className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+              New preset
+            </button>
           </div>
 
-          {/* Stats */}
-          <div className="pt-4 border-t border-border space-y-4">
+          {/* Today's figures, set like the ones on the home screen */}
+          <dl className="grid grid-cols-3 gap-4 border-t border-border pt-6">
             <div>
-              <div className="text-2xl font-semibold text-foreground">{sessionsCompleted}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">Sessions</div>
+              <dd className="text-3xl font-semibold tabular-nums tracking-[-0.03em] text-foreground">
+                {sessionsCompleted}
+              </dd>
+              <dt className="mt-1.5 text-[12px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                Sessions
+              </dt>
             </div>
             <div>
-              <div className="text-2xl font-semibold text-foreground">{totalFocusTime}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">Minutes</div>
+              <dd className="text-3xl font-semibold tabular-nums tracking-[-0.03em] text-foreground">
+                {totalFocusTime}
+              </dd>
+              <dt className="mt-1.5 text-[12px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                Minutes
+              </dt>
             </div>
-          </div>
+            <div>
+              <dd
+                className={cn(
+                  'text-3xl font-semibold tabular-nums tracking-[-0.03em]',
+                  streakDays > 0 ? 'text-foreground' : 'text-muted-foreground'
+                )}
+              >
+                {streakDays}
+              </dd>
+              <dt className="mt-1.5 text-[12px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                Day streak
+              </dt>
+            </div>
+          </dl>
+
+          {/* The warning gets its own line: inside the column it wrapped mid
+              label, and a streak is only worth showing if you can act on it. */}
+          {atRisk && (
+            <p className="text-[13px] text-muted-foreground">
+              Finish a session today to keep your {streakDays}-day streak.
+            </p>
+          )}
 
           <PresetSettingsDialog
             open={isSettingsOpen}

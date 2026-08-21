@@ -5,13 +5,13 @@ const SITE_URL = 'https://zephyr.punds.ch';
 
 const pageMetadata = {
   '/': {
-    title: 'Zephyr — Free Tasks, Notes & Pomodoro Timer. No Login.',
-    description: 'Zephyr is a free, local-first productivity app: tasks, notes, and a Pomodoro focus timer. No login, no signup — your data stays in your browser and it works offline.',
-    keywords: 'free productivity app, no login to do list, pomodoro timer, notes app, local-first app, offline productivity',
+    title: 'Zephyr — Free To-Do List & Pomodoro Timer. No Login.',
+    description: 'Zephyr is a free, local-first productivity app: a to-do list with natural-language quick add and a Pomodoro focus timer. No login, no signup — your data stays in your browser and it works offline.',
+    keywords: 'free productivity app, no login to do list, pomodoro timer, local-first app, offline productivity',
   },
   '/home': {
     title: 'Home | Zephyr — Your Day at a Glance',
-    description: 'See active tasks, tasks due today, weekly focus minutes, and notes in one simple local-first dashboard. No account required.',
+    description: 'See active tasks, what is due today, weekly focus minutes and completed sessions in one simple local-first dashboard. No account required.',
     keywords: 'productivity dashboard, local-first app, no signup app, daily overview, personal productivity home',
   },
   '/tasks': {
@@ -23,11 +23,6 @@ const pageMetadata = {
     title: 'Focus Timer | Zephyr — Pomodoro & Deep Work Sessions',
     description: 'A customizable Pomodoro timer with presets for deep work and meditation, automatic session tracking, and a daily streak. Free and offline-capable.',
     keywords: 'pomodoro timer, focus timer, deep work timer, productivity timer, time management',
-  },
-  '/notes': {
-    title: 'Notes | Zephyr — Simple, Local-First Note Taking',
-    description: 'Capture notes with #tags, colors, pinning, and instant search. Everything stays in your browser — private, free, and no login required.',
-    keywords: 'notes app, note taking, local-first notes, private notes, free notes app',
   },
   '/settings': {
     title: 'Settings | Zephyr — Notifications & Data Management',
