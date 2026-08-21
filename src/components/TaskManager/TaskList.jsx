@@ -166,7 +166,7 @@ const TaskList = () => {
                 value={newTask}
                 onChange={(e) => setNewTask(e.target.value)}
                 onKeyDown={(e) => e.key === 'Escape' && setNewTask('')}
-                className="pl-12 pr-14 h-14 text-base rounded-2xl bg-card/60 backdrop-blur-xl border-border/50 shadow-(--shadow-card)"
+                className="pl-12 pr-14 h-14 text-base rounded-xl bg-card border-border shadow-none"
                 aria-label="Add a task"
               />
               <Button
@@ -243,7 +243,7 @@ const TaskList = () => {
                       exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.15 } }}
                       transition={{ type: 'spring', stiffness: 500, damping: 40 }}
                       onClick={() => setEditingTask(task)}
-                      className="flex items-start sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-card/70 backdrop-blur-xl border border-border/60 rounded-xl transition-colors duration-200 hover:shadow-sm hover:border-primary/30 group cursor-pointer"
+                      className="flex items-start sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-card border border-border rounded-xl transition-colors duration-200 hover:border-primary/40 group cursor-pointer"
                     >
                       <Button
                         variant="ghost"
@@ -351,7 +351,7 @@ const TaskList = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.15 } }}
                     transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-                    className="flex items-center gap-3 p-4 bg-card/40 backdrop-blur-xl border border-border/50 rounded-xl"
+                    className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl"
                   >
                     <Button
                       variant="ghost"
@@ -385,7 +385,7 @@ const TaskList = () => {
 
           {/* Empty State */}
           {tasks.length === 0 && (
-            <Card className="border-dashed">
+            <Card className="border-0 bg-transparent">
               <CardContent className="p-0">
                 <EmptyState
                   icon={Target}
