@@ -2,59 +2,42 @@ import { localStorageService } from './localStorage';
 
 class SearchService {
   /**
-   * Unified search across all data types
+   * Search every task by title, description and #tag.
+   *
+   * Still returns a grouped object rather than a bare array: Notes used to be
+   * the second group, and the command palette renders whatever groups it is
+   * handed, so a third one can be added back without touching the caller.
+   *
    * @param {string} query - Search query
-   * @returns {Object} Grouped search results
+   * @returns {{ tasks: Array }} Grouped search results
    */
   searchAll(query) {
     if (!query || query.trim().length === 0) {
-      return { notes: [], tasks: [] };
+      return { tasks: [] };
     }
 
     const searchTerm = query.toLowerCase().trim();
     const results = {
-      notes: [],
       tasks: []
     };
-
-    // Search Notes
-    const notes = localStorageService.getNotes();
-    notes.forEach(note => {
-      const matchesTitle = note.title?.toLowerCase().includes(searchTerm);
-      const matchesContent = note.content?.toLowerCase().includes(searchTerm);
-      const matchesTags = note.tags?.some(tag => tag.toLowerCase().includes(searchTerm));
-      
-      if (matchesTitle || matchesContent || matchesTags) {
-        results.notes.push({
-          ...note,
-          matchType: matchesTitle ? 'title' : matchesContent ? 'content' : 'tag',
-          matchText: this.highlightMatch(note.title || note.content || '', searchTerm)
-        });
-      }
-    });
 
     // Search Tasks
     const tasks = localStorageService.getTasks();
     tasks.forEach(task => {
       const matchesTitle = task.title?.toLowerCase().includes(searchTerm);
       const matchesDescription = task.description?.toLowerCase().includes(searchTerm);
-      
-      if (matchesTitle || matchesDescription) {
+      const matchesTags = task.tags?.some(tag => tag.toLowerCase().includes(searchTerm));
+
+      if (matchesTitle || matchesDescription || matchesTags) {
         results.tasks.push({
           ...task,
-          matchType: matchesTitle ? 'title' : 'description',
+          matchType: matchesTitle ? 'title' : matchesDescription ? 'description' : 'tag',
           matchText: this.highlightMatch(task.title || task.description || '', searchTerm)
         });
       }
     });
 
-    // Sort results by relevance (title matches first, then content)
-    results.notes.sort((a, b) => {
-      if (a.matchType === 'title' && b.matchType !== 'title') return -1;
-      if (a.matchType !== 'title' && b.matchType === 'title') return 1;
-      return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt);
-    });
-
+    // Sort results by relevance (title matches first, then the rest)
     results.tasks.sort((a, b) => {
       if (a.matchType === 'title' && b.matchType !== 'title') return -1;
       if (a.matchType !== 'title' && b.matchType === 'title') return 1;
@@ -82,8 +65,7 @@ class SearchService {
    * @returns {number} Total count
    */
   getTotalCount(results) {
-    return (results.notes?.length || 0) +
-           (results.tasks?.length || 0);
+    return results.tasks?.length || 0;
   }
 }
 

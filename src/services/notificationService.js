@@ -18,9 +18,18 @@ const DEFAULT_SETTINGS = {
   }
 };
 
+const pad = (n) => String(n).padStart(2, '0');
+/** Local day key — reminders are once per task per day, not once per poll. */
+const dayKey = (date = new Date()) =>
+  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+
 class NotificationService {
   constructor() {
     this.checkInterval = null;
+    // One AudioContext, reused. Browsers cap a page at six, and the old code
+    // built a new one per chime and never closed it — so the seventh
+    // notification threw and every chime after it was silent.
+    this.audioContext = null;
   }
 
   /**
@@ -86,7 +95,7 @@ class NotificationService {
   /**
    * Create a new notification
    */
-  createNotification(type, title, message, action = null, metadata = {}) {
+  createNotification(type, title, message, action = null, metadata = {}, dedupeKey = null) {
     const settings = this.getSettings();
     if (!settings.enabled) return null;
 
@@ -101,21 +110,31 @@ class NotificationService {
       message,
       action,
       metadata,
+      dedupeKey,
       read: false,
       createdAt: new Date().toISOString()
     };
 
     const notifications = this.getNotifications();
-    
-    // Check if similar notification already exists (prevent duplicates)
-    const isDuplicate = notifications.some(n => 
-      n.type === type && 
-      n.title === title && 
-      !n.read &&
-      (Date.now() - new Date(n.createdAt).getTime()) < 60000 // Within last minute
-    );
 
-    if (isDuplicate) return null;
+    // A caller that supplies a key owns its own identity: one notification per
+    // key, ever (within the 30-day retention). Task reminders key on the task
+    // *and* the day, so a task due today is announced once today rather than
+    // once per poll — the old guard compared type + title inside a 60s window,
+    // which the 60s polling interval stepped straight over, and which also
+    // collapsed two different tasks due on the same day into one alert.
+    if (dedupeKey && notifications.some((n) => n.dedupeKey === dedupeKey)) return null;
+
+    if (!dedupeKey) {
+      const isDuplicate = notifications.some(
+        (n) =>
+          n.type === type &&
+          n.title === title &&
+          !n.read &&
+          Date.now() - new Date(n.createdAt).getTime() < 60000
+      );
+      if (isDuplicate) return null;
+    }
 
     notifications.unshift(notification);
     this.saveNotifications(notifications);
@@ -133,8 +152,13 @@ class NotificationService {
    */
   playNotificationSound() {
     try {
-      // Create a simple, pleasant notification sound using Web Audio API
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const Ctor = window.AudioContext || window.webkitAudioContext;
+      if (!Ctor) return;
+      if (!this.audioContext) this.audioContext = new Ctor();
+      const audioContext = this.audioContext;
+      // A context created before the first gesture starts suspended.
+      if (audioContext.state === 'suspended') audioContext.resume();
+
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 
@@ -207,6 +231,7 @@ class NotificationService {
     const tasks = localStorageService.getTasks();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const todayKey = dayKey(today);
 
     tasks.forEach(task => {
       if (!task.dueDate || task.completed) return;
@@ -224,7 +249,8 @@ class NotificationService {
           'Task Overdue',
           `${task.title} was due ${Math.abs(daysUntilDue)} day${Math.abs(daysUntilDue) !== 1 ? 's' : ''} ago`,
           { type: 'navigate', path: '/tasks' },
-          { taskId: task.id }
+          { taskId: task.id },
+          `task:${task.id}:overdue:${todayKey}`
         );
       }
       // Due today
@@ -234,7 +260,8 @@ class NotificationService {
           'Task Due Today',
           `${task.title} is due today`,
           { type: 'navigate', path: '/tasks' },
-          { taskId: task.id }
+          { taskId: task.id },
+          `task:${task.id}:due-today:${todayKey}`
         );
       }
       // Due soon
@@ -244,7 +271,8 @@ class NotificationService {
           'Task Due Soon',
           `${task.title} is due in ${daysUntilDue} day${daysUntilDue !== 1 ? 's' : ''}`,
           { type: 'navigate', path: '/tasks' },
-          { taskId: task.id }
+          { taskId: task.id },
+          `task:${task.id}:due-soon:${todayKey}`
         );
       }
     });
@@ -254,6 +282,10 @@ class NotificationService {
    * Start checking for notifications at intervals
    */
   startChecking() {
+    // Never stack intervals: a second start would orphan the first handle and
+    // leave a checker running that nothing can stop.
+    this.stopChecking();
+
     const settings = this.getSettings();
     if (!settings.enabled) return;
 

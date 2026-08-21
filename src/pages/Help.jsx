@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { HelpCircle, Zap, Shield, FileText, Scale, AlertCircle, Timer, Settings, WifiOff, Trash2, Cloud } from 'lucide-react';
+import { HelpCircle, Zap, Shield, FileText, Scale, AlertCircle, Timer, Settings, WifiOff, Trash2, Cloud, Keyboard, Command } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
+import ShortcutTable from '../components/Shortcuts/ShortcutTable';
 import PageHeader from '../components/Layout/PageHeader';
 import PageContainer from '../components/Layout/PageContainer';
 
@@ -19,21 +20,28 @@ function Help() {
     },
     {
       question: "Can I customize timer durations?",
-      answer: "Yes! Zephyr offers multiple timer presets including Pomodoro, Deep Work, and Meditation. You can also create custom presets with your preferred work session, short break, and long break durations. Simply click the settings icon (⚙️) on the Focus Timer page to access preset options and create your own custom timer configuration that fits your workflow.",
+      answer: "Yes! Zephyr offers multiple timer presets including Pomodoro, Deep Work, and Meditation. You can also create custom presets with your preferred work session, short break, and long break durations. On the Focus page, pick a preset from the list on the right; hover one to rename or retime it, or use the New preset button to add your own.",
       icon: Settings,
       iconColor: "text-primary",
       bgColor: "bg-accent/60"
     },
     {
+      question: "Can I drive Zephyr from the keyboard?",
+      answer: "Almost entirely. Ctrl+K (Cmd+K on a Mac) opens the command palette, which searches your tasks and runs any command — new task, start a focus session, switch theme, export a backup. Single keys work whenever you are not typing in a field: N for a new task, T to switch theme, G then T or F to jump between pages, and ? for the full list below.",
+      icon: Command,
+      iconColor: "text-primary",
+      bgColor: "bg-primary/10"
+    },
+    {
       question: "How do I track my progress?",
-      answer: "Zephyr tracks progress across Focus Timer, Tasks, and Notes. You can review your sessions, completed work, and upcoming items directly in each section. All progress is automatically saved and updated in real time.",
+      answer: "Zephyr tracks your focus sessions and your completed tasks. The home screen sums up the week — active tasks, tasks finished, focus minutes and sessions — and the timer keeps a daily streak. All of it is saved as it happens.",
       icon: FileText,
       iconColor: "text-primary",
       bgColor: "bg-accent/50"
     },
     {
       question: "Does Zephyr work offline?",
-      answer: "Yes! Zephyr is a Progressive Web App (PWA) designed to work completely offline. All your data—tasks, notes, and timer sessions—is stored locally on your device using browser storage. You don't need an internet connection to use any features. This ensures your data remains private and accessible even without internet access.",
+      answer: "Yes! Zephyr is a Progressive Web App (PWA) designed to work completely offline. All your data — tasks and timer sessions — is stored locally on your device using browser storage. You don't need an internet connection to use any features. This ensures your data remains private and accessible even without internet access.",
       icon: WifiOff,
       iconColor: "text-primary",
       bgColor: "bg-accent/60"
@@ -47,7 +55,7 @@ function Help() {
     },
     {
       question: "How do I clear all my data?",
-      answer: "To clear all your data, go to Settings > Data Management. Click the 'Clear All Local Storage' button. You'll be asked to confirm this action as it permanently deletes all tasks, notes, timer sessions, settings, and preferences. This action cannot be undone and will reload the page. Export a backup first (Settings > Data Management > Export data) if you want to keep anything.",
+      answer: "To clear all your data, go to Settings > Data Management. Click the 'Clear All Local Storage' button. You'll be asked to confirm this action as it permanently deletes all tasks, timer sessions, settings, and preferences. This action cannot be undone and will reload the page. Export a backup first (Settings > Data Management > Export data) if you want to keep anything.",
       icon: Trash2,
       iconColor: "text-destructive",
       bgColor: "bg-destructive/10"
@@ -137,10 +145,26 @@ function Help() {
                   <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">4</div>
                   <div>
                     <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Track Your Progress</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Review your activity across Focus, Tasks, and Notes.</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">The home screen sums up your week — tasks finished, focus minutes, sessions.</p>
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Keyboard shortcuts */}
+          <Card className=" animate-fade-in-up shrink-0" style={{ animationDelay: '0.15s' }}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Keyboard className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                Keyboard shortcuts
+              </CardTitle>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2">
+                Single keys work whenever you are not typing in a field. Press ? anywhere to see this list.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <ShortcutTable />
             </CardContent>
           </Card>
 
@@ -219,12 +243,11 @@ function Help() {
 
                 <h3 className="font-semibold text-foreground text-base mb-2">2. Local Data Storage</h3>
                 <p className="mb-4">
-                  All your tasks, notes, timer sessions, and settings are stored exclusively
+                  All your tasks, timer sessions, and settings are stored exclusively
                   on your device. This includes:
                 </p>
                 <ul className="list-disc ml-6 space-y-1 mb-4">
                   <li>Task lists</li>
-                  <li>Notes</li>
                   <li>Focus timer sessions and presets</li>
                   <li>Application settings and preferences</li>
                   <li>Notification history</li>
