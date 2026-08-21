@@ -46,10 +46,10 @@ const buttonVariants = cva(
 const MAGNET_SPRING = { stiffness: 260, damping: 18, mass: 0.5 }
 const PRESS_SPRING = { type: "spring", stiffness: 420, damping: 24, mass: 0.6 }
 
-// How far the button chases the cursor, and the ceiling on that chase. Past
-// about 10px it stops reading as magnetism and starts reading as a bug.
-const PULL = 0.32
-const MAX_PULL = 9
+// Deliberately restrained: enough travel to feel responsive under the cursor,
+// not enough to look like the button is dodging the pointer.
+const PULL = 0.14
+const MAX_PULL = 3
 
 const clamp = (v, limit) => Math.max(-limit, Math.min(limit, v))
 
@@ -123,8 +123,8 @@ const Button = React.forwardRef(
             ? undefined
             : { x: pullX, y: pullY, "--glow-x": glowLeft, "--glow-y": glowTop }
         }
-        whileHover={flat ? undefined : { scale: 1.06 }}
-        whileTap={flat ? undefined : { scale: 0.9 }}
+        whileHover={flat ? undefined : { scale: 1.02 }}
+        whileTap={flat ? undefined : { scale: 0.97 }}
         transition={PRESS_SPRING}
         {...props}
       >
