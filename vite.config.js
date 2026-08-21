@@ -74,8 +74,13 @@ export default defineConfig({
     // Uses the existing public/manifest.webmanifest — the plugin does not
     // generate one (manifest: false) and does not touch chunking.
     VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'auto',
+      // 'prompt', not 'autoUpdate': a deploy used to swap the precache under a
+      // session that was already running, so a lazy route chunk requested
+      // afterwards could 404 against the new manifest. Now the new worker waits
+      // and `usePwaUpdate` offers a reload instead. `injectRegister: null`
+      // because the app registers the worker itself, in that hook.
+      registerType: 'prompt',
+      injectRegister: null,
       manifest: false,
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,txt,xml}'],
@@ -106,8 +111,17 @@ export default defineConfig({
     },
     dedupe: ['react', 'react-dom'],
   },
+  // Port 1000 for both `dev` and `preview`, and strictly — Vite's default is
+  // to walk to the next free port, which quietly hands you a different URL.
+  // Failing loudly is better than serving on a port nobody is looking at.
   server: {
     port: 1000,
+    strictPort: true,
+    host: true,
+  },
+  preview: {
+    port: 1000,
+    strictPort: true,
     host: true,
   },
   build: {

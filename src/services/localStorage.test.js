@@ -31,13 +31,33 @@ describe('localStorageService — tasks', () => {
   });
 });
 
+describe('localStorageService — ids', () => {
+  it('gives two tasks made in the same millisecond different ids', () => {
+    const a = localStorageService.addTask({ title: 'A' });
+    const b = localStorageService.addTask({ title: 'B' });
+    expect(a.id).not.toBe(b.id);
+
+    // The bug that made this matter: delete matches on id, so a shared id
+    // meant deleting one task deleted the other with it.
+    localStorageService.deleteTask(a.id);
+    expect(localStorageService.getTasks().map((t) => t.title)).toEqual(['B']);
+  });
+
+  it('gives two focus sessions different ids too', () => {
+    localStorageService.saveFocusSession({ duration: 1 });
+    localStorageService.saveFocusSession({ duration: 2 });
+    const [one, two] = localStorageService.getFocusSessions();
+    expect(one.id).not.toBe(two.id);
+  });
+});
+
 describe('localStorageService — change events', () => {
   it('broadcasts a zephyr:change event on every write', () => {
     let fired = 0;
     const handler = () => { fired += 1; };
     window.addEventListener(CHANGE_EVENT, handler);
     localStorageService.addTask({ title: 'A' });
-    localStorageService.saveNotes([]);
+    localStorageService.saveViewPrefs({ taskView: 'today' });
     window.removeEventListener(CHANGE_EVENT, handler);
     expect(fired).toBe(2);
   });
@@ -52,15 +72,14 @@ describe('localStorageService — settings', () => {
   });
 });
 
-describe('localStorageService — notes', () => {
-  it('adds, updates and deletes a note', () => {
-    const n = localStorageService.addNote({ title: 'N', content: 'c' });
-    expect(localStorageService.getNotes()).toHaveLength(1);
+describe('localStorageService — view preferences', () => {
+  it('merges each write into the stored preferences', () => {
+    localStorageService.saveViewPrefs({ taskView: 'today' });
+    localStorageService.saveViewPrefs({ taskTag: 'work' });
+    expect(localStorageService.getViewPrefs()).toEqual({ taskView: 'today', taskTag: 'work' });
+  });
 
-    const updated = localStorageService.updateNote(n.id, { title: 'N2' });
-    expect(updated.title).toBe('N2');
-
-    localStorageService.deleteNote(n.id);
-    expect(localStorageService.getNotes()).toHaveLength(0);
+  it('returns an empty object when nothing is stored', () => {
+    expect(localStorageService.getViewPrefs()).toEqual({});
   });
 });

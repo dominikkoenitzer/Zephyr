@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import PageLoader from '../components/ui/PageLoader';
 import AppLayout from '../app/AppLayout';
 import ErrorFallback from '../components/ErrorBoundary/ErrorFallback';
-import { FocusTimer, Help, Home, Notes, Settings, TasksPage } from './pages';
+import { FocusTimer, Help, Home, Settings, TasksPage } from './pages';
 
 const withPageLoader = (Component) => (
   <Suspense fallback={<PageLoader />}>
@@ -33,12 +33,13 @@ export const routes = [
         element: withPageLoader(FocusTimer),
       },
       {
+        // Notes was removed; these keep old links and bookmarks alive.
         path: 'notes',
-        element: withPageLoader(Notes),
+        element: <Navigate to="/tasks" replace />,
       },
       {
         path: 'journal',
-        element: <Navigate to="/notes" replace />,
+        element: <Navigate to="/tasks" replace />,
       },
       {
         path: 'calendar',

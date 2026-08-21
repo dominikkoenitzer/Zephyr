@@ -7,6 +7,5 @@ import { lazy } from 'react';
 export const TasksPage = lazy(() => import('../pages/TasksPage'));
 export const Home = lazy(() => import('../pages/Home'));
 export const FocusTimer = lazy(() => import('../pages/FocusTimer'));
-export const Notes = lazy(() => import('../pages/Notes'));
 export const Settings = lazy(() => import('../pages/Settings'));
 export const Help = lazy(() => import('../pages/Help'));

@@ -8,7 +8,7 @@ import { Input } from '../ui/input';
  * Editor for one preset's name, four durations and colour.
  *
  * Fully controlled: it writes every change straight back through
- * `onPresetChange` so the sidebar swatch and the timer ring update live, and
+ * `onPresetChange` so the preset dot and the timer ring update live, and
  * nothing is persisted until Save. The hex field keeps its own draft string so
  * a half-typed value ("#3b8") does not repaint the UI mid-keystroke.
  */
