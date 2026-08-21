@@ -22,6 +22,10 @@ layer(base);
     /* Primary: Clean Blue; brand gradient runs primary → violet */
     --primary: 217 91% 50%;
     --primary-foreground: 0 0% 100%;
+    /* Primary as *text on a primary tint* — the same split --destructive
+       already needed. --primary at 14px on bg-primary/10 is 4.07:1; this is
+       4.8:1 on the same tint. Fills stay on --primary. */
+    --primary-strong: 217 91% 45%;
     --brand-violet: 262 83% 58%;
 
     /* Secondary: Neutral */
@@ -64,8 +68,9 @@ layer(base);
     --gutter-y: clamp(1rem, 2.5vw, 2rem);
     --section-gap: clamp(1.25rem, 3vw, 2.5rem);
     --panel-gap: clamp(0.75rem, 2vw, 1.5rem);
-    --sidebar-width: clamp(15rem, 18vw, 19rem);
-    --header-height: 4rem;
+    /* The bar is two rows: a small utility row and the nav type under it.
+       Pages offset themselves by this, so it has to cover the border too. */
+    --header-height: 6.6rem;
     --font-sans: 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --font-display: 'Space Grotesk', 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
@@ -82,6 +87,8 @@ layer(base);
     /* Primary: Clean Blue; brand gradient runs primary → violet */
     --primary: 217 91% 62%;
     --primary-foreground: 226 47% 8%;
+    /* On dark, the tint is dark and --primary already clears 4.5:1. */
+    --primary-strong: 217 91% 62%;
     --brand-violet: 262 83% 66%;
 
     /* Secondary: Neutral */
@@ -153,6 +160,15 @@ layer(base);
     letter-spacing: -0.02em;
   }
 
+  /* The nav type steps up at sm, so the bar does too. Pages offset by
+     this variable, and a value under the real height hides the first few
+     pixels of content behind the fixed bar. */
+  @media (min-width: 640px) {
+    :root {
+      --header-height: 7.4rem;
+    }
+  }
+
   /* Improve readability on very large monitors (QHD+/4K) */
   @media (min-width: 2560px) {
     :root {
@@ -161,7 +177,7 @@ layer(base);
       --panel-gap: clamp(1rem, 1.6vw, 1.8rem);
       --section-gap: clamp(1.5rem, 2.8vw, 3rem);
       --layout-wide: 1820px;
-      --header-height: 4.25rem;
+      --header-height: 7rem;
     }
 
     .text-xs {
@@ -235,6 +251,26 @@ layer(base);
     display: flex;
     flex-direction: column;
     gap: var(--panel-gap);
+  }
+
+  /* A printed key. Used by the palette's hint row, the shortcuts sheet and
+     the Help page, so a key looks the same wherever it is written down. */
+  .kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.65rem;
+    height: 1.65rem;
+    padding: 0 0.375rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.375rem;
+    background-color: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
   }
 
   /* Light sweeps across the button once on hover. Pure CSS so it costs nothing

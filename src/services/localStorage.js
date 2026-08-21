@@ -6,14 +6,16 @@ export const STORAGE_KEYS = {
   FOCUS_STREAK: 'zephyr_focus_streak',
   SETTINGS: 'zephyr_settings',
   WELLNESS: 'zephyr_wellness',
-  // Calendar and task folders were removed; keys stay listed so
-  // clearAllData wipes old data.
+  // Notes, the calendar, the journal and task folders were all removed from
+  // the app. Their keys stay listed so clearAllData still wipes old data and
+  // a backup still carries it — there is no code left that reads them.
   CALENDAR_EVENTS: 'zephyr_calendar_events',
   TASK_FOLDERS: 'zephyr_task_folders',
   NOTES: 'zephyr_notes',
   JOURNAL_ENTRIES: 'zephyr_journal_entries',
   ONBOARDING: 'zephyr_onboarding',
   LAST_SESSION: 'zephyr_last_focus_session',
+  VIEW_PREFS: 'zephyr_view_prefs',
 };
 
 // Custom event broadcast on every write so views in the same tab can react
@@ -37,6 +39,19 @@ export const DEFAULT_SETTINGS = {
   notificationsEnabled: true,
   theme: 'system',
 };
+
+/**
+ * A collision-proof id.
+ *
+ * Tasks and focus sessions used to be identified by `Date.now().toString()`
+ * alone, so two created inside the same millisecond shared an id — and since
+ * every lookup, update and delete matches on id, deleting one of them deleted
+ * both. Quick-adding two tasks in a row is enough to hit it.
+ */
+const makeId = (prefix) =>
+  (typeof crypto !== 'undefined' && crypto.randomUUID)
+    ? `${prefix}-${crypto.randomUUID()}`
+    : `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 
 // Always hand callers a fresh copy so they can't mutate the shared defaults.
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -117,7 +132,7 @@ class LocalStorageService {
   addTask(task) {
     const tasks = this.getTasks();
     const newTask = {
-      id: Date.now().toString(),
+      id: makeId('task'),
       createdAt: new Date().toISOString(),
       completed: false,
       priority: 'medium',
@@ -161,7 +176,7 @@ class LocalStorageService {
       const existingSessions = this.getFocusSessions();
       const updatedSessions = [...existingSessions, {
         ...session,
-        id: Date.now().toString(),
+        id: makeId('session'),
         date: new Date().toISOString()
       }];
 
@@ -281,6 +296,31 @@ class LocalStorageService {
     }
   }
 
+  // View preferences — which filter chip and sort a list was left on, so a
+  // reload doesn't drop you back into an unfiltered list. Deliberately kept
+  // apart from SETTINGS: this is where you were, not what you chose.
+  getViewPrefs() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.VIEW_PREFS);
+      return data ? JSON.parse(data) : {};
+    } catch (error) {
+      console.error('Failed to get view preferences:', error);
+      return {};
+    }
+  }
+
+  saveViewPrefs(prefs) {
+    try {
+      const updated = { ...this.getViewPrefs(), ...prefs };
+      localStorage.setItem(STORAGE_KEYS.VIEW_PREFS, JSON.stringify(updated));
+      emitChange(STORAGE_KEYS.VIEW_PREFS);
+      return updated;
+    } catch (error) {
+      console.error('Failed to save view preferences:', error);
+      return null;
+    }
+  }
+
   // Settings management
   saveSettings(settings) {
     try {
@@ -381,174 +421,6 @@ class LocalStorageService {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
-
-  // Notes management
-  saveNotes(notes) {
-    try {
-      localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
-      emitChange(STORAGE_KEYS.NOTES);
-      return true;
-    } catch (error) {
-      console.error('Failed to save notes:', error);
-      return false;
-    }
-  }
-
-  getNotes() {
-    try {
-      const data = localStorage.getItem(STORAGE_KEYS.NOTES);
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      console.error('Failed to get notes:', error);
-      return [];
-    }
-  }
-
-  addNote(note) {
-    try {
-      const notes = this.getNotes();
-      const newNote = {
-        id: note.id || `note-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        title: note.title || 'Untitled Note',
-        content: note.content || '',
-        tags: note.tags || [],
-        color: note.color || '#6366f1',
-        createdAt: note.createdAt || new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        pinned: note.pinned || false,
-      };
-      notes.push(newNote);
-      this.saveNotes(notes);
-      return newNote;
-    } catch (error) {
-      console.error('Failed to add note:', error);
-      return null;
-    }
-  }
-
-  updateNote(noteId, updates) {
-    try {
-      const notes = this.getNotes();
-      const index = notes.findIndex(n => n.id === noteId);
-      if (index === -1) return null;
-
-      notes[index] = {
-        ...notes[index],
-        ...updates,
-        updatedAt: new Date().toISOString(),
-      };
-      this.saveNotes(notes);
-      return notes[index];
-    } catch (error) {
-      console.error('Failed to update note:', error);
-      return null;
-    }
-  }
-
-  deleteNote(noteId) {
-    try {
-      const notes = this.getNotes();
-      const filtered = notes.filter(n => n.id !== noteId);
-      this.saveNotes(filtered);
-      return true;
-    } catch (error) {
-      console.error('Failed to delete note:', error);
-      return false;
-    }
-  }
-
-  // Journal entries management
-  saveJournalEntries(entries) {
-    try {
-      localStorage.setItem(STORAGE_KEYS.JOURNAL_ENTRIES, JSON.stringify(entries));
-      emitChange(STORAGE_KEYS.JOURNAL_ENTRIES);
-      return true;
-    } catch (error) {
-      console.error('Failed to save journal entries:', error);
-      return false;
-    }
-  }
-
-  getJournalEntries() {
-    try {
-      const data = localStorage.getItem(STORAGE_KEYS.JOURNAL_ENTRIES);
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      console.error('Failed to get journal entries:', error);
-      return [];
-    }
-  }
-
-  addJournalEntry(entry) {
-    try {
-      const entries = this.getJournalEntries();
-      const date = entry.date || new Date().toISOString().split('T')[0];
-      const existingIndex = entries.findIndex(e => e.date === date);
-
-      const newEntry = {
-        id: entry.id || `journal-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        date,
-        content: entry.content || '',
-        mood: entry.mood || 'neutral',
-        tags: entry.tags || [],
-        createdAt: entry.createdAt || new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      if (existingIndex !== -1) {
-        entries[existingIndex] = { ...entries[existingIndex], ...newEntry };
-      } else {
-        entries.push(newEntry);
-      }
-
-      this.saveJournalEntries(entries);
-      return newEntry;
-    } catch (error) {
-      console.error('Failed to add journal entry:', error);
-      return null;
-    }
-  }
-
-  updateJournalEntry(entryId, updates) {
-    try {
-      const entries = this.getJournalEntries();
-      const index = entries.findIndex(e => e.id === entryId);
-      if (index === -1) return null;
-
-      entries[index] = {
-        ...entries[index],
-        ...updates,
-        updatedAt: new Date().toISOString(),
-      };
-      this.saveJournalEntries(entries);
-      return entries[index];
-    } catch (error) {
-      console.error('Failed to update journal entry:', error);
-      return null;
-    }
-  }
-
-  deleteJournalEntry(entryId) {
-    try {
-      const entries = this.getJournalEntries();
-      const filtered = entries.filter(e => e.id !== entryId);
-      this.saveJournalEntries(filtered);
-      return true;
-    } catch (error) {
-      console.error('Failed to delete journal entry:', error);
-      return false;
-    }
-  }
-
-  getJournalEntryByDate(date) {
-    try {
-      const entries = this.getJournalEntries();
-      return entries.find(e => e.date === date) || null;
-    } catch (error) {
-      console.error('Failed to get journal entry by date:', error);
-      return null;
-    }
   }
 }
 

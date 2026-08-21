@@ -1,40 +1,44 @@
 import { useState, useRef } from 'react';
-import { Bell, Volume2, CheckSquare, Timer, Trash2, AlertTriangle, Download, Upload } from 'lucide-react';
+import {
+  Bell, Volume2, CheckSquare, Timer, Trash2, AlertTriangle, Download, Upload,
+  Palette, Monitor, Moon, Sun, HardDrive, Keyboard,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Checkbox } from '../components/ui/checkbox';
 import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import ShortcutsDialog from '../components/Shortcuts/ShortcutsDialog';
 import { notificationService } from '../services/notificationService';
 import { localStorageService } from '../services/localStorage';
+import { applyBackup, downloadBackup, isValidBackup, wipeAllData } from '../lib/backup';
+import { cn } from '../lib/utils';
+import { useStoreValue } from '../hooks/useStore';
+import { useTheme } from '../hooks/useTheme';
 import PageHeader from '../components/Layout/PageHeader';
 import PageContainer from '../components/Layout/PageContainer';
 
-// Non-"zephyr"-prefixed keys that still belong to the app's data.
-const EXTRA_BACKUP_KEYS = ['focusTimerPresets', 'selectedFocusPreset', 'theme'];
-const isBackupKey = (key) => key.startsWith('zephyr') || EXTRA_BACKUP_KEYS.includes(key);
+const THEME_OPTIONS = [
+  { value: 'light', label: 'Light', icon: Sun },
+  { value: 'dark', label: 'Dark', icon: Moon },
+  { value: 'system', label: 'System', icon: Monitor },
+];
+
+const readStorageInfo = () => localStorageService.getStorageInfo();
 
 function Settings() {
   const [notificationSettings, setNotificationSettings] = useState(notificationService.getSettings());
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const importInputRef = useRef(null);
+  const { preference, colorMode, setPreference } = useTheme();
+  // Re-reads itself on every write, so the figure moves as you use the app.
+  const [storageInfo] = useStoreValue(readStorageInfo);
 
   const handleExport = () => {
-    const data = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (isBackupKey(key)) data[key] = localStorage.getItem(key);
-    }
-    const backup = { app: 'zephyr', version: 1, exportedAt: new Date().toISOString(), data };
-    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `zephyr-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success('Backup downloaded');
+    const { fileName } = downloadBackup();
+    toast.success('Backup downloaded', { description: fileName });
   };
 
   const handleImportFile = (e) => {
@@ -45,16 +49,12 @@ function Settings() {
     reader.onload = () => {
       try {
         const backup = JSON.parse(reader.result);
-        if (backup?.app !== 'zephyr' || typeof backup.data !== 'object' || backup.data === null) {
+        if (!isValidBackup(backup)) {
           toast.error('That file is not a Zephyr backup.');
           return;
         }
-        Object.entries(backup.data).forEach(([key, value]) => {
-          if (isBackupKey(key) && typeof value === 'string') {
-            localStorage.setItem(key, value);
-          }
-        });
-        toast.success('Backup restored. Reloading…');
+        const restored = applyBackup(backup);
+        toast.success(`Restored ${restored} item${restored === 1 ? '' : 's'}. Reloading…`);
         setTimeout(() => window.location.reload(), 1200);
       } catch {
         toast.error('Could not read that backup file.');
@@ -81,37 +81,15 @@ function Settings() {
 
   const handleClearAllLocalStorage = () => {
     try {
-      // Clear all data using the localStorage service
+      // Scoped on purpose: this used to finish with localStorage.clear(),
+      // which empties the whole origin rather than just what Zephyr owns.
       localStorageService.clearAllData();
-      
-      // Clear additional keys that might not be in STORAGE_KEYS
-      const additionalKeys = [
-        'zephyrSettings',
-        'focusTimerPresets',
-        'selectedFocusPreset',
-        'zephyr_note_folders',
-        'theme',
-        'gardenTheme',
-        'zephyr_notifications',
-        'zephyr_notification_settings'
-      ];
-      
-      additionalKeys.forEach(key => {
-        localStorage.removeItem(key);
-      });
-      
-      // Clear all remaining localStorage items (catch-all)
-      localStorage.clear();
-      
-      // Reset notification settings to default
+      const removed = wipeAllData();
+
       setNotificationSettings(notificationService.getSettings());
-      
-      toast.success('All local storage data has been cleared. The page will reload.');
-      
-      // Reload the page after a short delay to show the toast
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+      toast.success(`Cleared ${removed} stored item${removed === 1 ? '' : 's'}. The page will reload.`);
+
+      setTimeout(() => window.location.reload(), 1600);
     } catch (error) {
       console.error('Failed to clear local storage:', error);
       toast.error('Failed to clear local storage. Please try again.');
@@ -128,6 +106,72 @@ function Settings() {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-(--panel-gap)">
+        {/* Appearance Card */}
+        <Card className="h-fit lg:col-span-2">
+          <CardHeader className="pb-3 sm:pb-4">
+            <CardTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl text-foreground">
+              <div className="p-1.5 sm:p-2 rounded-lg bg-primary/15 text-primary shadow-sm ring-1 ring-primary/20">
+                <Palette className="h-4 w-4 sm:h-5 sm:w-5" />
+              </div>
+              Appearance
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div className="min-w-0">
+                <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Theme</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  {preference === 'system'
+                    ? `Following your system, which is currently ${colorMode}.`
+                    : `Always ${preference}, whatever your system does.`}
+                </p>
+              </div>
+              <div
+                role="radiogroup"
+                aria-label="Theme"
+                className="flex items-center gap-1 rounded-full border border-border bg-background/70 p-1"
+              >
+                {THEME_OPTIONS.map((option) => {
+                  const Icon = option.icon;
+                  const active = preference === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => setPreference(option.value)}
+                      className={cn(
+                        'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                        active
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground'
+                      )}
+                    >
+                      <Icon className="h-4 w-4" aria-hidden="true" />
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-end justify-between gap-4 border-t border-border/50 pt-4">
+              <div className="min-w-0">
+                <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Keyboard shortcuts</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Press <kbd className="kbd">?</kbd> anywhere for this list, or <kbd className="kbd">Ctrl</kbd>
+                  <kbd className="kbd">K</kbd> for the command palette.
+                </p>
+              </div>
+              <Button variant="outline" onClick={() => setShowShortcuts(true)}>
+                <Keyboard className="h-4 w-4 mr-1.5" />
+                View shortcuts
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Notifications Card */}
         <Card className="h-fit">
         <CardHeader className="pb-3 sm:pb-4">
@@ -285,6 +329,10 @@ function Settings() {
                   </p>
                 </div>
               </div>
+              <p className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                <HardDrive className="h-4 w-4 shrink-0" aria-hidden="true" />
+                Zephyr is currently storing {storageInfo.totalSizeFormatted || '0 Bytes'} in this browser.
+              </p>
               <div className="flex gap-2 flex-wrap">
                 <Button variant="outline" onClick={handleExport}>
                   <Download className="h-4 w-4 mr-1.5" />
@@ -315,8 +363,7 @@ function Settings() {
                   </p>
                   <ul className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3 ml-4 sm:ml-6 list-disc space-y-1 sm:space-y-2">
                     <li>Tasks</li>
-                    <li>Notes</li>
-                    <li>Focus timer sessions and presets</li>
+                                        <li>Focus timer sessions and presets</li>
                     <li>Settings and preferences</li>
                     <li>Notification history</li>
                   </ul>
@@ -358,7 +405,7 @@ function Settings() {
             <DialogDescription className="pt-2">
               Are you sure you want to clear all local storage data? This will permanently delete:
               <ul className="list-disc ml-6 mt-2 space-y-1 text-sm">
-                <li>All tasks and notes</li>
+                <li>All tasks</li>
                 <li>All settings and preferences</li>
                 <li>All timer sessions and presets</li>
               </ul>
@@ -388,6 +435,7 @@ function Settings() {
         </DialogContent>
       </Dialog>
 
+      <ShortcutsDialog open={showShortcuts} onOpenChange={setShowShortcuts} />
     </PageContainer>
   );
 }

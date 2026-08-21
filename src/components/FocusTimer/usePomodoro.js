@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Clock, Target, Timer as TimerIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import { localStorageService } from '../../services/localStorage';
 import { notificationService } from '../../services/notificationService';
 import { DEFAULT_PRESETS, normalizePresetColor, THEME_COLOR_OPTIONS, toHexColor } from './presets';
@@ -191,8 +192,24 @@ export function usePomodoro() {
         `${newSessionsCompleted} session${newSessionsCompleted !== 1 ? 's' : ''} completed. Time for a break.`,
         { type: 'navigate', path: '/focus' }
       );
-      
+
       showNotification('Work Session Complete', `${newSessionsCompleted} session${newSessionsCompleted !== 1 ? 's' : ''} completed. Time for a break.`);
+
+      // An in-app toast as well as the OS notification, which the browser may
+      // have denied. When the session was tied to a task, finishing it is one
+      // click from here instead of a trip back to the task list.
+      if (sessionTask?.id) {
+        toast.success('Session complete', {
+          description: sessionTask.title,
+          duration: 8000,
+          action: {
+            label: 'Mark done',
+            onClick: () => localStorageService.updateTask(sessionTask.id, { completed: true }),
+          },
+        });
+      } else {
+        toast.success('Session complete', { description: 'Time for a break.' });
+      }
     } else {
       setIsBreak(false);
       setTimeLeft(workTime);
@@ -371,19 +388,6 @@ export function usePomodoro() {
     setTimeLeft(currentTime);
   };
 
-  // Space starts/pauses the timer (unless you're typing somewhere).
-  useEffect(() => {
-    const onKeyDown = (e) => {
-      if (e.code !== 'Space' || e.repeat) return;
-      const tag = e.target.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON' || e.target.isContentEditable) return;
-      e.preventDefault();
-      toggleTimer();
-    };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  });
-
   const skipSession = () => {
     setIsRunning(false);
     handleComplete();
@@ -405,6 +409,51 @@ export function usePomodoro() {
   };
 
   const sessionType = getSessionType();
+
+  // The timer's own keys: Space start/pause, R reset, S skip, F full screen
+  // (Esc leaves it). They stand down while you are typing, while a dialog is
+  // open, and when a modifier is held so they never shadow a browser shortcut.
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+      const tag = e.target.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON' || e.target.isContentEditable) return;
+      if (document.querySelector('[role="dialog"][data-state="open"]')) return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        toggleTimer();
+        return;
+      }
+
+      switch (e.key.toLowerCase()) {
+        case 'r':
+          e.preventDefault();
+          resetTimer();
+          break;
+        case 's':
+          // Skipping a session that hasn't started would just log a no-op.
+          if (timeLeft === currentSessionTime) return;
+          e.preventDefault();
+          skipSession();
+          break;
+        case 'f':
+          e.preventDefault();
+          setIsFullScreen((full) => !full);
+          break;
+        case 'escape':
+          if (isFullScreen) {
+            e.preventDefault();
+            setIsFullScreen(false);
+          }
+          break;
+        default:
+          break;
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  });
 
   const handlePresetChange = (presetId) => {
     setSelectedPreset(presetId);
@@ -504,6 +553,7 @@ export function usePomodoro() {
     sessionsCompleted,
     totalFocusTime,
     sessionTask,
+    setSessionTask,
 
     // Presets
     presets,
