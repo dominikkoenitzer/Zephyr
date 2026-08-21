@@ -264,7 +264,7 @@ layer(base);
     pointer-events: none;
     background: radial-gradient(
       circle 68px at var(--glow-x, -300px) var(--glow-y, -300px),
-      rgb(255 255 255 / 0.3),
+      rgb(255 255 255 / 0.16),
       transparent 70%
     );
   }
@@ -283,7 +283,7 @@ layer(base);
     background: linear-gradient(
       110deg,
       transparent 25%,
-      rgb(255 255 255 / 0.38) 50%,
+      rgb(255 255 255 / 0.22) 50%,
       transparent 75%
     );
     transform: translateX(-100%);
