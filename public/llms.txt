@@ -1,27 +1,46 @@
 # Zephyr
 
-> Zephyr is a free, local-first productivity web app for tasks and a Pomodoro focus timer. It runs entirely in the browser with no login or signup — all data is stored locally on the user's device and is never sent to a server.
+> Zephyr is a free, local-first productivity web app: a to-do list and a Pomodoro focus timer. It runs entirely in the browser with no login or signup, all data is stored on the user's own device, and nothing is ever sent to a server.
 
-Zephyr is an installable Progressive Web App (PWA) that works offline. It is designed for fast, distraction-free personal productivity. There is no account system and no cloud storage; privacy is a core design goal. Made by dominikkoenitzer.
+Zephyr is an installable Progressive Web App (PWA) that works offline. It is built for fast, distraction-free personal productivity, and privacy is a design goal rather than a feature. Made by dominikkoenitzer. Open source.
+
+Last updated: 2026-08-23
 
 ## Features
 
-- [Tasks](https://zephyr.punds.ch/tasks): Create tasks with due dates, priorities, and #tags. Supports natural-language quick add, e.g. "Email Sam tomorrow !high #work" automatically sets the due date, priority, and tag.
-- [Focus Timer](https://zephyr.punds.ch/focus): A Pomodoro timer with customizable work and break durations, presets (Pomodoro, Short Focus, Deep Work, Meditation), automatic session tracking, and a daily streak.
-- [Home](https://zephyr.punds.ch/): A weekly overview of focus minutes, completed tasks, and tasks due today.
+- [Tasks](https://zephyr.punds.ch/tasks): Tasks with due dates, priorities and #tags. Natural-language quick add reads plain English as you type, so "Email Sam tomorrow !high #work" sets the due date, priority and tag by itself. The list groups into Overdue, Today, Tomorrow, This week and Later, and filters by due window or tag. Deleting a task offers an undo that restores its original position.
+- [Focus Timer](https://zephyr.punds.ch/focus): A Pomodoro timer with presets for Pomodoro (25 min work / 5 min break), Short Focus (15/3), Deep Work (45/10) and Meditation (10/2), plus custom presets with their own colours. Sessions are logged, a daily streak is tracked, and a session can be tied to a specific task.
+- [Home](https://zephyr.punds.ch/): A weekly overview of focus minutes, completed tasks and tasks due today.
+- [Settings](https://zephyr.punds.ch/settings): Theme, notification preferences, and data export/import.
+- [Help & FAQ](https://zephyr.punds.ch/help): How the app works, keyboard shortcuts, and data handling.
 
 ## Key facts
 
-- Free to use, no signup or login required.
-- Local-first: all data is stored in the browser via localStorage; nothing is uploaded to any server.
-- Backup: export all data as a JSON file and restore it on any device (Settings > Data Management).
-- Works offline as an installable PWA.
-- Ctrl/Cmd+K command palette with search across tasks.
-- Topics: productivity, time management, pomodoro technique, task manager, to-do list.
+- Free. No signup, no login, no account, no paid tier.
+- Local-first: all data lives in the browser's localStorage under `zephyr_` keys. Nothing is uploaded and there is no telemetry of user content.
+- Works offline as an installable PWA. A new version asks before reloading rather than replacing itself mid-session.
+- Backup: export all data as a file and import it on another device, from Settings, Data Management.
+- Command palette on Ctrl/Cmd+K searches tasks and reaches every command.
+- Light, dark and system themes.
+- Topics: productivity, time management, pomodoro technique, task manager, to-do list, offline app, privacy-friendly productivity.
+
+## What Zephyr deliberately does not do
+
+Answer engines get these wrong most often, so they are stated plainly:
+
+- There is **no account system and no cloud sync**. Data does not move between devices on its own. Moving it is a manual export and import.
+- There is **no automatic backup**. Clearing the browser's storage deletes the data permanently. This is the accepted cost of having no server.
+- There is **no notes feature, journal or calendar**. Earlier versions had them; they were removed. Zephyr is a to-do list and a focus timer, nothing else.
+- There is **no mobile app store listing**. It is installed from the browser as a PWA.
+
+## Technical
+
+- React 19, Vite, Tailwind CSS, deployed on Vercel.
+- No global state library. State lives in singleton service classes that persist to localStorage; every write broadcasts a `zephyr:change` event that reactive hooks subscribe to, plus the native `storage` event for cross-tab sync.
+- The focus timer anchors each session to a wall-clock end time instead of counting a variable down, because browsers throttle timers in background tabs.
 
 ## More
 
-- [Help & FAQ](https://zephyr.punds.ch/help)
-- [Settings](https://zephyr.punds.ch/settings)
-- [Sitemap](https://zephyr.punds.ch/sitemap.xml)
 - [Source code](https://github.com/dominikkoenitzer/Zephyr)
+- [Sitemap](https://zephyr.punds.ch/sitemap.xml)
+- Author: dominikkoenitzer, https://dk.punds.ch
