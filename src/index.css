@@ -28,6 +28,14 @@ layer(base);
     --primary-strong: 217 91% 45%;
     --brand-violet: 262 83% 58%;
 
+    /* Focus-timer preset colours — see the dark block for why these exist. */
+    --preset-blue: 217 91% 50%;
+    --preset-teal: 174 84% 32%;
+    --preset-violet: 262 83% 58%;
+    --preset-rose: 340 82% 52%;
+    --preset-amber: 32 95% 44%;
+    --preset-green: 145 65% 24%;
+
     /* Secondary: Neutral */
     --secondary: 220 16% 96%;
     --secondary-foreground: 220 20% 25%;
@@ -90,6 +98,17 @@ layer(base);
     /* On dark, the tint is dark and --primary already clears 4.5:1. */
     --primary-strong: 217 91% 62%;
     --brand-violet: 262 83% 66%;
+
+    /* Focus-timer preset colours. Presets used UI tokens (--primary, --ring,
+       --accent …) which are not meant to differ from one another: two of them
+       resolved to the same blue and one to a near-white. These six are chosen
+       to stay apart, and are tuned per theme so they read on either ground. */
+    --preset-blue: 217 91% 62%;
+    --preset-teal: 174 70% 48%;
+    --preset-violet: 262 83% 70%;
+    --preset-rose: 340 82% 66%;
+    --preset-amber: 38 92% 58%;
+    --preset-green: 145 48% 44%;
 
     /* Secondary: Neutral */
     --secondary: 226 22% 16%;
