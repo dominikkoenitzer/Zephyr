@@ -1,8 +1,13 @@
 import { cn } from '../../lib/utils';
 
 /**
- * Standard page shell — a centered content column with consistent scroll
- * behavior. Deliberately NOT a card: content sits directly on the page
+ * Standard page shell: a centered content column.
+ *
+ * Deliberately not a scroll container. `main` in AppLayout owns the page
+ * scroll; when both scrolled, each reserved its own scrollbar gutter and
+ * left a dead strip down the right of every route using this shell.
+ *
+ * Deliberately NOT a card: content sits directly on the page
  * background and individual Cards provide the surfaces. `panel-stack` lays
  * children out as a vertical stack with the shared panel gap.
  *
@@ -13,7 +18,7 @@ function PageContainer({ children, className }) {
   return (
     <div
       className={cn(
-        'page-width flex-1 min-h-0 panel-stack overflow-y-auto scrollbar-thin',
+        'page-width flex-1 min-h-0 panel-stack',
         className
       )}
     >

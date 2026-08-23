@@ -81,7 +81,7 @@ function AppLayout() {
           <main
             id="main-content"
             tabIndex={-1}
-            className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pt-(--header-height) focus:outline-none"
+            className="scroll-stable flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pt-(--header-height) focus:outline-none"
           >
             {/* Re-keyed per route so every page mounts with a quick
                 fade-and-rise. Enter-only (no exit) keeps navigation snappy. */}
