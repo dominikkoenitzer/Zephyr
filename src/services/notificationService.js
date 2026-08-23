@@ -148,6 +148,16 @@ class NotificationService {
   }
 
   /**
+   * A chime for an event the user should hear on its own account, whether or
+   * not a notification record was written for it. The focus timer's break
+   * completion writes no record but still has to be audible.
+   */
+  playChime() {
+    if (!this.getSettings().soundEnabled) return;
+    this.playNotificationSound();
+  }
+
+  /**
    * Play notification sound
    */
   playNotificationSound() {
@@ -156,8 +166,25 @@ class NotificationService {
       if (!Ctor) return;
       if (!this.audioContext) this.audioContext = new Ctor();
       const audioContext = this.audioContext;
-      // A context created before the first gesture starts suspended.
-      if (audioContext.state === 'suspended') audioContext.resume();
+      // `resume()` is asynchronous and a suspended context's `currentTime` does
+      // not advance. Scheduling the chime before the resume had settled put the
+      // whole 0.3s envelope in the past, so nothing was audible — the reason
+      // the beep only played some of the time.
+      if (audioContext.state === 'suspended') {
+        audioContext.resume().then(() => this.emitChime()).catch(() => {});
+        return;
+      }
+      this.emitChime();
+    } catch (error) {
+      console.error('Failed to play notification sound:', error);
+    }
+  }
+
+  /** The chime itself, against a context that is known to be running. */
+  emitChime() {
+    try {
+      const audioContext = this.audioContext;
+      if (!audioContext) return;
 
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
@@ -168,7 +195,7 @@ class NotificationService {
       // Pleasant two-tone chime
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
       oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
-      
+
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
 
