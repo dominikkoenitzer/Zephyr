@@ -6,8 +6,16 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '..
 import ShortcutTable from '../components/Shortcuts/ShortcutTable';
 import PageHeader from '../components/Layout/PageHeader';
 import PageContainer from '../components/Layout/PageContainer';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 function Help() {
+  usePageMeta({
+    title: 'Help & FAQ — Zephyr',
+    description:
+      'How Zephyr works: local-first storage, offline use, keyboard shortcuts, the command palette, and how to back your data up.',
+    path: '/help',
+  });
+
   const [activeSection, setActiveSection] = useState('help');
 
   const faqs = [
