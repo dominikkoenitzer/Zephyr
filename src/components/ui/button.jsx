@@ -16,7 +16,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         // Filled variants carry the sweep; it needs a solid surface to read against.
-        default: "btn-shine bg-brand text-white shadow-brand hover:brightness-110",
+        default: "btn-shine bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
         destructive: "btn-shine bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         secondary: "btn-shine bg-secondary/85 text-secondary-foreground shadow-sm hover:bg-secondary",
         // `outline` and `ghost` are 33 of the ~35 buttons in the app, so this is
