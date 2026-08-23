@@ -420,6 +420,17 @@ layer(base);
   /* Thin scrollbar variant */
   .scrollbar-thin {
     scrollbar-width: thin;
+    scrollbar-gutter: stable;
+  }
+
+  /* Hold the scrollbar's track open on a container that only sometimes
+     overflows. Without it a short page has no scrollbar and a long one does,
+     so the whole layout slides sideways by the scrollbar width on every
+     navigation. Deliberately not on `*`: html and body are scroll containers
+     too, and three nested gutters would reserve the width three times.
+     `stable` reserves the track; the scrollbar still only draws when needed. */
+  .scroll-stable {
+    scrollbar-gutter: stable;
   }
   
   .scrollbar-thin::-webkit-scrollbar {
