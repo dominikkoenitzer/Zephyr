@@ -44,6 +44,26 @@ export function usePageMeta({ title, description, path }) {
         return el;
       }).setAttribute('href', `${SITE}${path}`);
     }
+
+    // Open Graph and Twitter describe whatever is shared. index.html only
+    // describes the home page, so a link to /focus previewed as the home page.
+    const social = [
+      ['meta[property="og:title"]', 'property', 'og:title', title],
+      ['meta[property="og:description"]', 'property', 'og:description', description],
+      ['meta[property="og:url"]', 'property', 'og:url', path && `${SITE}${path}`],
+      ['meta[name="twitter:title"]', 'name', 'twitter:title', title],
+      ['meta[name="twitter:description"]', 'name', 'twitter:description', description],
+      ['meta[name="twitter:url"]', 'name', 'twitter:url', path && `${SITE}${path}`],
+    ];
+
+    for (const [selector, attr, key, value] of social) {
+      if (!value) continue;
+      upsert(selector, () => {
+        const el = document.createElement('meta');
+        el.setAttribute(attr, key);
+        return el;
+      }).setAttribute('content', value);
+    }
   }, [title, description, path]);
 }
 

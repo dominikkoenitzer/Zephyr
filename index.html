@@ -100,7 +100,12 @@
         "name": "Dominik Könitzer",
         "url": "https://github.com/dominikkoenitzer"
       },
-      "image": "https://zephyr.punds.ch/og-image.png"
+      "image": "https://zephyr.punds.ch/og-image.png",
+      "softwareVersion": "1.0.0",
+      "datePublished": "2024-12-18",
+      "dateModified": "2026-08-23",
+      "inLanguage": "en",
+      "sameAs": ["https://github.com/dominikkoenitzer/Zephyr"]
     }
     </script>
 
@@ -169,15 +174,57 @@
   <body>
     <div id="root"></div>
     <noscript>
-      <main style="max-width: 640px; margin: 3rem auto; padding: 0 1.5rem; font-family: system-ui, sans-serif; line-height: 1.6;">
-        <h1>Zephyr — a free to-do list &amp; Pomodoro timer. No login.</h1>
+      <main style="max-width: 680px; margin: 3rem auto; padding: 0 1.5rem; font-family: system-ui, sans-serif; line-height: 1.6;">
+        <h1>Zephyr &mdash; a free to-do list &amp; Pomodoro timer. No login.</h1>
         <p>
-          Zephyr is a free, local-first productivity app. Manage <a href="/tasks">tasks</a> with due dates,
-          priorities, #tags and natural-language quick add, and stay focused with a customizable
-          <a href="/focus">Pomodoro timer</a>. There is no account and no server — all your data stays in your
-          browser, and the app works offline as an installable PWA.
+          Zephyr is a free, local-first productivity web app: a to-do list and a Pomodoro focus timer
+          in one place. There is no account, no signup and no server. Every task and focus session is
+          stored in your own browser, and the app works offline as an installable Progressive Web App.
         </p>
-        <p>Zephyr requires JavaScript to run. Please enable JavaScript and reload the page.</p>
+
+        <h2><a href="/tasks">Tasks</a></h2>
+        <p>
+          Create tasks with due dates, priorities and #tags. Natural-language quick add reads plain
+          English as you type, so &ldquo;Email Sam tomorrow !high #work&rdquo; sets the due date, the
+          priority and the tag by itself. The list groups itself into Overdue, Today, Tomorrow, This
+          week and Later, and filters by due window or tag.
+        </p>
+
+        <h2><a href="/focus">Focus timer</a></h2>
+        <p>
+          A Pomodoro timer with presets for Pomodoro (25/5), Short Focus (15/3), Deep Work (45/10)
+          and Meditation (10/2), plus your own custom presets. Sessions are logged, a daily streak is
+          tracked, and a session can be tied to a specific task. The countdown is anchored to the
+          clock rather than counted down, so it stays accurate while the tab sits in the background.
+        </p>
+
+        <h2>Privacy and your data</h2>
+        <p>
+          Local-first means what it says: all content lives in your browser&rsquo;s localStorage and is
+          never uploaded. There is no telemetry of your content and no cloud copy. Because the data is
+          local, there is also no automatic backup &mdash; you can export everything as a file and
+          import it again on any device from <a href="/settings">Settings</a> &rarr; Data Management.
+          Clearing your browser data removes it permanently.
+        </p>
+
+        <h2>Offline and installable</h2>
+        <p>
+          Zephyr is an installable PWA. Install it and it keeps working without a connection; when a
+          new version ships it asks before reloading rather than swapping itself out mid-session.
+        </p>
+
+        <h2>Keyboard</h2>
+        <p>
+          A command palette on Ctrl/Cmd&nbsp;+&nbsp;K searches tasks and reaches every command.
+          Light, dark and system themes. More in <a href="/help">Help &amp; FAQ</a>.
+        </p>
+
+        <p>
+          Zephyr is open source: <a href="https://github.com/dominikkoenitzer/Zephyr">source code on
+          GitHub</a>. Made by Dominik K&ouml;nitzer.
+        </p>
+
+        <p><em>Zephyr needs JavaScript to run. Please enable JavaScript and reload the page.</em></p>
       </main>
     </noscript>
     <script type="module" src="/src/main.jsx"></script>
