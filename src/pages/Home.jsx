@@ -4,6 +4,7 @@ import { m } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { useTasks, useStoreValue } from '../hooks/useStore';
 import { localStorageService } from '../services/localStorage';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 // Stagger-in for the stat tiles and quick links.
 const staggerGrid = {
@@ -35,6 +36,13 @@ const QUICK_LINKS = [
 ];
 
 function Home() {
+  usePageMeta({
+    title: 'Zephyr — Free To-Do List & Pomodoro Timer. No Login.',
+    description:
+      'A free, local-first productivity app: a to-do list with natural-language quick add and a Pomodoro focus timer. No login, no signup, works offline.',
+    path: '/',
+  });
+
   const [tasks] = useTasks();
   const [sessions] = useStoreValue(readSessions);
 
