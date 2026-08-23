@@ -190,7 +190,12 @@ export function usePomodoro() {
         'timer',
         'Session Complete',
         `${newSessionsCompleted} session${newSessionsCompleted !== 1 ? 's' : ''} completed. Time for a break.`,
-        { type: 'navigate', path: '/focus' }
+        { type: 'navigate', path: '/focus' },
+        {},
+        // Every finished session is its own event. Without a key these fell
+        // into the 60s same-title duplicate guard, which swallowed the record
+        // and with it the chime whenever two sessions landed close together.
+        `timer:complete:${Date.now()}`
       );
 
       showNotification('Work Session Complete', `${newSessionsCompleted} session${newSessionsCompleted !== 1 ? 's' : ''} completed. Time for a break.`);
@@ -214,6 +219,9 @@ export function usePomodoro() {
       setIsBreak(false);
       setTimeLeft(workTime);
       showNotification('Break Complete', 'Recharged and ready to focus again');
+      // The break end writes no notification record, so its chime has to be
+      // asked for directly or the timer simply goes quiet.
+      notificationService.playChime();
     }
     setIsRunning(false);
   }, [isBreak, sessionsCompleted, breakTime, longBreakTime, workTime, sessionsUntilLongBreak, selectedPreset, sessionTask]);

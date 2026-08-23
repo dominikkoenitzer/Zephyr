@@ -10,15 +10,24 @@ import { BookOpen, Heart, Settings, Target, Zap } from 'lucide-react';
  * hex the `<input type="color">` can display.
  */
 
+/**
+ * The six colours a preset can wear. These are dedicated `--preset-*` tokens
+ * rather than UI tokens: the palette used to be built from --primary, --accent,
+ * --ring and friends, which are not designed to differ from one another —
+ * --primary and --ring resolved to the same blue and --accent to a near-white,
+ * so four of the five default presets looked identical. Defined per theme in
+ * index.css so they still follow light/dark.
+ */
 export const THEME_COLOR_OPTIONS = [
-  'hsl(var(--primary))',
-  'hsl(var(--accent))',
-  'hsl(var(--ring))',
-  'hsl(var(--secondary-foreground))',
-  'hsl(var(--destructive))',
-  'hsl(var(--muted-foreground))'
+  'hsl(var(--preset-blue))',
+  'hsl(var(--preset-green))',
+  'hsl(var(--preset-violet))',
+  'hsl(var(--preset-rose))',
+  'hsl(var(--preset-amber))',
+  'hsl(var(--preset-teal))'
 ];
 
+/** Hexes written by builds before preset colours became theme tokens. */
 export const LEGACY_PRESET_COLOR_MAP = {
   '#3b82f6': THEME_COLOR_OPTIONS[0],
   '#8b5cf6': THEME_COLOR_OPTIONS[2],
@@ -26,13 +35,29 @@ export const LEGACY_PRESET_COLOR_MAP = {
   '#ec4899': THEME_COLOR_OPTIONS[3],
   '#ef4444': THEME_COLOR_OPTIONS[4],
   '#10b981': THEME_COLOR_OPTIONS[1],
-  '#f59e0b': THEME_COLOR_OPTIONS[0],
+  '#f59e0b': THEME_COLOR_OPTIONS[4],
+};
+
+/**
+ * Saved presets from the UI-token era. Without this a custom preset keeps the
+ * old indistinguishable colour forever, since those values are already `hsl(`
+ * and would otherwise pass straight through.
+ */
+export const LEGACY_TOKEN_COLOR_MAP = {
+  'hsl(var(--primary))': THEME_COLOR_OPTIONS[0],
+  'hsl(var(--accent))': THEME_COLOR_OPTIONS[1],
+  'hsl(var(--ring))': THEME_COLOR_OPTIONS[2],
+  'hsl(var(--secondary-foreground))': THEME_COLOR_OPTIONS[3],
+  'hsl(var(--destructive))': THEME_COLOR_OPTIONS[4],
+  'hsl(var(--muted-foreground))': THEME_COLOR_OPTIONS[5],
 };
 
 export const normalizePresetColor = (color) => {
   if (!color || typeof color !== 'string') return color;
   const trimmed = color.trim();
-  if (trimmed.startsWith('hsl(') || trimmed.startsWith('var(')) return trimmed;
+  if (trimmed.startsWith('hsl(') || trimmed.startsWith('var(')) {
+    return LEGACY_TOKEN_COLOR_MAP[trimmed] || trimmed;
+  }
   const lower = trimmed.toLowerCase();
   return LEGACY_PRESET_COLOR_MAP[lower] || trimmed;
 };

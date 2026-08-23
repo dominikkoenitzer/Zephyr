@@ -99,3 +99,26 @@ describe('formatTime', () => {
     expect(formatTime(90 * 60)).toBe('90:00');
   });
 });
+
+describe('the preset palette', () => {
+  it('offers six colours that are actually different from each other', () => {
+    // The palette used to be built from UI tokens: --primary and --ring are the
+    // same blue and --accent is a near-white, so the presets were visually
+    // indistinguishable. Whatever the palette is made of, it has to be distinct.
+    expect(new Set(THEME_COLOR_OPTIONS).size).toBe(THEME_COLOR_OPTIONS.length);
+  });
+
+  it('gives every default preset a colour of its own', () => {
+    const colors = DEFAULT_PRESETS.map((p) => p.color);
+    expect(new Set(colors).size).toBe(colors.length);
+  });
+
+  it('rewrites a preset saved with the old UI tokens', () => {
+    // These values are already `hsl(`, so without an explicit mapping they
+    // would pass straight through and keep the old indistinguishable colour.
+    expect(normalizePresetColor('hsl(var(--primary))')).toBe(THEME_COLOR_OPTIONS[0]);
+    expect(normalizePresetColor('hsl(var(--ring))')).toBe(THEME_COLOR_OPTIONS[2]);
+    expect(normalizePresetColor('hsl(var(--accent))')).toBe(THEME_COLOR_OPTIONS[1]);
+    expect(normalizePresetColor('hsl(var(--muted-foreground))')).toBe(THEME_COLOR_OPTIONS[5]);
+  });
+});
