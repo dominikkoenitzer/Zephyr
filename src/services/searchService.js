@@ -4,7 +4,7 @@ class SearchService {
   /**
    * Search every task by title, description and #tag.
    *
-   * Still returns a grouped object rather than a bare array: Notes used to be
+   * Still returns a grouped object instead of a bare array: Notes used to be
    * the second group, and the command palette renders whatever groups it is
    * handed, so a third one can be added back without touching the caller.
    *

@@ -1,6 +1,6 @@
 // The keyboard map, written once and read by both the ⌘K palette's shortcut
-// sheet and the Help page. Adding a shortcut means adding it here *and* in
-// `useAppShortcuts` — this file is the documentation, not the behaviour.
+// sheet and the Help page. Adding a shortcut means adding it here and in
+// `useAppShortcuts`; this file is the documentation, not the behaviour.
 
 /** Macs say ⌘, everything else says Ctrl. */
 export const isMac = () =>

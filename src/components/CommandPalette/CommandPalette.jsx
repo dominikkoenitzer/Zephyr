@@ -25,8 +25,8 @@ const matches = (item, tokens) => {
 };
 
 /**
- * Lower sorts first. What the label itself says beats what a keyword says —
- * without this, "dark theme" put *Light theme* first, because every theme
+ * Lower sorts first. What the label itself says beats what a keyword says.
+ * Without this, "dark theme" put "Light theme" first, because every theme
  * command lists the others' colour words as keywords.
  */
 const rank = (item, tokens) => {
@@ -54,7 +54,7 @@ const dueLabel = (dueDate) => {
 
 /**
  * One field that reaches everything: the app's commands plus a live search
- * across your tasks. Opened with Cmd/Ctrl+K or `/` from anywhere — including
+ * across your tasks. Opened with Cmd/Ctrl+K or `/` from anywhere, including
  * on a phone, where the bar has no room for a search box.
  *
  * Built on the Radix dialog primitive rather than our own `DialogContent`

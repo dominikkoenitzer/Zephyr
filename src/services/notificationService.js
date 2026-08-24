@@ -19,7 +19,7 @@ const DEFAULT_SETTINGS = {
 };
 
 const pad = (n) => String(n).padStart(2, '0');
-/** Local day key — reminders are once per task per day, not once per poll. */
+/** Local day key. Reminders fire once per task per day, not once per poll. */
 const dayKey = (date = new Date()) =>
   `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
@@ -27,7 +27,7 @@ class NotificationService {
   constructor() {
     this.checkInterval = null;
     // One AudioContext, reused. Browsers cap a page at six, and the old code
-    // built a new one per chime and never closed it — so the seventh
+    // built a new one per chime and never closed it, so the seventh
     // notification threw and every chime after it was silent.
     this.audioContext = null;
   }
@@ -119,8 +119,8 @@ class NotificationService {
 
     // A caller that supplies a key owns its own identity: one notification per
     // key, ever (within the 30-day retention). Task reminders key on the task
-    // *and* the day, so a task due today is announced once today rather than
-    // once per poll — the old guard compared type + title inside a 60s window,
+    // and the day, so a task due today is announced once today instead of
+    // once per poll. The old guard compared type and title inside a 60s window,
     // which the 60s polling interval stepped straight over, and which also
     // collapsed two different tasks due on the same day into one alert.
     if (dedupeKey && notifications.some((n) => n.dedupeKey === dedupeKey)) return null;
@@ -168,7 +168,7 @@ class NotificationService {
       const audioContext = this.audioContext;
       // `resume()` is asynchronous and a suspended context's `currentTime` does
       // not advance. Scheduling the chime before the resume had settled put the
-      // whole 0.3s envelope in the past, so nothing was audible — the reason
+      // whole 0.3s envelope in the past, so nothing was audible. That is why
       // the beep only played some of the time.
       if (audioContext.state === 'suspended') {
         audioContext.resume().then(() => this.emitChime()).catch(() => {});

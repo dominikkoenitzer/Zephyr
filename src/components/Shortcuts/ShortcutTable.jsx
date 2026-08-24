@@ -2,7 +2,7 @@ import { SHORTCUT_GROUPS, renderKeys } from '../../lib/shortcuts';
 
 /**
  * The printed keyboard map. Rendered both in the `?` dialog and on the Help
- * page, from the single list in `lib/shortcuts` — so the two can't drift.
+ * page, from the single list in `lib/shortcuts`, so the two can't drift.
  */
 function ShortcutTable() {
   return (
