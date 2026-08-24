@@ -60,7 +60,7 @@ const clamp = (v, limit) => Math.max(-limit, Math.min(limit, v))
  *  - compress hard on press
  *
  * Pointer position is held in motion values, not React state, so none of this
- * re-renders the tree — a button in a list can be swept over without cost.
+ * re-renders the tree, so a button in a list can be swept over without cost.
  * All of it is skipped under `prefers-reduced-motion`.
  */
 const Button = React.forwardRef(

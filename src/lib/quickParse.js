@@ -1,5 +1,5 @@
 // Local "smart" quick-add: parse natural language out of a task title.
-// No network, no AI service — just deterministic parsing of the patterns
+// No network and no AI service, just deterministic parsing of the patterns
 // people actually type. Returns the cleaned title plus any detected
 // due date (YYYY-MM-DD), priority, and #tags.
 
@@ -67,7 +67,7 @@ export function parseQuickTask(input) {
     return match;
   });
 
-  // 3) Due date — first match wins. Patterns are ordered most → least specific.
+  // 3) Due date. First match wins, so patterns run most to least specific.
   const today = startOfToday();
   const dateRules = [
     // ISO date: 2026-08-05
@@ -132,7 +132,7 @@ export function parseQuickTask(input) {
   }
 
   const cleaned = collapse(text);
-  // Never return an empty title — fall back to the original text.
+  // Never return an empty title; fall back to the original text.
   result.title = cleaned || input.trim();
   return result;
 }

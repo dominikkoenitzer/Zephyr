@@ -45,7 +45,7 @@ function AppLayout() {
   }, []);
   const openShortcuts = useCallback(() => setShortcutsOpen(true), []);
 
-  // Page-level intents travel as query params — the page answers them during
+  // Page-level intents travel as query params, and the page answers them during
   // its own render, then strips the param.
   const newTask = useCallback(() => navigate('/tasks?new=1'), [navigate]);
 

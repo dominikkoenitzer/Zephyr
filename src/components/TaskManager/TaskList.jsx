@@ -51,7 +51,7 @@ function GroupHeading({ label, count, tone = 'muted' }) {
 const TaskList = () => {
   const navigate = useNavigate();
   // Every write below goes through localStorageService, which broadcasts the
-  // change, so the list re-reads itself — here and in any other open tab.
+  // change, so the list re-reads itself, here and in any other open tab.
   const [tasks] = useTasks();
   const [newTask, setNewTask] = useState('');
   const [showCompleted, setShowCompleted] = useState(false);
@@ -59,7 +59,7 @@ const TaskList = () => {
   const newTaskInputRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Which filter you left the list on survives a reload — an unfiltered list
+  // Which filter you left the list on survives a reload. An unfiltered list
   // after every refresh is the thing that makes filters not worth using.
   const [view, setView] = useState(() => {
     const saved = localStorageService.getViewPrefs().taskView;
@@ -146,7 +146,7 @@ const TaskList = () => {
   };
 
   // Sorting, filtering and the due-date headings are all pure functions in
-  // `lib/taskFilters` — this component only renders what they return.
+  // `lib/taskFilters`, and this component only renders what they return.
   const today = todayKey();
   const allTags = useMemo(() => collectTags(tasks), [tasks]);
   const counts = useMemo(() => countsByView(tasks, tagFilter, today), [tasks, tagFilter, today]);
@@ -204,7 +204,7 @@ const TaskList = () => {
   };
 
   /**
-   * One task. No card and no border of its own — the list's hairlines separate
+   * One task. No card and no border of its own; the list's hairlines separate
    * the rows, the meta sits quiet on the right, and the row's actions take the
    * meta's place on hover so nothing moves under the cursor.
    */

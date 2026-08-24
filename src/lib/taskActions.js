@@ -1,6 +1,6 @@
 // Task mutations that come with their own undo. Both the task list and the
 // ⌘K palette run these, so the toast copy and the restore behaviour stay in
-// one place — an undo that silently reordered the list was the reason this
+// one place. An undo that silently reordered the list was the reason this
 // moved out of the component.
 
 import { toast } from 'sonner';

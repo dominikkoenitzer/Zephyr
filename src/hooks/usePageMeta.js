@@ -17,7 +17,7 @@ function upsert(selector, create) {
  *
  * index.html can only describe one page, and every route is served from it.
  * So each route inherited the home page's title and, worse, its canonical
- * pointed at `/` — while sitemap.xml asks for `/tasks`, `/focus`, `/help` and
+ * pointed at `/`, while sitemap.xml asks for `/tasks`, `/focus`, `/help` and
  * `/settings` to be indexed separately. The sitemap and the pages were telling
  * a crawler two different things.
  *

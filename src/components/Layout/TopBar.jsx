@@ -27,7 +27,7 @@ const THEME_ICON = { light: Sun, dark: Moon, system: Monitor };
  * The whole navigation, in two rows on one hairline.
  *
  * Row one is a whisper: the wordmark (which is also the way home) and the
- * utility controls. Row two is the deliberate move — the two destinations set
+ * utility controls. Row two is the deliberate move: the two destinations set
  * large and tightly tracked, with the active one in caps over a rule and the
  * other lowercase and quiet. Case carries the state, so nothing else has to.
  *

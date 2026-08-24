@@ -1,7 +1,7 @@
 // Light / dark / system, expressed as a class on <html>.
 //
-// Two values are in play and they are not the same thing: the *preference*
-// ('light' | 'dark' | 'system', persisted under `theme`) and the *colour mode*
+// Two values are in play and they are not the same thing: the preference
+// ('light' | 'dark' | 'system', persisted under `theme`) and the colour mode
 // it currently resolves to ('light' | 'dark'). "System" only means anything if
 // something keeps watching the media query, which is what `initialize` starts.
 
@@ -13,7 +13,7 @@ const prefersDark = () => {
   try {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   } catch {
-    // jsdom and very old browsers have no matchMedia — assume light.
+    // jsdom and very old browsers have no matchMedia, so assume light.
     return false;
   }
 };
@@ -74,7 +74,7 @@ class ThemeService {
         new CustomEvent(THEME_EVENT, { detail: { preference: next, colorMode } })
       );
     } catch {
-      // Non-browser — nothing is listening anyway.
+      // Non-browser, so nothing is listening anyway.
     }
     return { preference: next, colorMode };
   }
@@ -88,7 +88,7 @@ class ThemeService {
 
   /**
    * Paint the stored preference and keep following the OS while it is
-   * "system". Safe to call more than once — the listener is replaced, never
+   * "system". Safe to call more than once; the listener is replaced, never
    * stacked, which matters because both the layout and main.jsx call it.
    */
   initialize() {

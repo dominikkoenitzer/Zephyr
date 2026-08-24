@@ -1,7 +1,7 @@
 /**
  * The masthead every route shares. Same emphasis as the home page: the title
  * is set larger and tighter than a dashboard usually allows, and nothing around
- * it competes — no rule, no eyebrow, no panel.
+ * it competes: no rule, no eyebrow, no panel.
  */
 function PageHeader({ title, description, actions }) {
   return (

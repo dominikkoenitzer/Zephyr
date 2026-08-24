@@ -1,6 +1,6 @@
 // Pure helpers behind the task list's views, grouping and counts.
-// Everything here is date maths on `YYYY-MM-DD` day keys — no storage, no
-// React — so the behaviour is unit-testable and the list component stays a
+// Everything here is date maths on `YYYY-MM-DD` day keys, with no storage and
+// no React, so the behaviour is unit-testable and the list component stays a
 // renderer.
 
 /** The filter chips above the list, in the order they are shown. */
@@ -79,7 +79,7 @@ const matchesTag = (task, tag) =>
   !tag || (task.tags || []).some((t) => String(t).toLowerCase() === tag.toLowerCase());
 
 /**
- * Soonest due first (undated last), then priority — what needs attention
+ * Soonest due first (undated last), then priority, so what needs attention
  * stays at the top of whatever group it lands in.
  */
 export const sortByUrgency = (tasks) =>

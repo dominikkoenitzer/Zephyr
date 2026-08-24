@@ -22,12 +22,12 @@ layer(base);
     /* Primary: Clean Blue; brand gradient runs primary → violet */
     --primary: 217 91% 50%;
     --primary-foreground: 0 0% 100%;
-    /* Primary as *text on a primary tint* — the same split --destructive
+    /* Primary as text on a primary tint, the same split --destructive
        already needed. --primary at 14px on bg-primary/10 is 4.07:1; this is
        4.8:1 on the same tint. Fills stay on --primary. */
     --primary-strong: 217 91% 45%;
 
-    /* Focus-timer preset colours — see the dark block for why these exist. */
+    /* Focus-timer preset colours. See the dark block for why these exist. */
     --preset-blue: 217 91% 50%;
     --preset-teal: 174 84% 32%;
     --preset-violet: 262 83% 58%;
@@ -63,7 +63,7 @@ layer(base);
     --glass-border: rgba(255, 255, 255, 0.3);
     --glass-shadow: rgba(0, 0, 0, 0.1);
 
-    /* Elevation shadows — dark-based so they read as real shadows in both modes */
+    /* Elevation shadows: dark-based so they read as real shadows in both modes */
     --shadow-sm: 0 1px 2px hsl(220 25% 13% / 0.06);
     --shadow-card: 0 1px 2px hsl(220 25% 13% / 0.05), 0 6px 18px hsl(220 25% 13% / 0.06);
     --shadow-overlay: 0 20px 50px hsl(220 25% 13% / 0.18);
@@ -98,7 +98,7 @@ layer(base);
     --primary-strong: 217 91% 62%;
 
     /* Focus-timer preset colours. Presets used UI tokens (--primary, --ring,
-       --accent …) which are not meant to differ from one another: two of them
+       --accent and so on) which are not meant to differ from one another: two
        resolved to the same blue and one to a near-white. These six are chosen
        to stay apart, and are tuned per theme so they read on either ground. */
     --preset-blue: 217 91% 62%;
@@ -130,7 +130,7 @@ layer(base);
     --glass-border: rgba(255, 255, 255, 0.1);
     --glass-shadow: rgba(0, 0, 0, 0.3);
 
-    /* Elevation shadows — deeper, pure black for true dark-mode depth */
+    /* Elevation shadows: deeper, pure black for true dark-mode depth */
     --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.4);
     --shadow-card: 0 1px 2px hsl(0 0% 0% / 0.3), 0 6px 18px hsl(0 0% 0% / 0.45);
     --shadow-overlay: 0 24px 60px hsl(0 0% 0% / 0.6);
@@ -471,7 +471,7 @@ layer(base);
   }
   
 
-  /* Frosted panel — translucent over the page background. */
+  /* Frosted panel, translucent over the page background. */
   .glass {
     background-color: hsl(var(--card) / 0.55);
     backdrop-filter: blur(20px);
