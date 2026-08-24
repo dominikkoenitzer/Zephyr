@@ -47,7 +47,7 @@ function Home() {
   const [sessions] = useStoreValue(readSessions);
 
   const now = new Date();
-  // Before 5am still reads as "evening" — at 00:19 "Good morning" is just wrong.
+  // Before 5am still reads as "evening"; at 00:19 "Good morning" is just wrong.
   const hour = now.getHours();
   const greeting =
     hour < 5 ? 'Good evening' : hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';

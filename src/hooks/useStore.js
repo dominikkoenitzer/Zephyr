@@ -4,7 +4,7 @@ import { localStorageService, CHANGE_EVENT } from '../services/localStorage';
 /**
  * Subscribe a component to a slice of persisted state.
  *
- * Re-reads `read()` whenever the data changes — whether the change came from
+ * Re-reads `read()` whenever the data changes, whether the change came from
  * this tab (our in-app `zephyr:change` event), another tab (the native
  * `storage` event), or the window regaining focus. This replaces the
  * hand-wired `focus`/`storage` listeners that were duplicated across pages.

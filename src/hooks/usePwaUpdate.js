@@ -7,7 +7,7 @@ import { registerSW } from 'virtual:pwa-register';
  *
  * Zephyr is installable, so a session can be days old. Under the previous
  * `autoUpdate` the new worker claimed the page as soon as it was built, which
- * swaps the precache beneath a running app — a lazily-loaded route requested
+ * swaps the precache beneath a running app, and a lazily-loaded route requested
  * after that points at a filename the new manifest no longer has. Here the new
  * worker waits, and a toast hands the choice to the person using it.
  *

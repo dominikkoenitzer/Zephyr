@@ -71,7 +71,7 @@ export default defineConfig({
     fixChunkLoading(),
     // Service worker: precaches the app shell + assets so Zephyr genuinely
     // works offline (the PWA manifest alone does not cache anything).
-    // Uses the existing public/manifest.webmanifest — the plugin does not
+    // Uses the existing public/manifest.webmanifest, since the plugin does not
     // generate one (manifest: false) and does not touch chunking.
     VitePWA({
       // 'prompt', not 'autoUpdate': a deploy used to swap the precache under a
@@ -115,7 +115,7 @@ export default defineConfig({
     },
     dedupe: ['react', 'react-dom'],
   },
-  // Port 1000 for both `dev` and `preview`, and strictly — Vite's default is
+  // Port 1000 for both `dev` and `preview`, and strictly, because Vite's default is
   // to walk to the next free port, which quietly hands you a different URL.
   // Failing loudly is better than serving on a port nobody is looking at.
   server: {
@@ -152,7 +152,7 @@ export default defineConfig({
           }
 
           // ogl (WebGL, no React dependency) is only imported by the
-          // lazy-loaded AuroraBackground — return undefined so Rollup keeps
+          // lazy-loaded AuroraBackground, so return undefined and Rollup keeps
           // it in that async chunk instead of the eagerly-loaded vendor.
           if (id.includes('node_modules/ogl')) {
             return undefined;

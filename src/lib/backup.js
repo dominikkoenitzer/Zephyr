@@ -71,7 +71,7 @@ export function applyBackup(backup) {
 export const LEGACY_KEYS = ['gardenTheme'];
 
 /**
- * Remove every key Zephyr owns — and nothing else.
+ * Remove every key Zephyr owns, and nothing else.
  *
  * The Settings page used to finish its wipe with `localStorage.clear()`, which
  * empties the whole origin. It happens to be harmless on zephyr.punds.ch today,

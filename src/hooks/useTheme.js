@@ -5,7 +5,7 @@ import { themeService, THEME_EVENT } from '../services/themeService';
  * The live theme: what the user picked (`preference`) and what that resolves
  * to right now (`colorMode`).
  *
- * Seeded from the service rather than from an effect — the class is already on
+ * Seeded from the service instead of from an effect, since the class is already on
  * <html> before React renders, so the first paint is correct. The listeners
  * only follow later changes: the app's own `themechange` event, and the native
  * `storage` event so switching theme in one tab moves the others too.

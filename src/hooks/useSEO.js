@@ -41,7 +41,7 @@ export const useSEO = () => {
 
   useEffect(() => {
     const metadata = pageMetadata[location.pathname] || pageMetadata['/'];
-    // /home renders the same screen as / — canonicalize it to the root so
+    // /home renders the same screen as /, so canonicalize it to the root and
     // search engines don't index duplicate content.
     const canonicalPath = location.pathname === '/home' ? '/' : location.pathname;
     
