@@ -5,7 +5,7 @@ import { BookOpen, Heart, Settings, Target, Zap } from 'lucide-react';
  *
  * Preset colours are CSS variables so they follow the theme. Presets saved by
  * older builds stored literal Tailwind hexes instead, and the colour picker
- * hands back a hex too — `normalizePresetColor` maps the known old values onto
+ * hands back a hex too, and `normalizePresetColor` maps the known old values onto
  * theme tokens on load, and `toHexColor` resolves whatever is stored back to a
  * hex the `<input type="color">` can display.
  */
@@ -13,7 +13,7 @@ import { BookOpen, Heart, Settings, Target, Zap } from 'lucide-react';
 /**
  * The six colours a preset can wear. These are dedicated `--preset-*` tokens
  * rather than UI tokens: the palette used to be built from --primary, --accent,
- * --ring and friends, which are not designed to differ from one another —
+ * --ring and friends, which are not designed to differ from one another, so
  * --primary and --ring resolved to the same blue and --accent to a near-white,
  * so four of the five default presets looked identical. Defined per theme in
  * index.css so they still follow light/dark.

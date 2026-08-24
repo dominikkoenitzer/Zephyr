@@ -8,7 +8,7 @@ const isTyping = (target) =>
 
 /**
  * A Radix dialog, popover or select is open. Single-letter shortcuts stand
- * down while one is — inside a dialog, `t` belongs to whatever has focus.
+ * down while one is: inside a dialog, `t` belongs to whatever has focus.
  */
 const isOverlayOpen = () =>
   !!document.querySelector(
@@ -20,7 +20,7 @@ const CHORD_MS = 1400;
 
 /**
  * The app-wide keyboard map. Behaviour lives here; the printed list of what
- * exists lives in `src/lib/shortcuts.js` — keep the two in step.
+ * exists lives in `src/lib/shortcuts.js`, so keep the two in step.
  *
  * Handlers are read through a ref so the listener is attached once and never
  * re-registers as the callbacks change identity between renders.
@@ -58,7 +58,7 @@ export function useAppShortcuts(handlers) {
       const h = handlersRef.current;
       const mod = event.metaKey || event.ctrlKey;
 
-      // ⌘K / Ctrl+K works even inside a text field — that is the point of it.
+      // ⌘K / Ctrl+K works even inside a text field. That is the point of it.
       if (mod && !event.altKey && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         clearChord();

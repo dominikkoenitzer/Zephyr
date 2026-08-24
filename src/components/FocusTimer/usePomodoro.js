@@ -88,7 +88,7 @@ function readPersistedTimer() {
  * nothing else.
  *
  * The countdown anchors to a wall-clock end time rather than counting down a
- * variable, because browsers throttle `setInterval` in background tabs — the
+ * variable, because browsers throttle `setInterval` in background tabs. The
  * whole point of a focus timer is that it stays right while you are looking at
  * something else.
  */
@@ -313,7 +313,7 @@ export function usePomodoro() {
 
     // Anchor the session to a wall-clock end time. Browsers throttle
     // setInterval in background tabs, so remaining time is computed from
-    // Date.now() on every tick instead of counted down — no drift.
+    // Date.now() on every tick instead of counted down, so there is no drift.
     const endAt = Date.now() + timeLeftRef.current * 1000;
     let completed = false;
     const tick = () => {

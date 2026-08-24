@@ -8,7 +8,7 @@ export const STORAGE_KEYS = {
   WELLNESS: 'zephyr_wellness',
   // Notes, the calendar, the journal and task folders were all removed from
   // the app. Their keys stay listed so clearAllData still wipes old data and
-  // a backup still carries it — there is no code left that reads them.
+  // a backup still carries it. No code left in the app reads them.
   CALENDAR_EVENTS: 'zephyr_calendar_events',
   TASK_FOLDERS: 'zephyr_task_folders',
   NOTES: 'zephyr_notes',
@@ -19,14 +19,14 @@ export const STORAGE_KEYS = {
 };
 
 // Custom event broadcast on every write so views in the same tab can react
-// instantly (the native `storage` event only fires in *other* tabs).
+// instantly (the native `storage` event only fires in other tabs).
 export const CHANGE_EVENT = 'zephyr:change';
 
 export function emitChange(key) {
   try {
     window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: { key } }));
   } catch {
-    // Non-browser / SSR — nothing to broadcast.
+    // Non-browser or SSR, so nothing to broadcast.
   }
 }
 
@@ -44,7 +44,7 @@ export const DEFAULT_SETTINGS = {
  * A collision-proof id.
  *
  * Tasks and focus sessions used to be identified by `Date.now().toString()`
- * alone, so two created inside the same millisecond shared an id — and since
+ * alone, so two created inside the same millisecond shared an id, and since
  * every lookup, update and delete matches on id, deleting one of them deleted
  * both. Quick-adding two tasks in a row is enough to hit it.
  */
@@ -296,7 +296,7 @@ class LocalStorageService {
     }
   }
 
-  // View preferences — which filter chip and sort a list was left on, so a
+  // View preferences: which filter chip and sort a list was left on, so a
   // reload doesn't drop you back into an unfiltered list. Deliberately kept
   // apart from SETTINGS: this is where you were, not what you chose.
   getViewPrefs() {
