@@ -1,14 +1,10 @@
 import TaskList from '../components/TaskManager/TaskList';
 import PageContainer from '../components/Layout/PageContainer';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { ROUTE_META } from '../routes/meta';
 
 function TasksPage() {
-  usePageMeta({
-    title: 'Tasks | Zephyr',
-    description:
-      'A to-do list with due dates, priorities and #tags. Natural-language quick add understands plain English, and the list groups itself into Overdue, Today, Tomorrow and Later.',
-    path: '/tasks',
-  });
+  usePageMeta(ROUTE_META['/tasks']);
 
   return (
     <PageContainer>

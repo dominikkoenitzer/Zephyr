@@ -9,10 +9,10 @@ Last updated: 2026-08-30
 ## Features
 
 - [Tasks](https://zephyr.punds.ch/tasks): Tasks with due dates, priorities and #tags. Natural-language quick add reads plain English as you type, so "Email Sam tomorrow !high #work" sets the due date, priority and tag by itself. The list groups into Overdue, Today, Tomorrow, This week and Later, and filters by due window or tag. Deleting a task offers an undo that restores its original position.
-- [Focus Timer](https://zephyr.punds.ch/focus): A Pomodoro timer with presets for Pomodoro (25 min work / 5 min break), Short Focus (15/3), Deep Work (45/10) and Meditation (10/2), plus custom presets with their own colours. Sessions are logged, a daily streak is tracked, and a session can be tied to a specific task.
+- [Focus Timer](https://zephyr.punds.ch/focus): A Pomodoro timer with presets for Pomodoro (25 min work / 5 min break), Short Focus (15/3), Deep Work (45/10) and Meditation (10/2), plus custom presets with their own colours. The Pomodoro preset schedules a longer 15-minute break after every fourth session. Sessions are logged, a daily streak is tracked, and a session can be tied to a specific task.
 - [Home](https://zephyr.punds.ch/): A weekly overview of focus minutes, completed tasks and tasks due today.
 - [Settings](https://zephyr.punds.ch/settings): Theme, notification preferences, and data export/import.
-- [Help & FAQ](https://zephyr.punds.ch/help): How the app works, keyboard shortcuts, and data handling.
+- [Help & FAQ](https://zephyr.punds.ch/help): How the app works, keyboard shortcuts, and data handling, plus the Privacy Policy, Terms of Service and legal text.
 
 ## Key facts
 

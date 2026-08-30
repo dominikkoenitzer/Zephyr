@@ -1,8 +1,10 @@
+import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { VitePWA } from 'vite-plugin-pwa'
+import { ROUTE_META } from './src/routes/meta.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -65,10 +67,49 @@ function fixChunkLoading() {
   }
 }
 
+// Writes a static HTML file per route after the build. Every route is served
+// from index.html, so a crawler that does not execute JavaScript (most AI
+// crawlers) used to see the home page's title, description and canonical on
+// every URL — the canonical told it /tasks was a duplicate of /. usePageMeta
+// corrects the head only after React runs; these files make the served bytes
+// right too. vercel.json rewrites each route here, ahead of the catch-all.
+function perRouteHtml() {
+  const escapeHtml = (s) =>
+    s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  return {
+    name: 'per-route-html',
+    closeBundle() {
+      const template = readFileSync(resolve(__dirname, 'dist/index.html'), 'utf8');
+      for (const { title, description, path } of Object.values(ROUTE_META)) {
+        if (path === '/') continue;
+        const url = `https://zephyr.punds.ch${path}`;
+        const t = escapeHtml(title);
+        const d = escapeHtml(description);
+        const html = template
+          .replace(/<title>[^<]*<\/title>/, `<title>${t}</title>`)
+          .replace(/(<meta name="description" content=")[^"]*(")/, `$1${d}$2`)
+          .replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${url}$2`)
+          .replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${t}$2`)
+          .replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${d}$2`)
+          .replace(/(<meta property="og:url" content=")[^"]*(")/, `$1${url}$2`)
+          .replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${t}$2`)
+          .replace(/(<meta name="twitter:description" content=")[^"]*(")/, `$1${d}$2`)
+          .replace(/(<meta name="twitter:url" content=")[^"]*(")/, `$1${url}$2`);
+        writeFileSync(resolve(__dirname, `dist${path}.html`), html);
+      }
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
     react(),
     fixChunkLoading(),
+    perRouteHtml(),
     // Service worker: precaches the app shell + assets so Zephyr genuinely
     // works offline (the PWA manifest alone does not cache anything).
     // Uses the existing public/manifest.webmanifest, since the plugin does not
