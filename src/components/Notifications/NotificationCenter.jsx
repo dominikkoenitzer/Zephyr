@@ -97,7 +97,7 @@ const NotificationCenter = ({ onClose }) => {
             <Bell className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mb-2 sm:mb-3 opacity-50" />
             <p className="text-xs sm:text-sm font-medium text-foreground mb-0.5 sm:mb-1">No notifications</p>
             <p className="text-[10px] sm:text-xs text-muted-foreground text-center px-2">
-              You&apos;re all caught up! Notifications will appear here.
+              Reminders about due tasks and finished sessions show up here.
             </p>
           </div>
         ) : (

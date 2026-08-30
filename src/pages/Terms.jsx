@@ -177,8 +177,8 @@ function Terms() {
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
             <p>
-              This application stores all data locally on your device. We do not have access to your data, and we cannot
-              recover it if it is lost. Please ensure you regularly back up important information if needed.
+              This application stores all data locally on your device. We cannot see it, and we cannot recover it once it
+              is gone. Export a backup from Settings if the data matters to you.
             </p>
           </CardContent>
         </Card>

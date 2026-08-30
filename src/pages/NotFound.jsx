@@ -21,7 +21,7 @@ const NotFound = () => {
           Page not found
         </h1>
         <p className="mt-4 text-base text-muted-foreground">
-          This page does not exist.{' '}
+          The link may be old, or the address may have a typo in it.{' '}
           <Link to="/" className="text-foreground underline underline-offset-4">
             Back to Home
           </Link>

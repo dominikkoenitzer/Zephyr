@@ -218,7 +218,7 @@ export function usePomodoro() {
     } else {
       setIsBreak(false);
       setTimeLeft(workTime);
-      showNotification('Break Complete', 'Recharged and ready to focus again');
+      showNotification('Break Complete', 'The next session is ready when you are.');
       // The break end writes no notification record, so its chime has to be
       // asked for directly or the timer simply goes quiet.
       notificationService.playChime();

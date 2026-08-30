@@ -87,7 +87,7 @@ function TopBar({ onSearchClick }) {
                 reading size, and a target that lights up under the cursor. */}
             <Link
               to="/"
-              aria-label="Zephyr — go to the home screen"
+              aria-label="Zephyr, go to the home screen"
               title="Home"
               className="-ml-2 flex items-center gap-2.5 rounded-full py-1.5 pl-2 pr-3.5 transition-colors hover:bg-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >

@@ -105,7 +105,7 @@ function Settings() {
     <PageContainer>
       <PageHeader
         title="Settings"
-        description="Manage notifications, data, and personalization"
+        description="Theme, notifications and what happens to your data"
       />
 
       {/* Main Content Grid */}
@@ -231,7 +231,7 @@ function Settings() {
                     </div>
                     <div>
                       <h4 className="font-semibold text-foreground">Task Notifications</h4>
-                      <p className="text-xs text-muted-foreground mt-0.5">Stay on top of your tasks</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Reminders for due and overdue tasks</p>
                     </div>
                   </div>
                   <Checkbox
@@ -301,7 +301,7 @@ function Settings() {
                 </div>
                 {notificationSettings.timer.enabled && (
                   <div className="mt-4 pt-4 border-t border-border/50">
-                    <p className="text-sm text-muted-foreground">Get notified when your focus timer sessions complete</p>
+                    <p className="text-sm text-muted-foreground">A chime and a notification when a work or break session ends</p>
                   </div>
                 )}
               </div>
@@ -329,7 +329,7 @@ function Settings() {
                   <h3 className="font-bold text-base sm:text-lg text-foreground mb-1 sm:mb-2">Backup &amp; Restore</h3>
                   <p className="text-sm sm:text-base text-muted-foreground">
                     Download all your data as a single file, or restore a backup on any device.
-                    Everything stays local — nothing is uploaded.
+                    The file is written by your browser, so nothing is uploaded.
                   </p>
                 </div>
               </div>
