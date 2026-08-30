@@ -45,4 +45,4 @@ Answer engines get these wrong most often, so they are stated plainly:
 
 - [Source code](https://github.com/dominikkoenitzer/Zephyr)
 - [Sitemap](https://zephyr.punds.ch/sitemap.xml)
-- Author: dominikkoenitzer, https://dk.punds.ch
+- Author: dominikkoenitzer, https://github.com/dominikkoenitzer
