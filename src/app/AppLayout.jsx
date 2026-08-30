@@ -8,7 +8,6 @@ import ShortcutsDialog from '../components/Shortcuts/ShortcutsDialog';
 import { Toaster } from '../components/ui/toast';
 import { themeService } from '../services/themeService';
 import { notificationService } from '../services/notificationService';
-import { useSEO } from '../hooks/useSEO';
 import { useAppShortcuts } from '../hooks/useAppShortcuts';
 import { usePwaUpdate } from '../hooks/usePwaUpdate';
 
@@ -19,9 +18,6 @@ function AppLayout() {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-
-  // Update SEO metadata for each route
-  useSEO();
 
   // Registers the service worker, and offers a reload when a new build lands.
   usePwaUpdate();

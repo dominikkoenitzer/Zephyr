@@ -4,7 +4,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 
 function TasksPage() {
   usePageMeta({
-    title: 'Tasks — Zephyr',
+    title: 'Tasks | Zephyr',
     description:
       'A to-do list with due dates, priorities and #tags. Natural-language quick add understands plain English, and the list groups itself into Overdue, Today, Tomorrow and Later.',
     path: '/tasks',

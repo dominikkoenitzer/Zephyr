@@ -30,7 +30,7 @@ const readStorageInfo = () => localStorageService.getStorageInfo();
 
 function Settings() {
   usePageMeta({
-    title: 'Settings — Zephyr',
+    title: 'Settings | Zephyr',
     description:
       'Theme, notifications and data management. Export a full backup of your Zephyr data or import one on another device.',
     path: '/settings',
