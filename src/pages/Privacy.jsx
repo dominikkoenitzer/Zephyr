@@ -90,7 +90,7 @@ function Privacy() {
 
               <h2 className="font-semibold text-foreground text-base mb-2">9. Contact Us</h2>
               <p>
-                If you have questions about this Privacy Policy, please contact us at: <a href="mailto:dominikkoenitzer@users.noreply.github.com" className="text-primary hover:underline">dominikkoenitzer@users.noreply.github.com</a>
+                If you have questions about this Privacy Policy, please contact us at: <a href="https://github.com/dominikkoenitzer/Zephyr/issues" className="text-primary hover:underline">GitHub</a>
               </p>
             </div>
           </CardContent>

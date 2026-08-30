@@ -100,7 +100,7 @@ function Terms() {
 
               <h2 className="font-semibold text-foreground text-base mb-2">11. Contact Information</h2>
               <p>
-                For questions about these Terms of Service, please contact us at: <a href="mailto:dominikkoenitzer@users.noreply.github.com" className="text-primary hover:underline">dominikkoenitzer@users.noreply.github.com</a>
+                For questions about these Terms of Service, please contact us at: <a href="https://github.com/dominikkoenitzer/Zephyr/issues" className="text-primary hover:underline">GitHub</a>
               </p>
             </div>
           </CardContent>
@@ -162,7 +162,7 @@ function Terms() {
 
               <h2 className="font-semibold text-foreground text-base mb-2">Contact Information</h2>
               <p>
-                For legal inquiries or questions about these terms, please contact us at: <a href="mailto:dominikkoenitzer@users.noreply.github.com" className="text-primary hover:underline">dominikkoenitzer@users.noreply.github.com</a>
+                For legal inquiries or questions about these terms, please contact us at: <a href="https://github.com/dominikkoenitzer/Zephyr/issues" className="text-primary hover:underline">GitHub</a>
               </p>
             </div>
           </CardContent>
