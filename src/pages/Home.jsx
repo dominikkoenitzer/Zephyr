@@ -32,7 +32,7 @@ const weekStart = () => {
 const readSessions = () => localStorageService.getFocusSessions();
 
 const QUICK_LINKS = [
-  { to: '/tasks', label: 'Tasks', desc: 'Plan and track your work' },
+  { to: '/tasks', label: 'Tasks', desc: 'Your list, grouped by when things are due' },
   { to: '/focus', label: 'Focus', desc: 'Start a Pomodoro session' },
 ];
 
@@ -95,7 +95,7 @@ function Home() {
         <p className="mt-3 text-[2.5rem] font-semibold leading-[0.95] tracking-[-0.035em] text-foreground sm:text-6xl lg:text-7xl">
           {greeting}
         </p>
-        <p className="mt-4 text-base text-muted-foreground">Here’s your day at a glance.</p>
+        <p className="mt-4 text-base text-muted-foreground">Today’s list, and the week so far.</p>
 
         {/* Figures — no tiles, no icon chips, no gradient. A number and its
             label, separated by a hairline. */}
@@ -128,7 +128,7 @@ function Home() {
           </h2>
           {dueToday.length === 0 ? (
             <p className="mt-4 text-lg text-muted-foreground">
-              Nothing due today — enjoy the breathing room.
+              Nothing is due today.
             </p>
           ) : (
             <ul className="mt-4 divide-y divide-border">
