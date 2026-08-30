@@ -40,6 +40,14 @@
       "destination": "/settings.html"
     },
     {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
@@ -67,7 +75,7 @@
       ]
     },
     {
-      "source": "/(tasks|focus|help|settings)",
+      "source": "/(tasks|focus|help|settings|privacy|terms)",
       "headers": [
         {
           "key": "Cache-Control",
