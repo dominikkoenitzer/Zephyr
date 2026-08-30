@@ -38,7 +38,22 @@
     "utilities",
     "business"
   ],
-  "screenshots": [],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "The task list"
+    },
+    {
+      "src": "/screenshot-narrow.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "The focus timer"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Home",

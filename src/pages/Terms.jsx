@@ -1,0 +1,190 @@
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { FileText, Scale, AlertCircle } from 'lucide-react';
+import PageHeader from '../components/Layout/PageHeader';
+import PageContainer from '../components/Layout/PageContainer';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { ROUTE_META } from '../routes/meta';
+
+// Lived as two tabs (Terms, Legal) inside Help, which kept them out of the
+// DOM unless clicked. A trust page needs its own URL, so both live here.
+function Terms() {
+  usePageMeta(ROUTE_META['/terms']);
+
+  return (
+    <PageContainer>
+      <PageHeader
+        title="Terms of Service"
+        description="The terms for using Zephyr, and the legal notices"
+      />
+
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-3 sm:space-y-4">
+        <Card className="">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              Terms of Service
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 sm:space-y-6 text-xs sm:text-sm text-muted-foreground">
+            <div>
+              <p className="text-xs sm:text-sm text-muted-foreground mb-4">Last updated: August 30, 2026</p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">1. Acceptance of Terms</h2>
+              <p className="mb-4">
+                By accessing and using Zephyr, you accept and agree to be bound by the terms and provision of this agreement.
+                If you do not agree to these terms, please do not use this application.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">2. License</h2>
+              <p className="mb-4">
+                Zephyr&apos;s source code is open source under the <a href="https://github.com/dominikkoenitzer/Zephyr/blob/main/LICENSE" className="text-primary hover:underline">MIT License</a>,
+                which lets you use, copy, and modify it under that license&apos;s terms. The hosted application at
+                zephyr.punds.ch is provided free of charge for personal use.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">3. Disclaimer</h2>
+              <p className="mb-4">
+                The materials in Zephyr are provided on an &apos;as is&apos; basis. Zephyr makes no warranties, expressed or implied,
+                and hereby disclaims and negates all other warranties including, without limitation, implied warranties or
+                conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property
+                or other violation of rights.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">4. Limitations</h2>
+              <p className="mb-4">
+                In no event shall Zephyr or its suppliers be liable for any damages (including, without limitation, damages for
+                loss of data or profit, or due to business interruption) arising out of the use or inability to use Zephyr,
+                even if Zephyr or a Zephyr authorized representative has been notified orally or in writing of the possibility
+                of such damage.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">5. Data Responsibility</h2>
+              <p className="mb-4">
+                You are solely responsible for backing up your data. Zephyr stores all data locally on your device, and we
+                are not responsible for any data loss resulting from device failure, browser issues, or user actions such as
+                clearing browser data.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">6. Accuracy of Materials</h2>
+              <p className="mb-4">
+                The materials appearing in Zephyr could include technical, typographical, or photographic errors. Zephyr does
+                not warrant that any of the materials on its application are accurate, complete, or current.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">7. Modifications</h2>
+              <p className="mb-4">
+                Zephyr may revise these terms of service at any time without notice. By using this application you are agreeing
+                to be bound by the then current version of these terms of service.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">8. Prohibited Uses</h2>
+              <p className="mb-2">You may not use Zephyr:</p>
+              <ul className="list-disc ml-6 space-y-1 mb-4">
+                <li>In any way that violates any applicable law or regulation</li>
+                <li>To transmit any malicious code or viruses</li>
+                <li>To attempt to gain unauthorized access to any systems</li>
+                <li>In any manner that could damage, disable, or impair the application</li>
+              </ul>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">9. Termination</h2>
+              <p className="mb-4">
+                We reserve the right to terminate or suspend access to Zephyr immediately, without prior notice or liability,
+                for any reason whatsoever, including without limitation if you breach the Terms.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">10. Governing Law</h2>
+              <p className="mb-4">
+                These terms and conditions are governed by and construed in accordance with applicable laws. Any disputes
+                relating to these terms shall be subject to the exclusive jurisdiction of the courts in the applicable jurisdiction.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">11. Contact Information</h2>
+              <p>
+                For questions about these Terms of Service, please contact us at: <a href="mailto:dominikkoenitzer@users.noreply.github.com" className="text-primary hover:underline">dominikkoenitzer@users.noreply.github.com</a>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Scale className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              Legal Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 sm:space-y-6 text-xs sm:text-sm text-muted-foreground">
+            <div>
+              <h2 className="font-semibold text-foreground text-base mb-2">Copyright Notice</h2>
+              <p className="mb-4">
+                © 2026 Zephyr. The Zephyr application, including its design,
+                functionality, and content, is protected by copyright laws and released under the MIT License.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">Intellectual Property</h2>
+              <p className="mb-4">
+                All trademarks, service marks, trade names, logos, and other intellectual property displayed in Zephyr are
+                the property of their respective owners. Unauthorized use of any intellectual property is prohibited.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">Open Source Components</h2>
+              <p className="mb-4">
+                Zephyr uses open source software components. These components are subject to their respective licenses,
+                listed in the repository&apos;s package.json.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">Disclaimer of Warranties</h2>
+              <p className="mb-4">
+                ZEPHYR IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+                INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+                AND NON-INFRINGEMENT.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">Limitation of Liability</h2>
+              <p className="mb-4">
+                TO THE MAXIMUM EXTENT PERMITTED BY LAW, ZEPHYR SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
+                CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR
+                INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">Indemnification</h2>
+              <p className="mb-4">
+                You agree to indemnify and hold harmless Zephyr and its operators from any claims, damages, losses, liabilities,
+                and expenses (including legal fees) arising out of or relating to your use of the application or violation of
+                these terms.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">Severability</h2>
+              <p className="mb-4">
+                If any provision of these legal terms is found to be unenforceable or invalid, that provision shall be limited
+                or eliminated to the minimum extent necessary, and the remaining provisions shall remain in full force and effect.
+              </p>
+
+              <h2 className="font-semibold text-foreground text-base mb-2">Contact Information</h2>
+              <p>
+                For legal inquiries or questions about these terms, please contact us at: <a href="mailto:dominikkoenitzer@users.noreply.github.com" className="text-primary hover:underline">dominikkoenitzer@users.noreply.github.com</a>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className=" border-yellow-500/30 bg-yellow-500/10">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
+              <AlertCircle className="h-5 w-5" />
+              Important Notice
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            <p>
+              This application stores all data locally on your device. We do not have access to your data, and we cannot
+              recover it if it is lost. Please ensure you regularly back up important information if needed.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </PageContainer>
+  );
+}
+
+export default Terms;
