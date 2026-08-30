@@ -108,10 +108,14 @@ const PresetSettingsDialog = ({
           <div className="space-y-4 border border-border/60 rounded-xl p-3 sm:p-4 bg-background/70">
             <div className="flex items-center justify-between gap-3">
               <label className="text-sm font-medium text-foreground">Color</label>
+              <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-2.5 py-1 text-xs text-muted-foreground">
+                <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: preset.color }} />
+                Live preview
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-4 sm:gap-5 items-center">
-              <div className="relative h-20 w-20 rounded-full p-1 border border-border">
+              <div className="relative h-20 w-20 rounded-full p-1.5 bg-linear-to-br from-primary/30 via-accent/30 to-muted/40 shadow-inner">
                 <input
                   type="color"
                   value={colorHex}
