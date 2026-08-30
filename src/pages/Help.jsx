@@ -10,7 +10,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 
 function Help() {
   usePageMeta({
-    title: 'Help & FAQ — Zephyr',
+    title: 'Help & FAQ | Zephyr',
     description:
       'How Zephyr works: local-first storage, offline use, keyboard shortcuts, the command palette, and how to back your data up.',
     path: '/help',

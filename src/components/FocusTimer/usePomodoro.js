@@ -343,11 +343,11 @@ export function usePomodoro() {
 
   // Show the countdown in the browser tab while a session is running, so
   // the timer stays visible when you switch tabs to do the actual work.
-  // (Navigating to another route re-runs useSEO, which resets the title.)
+  // (Navigating to another route re-runs usePageMeta, which resets the title.)
   useEffect(() => {
     if (isRunning) {
       if (originalTitleRef.current === null) originalTitleRef.current = document.title;
-      document.title = `${formatTime(timeLeft)} · ${isBreak ? 'Break' : 'Focus'} — Zephyr`;
+      document.title = `${formatTime(timeLeft)} · ${isBreak ? 'Break' : 'Focus'} | Zephyr`;
     } else if (originalTitleRef.current !== null) {
       document.title = originalTitleRef.current;
       originalTitleRef.current = null;
