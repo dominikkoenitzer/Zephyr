@@ -37,9 +37,9 @@ const QUICK_LINKS = [
 
 function Home() {
   usePageMeta({
-    title: 'Zephyr — Free To-Do List & Pomodoro Timer. No Login.',
+    title: 'Zephyr, a to-do list and Pomodoro timer',
     description:
-      'A free, local-first productivity app: a to-do list with natural-language quick add and a Pomodoro focus timer. No login, no signup, works offline.',
+      'Zephyr is a to-do list and Pomodoro focus timer that runs in your browser. There is no account and no server: your data stays on your device and it works offline.',
     path: '/',
   });
 

@@ -4,7 +4,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 
 function FocusTimer() {
   usePageMeta({
-    title: 'Focus Timer — Zephyr',
+    title: 'Focus Timer | Zephyr',
     description:
       'A Pomodoro focus timer with custom presets, session tracking and a daily streak. Runs accurately in a background tab and keeps working offline.',
     path: '/focus',
