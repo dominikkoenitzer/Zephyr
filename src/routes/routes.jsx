@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import PageLoader from '../components/ui/PageLoader';
 import AppLayout from '../app/AppLayout';
 import ErrorFallback from '../components/ErrorBoundary/ErrorFallback';
-import { FocusTimer, Help, Home, Settings, TasksPage } from './pages';
+import { FocusTimer, Help, Home, NotFound, Settings, TasksPage } from './pages';
 
 const withPageLoader = (Component) => (
   <Suspense fallback={<PageLoader />}>
@@ -18,10 +18,6 @@ export const routes = [
     children: [
       {
         index: true,
-        element: withPageLoader(Home),
-      },
-      {
-        path: 'home',
         element: withPageLoader(Home),
       },
       {
@@ -55,7 +51,7 @@ export const routes = [
       },
       {
         path: '*',
-        element: <Navigate to="/" replace />,
+        element: withPageLoader(NotFound),
       },
     ],
   },

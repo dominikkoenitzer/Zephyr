@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { useTasks, useStoreValue } from '../hooks/useStore';
 import { localStorageService } from '../services/localStorage';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { ROUTE_META } from '../routes/meta';
 
 // Stagger-in for the stat tiles and quick links.
 const staggerGrid = {
@@ -36,12 +37,7 @@ const QUICK_LINKS = [
 ];
 
 function Home() {
-  usePageMeta({
-    title: 'Zephyr, a to-do list and Pomodoro timer',
-    description:
-      'Zephyr is a to-do list and Pomodoro focus timer that runs in your browser. There is no account and no server: your data stays on your device and it works offline.',
-    path: '/',
-  });
+  usePageMeta(ROUTE_META['/']);
 
   const [tasks] = useTasks();
   const [sessions] = useStoreValue(readSessions);
@@ -93,9 +89,12 @@ function Home() {
         <p className="text-[12px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
           {dateLabel}
         </p>
-        <h1 className="mt-3 text-[2.5rem] font-semibold leading-[0.95] tracking-[-0.035em] text-foreground sm:text-6xl lg:text-7xl">
+        {/* The h1 Google indexes should say what the app is, not the time of
+            day. The greeting keeps its exact type but as a paragraph. */}
+        <h1 className="sr-only">Zephyr, a to-do list and Pomodoro focus timer</h1>
+        <p className="mt-3 text-[2.5rem] font-semibold leading-[0.95] tracking-[-0.035em] text-foreground sm:text-6xl lg:text-7xl">
           {greeting}
-        </h1>
+        </p>
         <p className="mt-4 text-base text-muted-foreground">Here’s your day at a glance.</p>
 
         {/* Figures — no tiles, no icon chips, no gradient. A number and its

@@ -7,28 +7,24 @@ import ShortcutTable from '../components/Shortcuts/ShortcutTable';
 import PageHeader from '../components/Layout/PageHeader';
 import PageContainer from '../components/Layout/PageContainer';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { ROUTE_META } from '../routes/meta';
 
 function Help() {
-  usePageMeta({
-    title: 'Help & FAQ | Zephyr',
-    description:
-      'How Zephyr works: local-first storage, offline use, keyboard shortcuts, the command palette, and how to back your data up.',
-    path: '/help',
-  });
+  usePageMeta(ROUTE_META['/help']);
 
   const [activeSection, setActiveSection] = useState('help');
 
   const faqs = [
     {
       question: "How does the Pomodoro timer work?",
-      answer: "The Pomodoro Technique is a time management method that breaks work into focused intervals. In Zephyr, you work for 25 minutes (a 'pomodoro'), then take a 5-minute break. After completing 4 pomodoros, you get a longer 15-minute break. This cycle helps maintain focus, prevent burnout, and boost productivity. The timer automatically tracks your sessions so you can build consistent focus habits.",
+      answer: "The Pomodoro Technique is a time management method that breaks work into focused intervals. In Zephyr, you work for 25 minutes (a 'pomodoro'), then take a 5-minute break. After completing 4 pomodoros, you get a longer 15-minute break. The cycle keeps breaks regular through long stretches of work, and the timer logs each session.",
       icon: Timer,
       iconColor: "text-primary",
       bgColor: "bg-primary/10"
     },
     {
       question: "Can I customize timer durations?",
-      answer: "Yes! Zephyr offers multiple timer presets including Pomodoro, Deep Work, and Meditation. You can also create custom presets with your preferred work session, short break, and long break durations. On the Focus page, pick a preset from the list on the right; hover one to rename or retime it, or use the New preset button to add your own.",
+      answer: "Yes. Zephyr has timer presets for Pomodoro, Deep Work, and Meditation. You can also create custom presets with your preferred work session, short break, and long break durations. On the Focus page, pick a preset from the list on the right; hover one to rename or retime it, or use the New preset button to add your own.",
       icon: Settings,
       iconColor: "text-primary",
       bgColor: "bg-accent/60"
@@ -49,7 +45,7 @@ function Help() {
     },
     {
       question: "Does Zephyr work offline?",
-      answer: "Yes! Zephyr is a Progressive Web App (PWA) designed to work completely offline. All your data — tasks and timer sessions — is stored locally on your device using browser storage. You don't need an internet connection to use any features. This ensures your data remains private and accessible even without internet access.",
+      answer: "Yes. Zephyr is a Progressive Web App (PWA) that works offline. All your data — tasks and timer sessions — is stored locally on your device using browser storage. You don't need an internet connection to use any features.",
       icon: WifiOff,
       iconColor: "text-primary",
       bgColor: "bg-accent/60"
@@ -81,7 +77,7 @@ function Help() {
     <PageContainer>
       <PageHeader
         title="Help & Support"
-        description="Everything you need to master Zephyr"
+        description="How Zephyr works, from shortcuts to backups"
       />
 
       {/* Navigation Tabs */}
@@ -186,7 +182,7 @@ function Help() {
                 <span className="wrap-break-word">Frequently Asked Questions</span>
               </CardTitle>
               <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1 sm:mt-2">
-                Find answers to common questions about Zephyr
+                Common questions about Zephyr
               </p>
             </CardHeader>
             <CardContent className="pr-1 sm:pr-2">

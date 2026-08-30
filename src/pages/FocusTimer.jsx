@@ -1,14 +1,10 @@
 import PomodoroTimer from '../components/FocusTimer/PomodoroTimer';
 import PageContainer from '../components/Layout/PageContainer';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { ROUTE_META } from '../routes/meta';
 
 function FocusTimer() {
-  usePageMeta({
-    title: 'Focus Timer | Zephyr',
-    description:
-      'A Pomodoro focus timer with custom presets, session tracking and a daily streak. Runs accurately in a background tab and keeps working offline.',
-    path: '/focus',
-  });
+  usePageMeta(ROUTE_META['/focus']);
 
   return (
     <PageContainer>

@@ -19,6 +19,7 @@ import { useTheme } from '../hooks/useTheme';
 import PageHeader from '../components/Layout/PageHeader';
 import PageContainer from '../components/Layout/PageContainer';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { ROUTE_META } from '../routes/meta';
 
 const THEME_OPTIONS = [
   { value: 'light', label: 'Light', icon: Sun },
@@ -29,12 +30,7 @@ const THEME_OPTIONS = [
 const readStorageInfo = () => localStorageService.getStorageInfo();
 
 function Settings() {
-  usePageMeta({
-    title: 'Settings | Zephyr',
-    description:
-      'Theme, notifications and data management. Export a full backup of your Zephyr data or import one on another device.',
-    path: '/settings',
-  });
+  usePageMeta(ROUTE_META['/settings']);
 
   const [notificationSettings, setNotificationSettings] = useState(notificationService.getSettings());
   const [showClearDialog, setShowClearDialog] = useState(false);
