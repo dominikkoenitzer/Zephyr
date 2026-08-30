@@ -1,5 +1,44 @@
 {
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/notes",
+      "destination": "/tasks",
+      "permanent": true
+    },
+    {
+      "source": "/journal",
+      "destination": "/tasks",
+      "permanent": true
+    },
+    {
+      "source": "/calendar",
+      "destination": "/tasks",
+      "permanent": true
+    },
+    {
+      "source": "/home",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/tasks",
+      "destination": "/tasks.html"
+    },
+    {
+      "source": "/focus",
+      "destination": "/focus.html"
+    },
+    {
+      "source": "/help",
+      "destination": "/help.html"
+    },
+    {
+      "source": "/settings",
+      "destination": "/settings.html"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
@@ -24,6 +63,15 @@
         {
           "key": "Referrer-Policy",
           "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/(tasks|focus|help|settings)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store"
         }
       ]
     },

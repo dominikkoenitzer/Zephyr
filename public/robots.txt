@@ -1,44 +1,9 @@
 # robots.txt for https://zephyr.punds.ch
-# Search and AI crawlers are welcome.
+# Search and AI crawlers are welcome. One wildcard group covers them all:
+# a named per-bot group would fully replace this one for that bot, silently
+# exempting it from any Disallow added here later.
 
 User-agent: *
-Allow: /
-
-# --- AI / LLM crawlers (explicitly allowed for AI search & answer engines) ---
-User-agent: GPTBot
-Allow: /
-
-User-agent: OAI-SearchBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: Claude-Web
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: Perplexity-User
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: Applebot-Extended
-Allow: /
-
-User-agent: Amazonbot
-Allow: /
-
-User-agent: CCBot
 Allow: /
 
 # Sitemap

@@ -25,9 +25,18 @@ function upsert(selector, create) {
  * index.html, and rendering more would leave the document with two titles and
  * two canonicals rather than replacing them.
  */
-export function usePageMeta({ title, description, path }) {
+export function usePageMeta({ title, description, path, robots }) {
   useEffect(() => {
     if (title) document.title = title;
+
+    // Written even when the route does not set it: a route that stays silent
+    // must reset the default, or navigating away from the 404 page would
+    // carry its noindex onto a real page.
+    upsert('meta[name="robots"]', () => {
+      const el = document.createElement('meta');
+      el.setAttribute('name', 'robots');
+      return el;
+    }).setAttribute('content', robots || 'index, follow');
 
     if (description) {
       upsert('meta[name="description"]', () => {
@@ -64,7 +73,7 @@ export function usePageMeta({ title, description, path }) {
         return el;
       }).setAttribute('content', value);
     }
-  }, [title, description, path]);
+  }, [title, description, path, robots]);
 }
 
 export default usePageMeta;
