@@ -27,7 +27,7 @@ function Help() {
       answer: "Yes. Zephyr ships presets for Pomodoro, Short Focus, Deep Work and Meditation, and you can add your own with whatever work, short break and long break durations you want. On the Focus page, pick a preset from the list on the right; hover one to rename or retime it, or use the New preset button to add another.",
       icon: Settings,
       iconColor: "text-primary",
-      bgColor: "bg-primary/10"
+      bgColor: "bg-accent/60"
     },
     {
       question: "Can I drive Zephyr from the keyboard?",
@@ -41,21 +41,21 @@ function Help() {
       answer: "Zephyr tracks your focus sessions and your completed tasks. The home screen adds up the week: active tasks, tasks finished, focus minutes and sessions. The timer keeps a daily streak alongside that, and everything is saved as it happens.",
       icon: FileText,
       iconColor: "text-primary",
-      bgColor: "bg-primary/10"
+      bgColor: "bg-accent/50"
     },
     {
       question: "Does Zephyr work offline?",
       answer: "Yes. Zephyr is a Progressive Web App (PWA) that works offline. Your tasks and timer sessions are stored on your own device in browser storage, so no feature needs an internet connection.",
       icon: WifiOff,
       iconColor: "text-primary",
-      bgColor: "bg-primary/10"
+      bgColor: "bg-accent/60"
     },
     {
       question: "Is my data backed up?",
       answer: "Zephyr stores all data locally on your device. We cannot see it, and there is no automatic cloud backup. You can download a full backup anytime from Settings > Data Management > Export data, and restore it on any device with Import backup. Clearing your browser's site data will remove everything, so export a backup first if your data matters.",
       icon: Cloud,
       iconColor: "text-primary",
-      bgColor: "bg-primary/10"
+      bgColor: "bg-accent/60"
     },
     {
       question: "How do I clear all my data?",

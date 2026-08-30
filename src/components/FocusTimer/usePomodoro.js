@@ -409,9 +409,9 @@ export function usePomodoro() {
   const totalFocusTime = Math.floor((sessionsCompleted * workTime) / 60);
   const getSessionType = () => {
     if (isBreak) {
-      return sessionsCompleted % sessionsUntilLongBreak === 0
-        ? { text: 'Long Break', icon: Clock, color: 'text-muted-foreground' }
-        : { text: 'Short Break', icon: Clock, color: 'text-muted-foreground' };
+      return sessionsCompleted % sessionsUntilLongBreak === 0 
+        ? { text: 'Long Break', icon: Clock, color: 'text-purple-500' } 
+        : { text: 'Short Break', icon: Clock, color: 'text-green-500' };
     }
     return { text: 'Focus Time', icon: Target, color: 'text-primary' };
   };
