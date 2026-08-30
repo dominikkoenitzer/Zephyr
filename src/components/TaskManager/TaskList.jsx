@@ -325,7 +325,7 @@ const TaskList = () => {
           <input
             ref={newTaskInputRef}
             autoFocus
-            placeholder='Add a task — try "Email Sam tomorrow !high #work"'
+            placeholder='Add a task, like "Email Sam tomorrow !high #work"'
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
             onKeyDown={(e) => {
@@ -503,7 +503,7 @@ const TaskList = () => {
         <EmptyState
           icon={Target}
           title="No tasks yet"
-          description="Add your first task above — type a due date, priority, or #tag and it'll be picked up automatically."
+          description="Add your first task on the line above. Type a due date, a priority or a #tag into it and Zephyr picks them up as you write."
         />
       )}
 

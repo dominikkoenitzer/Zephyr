@@ -31,9 +31,9 @@ function Privacy() {
 
               <h2 className="font-semibold text-foreground text-base mb-2">1. Information We Collect</h2>
               <p className="mb-4">
-                Zephyr is designed with privacy in mind. All data is stored locally on your device using browser localStorage.
-                We do not collect, transmit, or store any personal information on our servers. The application operates entirely
-                offline and processes all data locally.
+                Zephyr keeps what you write on your own device. Every task, focus session and setting is saved to your
+                browser&apos;s localStorage and processed there. We do not collect, transmit or store personal information
+                on a server, because there is no server behind the app.
               </p>
 
               <h2 className="font-semibold text-foreground text-base mb-2">2. Local Data Storage</h2>
@@ -50,28 +50,25 @@ function Privacy() {
 
               <h2 className="font-semibold text-foreground text-base mb-2">3. Data Security</h2>
               <p className="mb-4">
-                Since all data is stored locally, you have complete control over your information. We recommend:
+                Because the data sits in your browser, it is only as protected as the device holding it. Worth doing:
               </p>
               <ul className="list-disc ml-6 space-y-1 mb-4">
-                <li>Keeping your device secure with passwords or biometric authentication</li>
-                <li>Regularly backing up important data if needed</li>
-                <li>Clearing browser data if using a shared device</li>
+                <li>Lock the device with a password or biometrics</li>
+                <li>Export a backup from Settings if the data matters to you</li>
+                <li>Clear the browser data when you are on a shared device</li>
               </ul>
 
               <h2 className="font-semibold text-foreground text-base mb-2">4. Third-Party Services</h2>
               <p className="mb-4">
-                Zephyr uses Vercel Analytics, a privacy-focused analytics service provided by Vercel, Inc. This service
-                collects anonymous, aggregated usage statistics to help improve the application. No personal data or user
-                content is shared with Vercel Analytics. The application is otherwise a standalone Progressive Web App (PWA)
-                that functions primarily within your browser.
+                One service is in use: Vercel Analytics, run by Vercel, Inc., which counts page views and performance
+                figures in aggregate. Your tasks, sessions and settings are never sent to it. Apart from that request,
+                Zephyr is a self-contained Progressive Web App (PWA) running in your browser.
               </p>
 
               <h2 className="font-semibold text-foreground text-base mb-2">5. Cookies and Tracking</h2>
               <p className="mb-4">
-                Zephyr uses Vercel Analytics to collect anonymous usage statistics. This service collects aggregated,
-                non-personally identifiable information about how the application is used, such as page views and performance metrics.
-                No personal data, user content, or identifiable information is collected. Vercel Analytics operates in compliance
-                with privacy regulations and does not use cookies or track individual users across sites.
+                Zephyr sets no cookies of its own, and Vercel Analytics does not set any either. It records no identifier
+                for you and cannot follow you to other sites; what it reports is a count, not a person.
               </p>
 
               <h2 className="font-semibold text-foreground text-base mb-2">6. Data Deletion</h2>

@@ -31,7 +31,7 @@ const PresetSettingsDialog = ({
         <div className="px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-border/60 bg-muted/30">
           <DialogTitle className="text-lg sm:text-xl">Edit Timer Preset</DialogTitle>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-            Fine-tune session timings and choose any custom color.
+            Set the four durations and pick a color for the ring.
           </p>
         </div>
       </DialogHeader>

@@ -58,7 +58,7 @@
     {
       "name": "Home",
       "short_name": "Home",
-      "description": "Your day at a glance",
+      "description": "Today's list and the week so far",
       "url": "/",
       "icons": [
         {
@@ -82,7 +82,7 @@
     {
       "name": "Tasks",
       "short_name": "Tasks",
-      "description": "Manage your tasks",
+      "description": "Your task list",
       "url": "/tasks",
       "icons": [
         {

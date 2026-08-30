@@ -24,35 +24,35 @@ function Help() {
     },
     {
       question: "Can I customize timer durations?",
-      answer: "Yes. Zephyr has timer presets for Pomodoro, Deep Work, and Meditation. You can also create custom presets with your preferred work session, short break, and long break durations. On the Focus page, pick a preset from the list on the right; hover one to rename or retime it, or use the New preset button to add your own.",
+      answer: "Yes. Zephyr ships presets for Pomodoro, Short Focus, Deep Work and Meditation, and you can add your own with whatever work, short break and long break durations you want. On the Focus page, pick a preset from the list on the right; hover one to rename or retime it, or use the New preset button to add another.",
       icon: Settings,
       iconColor: "text-primary",
       bgColor: "bg-accent/60"
     },
     {
       question: "Can I drive Zephyr from the keyboard?",
-      answer: "Almost entirely. Ctrl+K (Cmd+K on a Mac) opens the command palette, which searches your tasks and runs any command — new task, start a focus session, switch theme, export a backup. Single keys work whenever you are not typing in a field: N for a new task, T to switch theme, G then T or F to jump between pages, and ? for the full list below.",
+      answer: "Almost entirely. Ctrl+K (Cmd+K on a Mac) opens the command palette, which searches your tasks and runs any command: new task, start a focus session, switch theme, export a backup. Single keys work whenever you are not typing in a field. N adds a task, T switches theme, G then T or F jumps between pages, and ? opens the full list below.",
       icon: Command,
       iconColor: "text-primary",
       bgColor: "bg-primary/10"
     },
     {
       question: "How do I track my progress?",
-      answer: "Zephyr tracks your focus sessions and your completed tasks. The home screen sums up the week — active tasks, tasks finished, focus minutes and sessions — and the timer keeps a daily streak. All of it is saved as it happens.",
+      answer: "Zephyr tracks your focus sessions and your completed tasks. The home screen adds up the week: active tasks, tasks finished, focus minutes and sessions. The timer keeps a daily streak alongside that, and everything is saved as it happens.",
       icon: FileText,
       iconColor: "text-primary",
       bgColor: "bg-accent/50"
     },
     {
       question: "Does Zephyr work offline?",
-      answer: "Yes. Zephyr is a Progressive Web App (PWA) that works offline. All your data — tasks and timer sessions — is stored locally on your device using browser storage. You don't need an internet connection to use any features.",
+      answer: "Yes. Zephyr is a Progressive Web App (PWA) that works offline. Your tasks and timer sessions are stored on your own device in browser storage, so no feature needs an internet connection.",
       icon: WifiOff,
       iconColor: "text-primary",
       bgColor: "bg-accent/60"
     },
     {
       question: "Is my data backed up?",
-      answer: "Zephyr stores all data locally on your device—we don't have access to your data, and there's no automatic cloud backup. You can download a full backup anytime from Settings > Data Management > Export data, and restore it on any device with Import backup. Clearing your browser's site data will remove everything, so export a backup first if your data matters.",
+      answer: "Zephyr stores all data locally on your device. We cannot see it, and there is no automatic cloud backup. You can download a full backup anytime from Settings > Data Management > Export data, and restore it on any device with Import backup. Clearing your browser's site data will remove everything, so export a backup first if your data matters.",
       icon: Cloud,
       iconColor: "text-primary",
       bgColor: "bg-accent/60"
@@ -102,7 +102,7 @@ function Help() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                Quick Start Guide
+                Quick start
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4">
@@ -110,32 +110,32 @@ function Help() {
                 <div className="flex gap-3 sm:gap-4 items-start">
                   <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">1</div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Set Your Priorities</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Head to the Tasks page and add what you want to accomplish today.</p>
+                    <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Write today down</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Open the Tasks page and add what actually has to happen today.</p>
                   </div>
                 </div>
                 
                 <div className="flex gap-3 sm:gap-4 items-start">
                   <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">2</div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Start a Focus Session</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Click the Focus Timer and press play to begin your first 25-minute session.</p>
+                    <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Start a session</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Go to Focus and press play. The default session runs 25 minutes.</p>
                   </div>
                 </div>
                 
                 <div className="flex gap-3 sm:gap-4 items-start">
                   <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">3</div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Take Breaks</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground">When the timer completes, enjoy your well-earned break. Stretch, hydrate, breathe!</p>
+                    <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Take the break</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">When the timer ends, leave the screen. Five minutes away is the point of the method.</p>
                   </div>
                 </div>
                 
                 <div className="flex gap-3 sm:gap-4 items-start">
                   <div className="bg-primary text-white rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-bold shrink-0 text-base sm:text-lg">4</div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Track Your Progress</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground">The home screen sums up your week — tasks finished, focus minutes, sessions.</p>
+                    <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Check the week</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">The home screen adds up tasks finished, focus minutes and sessions.</p>
                   </div>
                 </div>
               </div>
@@ -168,7 +168,7 @@ function Help() {
                 <span className="wrap-break-word">Frequently Asked Questions</span>
               </CardTitle>
               <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1 sm:mt-2">
-                Common questions about Zephyr
+                Answers about storage, offline use and backups
               </p>
             </CardHeader>
             <CardContent className="pr-1 sm:pr-2">

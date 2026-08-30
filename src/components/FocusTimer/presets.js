@@ -106,7 +106,7 @@ export const DEFAULT_PRESETS = [
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
     sessionsUntilLongBreak: 4,
-    description: 'The Pomodoro Technique: Work for 25 minutes, then take a 5-minute break. After 4 cycles, take a longer 15-minute break.'
+    description: 'The Pomodoro Technique: work for 25 minutes, then take a 5-minute break. After 4 sessions the break runs 15 minutes.'
   },
   {
     id: 'short',
@@ -117,7 +117,7 @@ export const DEFAULT_PRESETS = [
     shortBreak: 3 * 60,
     longBreak: 10 * 60,
     sessionsUntilLongBreak: 4,
-    description: 'Perfect for quick bursts of productivity. Work for 15 minutes, take a 3-minute break. After 4 sessions, enjoy a 10-minute longer break.'
+    description: 'For short jobs: work for 15 minutes, then take 3 minutes off. After 4 sessions the break runs 10 minutes.'
   },
   {
     id: 'long',
@@ -128,7 +128,7 @@ export const DEFAULT_PRESETS = [
     shortBreak: 10 * 60,
     longBreak: 20 * 60,
     sessionsUntilLongBreak: 3,
-    description: 'Designed for extended focus sessions. Work for 45 minutes, then take a 10-minute break. After 3 cycles, take a 20-minute longer break.'
+    description: 'A long stretch: work for 45 minutes, then take a 10-minute break. After 3 cycles the break runs 20 minutes.'
   },
   {
     id: 'meditation',
@@ -139,7 +139,7 @@ export const DEFAULT_PRESETS = [
     shortBreak: 2 * 60,
     longBreak: 5 * 60,
     sessionsUntilLongBreak: 3,
-    description: 'Mindfulness and meditation timer. Meditate for 10 minutes, take a 2-minute break. After 3 sessions, take a 5-minute longer break.'
+    description: 'Sit for 10 minutes, then 2 minutes off. After 3 sessions the break runs 5 minutes.'
   },
   {
     id: 'custom',
@@ -150,6 +150,6 @@ export const DEFAULT_PRESETS = [
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
     sessionsUntilLongBreak: 4,
-    description: 'Create your own custom timer with personalized work and break durations.'
+    description: 'Your own work and break durations. Edit it to whatever suits the day.'
   }
 ];
