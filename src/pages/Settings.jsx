@@ -283,8 +283,8 @@ function Settings() {
               <div className="relative p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/15 text-primary shadow-sm ring-1 ring-primary/20">
-                      <Timer className="h-5 w-5" />
+                    <div className="p-2 rounded-lg bg-green-500/10 border border-green-500/20">
+                      <Timer className="h-5 w-5 text-green-500" />
                     </div>
                     <div>
                       <h4 className="font-semibold text-foreground">Timer Notifications</h4>
