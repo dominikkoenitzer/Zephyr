@@ -1,4 +1,4 @@
-# robots.txt for Zephyr — https://zephyr.punds.ch
+# robots.txt for https://zephyr.punds.ch
 # Search and AI crawlers are welcome.
 
 User-agent: *
