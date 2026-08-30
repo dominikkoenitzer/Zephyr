@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LazyMotion, domMax, MotionConfig, m } from 'motion/react';
 import { toast } from 'sonner';
 import TopBar from '../components/Layout/TopBar';
+import Footer from '../components/Layout/Footer';
 import CommandPalette from '../components/CommandPalette/CommandPalette';
 import ShortcutsDialog from '../components/Shortcuts/ShortcutsDialog';
 import { Toaster } from '../components/ui/toast';
@@ -90,6 +91,7 @@ function AppLayout() {
             >
               <Outlet />
             </m.div>
+            <Footer />
           </main>
 
           <CommandPalette

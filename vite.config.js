@@ -125,10 +125,10 @@ export default defineConfig({
       manifest: false,
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,txt,xml}'],
-        // The 1024px install icon is only ever fetched by the browser's
-        // install flow. Precaching 1.4MB of it would more than double the
-        // precache for a file the running app never asks for.
-        globIgnores: ['**/icon-1024.png'],
+        // The 1024px install icon and the manifest screenshots are only ever
+        // fetched by the browser's install flow. Precaching them would bloat
+        // the precache with files the running app never asks for.
+        globIgnores: ['**/icon-1024.png', '**/screenshot-*.png'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/_vercel/],
         runtimeCaching: [

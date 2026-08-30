@@ -12,7 +12,9 @@ Last updated: 2026-08-30
 - [Focus Timer](https://zephyr.punds.ch/focus): A Pomodoro timer with presets for Pomodoro (25 min work / 5 min break), Short Focus (15/3), Deep Work (45/10) and Meditation (10/2), plus custom presets with their own colours. The Pomodoro preset schedules a longer 15-minute break after every fourth session. Sessions are logged, a daily streak is tracked, and a session can be tied to a specific task.
 - [Home](https://zephyr.punds.ch/): A weekly overview of focus minutes, completed tasks and tasks due today.
 - [Settings](https://zephyr.punds.ch/settings): Theme, notification preferences, and data export/import.
-- [Help & FAQ](https://zephyr.punds.ch/help): How the app works, keyboard shortcuts, and data handling, plus the Privacy Policy, Terms of Service and legal text.
+- [Help & FAQ](https://zephyr.punds.ch/help): How the app works, keyboard shortcuts, and data handling.
+- [Privacy Policy](https://zephyr.punds.ch/privacy): What is stored (everything, locally), the one analytics service in use, and how to delete your data.
+- [Terms of Service](https://zephyr.punds.ch/terms): MIT-licensed source, free hosted app, local backups are the user's responsibility.
 
 ## Key facts
 

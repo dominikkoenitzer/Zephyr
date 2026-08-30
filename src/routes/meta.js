@@ -33,4 +33,16 @@ export const ROUTE_META = {
       'How Zephyr works: local-first storage, offline use, keyboard shortcuts, the command palette, and how to back your data up.',
     path: '/help',
   },
+  '/privacy': {
+    title: 'Privacy Policy | Zephyr',
+    description:
+      'Zephyr stores every task and focus session in your own browser. What is stored, the one analytics service in use, and how to delete your data.',
+    path: '/privacy',
+  },
+  '/terms': {
+    title: 'Terms of Service | Zephyr',
+    description:
+      'The terms for using Zephyr: MIT-licensed source code, a free hosted app, and your responsibility for backing up local data.',
+    path: '/terms',
+  },
 };
