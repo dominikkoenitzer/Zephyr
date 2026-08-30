@@ -4,7 +4,7 @@
 
 Zephyr is an installable Progressive Web App (PWA) that works offline. It is built for fast, distraction-free personal productivity, and privacy is a design goal rather than a feature. Made by dominikkoenitzer. Open source.
 
-Last updated: 2026-08-23
+Last updated: 2026-08-30
 
 ## Features
 

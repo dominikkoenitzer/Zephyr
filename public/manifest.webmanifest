@@ -1,7 +1,7 @@
 {
-  "name": "Zephyr - Flow Through Focus",
+  "name": "Zephyr",
   "short_name": "Zephyr",
-  "description": "Free, local-first productivity app with a to-do list and a Pomodoro focus timer. No login required.",
+  "description": "A to-do list and Pomodoro focus timer that runs in your browser. There is no account and no server, and it works offline.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
