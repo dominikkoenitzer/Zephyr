@@ -14,7 +14,7 @@ describe('activeStreak', () => {
     expect(activeStreak({ count: 5, lastDate: day(0) }, TODAY)).toBe(5);
   });
 
-  it('keeps yesterday alive — you still have today to continue it', () => {
+  it('keeps yesterday alive: you still have today to continue it', () => {
     expect(activeStreak({ count: 5, lastDate: day(-1) }, TODAY)).toBe(5);
   });
 

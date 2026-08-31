@@ -97,8 +97,8 @@ function Home() {
         </p>
         <p className="mt-4 text-base text-muted-foreground">Today’s list, and the week so far.</p>
 
-        {/* Figures — no tiles, no icon chips, no gradient. A number and its
-            label, separated by a hairline. */}
+        {/* Figures: a number and its label, separated by a hairline. No
+            tiles, icon chips or gradients. */}
         <m.dl
           variants={staggerGrid}
           initial="hidden"
@@ -147,7 +147,7 @@ function Home() {
           )}
         </section>
 
-        {/* Quick links — rows on hairlines, no tiles and no icon chips */}
+        {/* Quick links: rows on hairlines, without tiles or icon chips */}
         <section className="mt-14 border-t border-border">
           <h2 className="sr-only">Jump back in</h2>
           <m.div variants={staggerGrid} initial="hidden" animate="show" className="divide-y divide-border">

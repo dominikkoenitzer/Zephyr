@@ -16,7 +16,7 @@ beforeEach(() => {
   vi.spyOn(notificationService, 'playNotificationSound').mockImplementation(() => {});
 });
 
-describe('notificationService — task reminders', () => {
+describe('notificationService: task reminders', () => {
   it('announces every due task, not just the first one', () => {
     localStorageService.addTask({ title: 'Send the invoice', dueDate: dayKey(0) });
     localStorageService.addTask({ title: 'Book the dentist', dueDate: dayKey(0) });
@@ -92,7 +92,7 @@ describe('notificationService — task reminders', () => {
   });
 });
 
-describe('notificationService — unkeyed notifications', () => {
+describe('notificationService: unkeyed notifications', () => {
   it('still collapses a repeated timer alert inside a minute', () => {
     notificationService.createNotification('timer', 'Session Complete', 'one');
     notificationService.createNotification('timer', 'Session Complete', 'two');
@@ -100,7 +100,7 @@ describe('notificationService — unkeyed notifications', () => {
   });
 });
 
-describe('notificationService — polling', () => {
+describe('notificationService: polling', () => {
   it('does not stack intervals when started twice', () => {
     const spy = vi.spyOn(globalThis, 'clearInterval');
     notificationService.startChecking();

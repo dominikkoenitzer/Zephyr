@@ -257,7 +257,7 @@ const TaskList = () => {
               )}
             >
               {priority && <span>{priority}</span>}
-              {/* Only the date goes red when it is late — a low-priority task
+              {/* Only the date goes red when it is late: a low-priority task
                   that happens to be overdue is not suddenly urgent. */}
               {due && <span className={overdue ? 'text-destructive-strong' : undefined}>{due}</span>}
             </span>
@@ -318,7 +318,7 @@ const TaskList = () => {
 
   return (
     <div className="w-full">
-      {/* Quick add — a line to write on, not a box. */}
+      {/* Quick add: a line to write on, not a box. */}
       <form onSubmit={addTask}>
         <div className="flex items-center gap-3 border-b border-border pb-3 transition-colors focus-within:border-foreground">
           <Plus className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
@@ -370,7 +370,7 @@ const TaskList = () => {
         )}
       </form>
 
-      {/* Filters — words on a rule, not a row of pills */}
+      {/* Filters: words on a rule, not a row of pills */}
       {activeTotal > 0 && (
         <div className="mt-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-border">
           <div
@@ -441,7 +441,7 @@ const TaskList = () => {
         </div>
       )}
 
-      {/* Completed — collapsed by default; the list is about what is left */}
+      {/* Completed: collapsed by default; the list is about what is left */}
       {completedTasks.length > 0 && (
         <section className="mt-12 border-t border-border pt-4">
           <div className="flex items-center justify-between gap-4">
