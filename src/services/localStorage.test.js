@@ -5,7 +5,7 @@ beforeEach(() => {
   localStorage.clear();
 });
 
-describe('localStorageService — tasks', () => {
+describe('localStorageService: tasks', () => {
   it('adds a task with sensible defaults', () => {
     const t = localStorageService.addTask({ title: 'A' });
     expect(t.id).toBeTruthy();
@@ -31,7 +31,7 @@ describe('localStorageService — tasks', () => {
   });
 });
 
-describe('localStorageService — ids', () => {
+describe('localStorageService: ids', () => {
   it('gives two tasks made in the same millisecond different ids', () => {
     const a = localStorageService.addTask({ title: 'A' });
     const b = localStorageService.addTask({ title: 'B' });
@@ -51,7 +51,7 @@ describe('localStorageService — ids', () => {
   });
 });
 
-describe('localStorageService — change events', () => {
+describe('localStorageService: change events', () => {
   it('broadcasts a zephyr:change event on every write', () => {
     let fired = 0;
     const handler = () => { fired += 1; };
@@ -63,7 +63,7 @@ describe('localStorageService — change events', () => {
   });
 });
 
-describe('localStorageService — settings', () => {
+describe('localStorageService: settings', () => {
   it('returns a fresh copy of the defaults that callers cannot mutate', () => {
     const a = localStorageService.getSettings();
     a.workDuration = a.workDuration + 99;
@@ -72,7 +72,7 @@ describe('localStorageService — settings', () => {
   });
 });
 
-describe('localStorageService — view preferences', () => {
+describe('localStorageService: view preferences', () => {
   it('merges each write into the stored preferences', () => {
     localStorageService.saveViewPrefs({ taskView: 'today' });
     localStorageService.saveViewPrefs({ taskTag: 'work' });

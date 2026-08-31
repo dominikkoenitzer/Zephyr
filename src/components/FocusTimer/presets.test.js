@@ -95,7 +95,7 @@ describe('formatTime', () => {
     expect(formatTime(25 * 60)).toBe('25:00');
   });
 
-  it('does not roll over at an hour — a focus session is counted in minutes', () => {
+  it('does not roll over at an hour: a focus session is counted in minutes', () => {
     expect(formatTime(90 * 60)).toBe('90:00');
   });
 });

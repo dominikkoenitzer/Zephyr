@@ -70,7 +70,7 @@ function fixChunkLoading() {
 // Writes a static HTML file per route after the build. Every route is served
 // from index.html, so a crawler that does not execute JavaScript (most AI
 // crawlers) used to see the home page's title, description and canonical on
-// every URL — the canonical told it /tasks was a duplicate of /. usePageMeta
+// every URL; the canonical told it /tasks was a duplicate of /. usePageMeta
 // corrects the head only after React runs; these files make the served bytes
 // right too. vercel.json rewrites each route here, ahead of the catch-all.
 function perRouteHtml() {

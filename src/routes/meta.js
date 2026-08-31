@@ -1,6 +1,6 @@
 // One source of truth for each route's document metadata. Pages pass their
 // entry to usePageMeta at runtime, and vite.config.js reads the same object at
-// build time to write a static HTML file per route — so the served head and
+// build time to write a static HTML file per route, so the served head and
 // the hydrated head can never disagree.
 export const ROUTE_META = {
   '/': {

@@ -298,7 +298,7 @@ layer(base);
   }
 
   /* The sweep needs the button to be a containing block, but this must not
-     beat a positioning utility — the task "+" button is `absolute` inside its
+     beat a positioning utility: the task "+" button is `absolute` inside its
      input, and a plain `position: relative` here dropped it out of the field.
      `:where()` has zero specificity, so `absolute`/`fixed` still win. */
   :where(.btn-shine, .btn-glow) {
