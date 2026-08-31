@@ -102,7 +102,7 @@ const PomodoroTimer = () => {
     <div className="w-full space-y-(--section-gap)">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-(--panel-gap)">
         <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-          {/* Header — the bar already carries the page's name, so the state
+          {/* Header: the bar already carries the page's name, so the state
               of the session is set as an eyebrow rather than a second title. */}
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
@@ -258,7 +258,7 @@ const PomodoroTimer = () => {
         </div>
 
         <div className="space-y-8">
-          {/* Presets — the same hairline rows the task list uses */}
+          {/* Presets: the same hairline rows the task list uses */}
           <div>
             <h3 className="mb-1 flex items-center gap-3 text-[12px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
               <span>Presets</span>

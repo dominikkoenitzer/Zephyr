@@ -81,7 +81,7 @@ function TopBar({ onSearchClick }) {
     <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-background/85 backdrop-blur-2xl">
       <div className="px-responsive">
         <div className="page-width">
-          {/* Row one — the way home, and the utilities */}
+          {/* Row one: the way home, and the utilities */}
           <div className="flex h-14 items-center justify-between gap-4">
             {/* A home *button*, not a label: the app's own mark, its name at
                 reading size, and a target that lights up under the cursor. */}
@@ -160,7 +160,7 @@ function TopBar({ onSearchClick }) {
             </div>
           </div>
 
-          {/* Row two — the one deliberate move */}
+          {/* Row two: the one deliberate move */}
           <nav aria-label="Primary" className="flex items-end gap-6 sm:gap-8">
             {NAV.map((item) => {
               const isActive = location.pathname === item.href;

@@ -8,7 +8,7 @@ import PageContainer from '../components/Layout/PageContainer';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { ROUTE_META } from '../routes/meta';
 
-// Privacy and Terms used to be tabs here, held in useState — which kept them
+// Privacy and Terms used to be tabs here, held in useState, which kept them
 // out of the DOM (and out of every crawler) unless clicked. They are real
 // routes now (/privacy, /terms), linked below the header.
 function Help() {
