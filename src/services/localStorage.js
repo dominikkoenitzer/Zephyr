@@ -77,13 +77,10 @@ class LocalStorageService {
       const data = localStorage.getItem(STORAGE_KEYS.TIMER_STATE);
       if (!data) return null;
 
-      const state = JSON.parse(data);
-      // Calculate time elapsed since last save if timer was running
-      if (state.isRunning && state.lastSaved) {
-        const timeElapsed = Math.floor((Date.now() - state.lastSaved) / 1000);
-        state.timeLeft = Math.max(0, state.timeLeft - timeElapsed);
-      }
-      return state;
+      // Returned exactly as stored. The caller applies the elapsed-time
+      // correction, because it also needs the uncorrected timeLeft to tell
+      // whether the session ran out while the tab was closed.
+      return JSON.parse(data);
     } catch (error) {
       console.error('Failed to get timer state:', error);
       return null;
