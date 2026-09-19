@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { VitePWA } from 'vite-plugin-pwa'
-import { ROUTE_META } from './src/routes/meta.js'
+import { NOT_FOUND_META, ROUTE_META } from './src/routes/meta.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -72,7 +72,12 @@ function fixChunkLoading() {
 // crawlers) used to see the home page's title, description and canonical on
 // every URL; the canonical told it /tasks was a duplicate of /. usePageMeta
 // corrects the head only after React runs; these files make the served bytes
-// right too. vercel.json rewrites each route here, ahead of the catch-all.
+// right too. vercel.json rewrites each route here.
+//
+// It also writes 404.html, which Vercel serves — with a real 404 status — for
+// any path no route matches. Without it the catch-all rewrite answered every
+// junk URL with 200 and the home page's head, robots "index, follow" included,
+// so a crawler saw unlimited copies of the home page rather than a not-found.
 function perRouteHtml() {
   const escapeHtml = (s) =>
     s
@@ -84,12 +89,10 @@ function perRouteHtml() {
     name: 'per-route-html',
     closeBundle() {
       const template = readFileSync(resolve(__dirname, 'dist/index.html'), 'utf8');
-      for (const { title, description, path } of Object.values(ROUTE_META)) {
-        if (path === '/') continue;
-        const url = `https://zephyr.punds.ch${path}`;
+      const fill = (title, description, url) => {
         const t = escapeHtml(title);
         const d = escapeHtml(description);
-        const html = template
+        return template
           .replace(/<title>[^<]*<\/title>/, `<title>${t}</title>`)
           .replace(/(<meta name="description" content=")[^"]*(")/, `$1${d}$2`)
           .replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${url}$2`)
@@ -99,8 +102,21 @@ function perRouteHtml() {
           .replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${t}$2`)
           .replace(/(<meta name="twitter:description" content=")[^"]*(")/, `$1${d}$2`)
           .replace(/(<meta name="twitter:url" content=")[^"]*(")/, `$1${url}$2`);
-        writeFileSync(resolve(__dirname, `dist${path}.html`), html);
+      };
+
+      for (const { title, description, path } of Object.values(ROUTE_META)) {
+        if (path === '/') continue;
+        const url = `https://zephyr.punds.ch${path}`;
+        writeFileSync(resolve(__dirname, `dist${path}.html`), fill(title, description, url));
       }
+
+      // The head has to match what the NotFound page sets once React runs.
+      // No canonical: the page stands for whatever URL was asked for, and
+      // pointing it at the home page is the soft 404 all over again.
+      const notFound = fill(NOT_FOUND_META.title, NOT_FOUND_META.description, 'https://zephyr.punds.ch/')
+        .replace(/\s*<link rel="canonical" href="[^"]*" \/>/, '')
+        .replace(/(<meta name="robots" content=")[^"]*(")/, `$1${NOT_FOUND_META.robots}$2`);
+      writeFileSync(resolve(__dirname, 'dist/404.html'), notFound);
     },
   };
 }
