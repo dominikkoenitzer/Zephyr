@@ -189,12 +189,11 @@ Zephyr is built around a simple promise: **your data is yours and stays on your 
 
 ## Deployment & CI/CD
 
-Zephyr is a static SPA deployed on **[Vercel](https://vercel.com/)** (live at **[zephyr.punds.ch](https://zephyr.punds.ch)**). SPA rewrites and security/cache headers are configured in [`vercel.json`](vercel.json).
+Zephyr is a static SPA deployed on **[Vercel](https://vercel.com/)** (live at **[zephyr.punds.ch](https://zephyr.punds.ch)**). SPA rewrites and security/cache headers are configured in [`vercel.json`](vercel.json). Deploys run through Vercel's Git integration on push to `main`; there is no deploy workflow in the repo.
 
-Two GitHub Actions workflows are included:
+One GitHub Actions workflow is included:
 
 - **[`ci.yml`](.github/workflows/ci.yml)** runs on every push and pull request to `main`: install, **lint**, **test**, **build**.
-- **[`deploy.yml`](.github/workflows/deploy.yml)** is an optional production deploy through the Vercel CLI on push to `main`. It runs only when the `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` repository secrets are set; otherwise it's a no-op (by default, Vercel's Git integration handles deploys automatically).
 
 [Dependabot](.github/dependabot.yml) keeps npm and GitHub Actions dependencies up to date weekly.
 
