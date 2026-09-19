@@ -158,8 +158,7 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
     onChange?.({ target: { value: nextValue } })
   }
 
-  const handleClear = (e) => {
-    e.stopPropagation()
+  const handleClear = () => {
     setSelectedDate(null)
     setIsOpen(false)
     onChange?.({ target: { value: "" } })
@@ -215,6 +214,9 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
         className={cn(
           "flex h-11 w-full items-center gap-2 rounded-xl border border-border/70 bg-background/80 px-3 py-2",
           "shadow-sm transition-colors hover:border-primary/60 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+          // Room for the clear button, which overlays the trigger rather than
+          // sitting inside it.
+          selectedDate && "pr-11",
           className
         )}
         {...props}
@@ -228,17 +230,21 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
         >
           {formatDisplayDate(selectedDate)}
         </span>
-        {selectedDate && (
-          <button
-            type="button"
-            onClick={handleClear}
-            aria-label="Clear selected date"
-            className="rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
       </div>
+
+      {/* A sibling of the trigger, not a child: `role="button"` is a leaf, so
+          a focusable descendant is nested-interactive and the clear control
+          would be swallowed by the trigger's name. */}
+      {selectedDate && (
+        <button
+          type="button"
+          onClick={handleClear}
+          aria-label="Clear selected date"
+          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
 
       {isOpen && typeof document !== "undefined" && createPortal(
         <>

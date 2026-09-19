@@ -1,15 +1,13 @@
 import { Link } from 'react-router-dom';
 import usePageMeta from '../hooks/usePageMeta';
+import { NOT_FOUND_META } from '../routes/meta';
 
 // A real 404 page instead of a silent redirect to Home. Redirecting made every
 // junk URL answer 200 with the home page, which search engines classify as a
-// soft 404 and hold against the real pages.
+// soft 404 and hold against the real pages. Vercel serves dist/404.html with a
+// 404 status for unmatched paths; this renders into it.
 const NotFound = () => {
-  usePageMeta({
-    title: 'Page not found | Zephyr',
-    description: 'This page does not exist.',
-    robots: 'noindex',
-  });
+  usePageMeta(NOT_FOUND_META);
 
   return (
     <section className="w-full flex-1 min-h-0 overflow-y-auto">

@@ -49,8 +49,10 @@ const PresetSettingsDialog = ({
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
             <div>
-              <label className="text-sm font-medium mb-2 block text-foreground">Focus Time (min)</label>
+              <label htmlFor="preset-work-time" className="text-sm font-medium mb-2 block text-foreground">Focus Time (min)</label>
               <CustomNumberInput
+                id="preset-work-time"
+                label="Focus Time"
                 min={1}
                 max={120}
                 step={1}
@@ -63,8 +65,10 @@ const PresetSettingsDialog = ({
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block text-foreground">Short Break (min)</label>
+              <label htmlFor="preset-short-break" className="text-sm font-medium mb-2 block text-foreground">Short Break (min)</label>
               <CustomNumberInput
+                id="preset-short-break"
+                label="Short Break"
                 min={1}
                 max={60}
                 step={1}
@@ -77,8 +81,10 @@ const PresetSettingsDialog = ({
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block text-foreground">Long Break (min)</label>
+              <label htmlFor="preset-long-break" className="text-sm font-medium mb-2 block text-foreground">Long Break (min)</label>
               <CustomNumberInput
+                id="preset-long-break"
+                label="Long Break"
                 min={1}
                 max={120}
                 step={1}
@@ -91,8 +97,10 @@ const PresetSettingsDialog = ({
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block text-foreground">Sessions Until Long Break</label>
+              <label htmlFor="preset-sessions" className="text-sm font-medium mb-2 block text-foreground">Sessions Until Long Break</label>
               <CustomNumberInput
+                id="preset-sessions"
+                label="Sessions Until Long Break"
                 min={1}
                 max={10}
                 step={1}

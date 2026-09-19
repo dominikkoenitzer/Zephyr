@@ -46,3 +46,12 @@ export const ROUTE_META = {
     path: '/terms',
   },
 };
+
+// Not in ROUTE_META: it belongs to no path, so it gets no canonical and is not
+// in the sitemap. The NotFound page and dist/404.html both take their head
+// from here, so the served bytes and the hydrated head agree on the noindex.
+export const NOT_FOUND_META = {
+  title: 'Page not found | Zephyr',
+  description: 'This page does not exist.',
+  robots: 'noindex, follow',
+};
