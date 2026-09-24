@@ -74,7 +74,7 @@ function fixChunkLoading() {
 // corrects the head only after React runs; these files make the served bytes
 // right too. vercel.json rewrites each route here.
 //
-// It also writes 404.html, which Vercel serves — with a real 404 status — for
+// It also writes 404.html, which Vercel serves, with a real 404 status, for
 // any path no route matches. Without it the catch-all rewrite answered every
 // junk URL with 200 and the home page's head, robots "index, follow" included,
 // so a crawler saw unlimited copies of the home page rather than a not-found.
