@@ -5,6 +5,8 @@
     "": {
       "name": "zephyr",
       "dependencies": {
+        "@fontsource-variable/manrope": "^5.3.0",
+        "@fontsource-variable/space-grotesk": "^5.3.0",
         "@radix-ui/react-checkbox": "^1.3.11",
         "@radix-ui/react-dialog": "^1.1.23",
         "@radix-ui/react-progress": "^1.1.16",
@@ -14,8 +16,8 @@
         "@vercel/analytics": "^2.0.1",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
-        "lucide-react": "^1.48.0",
-        "motion": "^13.4.3",
+        "lucide-react": "^1",
+        "motion": "^13",
         "react": "^19",
         "react-dom": "^19",
         "react-router-dom": "^7",
@@ -34,7 +36,7 @@
         "eslint-plugin-react-hooks": "^7",
         "eslint-plugin-react-refresh": "^0.5.4",
         "globals": "^17.11.0",
-        "jsdom": "^30.1.1",
+        "jsdom": "^30.0.1",
         "postcss": "^8.5.26",
         "tailwindcss": "^4.3.3",
         "vite": "^8",
@@ -275,6 +277,10 @@
     "@floating-ui/react-dom": ["@floating-ui/react-dom@2.1.8", "", { "dependencies": { "@floating-ui/dom": "^1.7.6" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-cC52bHwM/n/CxS87FH0yWdngEZrjdtLW/qVruo68qg+prK7ZQ4YGdut2GyDVpoGeAYe/h899rVeOVm6Oi40k2A=="],
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.11", "", {}, "sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg=="],
+
+    "@fontsource-variable/manrope": ["@fontsource-variable/manrope@5.3.0", "", {}, "sha512-6D5dgokHsWDDMtmXHznKa0hK229NN+1a4BLPmUCLqcO1Pw5EEhWY5RFt0AcXnVRAljFFPfRtLkJePQj6LSsV6g=="],
+
+    "@fontsource-variable/space-grotesk": ["@fontsource-variable/space-grotesk@5.3.0", "", {}, "sha512-2IxmvfB08i9vnGB3Ym/AXvhRE+8XOjWMXIyDum03c+tPwH0FUoMNQfGpU8NXPxjbws0Vvss3AH0Zqt4oJBBAdw=="],
 
     "@humanfs/core": ["@humanfs/core@0.19.2", "", { "dependencies": { "@humanfs/types": "^0.15.0" } }, "sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA=="],
 
