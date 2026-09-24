@@ -149,18 +149,13 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/_vercel/],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'StaleWhileRevalidate',
-            options: { cacheName: 'google-fonts-stylesheets' },
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            // The self-hosted fonts. Not precached: the packages ship every
+            // unicode-range subset and a page only fetches the ones it paints,
+            // so those are kept on first use and the app stays offline-ready.
+            // File names are content-hashed, so a cached one never goes stale.
+            urlPattern: ({ request, sameOrigin }) => sameOrigin && request.destination === 'font',
             handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-webfonts',
-              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
-              cacheableResponse: { statuses: [0, 200] },
-            },
+            options: { cacheName: 'fonts', expiration: { maxEntries: 30 } },
           },
         ],
       },
