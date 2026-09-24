@@ -37,7 +37,7 @@ function Terms() {
 
               <h2 className="font-semibold text-foreground text-base mb-2">2. License</h2>
               <p className="mb-4">
-                Zephyr&apos;s source code is open source under the <a href="https://github.com/dominikkoenitzer/Zephyr/blob/main/LICENSE" className="text-primary hover:underline">MIT License</a>,
+                Zephyr&apos;s source code is open source under the <a href="https://github.com/dominikkoenitzer/Zephyr/blob/main/LICENSE" className="text-primary underline underline-offset-4">MIT License</a>,
                 which lets you use, copy, and modify it under that license&apos;s terms. The hosted application at
                 zephyr.punds.ch is provided free of charge for personal use.
               </p>
@@ -100,7 +100,7 @@ function Terms() {
 
               <h2 className="font-semibold text-foreground text-base mb-2">11. Contact Information</h2>
               <p>
-                For questions about these Terms of Service, please contact us at: <a href="https://github.com/dominikkoenitzer/Zephyr/issues" className="text-primary hover:underline">GitHub</a>
+                For questions about these Terms of Service, please contact us at: <a href="https://github.com/dominikkoenitzer/Zephyr/issues" className="text-primary underline underline-offset-4">GitHub</a>
               </p>
             </div>
           </CardContent>
@@ -162,7 +162,7 @@ function Terms() {
 
               <h2 className="font-semibold text-foreground text-base mb-2">Contact Information</h2>
               <p>
-                For legal inquiries or questions about these terms, please contact us at: <a href="https://github.com/dominikkoenitzer/Zephyr/issues" className="text-primary hover:underline">GitHub</a>
+                For legal inquiries or questions about these terms, please contact us at: <a href="https://github.com/dominikkoenitzer/Zephyr/issues" className="text-primary underline underline-offset-4">GitHub</a>
               </p>
             </div>
           </CardContent>
@@ -170,7 +170,7 @@ function Terms() {
 
         <Card className=" border-yellow-500/30 bg-yellow-500/10">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
+            <CardTitle className="flex items-center gap-2 text-yellow-800 dark:text-yellow-400">
               <AlertCircle className="h-5 w-5" />
               Important Notice
             </CardTitle>
