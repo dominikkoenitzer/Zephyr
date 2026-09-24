@@ -162,7 +162,7 @@ src/
 │   ├── TaskManager/# Tasks, filters & quick add
 │   ├── Layout/     # TopBar (the whole navigation), PageHeader
 │   └── ui/         # Reusable shadcn-style primitives
-├── hooks/          # useStore (reactive data hooks), useAppShortcuts, useTheme, useSEO
+├── hooks/          # useStore (reactive data hooks), useAppShortcuts, useTheme, usePageMeta, usePwaUpdate
 ├── lib/            # quickParse (NL parser), taskFilters, shortcuts, backup, utils
 ├── pages/          # Route-level screens
 ├── routes/         # routes.jsx (lazy-loaded route table)
@@ -178,7 +178,7 @@ Zephyr has no Redux, Zustand, or Context store. Application state lives in **sin
 - **`notificationService.js`** polls for task due dates and plays a Web Audio chime.
 - **`themeService.js`** handles light/dark/system via a class on `<html>`, applied before React renders to avoid a flash, and kept in step with the OS media query while the preference is "system".
 
-Every write broadcasts a `zephyr:change` event. Reactive hooks in **`src/hooks/useStore.js`** (`useTasks`, `useNotes` and friends) subscribe to it, along with the native `storage` event for cross-tab sync, so views update live without a global store. Routes are defined in `src/routes/routes.jsx`, lazy-loaded, and wrapped in a Suspense loader.
+Every write broadcasts a `zephyr:change` event. Reactive hooks in **`src/hooks/useStore.js`** (`useTasks`, `useSettings`) subscribe to it, along with the native `storage` event for cross-tab sync, so views update live without a global store. Routes are defined in `src/routes/routes.jsx`, lazy-loaded, and wrapped in a Suspense loader.
 
 ## Privacy
 
@@ -195,7 +195,7 @@ One GitHub Actions workflow is included:
 
 - **[`ci.yml`](.github/workflows/ci.yml)** runs on every push and pull request to `main`: install, **lint**, **test**, **build**.
 
-[Dependabot](.github/dependabot.yml) keeps npm and GitHub Actions dependencies up to date weekly.
+[Dependabot](.github/dependabot.yml) keeps the bun and GitHub Actions dependencies up to date weekly.
 
 ## Contributing
 
