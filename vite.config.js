@@ -182,6 +182,10 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
+    // Never inline a font as a data: URL. Vite inlines any asset under 4 kB,
+    // which caught the smallest font subset, and the CSP's font-src 'self'
+    // then refused it.
+    assetsInlineLimit: (file) => (file.endsWith('.woff2') ? false : undefined),
     // oxc is Vite 8's own minifier. 'esbuild' still works but only if esbuild
     // is installed, and Vite 8 no longer brings it.
     minify: 'oxc',
