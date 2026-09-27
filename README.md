@@ -124,7 +124,7 @@ Every duration is adjustable, and you can save your own custom presets. Complete
 
 ## Getting started
 
-**Prerequisites:** [Bun](https://bun.sh/) 1.1.39+ (this repo pins `1.3.14` via `.bun-version`). Bun is the runtime and package manager, so no separate Node.js install is required.
+**Prerequisites:** [Bun](https://bun.sh/) 1.1.39+ (this repo pins `1.4.2` via `.bun-version`). Bun is the runtime and package manager, so no separate Node.js install is required.
 
 ```bash
 # Clone
