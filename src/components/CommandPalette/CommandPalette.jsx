@@ -269,12 +269,12 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
             event.preventDefault();
             inputRef.current?.focus();
           }}
-          className="fixed left-1/2 top-4 z-50 w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-2xl border border-border/65 bg-card p-0 shadow-(--shadow-overlay) duration-200 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:top-[12vh]"
+          className="fixed left-1/2 top-4 z-50 w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-3xl bg-card p-0 shadow-(--shadow-overlay) duration-200 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:top-[12vh]"
         >
           <DialogPrimitive.Title className="sr-only">Command palette</DialogPrimitive.Title>
 
-          <div className="flex items-center gap-3 border-b border-border/60 px-4">
-            <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <div className="m-2 flex items-center gap-3 rounded-full bg-accent px-4">
+            <Search className="h-[18px] w-[18px] shrink-0 text-muted-foreground" aria-hidden="true" />
             <input
               ref={inputRef}
               value={query}
@@ -290,7 +290,7 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
               aria-controls="command-palette-list"
               aria-autocomplete="list"
               aria-activedescendant={selected >= 0 ? `command-item-${selected}` : undefined}
-              className="h-14 w-full bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
+              className="h-12 w-full bg-transparent text-base font-medium text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:outline-none"
             />
           </div>
 
@@ -299,7 +299,7 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
             ref={listRef}
             role="listbox"
             aria-label="Results"
-            className="max-h-[min(60vh,26rem)] overflow-y-auto scrollbar-thin p-2"
+            className="max-h-[min(60vh,26rem)] overflow-y-auto scrollbar-thin px-2 pb-2"
           >
             {items.length === 0 ? (
               <p className="px-3 py-8 text-center text-sm text-muted-foreground">
@@ -308,7 +308,7 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
             ) : (
               groups.map((group) => (
                 <div key={group.title} role="group" aria-label={group.title} className="mb-1 last:mb-0">
-                  <p className="px-3 pb-1 pt-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <p className="px-3 pb-1 pt-3 text-[12px] font-semibold text-muted-foreground">
                     {group.title}
                   </p>
                   {group.items.map(({ item, index }) => {
@@ -324,11 +324,19 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
                         onMouseMove={() => setActiveIndex(index)}
                         onClick={() => item.run()}
                         className={cn(
-                          'flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors',
+                          'group/item flex cursor-pointer items-center gap-3 rounded-2xl px-2.5 py-2 text-sm font-medium transition-colors',
                           isActive ? 'bg-accent text-accent-foreground' : 'text-foreground'
                         )}
                       >
-                        <Icon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                        <span
+                          className={cn(
+                            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors',
+                            isActive ? 'bg-primary/10 text-primary-strong' : 'bg-accent text-muted-foreground'
+                          )}
+                          aria-hidden="true"
+                        >
+                          <Icon className="h-4 w-4" />
+                        </span>
                         <span className="min-w-0 flex-1 truncate">{item.label}</span>
                         {item.hint && (
                           <span className="max-w-[40%] shrink-0 truncate text-xs text-muted-foreground">
@@ -343,7 +351,7 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
             )}
           </div>
 
-          <div className="hidden items-center gap-4 border-t border-border/60 px-4 py-2.5 text-[12px] text-muted-foreground sm:flex">
+          <div className="hidden items-center gap-4 border-t border-border px-5 py-3 text-[12px] text-muted-foreground sm:flex">
             <span className="flex items-center gap-1">
               <kbd className="kbd">↑</kbd>
               <kbd className="kbd">↓</kbd>
