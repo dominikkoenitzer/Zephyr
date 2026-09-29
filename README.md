@@ -207,6 +207,7 @@ Issues and pull requests are welcome. Before opening a PR:
 bun run lint    # must pass with zero warnings
 bun run test
 bun run build
+bun run e2e     # the browser tests; CI runs them too
 ```
 
 Please keep features minimal and aligned with the local-first, no-backend design.
