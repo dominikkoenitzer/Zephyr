@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Pause, Play, RotateCcw, SkipForward, X } from 'lucide-react';
 import { WindLines } from '../ui/night-surface';
 import SunDial from './SunDial';
@@ -22,8 +24,24 @@ const FullScreenMode = ({
   preset,
   isBreak = false
 }) => {
-  return (
-    <div className="fixed inset-0 z-100 isolate flex flex-col items-center justify-center overflow-hidden bg-linear-to-br from-hero-from to-hero-to p-4 text-hero-foreground sm:p-8">
+  const rootRef = useRef(null);
+
+  // Everything behind the night goes inert while it is up, so Tab stays on
+  // the three controls and the exit button instead of walking the page.
+  useEffect(() => {
+    const self = rootRef.current;
+    const others = [...document.body.children].filter((el) => el !== self && !el.hasAttribute('inert'));
+    others.forEach((el) => el.setAttribute('inert', ''));
+    return () => others.forEach((el) => el.removeAttribute('inert'));
+  }, []);
+
+  return createPortal(
+    <div
+      ref={rootRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Full screen timer"
+      className="fixed inset-0 z-100 isolate flex flex-col items-center justify-center overflow-hidden bg-linear-to-br from-hero-from to-hero-to p-4 text-hero-foreground sm:p-8">
       <WindLines className="-z-10 max-h-72 opacity-80" />
 
       <button
@@ -70,7 +88,8 @@ const FullScreenMode = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
