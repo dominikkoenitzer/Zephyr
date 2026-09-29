@@ -297,10 +297,8 @@ export function usePomodoro() {
     const sessionTypeChanged = prevIsBreakRef.current !== isBreak;
     
     if ((presetChanged || sessionTypeChanged) && !isRunning) {
-      const currentTime = isBreak 
-        ? (sessionsCompleted % sessionsUntilLongBreak === 0 ? longBreakTime : breakTime)
-        : workTime;
-      setTimeLeft(currentTime);
+      const longDue = sessionsCompleted > 0 && sessionsCompleted % sessionsUntilLongBreak === 0;
+      setTimeLeft(isBreak ? (longDue ? longBreakTime : breakTime) : workTime);
     }
     
     // Update refs
@@ -390,6 +388,10 @@ export function usePomodoro() {
     return () => window.removeEventListener('resize', updateCircumference);
   }, []);
 
+  // The long break follows every Nth finished session, and never the zeroth:
+  // with nothing finished yet, 0 % N === 0 used to hand out a long break.
+  const longBreakDue = sessionsCompleted > 0 && sessionsCompleted % sessionsUntilLongBreak === 0;
+
   const toggleTimer = () => {
     if (!isRunning) {
       localStorageService.saveOnboarding({ focusStarted: true });
@@ -399,10 +401,7 @@ export function usePomodoro() {
 
   const resetTimer = () => {
     setIsRunning(false);
-    const currentTime = isBreak
-      ? (sessionsCompleted % sessionsUntilLongBreak === 0 ? longBreakTime : breakTime)
-      : workTime;
-    setTimeLeft(currentTime);
+    setTimeLeft(isBreak ? (longBreakDue ? longBreakTime : breakTime) : workTime);
   };
 
   const skipSession = () => {
@@ -410,15 +409,13 @@ export function usePomodoro() {
     handleComplete();
   };
 
-  const currentSessionTime = isBreak 
-    ? (sessionsCompleted % sessionsUntilLongBreak === 0 ? longBreakTime : breakTime)
-    : workTime;
+  const currentSessionTime = isBreak ? (longBreakDue ? longBreakTime : breakTime) : workTime;
   const progress = ((currentSessionTime - timeLeft) / currentSessionTime) * 100;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
   const totalFocusTime = Math.floor((sessionsCompleted * workTime) / 60);
   const getSessionType = () => {
     if (isBreak) {
-      return sessionsCompleted % sessionsUntilLongBreak === 0 
+      return longBreakDue
         ? { text: 'Long break', icon: Clock, color: 'text-night' }
         : { text: 'Short break', icon: Clock, color: 'text-night' };
     }
@@ -478,7 +475,9 @@ export function usePomodoro() {
     setIsRunning(false);
     const preset = presets.find(p => p.id === presetId);
     if (preset) {
-      setTimeLeft(isBreak ? (sessionsCompleted % sessionsUntilLongBreak === 0 ? preset.longBreak : preset.shortBreak) : preset.workTime);
+      const n = preset.sessionsUntilLongBreak || 4;
+      const long = sessionsCompleted > 0 && sessionsCompleted % n === 0;
+      setTimeLeft(isBreak ? (long ? preset.longBreak : preset.shortBreak) : preset.workTime);
     }
   };
 
@@ -496,9 +495,9 @@ export function usePomodoro() {
     
     if (selectedPreset === editingPreset.id) {
       setSelectedPreset(editingPreset.id);
-      const currentTime = isBreak 
-        ? (sessionsCompleted % updatedPreset.sessionsUntilLongBreak === 0 ? updatedPreset.longBreak : updatedPreset.shortBreak)
-        : updatedPreset.workTime;
+      const n = updatedPreset.sessionsUntilLongBreak || 4;
+      const long = sessionsCompleted > 0 && sessionsCompleted % n === 0;
+      const currentTime = isBreak ? (long ? updatedPreset.longBreak : updatedPreset.shortBreak) : updatedPreset.workTime;
       if (!isRunning) {
         setTimeLeft(currentTime);
       }
