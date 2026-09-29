@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -78,6 +79,29 @@ function fixChunkLoading() {
 // any path no route matches. Without it the catch-all rewrite answered every
 // junk URL with 200 and the home page's head, robots "index, follow" included,
 // so a crawler saw unlimited copies of the home page rather than a not-found.
+// The date the app last changed, for the JSON-LD dateModified and the sitemap's
+// lastmod. Both were typed by hand and fell weeks behind. The last commit is
+// the truth; a build outside git falls back to today.
+function stampDates() {
+  let date
+  try {
+    date = execSync('git log -1 --format=%cs', { cwd: __dirname, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim()
+  } catch {
+    date = ''
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) date = new Date().toISOString().slice(0, 10)
+  return {
+    name: 'stamp-dates',
+    transformIndexHtml(html) {
+      return html.replace(/("dateModified": ")[^"]*(")/, `$1${date}$2`)
+    },
+    closeBundle() {
+      const sitemap = resolve(__dirname, 'dist/sitemap.xml')
+      writeFileSync(sitemap, readFileSync(sitemap, 'utf8').replace(/<lastmod>[^<]*<\/lastmod>/g, `<lastmod>${date}</lastmod>`))
+    },
+  }
+}
+
 function perRouteHtml() {
   const escapeHtml = (s) =>
     s
@@ -125,6 +149,7 @@ export default defineConfig({
   plugins: [
     react(),
     fixChunkLoading(),
+    stampDates(),
     perRouteHtml(),
     // Service worker: precaches the app shell + assets so Zephyr genuinely
     // works offline (the PWA manifest alone does not cache anything).
