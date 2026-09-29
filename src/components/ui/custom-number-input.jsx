@@ -72,7 +72,7 @@ const CustomNumberInput = React.forwardRef(({
         type="button"
         variant="outline"
         size="icon"
-        className="h-9 w-9 rounded-md shrink-0"
+        className="h-11 w-11 shrink-0"
         onClick={handleDecrement}
         disabled={displayValue <= min}
         aria-label={label ? `Decrease ${label}` : "Decrease value"}
@@ -89,7 +89,7 @@ const CustomNumberInput = React.forwardRef(({
           onChange={handleInputChange}
           onBlur={handleBlur}
           className={cn(
-            "flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-center text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-11 w-full rounded-2xl border-0 bg-accent px-3 py-2 text-center text-[15px] font-semibold tabular-nums focus-visible:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-50",
             className
           )}
           {...props}
@@ -100,7 +100,7 @@ const CustomNumberInput = React.forwardRef(({
         type="button"
         variant="outline"
         size="icon"
-        className="h-9 w-9 rounded-md shrink-0"
+        className="h-11 w-11 shrink-0"
         onClick={handleIncrement}
         disabled={displayValue >= max}
         aria-label={label ? `Increase ${label}` : "Increase value"}
