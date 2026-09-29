@@ -9,7 +9,7 @@ function TasksPage() {
 
   return (
     <PageContainer>
-      <PageHeader title="Tasks" description="Write it the way you would say it. Dates, !priority and #tags are picked up as you type." />
+      <PageHeader title="Tasks" />
       <TaskList />
     </PageContainer>
   );
