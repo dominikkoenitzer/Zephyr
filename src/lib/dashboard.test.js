@@ -4,6 +4,7 @@ import {
   dueLabel,
   dueSoon,
   focusByDay,
+  focusToday,
   formatMinutes,
   recentSessions,
   upNext,
@@ -43,6 +44,22 @@ describe('focusByDay', () => {
     ];
     const minutes = focusByDay(sessions, NOW).map((d) => d.minutes);
     expect(minutes).toEqual([50, 0, 50, 0, 0, 0, 0]);
+  });
+});
+
+describe('focusToday', () => {
+  it("counts only today's work sessions, at their real length", () => {
+    const sessions = [
+      { date: at(30, 9), duration: 1500, type: 'work' },
+      { date: at(30, 11), duration: 2700 },
+      { date: at(30, 12), duration: 300, type: 'break' },
+      { date: at(29, 10), duration: 1500, type: 'work' },
+    ];
+    expect(focusToday(sessions, NOW)).toEqual({ sessions: 2, minutes: 70 });
+  });
+
+  it('starts every day at zero', () => {
+    expect(focusToday([{ date: at(29), duration: 1500 }], NOW)).toEqual({ sessions: 0, minutes: 0 });
   });
 });
 

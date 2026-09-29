@@ -44,6 +44,16 @@ export const focusByDay = (sessions, now = new Date()) => {
   return days.map((d) => ({ ...d, minutes: Math.round(totals[d.key]) }));
 };
 
+/** Today's focus: finished work sessions and their minutes, from the session log. */
+export const focusToday = (sessions, now = new Date()) => {
+  const today = toDayKey(now);
+  const done = sessions.filter((s) => isWork(s) && toDayKey(new Date(s.date)) === today);
+  return {
+    sessions: done.length,
+    minutes: Math.round(done.reduce((sum, s) => sum + (Number(s.duration) || 0), 0) / 60),
+  };
+};
+
 /** The headline figures. */
 export const dashboardStats = (tasks, sessions, now = new Date()) => {
   const today = toDayKey(now);
