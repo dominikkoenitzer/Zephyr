@@ -40,6 +40,59 @@ test.describe('the focus timer', () => {
     await expect.poll(() => sessionsLogged(page), { timeout: 8000 }).toBe(1);
   });
 
+  test('a session that runs out on another page is logged there, once, when it ended', async ({ page }) => {
+    const lastSaved = Date.now();
+    await seed(page, {
+      sessions: [],
+      extra: {
+        zephyr_timer_state: JSON.stringify({
+          timeLeft: 2, isRunning: true, isBreak: false, pomodorosCompleted: 0,
+          workTime: 1500, breakTime: 300, longBreakTime: 900, focusTask: null, lastSaved,
+        }),
+      },
+    });
+    await page.goto('/tasks');
+    await expect.poll(() => sessionsLogged(page), { timeout: 8000 }).toBe(1);
+    await page.waitForTimeout(2500);
+    expect(await sessionsLogged(page)).toBe(1);
+    const loggedAt = await page.evaluate(() => JSON.parse(localStorage.getItem('zephyr_focus_sessions'))[0].date);
+    expect(Math.abs(new Date(loggedAt).getTime() - (lastSaved + 2000))).toBeLessThan(1500);
+  });
+
+  test('a session that ran out while the app was closed counts on the day it ended', async ({ page }) => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(10, 0, 0, 0);
+    await seed(page, {
+      sessions: [],
+      extra: {
+        zephyr_timer_state: JSON.stringify({
+          timeLeft: 60, isRunning: true, isBreak: false, pomodorosCompleted: 0,
+          workTime: 1500, breakTime: 300, longBreakTime: 900, focusTask: null, lastSaved: yesterday.getTime(),
+        }),
+      },
+    });
+    await page.goto('/');
+    await expect.poll(() => sessionsLogged(page), { timeout: 8000 }).toBe(1);
+    const loggedAt = await page.evaluate(() => JSON.parse(localStorage.getItem('zephyr_focus_sessions'))[0].date);
+    expect(new Date(loggedAt).toDateString()).toBe(yesterday.toDateString());
+  });
+
+  test('So far counts today, from the session log', async ({ page }) => {
+    await seed(page, {
+      extra: {
+        zephyr_timer_state: JSON.stringify({
+          timeLeft: 1500, isRunning: false, isBreak: false, pomodorosCompleted: 9,
+          workTime: 1500, breakTime: 300, longBreakTime: 900, focusTask: null, lastSaved: Date.now(),
+        }),
+      },
+    });
+    await page.goto('/focus');
+    const today = page.getByRole('region', { name: 'So far' });
+    await expect(today.getByText('Sessions').locator('xpath=..')).toContainText('1');
+    await expect(today.getByText('Minutes').locator('xpath=..')).toContainText('25');
+  });
+
   test('a start link leaves the address bar, so a reload does not start again', async ({ page }) => {
     await seed(page);
     await page.goto('/focus?start=1');
