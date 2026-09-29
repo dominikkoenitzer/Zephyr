@@ -273,7 +273,7 @@ function RecentSessions({ sessions }) {
                 <Timer className="h-[18px] w-[18px] text-primary-strong" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[15px] font-semibold">{s.task?.title || 'Open session'}</span>
+                <span className="block truncate text-[15px] font-semibold">{s.task?.title || 'Focus session'}</span>
                 <span className="block text-[12px] text-muted-foreground">{sessionWhen(s.date)}</span>
               </span>
               <Chip className="bg-accent tabular-nums text-foreground">{formatMinutes((Number(s.duration) || 0) / 60)}</Chip>
