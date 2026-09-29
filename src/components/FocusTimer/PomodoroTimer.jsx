@@ -125,7 +125,7 @@ const PomodoroTimer = () => {
                 <Select value={sessionTask?.id || NO_TASK} onValueChange={chooseTask}>
                   <SelectTrigger
                     aria-label="Task for this session"
-                    className="h-9 w-[min(22rem,62vw)] rounded-full border-0 bg-hero-foreground/10 px-4 text-[15px] font-semibold text-hero-foreground hover:bg-hero-foreground/15 focus:ring-2 focus:ring-primary-soft focus:ring-offset-0 [&>svg]:text-hero-foreground/70"
+                    className="h-9 w-[min(22rem,62vw)] rounded-full border-0 bg-hero-foreground/10 px-4 text-left text-[15px] font-semibold text-hero-foreground [&>span]:truncate hover:bg-hero-foreground/15 focus:ring-2 focus:ring-primary-soft focus:ring-offset-0 [&>svg]:text-hero-foreground/70"
                   >
                     <SelectValue placeholder="Focus on…" />
                   </SelectTrigger>
