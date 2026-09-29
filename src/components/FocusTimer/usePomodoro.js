@@ -148,7 +148,11 @@ export function usePomodoro() {
     let nextCount = 1;
 
     if (lastDate) {
-      const diff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+      // Calendar days between the two dates, from midnight to midnight and
+      // rounded, so the 25-hour day in October does not count as two.
+      const startOfToday = new Date(today).setHours(0, 0, 0, 0);
+      const startOfLast = new Date(lastDate).setHours(0, 0, 0, 0);
+      const diff = Math.round((startOfToday - startOfLast) / (1000 * 60 * 60 * 24));
       if (diff === 0) {
         nextCount = existing.count || 1;
       } else if (diff === 1) {
