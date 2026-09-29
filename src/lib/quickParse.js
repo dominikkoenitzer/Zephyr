@@ -10,6 +10,10 @@
 const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const WEEKDAY_ALIASES = { sun: 0, mon: 1, tue: 2, tues: 2, wed: 3, thu: 4, thur: 4, thurs: 4, fri: 5, sat: 6 };
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+// A month as it is written, whole or cut short, and never a word that merely
+// starts like one: "mars bars" is not March.
+const MONTH_WORD =
+  '(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec)';
 
 const PRIORITY_MAP = {
   '!high': 'high', '!h': 'high', '!1': 'high', p1: 'high',
@@ -117,10 +121,20 @@ export function parseQuickTask(input) {
     },
     // Month name + day: "aug 5", "august 5th"
     {
-      re: new RegExp(`(^|\\s)(${MONTHS.join('|')})[a-z]*\\.?\\s+(\\d{1,2})(?:st|nd|rd|th)?(?=\\s|$)`, 'i'),
+      re: new RegExp(`(^|\\s)(${MONTH_WORD})\\.?\\s+(\\d{1,2})(?:st|nd|rd|th)?(?=\\s|$)`, 'i'),
       run: (m) => {
         const month = MONTHS.indexOf(m[2].slice(0, 3).toLowerCase());
         const day = Number(m[3]);
+        const d = realDate(today.getFullYear(), month, day);
+        return d && d < today ? realDate(today.getFullYear() + 1, month, day) : d;
+      },
+    },
+    // Day + month name: "5 oct", "5th october", the way most of the world writes it
+    {
+      re: new RegExp(`(^|\\s)(\\d{1,2})(?:st|nd|rd|th)?\\s+(${MONTH_WORD})\\.?(?=\\s|$)`, 'i'),
+      run: (m) => {
+        const month = MONTHS.indexOf(m[3].slice(0, 3).toLowerCase());
+        const day = Number(m[2]);
         const d = realDate(today.getFullYear(), month, day);
         return d && d < today ? realDate(today.getFullYear() + 1, month, day) : d;
       },
@@ -159,7 +173,10 @@ export function parseQuickTask(input) {
       const date = rule.run(match);
       if (date && !Number.isNaN(date.getTime())) {
         result.dueDate = toISODate(date);
-        text = text.slice(0, match.index) + match[1] + text.slice(match.index + match[0].length);
+        // A word that only introduced the date ("by friday", "due tomorrow")
+        // goes with it, or the title ends on a dangling "by".
+        const before = text.slice(0, match.index).replace(/\s(?:by|on|due|until)\s*$/i, ' ');
+        text = before + match[1] + text.slice(match.index + match[0].length);
         break;
       }
     }
