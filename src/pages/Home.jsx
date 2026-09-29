@@ -160,7 +160,7 @@ function UpNext({ task }) {
           <div className="mt-auto pt-6">
             <Link
               to={focusHref(task)}
-              className="flex h-12 items-center justify-center gap-2 rounded-full bg-linear-to-br from-hero-from to-hero-to text-[15px] font-semibold text-hero-foreground transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="flex h-12 items-center justify-center gap-2 rounded-full bg-linear-to-br from-hero-from to-hero-to text-[15px] font-semibold text-hero-foreground transition-transform dark:ring-1 dark:ring-inset dark:ring-white/12 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <Timer className="h-[18px] w-[18px]" />
               Focus on this
