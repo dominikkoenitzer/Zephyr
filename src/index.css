@@ -7,28 +7,27 @@
 
 @layer base {
   :root {
-    /* Light: a pale green-grey ground with white cards floating on it, one deep
-       green for everything that acts. Near-black type, grey for the quiet parts. */
-    --background: 140 7% 94.5%;
-    --foreground: 150 12% 8%;
+    /* Dusk. A warm stone ground with white cards on it, ink for type, deep
+       indigo night for the few surfaces that carry weight, and one burnt
+       apricot for everything that acts. */
+    --background: 36 16% 93%;
+    --foreground: 246 22% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 150 12% 8%;
+    --card-foreground: 246 22% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 150 12% 8%;
+    --popover-foreground: 246 22% 10%;
 
-    --primary: 151 55% 26%;
+    --primary: 16 82% 42%;
     --primary-foreground: 0 0% 100%;
-    /* Primary as text on its own tint. Deep enough already, so the same value. */
-    --primary-strong: 151 60% 22%;
-    /* The green family around the accent: the dark end of the hero gradient,
-       and the light green the charts use next to it. */
-    --primary-deep: 153 62% 13%;
-    --primary-soft: 147 42% 56%;
-    /* The hero surfaces (the first stat card, the timer card) are green in both
-       modes, so they get their own pair instead of borrowing --primary. */
-    --hero-from: 151 52% 28%;
-    --hero-to: 154 64% 12%;
-    --hero-foreground: 0 0% 100%;
+    /* Primary as text on its own tint: one step darker so it clears 4.5:1. */
+    --primary-strong: 16 84% 38%;
+    /* The light apricot the charts and the wind lines use next to it. */
+    --primary-soft: 24 92% 72%;
+    /* The night surfaces (the lead stat, the timer, the sidebar card) are dark
+       in both modes, so they get their own pair instead of borrowing a token. */
+    --hero-from: 247 36% 25%;
+    --hero-to: 249 44% 10%;
+    --hero-foreground: 36 30% 97%;
 
     /* Focus-timer preset colours. See the dark block for why these exist. */
     --preset-blue: 217 91% 50%;
@@ -36,15 +35,15 @@
     --preset-violet: 262 83% 58%;
     --preset-rose: 340 82% 52%;
     --preset-amber: 32 95% 44%;
-    --preset-green: 151 55% 26%;
+    --preset-green: 145 65% 24%;
 
-    --secondary: 140 8% 94%;
-    --secondary-foreground: 150 12% 12%;
+    --secondary: 36 14% 92%;
+    --secondary-foreground: 246 22% 12%;
 
-    --muted: 140 8% 95%;
-    --muted-foreground: 150 4% 40%;
-    --accent: 140 9% 93%;
-    --accent-foreground: 150 12% 10%;
+    --muted: 36 14% 94%;
+    --muted-foreground: 246 6% 40%;
+    --accent: 36 14% 91%;
+    --accent-foreground: 246 22% 10%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -54,11 +53,11 @@
      * that same red reads at 3.6:1 as text.
      */
     --destructive-strong: 0 72% 42%;
-    --warning-strong: 32 90% 34%;
+    --warning-strong: 32 90% 32%;
 
-    --border: 140 7% 89%;
-    --input: 140 7% 88%;
-    --ring: 151 55% 32%;
+    --border: 36 12% 87%;
+    --input: 36 12% 85%;
+    --ring: 16 82% 50%;
     --radius: 1.5rem;
 
     /* Glassmorphism variables */
@@ -66,10 +65,10 @@
     --glass-border: rgba(255, 255, 255, 0.3);
     --glass-shadow: rgba(0, 0, 0, 0.1);
 
-    /* Elevation. Cards barely lift; the grey ground does the separating. */
-    --shadow-sm: 0 1px 2px hsl(150 12% 8% / 0.04);
-    --shadow-card: 0 1px 2px hsl(150 12% 8% / 0.03), 0 8px 24px hsl(150 12% 8% / 0.04);
-    --shadow-overlay: 0 24px 60px hsl(150 12% 8% / 0.16);
+    /* Elevation. Cards barely lift; the stone ground does the separating. */
+    --shadow-sm: 0 1px 2px hsl(246 22% 10% / 0.04);
+    --shadow-card: 0 1px 2px hsl(246 22% 10% / 0.03), 0 8px 24px hsl(246 22% 10% / 0.04);
+    --shadow-overlay: 0 24px 60px hsl(246 22% 10% / 0.16);
 
     /* Layout tokens */
     --layout-max: 1400px;
@@ -86,23 +85,22 @@
   }
 
   .dark {
-    /* Dark: the same build in reverse. A near-black green ground, cards a step
-       lighter, and a brighter green so it still reads as the one accent. */
-    --background: 150 10% 4.5%;
-    --foreground: 140 12% 94%;
-    --card: 150 8% 8.5%;
-    --card-foreground: 140 12% 94%;
-    --popover: 150 8% 9.5%;
-    --popover-foreground: 140 12% 94%;
+    /* Dusk after dark: an indigo-black ground, cards a step lighter, and a
+       brighter apricot so it still reads as the one accent. */
+    --background: 248 22% 5%;
+    --foreground: 36 22% 93%;
+    --card: 248 16% 9%;
+    --card-foreground: 36 22% 93%;
+    --popover: 248 16% 10%;
+    --popover-foreground: 36 22% 93%;
 
-    --primary: 146 50% 50%;
-    --primary-foreground: 152 60% 7%;
-    --primary-strong: 146 55% 60%;
-    --primary-deep: 152 55% 22%;
-    --primary-soft: 146 38% 36%;
-    --hero-from: 150 50% 24%;
-    --hero-to: 154 60% 9%;
-    --hero-foreground: 0 0% 100%;
+    --primary: 20 90% 62%;
+    --primary-foreground: 249 44% 8%;
+    --primary-strong: 22 92% 68%;
+    --primary-soft: 18 60% 40%;
+    --hero-from: 247 34% 22%;
+    --hero-to: 250 42% 8%;
+    --hero-foreground: 36 30% 97%;
 
     /* Focus-timer preset colours. Presets used UI tokens (--primary, --ring,
        --accent and so on) which are not meant to differ from one another: two
@@ -113,24 +111,24 @@
     --preset-violet: 262 83% 70%;
     --preset-rose: 340 82% 66%;
     --preset-amber: 38 92% 58%;
-    --preset-green: 146 50% 50%;
+    --preset-green: 145 48% 44%;
 
-    --secondary: 150 7% 13%;
-    --secondary-foreground: 140 12% 90%;
+    --secondary: 248 12% 14%;
+    --secondary-foreground: 36 18% 90%;
 
-    --muted: 150 7% 12%;
-    --muted-foreground: 140 5% 62%;
-    --accent: 150 7% 14%;
-    --accent-foreground: 140 12% 92%;
+    --muted: 248 12% 12%;
+    --muted-foreground: 246 8% 64%;
+    --accent: 248 12% 15%;
+    --accent-foreground: 36 20% 92%;
 
     --destructive: 0 63% 48%;
     --destructive-foreground: 210 20% 98%;
     --destructive-strong: 0 70% 66%;
     --warning-strong: 38 90% 60%;
 
-    --border: 150 6% 15%;
-    --input: 150 6% 17%;
-    --ring: 146 50% 50%;
+    --border: 248 10% 16%;
+    --input: 248 10% 18%;
+    --ring: 20 90% 62%;
 
     /* Glassmorphism variables for dark mode */
     --glass-bg: rgba(30, 41, 59, 0.7);
