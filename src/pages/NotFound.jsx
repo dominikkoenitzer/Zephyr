@@ -21,9 +21,6 @@ const NotFound = () => {
           <h1 className="mt-4 text-[1.75rem] font-semibold leading-tight tracking-[-0.03em] sm:text-[2.25rem]">
             Page not found
           </h1>
-          <p className="mx-auto mt-3 max-w-sm text-[15px] text-hero-foreground/75">
-            The link may be old, or the address may have a typo in it.
-          </p>
           <Link
             to="/"
             className="mt-7 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-hero-to"
