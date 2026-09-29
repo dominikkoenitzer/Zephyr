@@ -174,8 +174,7 @@ function UpNext({ task }) {
         </>
       ) : (
         <>
-          <p className="mt-5 text-[1.625rem] font-semibold leading-[1.15] tracking-[-0.025em]">Nothing waiting.</p>
-          <p className="mt-2 text-sm text-muted-foreground">Everything on your list is done.</p>
+          <p className="mt-5 text-[1.625rem] font-semibold leading-[1.15] tracking-[-0.025em]">Nothing waiting</p>
           <Link
             to="/tasks?new=1"
             className="mt-6 flex h-12 items-center justify-center gap-2 rounded-full border border-foreground/15 text-[15px] font-semibold transition-colors hover:bg-accent"
@@ -224,7 +223,7 @@ function DueSoon({ tasks }) {
         </Link>
       </div>
       {tasks.length === 0 ? (
-        <p className="mt-5 text-sm text-muted-foreground">No due dates coming up.</p>
+        <p className="mt-5 text-sm text-muted-foreground">Nothing due</p>
       ) : (
         <ul className="mt-4 space-y-1">
           {tasks.map((t) => {
@@ -273,7 +272,7 @@ function RecentSessions({ sessions }) {
         </Link>
       </div>
       {sessions.length === 0 ? (
-        <p className="mt-5 text-sm text-muted-foreground">Finished sessions land here.</p>
+        <p className="mt-5 text-sm text-muted-foreground">No sessions yet</p>
       ) : (
         <ul className="mt-4 divide-y divide-border">
           {sessions.map((s, i) => (
@@ -353,7 +352,7 @@ function Progress({ done, open, overdue }) {
         </svg>
         <div className="absolute inset-x-0 bottom-0 text-center">
           <p className="text-[2.5rem] font-semibold leading-none tracking-[-0.04em] tabular-nums">{pct}%</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">of your list done</p>
+          <p className="mt-1 text-[13px] text-muted-foreground">done</p>
         </div>
       </div>
       <ul className="mt-auto flex flex-wrap justify-center gap-x-5 gap-y-2 pt-6 text-[13px]">
@@ -474,13 +473,13 @@ function Home() {
             to="/tasks"
             label="Open tasks"
             value={stats.open}
-            note={stats.open ? `${stats.dueToday} due today` : 'All clear'}
+            note={`${stats.dueToday} due today`}
           />
           <StatCard
             to="/tasks"
             label="Overdue"
             value={stats.overdue}
-            note={stats.overdue ? 'Worth a look first' : 'Nothing slipped'}
+            note={stats.overdue ? 'Late' : 'On time'}
           />
           <StatCard
             to="/focus"
