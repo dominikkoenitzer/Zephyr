@@ -363,10 +363,10 @@ function Progress({ done, open, overdue }) {
 /* ---------------------------------------------------------------- timer */
 
 function TimerCard({ timer, defaultMinutes }) {
-  const running = Boolean(timer?.running && timer.timeLeft > 0);
-  const paused = Boolean(timer && !timer.running && timer.total && timer.timeLeft > 0 && timer.timeLeft < timer.total);
+  const running = Boolean(timer?.running);
+  const paused = Boolean(timer?.paused);
   const seconds = timer?.timeLeft || defaultMinutes * 60;
-  const progress = timer?.total ? ((timer.total - timer.timeLeft) / timer.total) * 100 : 0;
+  const progress = timer?.progress || 0;
   const state = running ? (timer.isBreak ? 'On a break' : 'Running') : paused ? 'Paused' : 'Ready';
 
   return (
