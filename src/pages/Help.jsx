@@ -94,7 +94,7 @@ function Help() {
   return (
     <PageContainer>
       <PageHeader
-        title="Help & Support"
+        title="Help"
         actions={legalLinks.map((link) => {
           const Icon = link.icon;
           return (
