@@ -286,13 +286,17 @@ export function usePomodoro() {
   }, [isRunning, timeLeft, isBreak]);
 
   useEffect(() => {
+    const root = document.documentElement;
     if (isFullScreen) {
       document.body.style.overflow = 'hidden';
+      root.dataset.fullscreen = '';
     } else {
       document.body.style.overflow = '';
+      delete root.dataset.fullscreen;
     }
     return () => {
       document.body.style.overflow = '';
+      delete root.dataset.fullscreen;
     };
   }, [isFullScreen]);
 
