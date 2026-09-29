@@ -273,7 +273,7 @@ class NotificationService {
       if (settings.tasks.overdue && daysUntilDue < 0) {
         this.createNotification(
           'task',
-          'Task Overdue',
+          'Task overdue',
           `${task.title} was due ${Math.abs(daysUntilDue)} day${Math.abs(daysUntilDue) !== 1 ? 's' : ''} ago`,
           { type: 'navigate', path: '/tasks' },
           { taskId: task.id },
@@ -284,7 +284,7 @@ class NotificationService {
       else if (daysUntilDue === 0) {
         this.createNotification(
           'task',
-          'Task Due Today',
+          'Task due today',
           `${task.title} is due today`,
           { type: 'navigate', path: '/tasks' },
           { taskId: task.id },
@@ -295,7 +295,7 @@ class NotificationService {
       else if (daysUntilDue > 0 && daysUntilDue <= settings.tasks.dueDateReminder) {
         this.createNotification(
           'task',
-          'Task Due Soon',
+          'Task due soon',
           `${task.title} is due in ${daysUntilDue} day${daysUntilDue !== 1 ? 's' : ''}`,
           { type: 'navigate', path: '/tasks' },
           { taskId: task.id },
