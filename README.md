@@ -15,7 +15,7 @@ No login, no signup, no backend. Your data never leaves your browser.
 ![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss&logoColor=white)
-![Bun](https://img.shields.io/badge/Bun-1.3-fbf0df?logo=bun&logoColor=black)
+![Bun](https://img.shields.io/badge/Bun-1.4-fbf0df?logo=bun&logoColor=black)
 
 **[→ Try it live at zephyr.punds.ch](https://zephyr.punds.ch)**
 
