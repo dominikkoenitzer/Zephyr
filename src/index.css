@@ -32,13 +32,15 @@
        dark theme lifts it, because night on night disappears. */
     --night: 247 36% 27%;
 
-    /* Focus-timer preset colours. See the dark block for why these exist. */
-    --preset-blue: 217 91% 50%;
-    --preset-teal: 174 84% 32%;
-    --preset-violet: 262 83% 58%;
-    --preset-rose: 340 82% 52%;
-    --preset-amber: 32 95% 44%;
-    --preset-green: 145 65% 24%;
+    /* Focus-timer preset colours. See the dark block for why these exist. The
+       names are the old ones because saved presets store them; the values are
+       dusk: apricot, sage, lilac, rose, gold and a sea teal. */
+    --preset-blue: 18 85% 50%;
+    --preset-teal: 185 55% 34%;
+    --preset-violet: 255 50% 58%;
+    --preset-rose: 340 68% 52%;
+    --preset-amber: 40 90% 42%;
+    --preset-green: 150 30% 38%;
 
     --secondary: 36 14% 92%;
     --secondary-foreground: 246 22% 12%;
@@ -110,12 +112,12 @@
        --accent and so on) which are not meant to differ from one another: two
        resolved to the same blue and one to a near-white. These six are chosen
        to stay apart, and are tuned per theme so they read on either ground. */
-    --preset-blue: 217 91% 62%;
-    --preset-teal: 174 70% 48%;
-    --preset-violet: 262 83% 70%;
-    --preset-rose: 340 82% 66%;
-    --preset-amber: 38 92% 58%;
-    --preset-green: 145 48% 44%;
+    --preset-blue: 20 90% 64%;
+    --preset-teal: 185 50% 55%;
+    --preset-violet: 255 70% 76%;
+    --preset-rose: 340 75% 70%;
+    --preset-amber: 42 90% 62%;
+    --preset-green: 150 32% 58%;
 
     --secondary: 248 12% 14%;
     --secondary-foreground: 36 18% 90%;
