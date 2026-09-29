@@ -181,6 +181,8 @@ function Settings() {
               </div>
             </SettingRow>
 
+            {/* Phones have no keyboard to use it with. */}
+            <div className="hidden md:block">
             <SettingRow
               title="Keyboard shortcuts"
             >
@@ -189,6 +191,7 @@ function Settings() {
                 View shortcuts
               </Button>
             </SettingRow>
+            </div>
           </div>
         </Card>
 
