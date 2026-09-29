@@ -57,7 +57,7 @@ function StatCard({ to, label, value, note, lead = false }) {
       >
         <Surface className={cn('h-full p-5 sm:p-6', !lead && panel)}>
           <div className="flex items-start justify-between gap-3">
-            <p className={cn('text-[15px] font-semibold sm:text-[17px]', lead ? 'text-hero-foreground' : 'text-foreground')}>
+            <p className={cn('text-[14px] font-semibold leading-tight sm:text-[17px]', lead ? 'text-hero-foreground' : 'text-foreground')}>
               {label}
             </p>
             <span
