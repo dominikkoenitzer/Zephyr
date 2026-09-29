@@ -265,7 +265,7 @@ const TaskList = () => {
             type="button"
             aria-label={`Mark "${task.title}" complete`}
             onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
-            className="mt-px flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full border-2 border-muted-foreground/40 text-transparent transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[9px] bg-accent text-transparent shadow-[inset_0_0_0_1.5px_hsl(var(--foreground)/0.12)] transition-colors hover:bg-primary hover:text-primary-foreground hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
           >
             <Check className="h-3 w-3" strokeWidth={3.5} />
           </button>
@@ -384,7 +384,7 @@ const TaskList = () => {
           <input
             ref={newTaskInputRef}
             autoFocus
-            placeholder='Add a task, like "Email Sam tomorrow !high #work"'
+            placeholder='Add a task, like "Call mum friday !high #home"'
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
             onKeyDown={(e) => {
@@ -590,7 +590,7 @@ const TaskList = () => {
                               type="button"
                               aria-label={`Mark "${task.title}" not complete`}
                               onClick={() => toggleTask(task.id)}
-                              className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                             >
                               <Check className="h-3 w-3" strokeWidth={3.5} />
                             </button>
