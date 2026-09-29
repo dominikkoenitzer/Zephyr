@@ -79,8 +79,8 @@ function fixChunkLoading() {
 // any path no route matches. Without it the catch-all rewrite answered every
 // junk URL with 200 and the home page's head, robots "index, follow" included,
 // so a crawler saw unlimited copies of the home page rather than a not-found.
-// The date the app last changed, for the JSON-LD dateModified and the sitemap's
-// lastmod. Both were typed by hand and fell weeks behind. The last commit is
+// The date the app last changed, for the JSON-LD dateModified, the sitemap's
+// lastmod and llms.txt. Both were typed by hand and fell weeks behind. The last commit is
 // the truth; a build outside git falls back to today.
 function stampDates() {
   let date
@@ -98,6 +98,8 @@ function stampDates() {
     closeBundle() {
       const sitemap = resolve(__dirname, 'dist/sitemap.xml')
       writeFileSync(sitemap, readFileSync(sitemap, 'utf8').replace(/<lastmod>[^<]*<\/lastmod>/g, `<lastmod>${date}</lastmod>`))
+      const llms = resolve(__dirname, 'dist/llms.txt')
+      writeFileSync(llms, readFileSync(llms, 'utf8').replace(/^Last updated: .*$/m, `Last updated: ${date}`))
     },
   }
 }
