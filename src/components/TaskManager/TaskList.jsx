@@ -270,7 +270,18 @@ const TaskList = () => {
           </button>
 
           <div className="min-w-0 flex-1">
-            <p className="text-[15.5px] font-medium leading-6 text-foreground">{task.title}</p>
+            {/* The row opens the editor on a click anywhere; the title is its
+                button, because below `sm` the row's own Edit button is hidden
+                and a keyboard had no way in. */}
+            <p className="text-[15.5px] font-medium leading-6 text-foreground">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
+                className="rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {task.title}
+              </button>
+            </p>
             {(task.description || (task.tags && task.tags.length > 0) || priority || due) && (
               <p
                 className={cn(
