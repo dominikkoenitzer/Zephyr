@@ -155,7 +155,7 @@ const PomodoroTimer = () => {
 
         {/* The day the session is: the sun crosses the sky and sets at the end */}
         <div ref={timerContainerRef} className="mx-auto flex w-full max-w-xl flex-1 items-center py-6">
-          <SunDial progress={progress} isBreak={isBreak}>
+          <SunDial progress={progress} isBreak={isBreak} running={isRunning}>
             <p className="text-[3.75rem] font-semibold leading-none tracking-[-0.04em] tabular-nums sm:text-[5.25rem]">
               {formatTime(timeLeft)}
             </p>
