@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { parseQuickTask } from './quickParse';
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -92,5 +92,52 @@ describe('parseQuickTask', () => {
   it('never returns an empty title (falls back to original text)', () => {
     const r = parseQuickTask('tomorrow');
     expect(r.title.length).toBeGreaterThan(0);
+  });
+});
+
+describe('parseQuickTask: times of day', () => {
+  const at = (h, m = 0) => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 8, 29, h, m));
+  };
+
+  afterEach(() => vi.useRealTimers());
+
+  it('gives a time still ahead today the day of today, and keeps it in the title', () => {
+    at(10);
+    expect(parseQuickTask('Call the dentist at 3pm')).toEqual({
+      title: 'Call the dentist at 3pm', dueDate: '2026-09-29', priority: null, tags: [],
+    });
+    expect(parseQuickTask('Standup 15:30').dueDate).toBe('2026-09-29');
+    expect(parseQuickTask('Pick up at 11:45 am').dueDate).toBe('2026-09-29');
+  });
+
+  it('moves a time that has passed to tomorrow', () => {
+    at(16);
+    expect(parseQuickTask('Call the dentist at 3pm').dueDate).toBe('2026-09-30');
+    expect(parseQuickTask('Standup 15:30').dueDate).toBe('2026-09-30');
+    expect(parseQuickTask('Call at 4pm').dueDate).toBe('2026-09-30');
+  });
+
+  it('reads noon and midnight on the 12-hour clock', () => {
+    at(11, 30);
+    expect(parseQuickTask('Lunch 12pm').dueDate).toBe('2026-09-29');
+    expect(parseQuickTask('Backup 12am').dueDate).toBe('2026-09-30');
+  });
+
+  it('lets a date win and leaves its time in the title', () => {
+    at(10);
+    const r = parseQuickTask('Gym tomorrow at 9');
+    expect(r.dueDate).toBe('2026-09-30');
+    expect(r.title).toBe('Gym at 9');
+    expect(parseQuickTask('Review fri 15:30').title).toBe('Review 15:30');
+  });
+
+  it('picks no day for an hour without am, pm or minutes, or for a time that does not exist', () => {
+    at(10);
+    expect(parseQuickTask('Meet at 9').dueDate).toBeNull();
+    expect(parseQuickTask('Score 25:10').dueDate).toBeNull();
+    expect(parseQuickTask('Call at 13pm').dueDate).toBeNull();
+    expect(parseQuickTask('Chapter 3:5').dueDate).toBeNull();
   });
 });

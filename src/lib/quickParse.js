@@ -2,6 +2,10 @@
 // No network and no AI service, just deterministic parsing of the patterns
 // people actually type. Returns the cleaned title plus any detected
 // due date (YYYY-MM-DD), priority, and #tags.
+//
+// A task has a due day, not a due time: the editor, the reminders and the
+// views all work in days. So a time of day ("at 3pm", "15:30") only picks
+// the day when nothing else did, and stays in the title for the person.
 
 const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const WEEKDAY_ALIASES = { sun: 0, mon: 1, tue: 2, tues: 2, wed: 3, thu: 4, thur: 4, thurs: 4, fri: 5, sat: 6 };
@@ -44,6 +48,24 @@ const collapse = (text) => text.replace(/\s{2,}/g, ' ').trim();
 const realDate = (year, monthIndex, day) => {
   const d = new Date(year, monthIndex, day);
   return d.getFullYear() === year && d.getMonth() === monthIndex && d.getDate() === day ? d : null;
+};
+
+/**
+ * Minutes after midnight for the first time of day in `text` ("3pm",
+ * "at 3:30 pm", "15:30"), or null. Only clock times count: an hour with
+ * am/pm, or hours and minutes.
+ */
+const timeOfDay = (text) => {
+  const twelve = text.match(/(^|\s)(?:at\s+)?(\d{1,2})(?::([0-5]\d))?\s*(am|pm)(?=\s|$)/i);
+  if (twelve) {
+    const hour = Number(twelve[2]);
+    if (hour < 1 || hour > 12) return null;
+    const pm = twelve[4].toLowerCase() === 'pm';
+    return ((hour % 12) + (pm ? 12 : 0)) * 60 + Number(twelve[3] || 0);
+  }
+  const clock = text.match(/(^|\s)(?:at\s+)?([01]?\d|2[0-3]):([0-5]\d)(?=\s|$)/i);
+  if (clock) return Number(clock[2]) * 60 + Number(clock[3]);
+  return null;
 };
 
 /**
@@ -140,6 +162,18 @@ export function parseQuickTask(input) {
         text = text.slice(0, match.index) + match[1] + text.slice(match.index + match[0].length);
         break;
       }
+    }
+  }
+
+  // 4) A time of day with no date: today while it is still ahead, otherwise
+  // tomorrow. It stays in the title, since the task has nowhere else to keep
+  // it. A bare "at 9" says neither am nor pm, so it picks no day.
+  if (!result.dueDate) {
+    const minutes = timeOfDay(text);
+    if (minutes !== null) {
+      const now = new Date();
+      const passed = minutes <= now.getHours() * 60 + now.getMinutes();
+      result.dueDate = toISODate(passed ? addDays(today, 1) : today);
     }
   }
 
