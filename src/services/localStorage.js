@@ -16,6 +16,10 @@ export const STORAGE_KEYS = {
   ONBOARDING: 'zephyr_onboarding',
   LAST_SESSION: 'zephyr_last_focus_session',
   VIEW_PREFS: 'zephyr_view_prefs',
+  // Facts about this browser rather than the user's data, so lib/backup
+  // leaves them out of an export and out of an import (DEVICE_KEYS).
+  LAST_BACKUP: 'zephyr_last_backup',
+  PERSIST_ASKED: 'zephyr_storage_persist_asked',
 };
 
 // Custom event broadcast on every write so views in the same tab can react
