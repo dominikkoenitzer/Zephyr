@@ -11,6 +11,7 @@ import { activeStreak, streakAtRisk } from '../../lib/streak';
 import { sortByUrgency } from '../../lib/taskFilters';
 import { DEFAULT_PRESETS } from './presets';
 import FullScreenMode from './FullScreenMode';
+import SunDial from './SunDial';
 import PresetSettingsDialog from './PresetSettingsDialog';
 import { formatTime, usePomodoro } from './usePomodoro';
 
@@ -23,10 +24,9 @@ const PomodoroTimer = () => {
     timeLeft,
     isRunning,
     progress,
-    strokeDashoffset,
-    circumference,
     currentSessionTime,
     sessionType,
+    isBreak,
     timerContainerRef,
     toggleTimer,
     resetTimer,
@@ -94,13 +94,14 @@ const PomodoroTimer = () => {
         onExit={() => setIsFullScreen(false)}
         formatTime={formatTime}
         preset={currentPreset}
+        isBreak={isBreak}
       />
     );
   }
 
   const card = 'rounded-3xl bg-card p-6 shadow-(--shadow-card)';
   const roundControl =
-    'flex h-12 w-12 items-center justify-center rounded-full bg-hero-foreground/10 text-hero-foreground transition-colors hover:bg-hero-foreground/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-soft disabled:pointer-events-none disabled:opacity-40';
+    'flex h-12 w-12 items-center justify-center rounded-full bg-hero-foreground/10 text-hero-foreground transition-colors hover:bg-hero-foreground/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun disabled:pointer-events-none disabled:opacity-40';
 
   return (
     <div className="grid w-full grid-cols-1 items-start gap-(--panel-gap) xl:grid-cols-12">
@@ -116,16 +117,16 @@ const PomodoroTimer = () => {
                 the task off. */}
             {sessionTask?.title && !sessionTask.id ? (
               <p className="mt-3 flex items-center gap-2 text-[17px] font-semibold">
-                <Target className="h-4 w-4 shrink-0 text-primary-soft" />
+                <Target className="h-4 w-4 shrink-0 text-sun" />
                 <span className="max-w-[14rem] truncate sm:max-w-md">{sessionTask.title}</span>
               </p>
             ) : taskOptions.length > 0 || sessionTask?.id ? (
               <div className="mt-3 flex items-center gap-2">
-                <Target className="h-4 w-4 shrink-0 text-primary-soft" aria-hidden="true" />
+                <Target className="h-4 w-4 shrink-0 text-sun" aria-hidden="true" />
                 <Select value={sessionTask?.id || NO_TASK} onValueChange={chooseTask}>
                   <SelectTrigger
                     aria-label="Task for this session"
-                    className="h-9 w-[min(22rem,62vw)] rounded-full border-0 bg-hero-foreground/10 px-4 text-left text-[15px] font-semibold text-hero-foreground [&>span]:truncate hover:bg-hero-foreground/15 focus:ring-2 focus:ring-primary-soft focus:ring-offset-0 [&>svg]:text-hero-foreground/70"
+                    className="h-9 w-[min(22rem,62vw)] rounded-full border-0 bg-hero-foreground/10 px-4 text-left text-[15px] font-semibold text-hero-foreground [&>span]:truncate hover:bg-hero-foreground/15 focus:ring-2 focus:ring-sun focus:ring-offset-0 [&>svg]:text-hero-foreground/70"
                   >
                     <SelectValue placeholder="Focus on…" />
                   </SelectTrigger>
@@ -152,35 +153,17 @@ const PomodoroTimer = () => {
           </button>
         </div>
 
-        {/* Ring */}
-        <div className="flex flex-1 items-center justify-center py-6">
-          <div ref={timerContainerRef} className="relative h-[260px] w-[260px] sm:h-[340px] sm:w-[340px]">
-            <svg className="absolute inset-0 h-full w-full -rotate-90" aria-hidden="true">
-              <circle cx="50%" cy="50%" r="45%" stroke="currentColor" strokeWidth="10" fill="none" className="text-hero-foreground/10" />
-              <circle
-                cx="50%"
-                cy="50%"
-                r="45%"
-                stroke="currentColor"
-                strokeWidth="10"
-                fill="none"
-                strokeLinecap="round"
-                style={{
-                  color: currentPreset.color,
-                  strokeDasharray: circumference,
-                  strokeDashoffset: strokeDashoffset,
-                  transition: 'stroke-dashoffset 1s ease-out',
-                }}
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-[3.75rem] font-semibold leading-none tracking-[-0.04em] tabular-nums sm:text-[5rem]">
-                {formatTime(timeLeft)}
-              </p>
-              <p className="mt-3 text-sm font-medium text-hero-foreground/65">{Math.round(progress)}% through</p>
-            </div>
-          </div>
+        {/* The day the session is: the sun crosses the sky and sets at the end */}
+        <div ref={timerContainerRef} className="mx-auto flex w-full max-w-xl flex-1 items-center py-6">
+          <SunDial progress={progress} isBreak={isBreak}>
+            <p className="text-[3.75rem] font-semibold leading-none tracking-[-0.04em] tabular-nums sm:text-[5.25rem]">
+              {formatTime(timeLeft)}
+            </p>
+          </SunDial>
         </div>
+        <p className="-mt-2 mb-6 text-center text-sm font-medium text-hero-foreground/65">
+          {Math.round(progress)}% through
+        </p>
 
         {/* Controls */}
         <div className="flex items-center justify-center gap-4">
@@ -192,7 +175,7 @@ const PomodoroTimer = () => {
             onClick={toggleTimer}
             aria-label={isRunning ? 'Pause timer' : 'Start timer'}
             title={isRunning ? 'Pause (Space)' : 'Start (Space)'}
-            className="flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full bg-hero-foreground text-hero-to shadow-lg transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary-soft/60"
+            className="flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full bg-hero-foreground text-hero-to shadow-lg transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sun/60"
           >
             {isRunning ? <Pause className="h-7 w-7" strokeWidth={2.5} /> : <Play className="ml-1 h-7 w-7" strokeWidth={2.5} />}
           </button>

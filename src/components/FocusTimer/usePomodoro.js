@@ -410,10 +410,10 @@ export function usePomodoro() {
   const getSessionType = () => {
     if (isBreak) {
       return sessionsCompleted % sessionsUntilLongBreak === 0 
-        ? { text: 'Long Break', icon: Clock, color: 'text-purple-500' } 
-        : { text: 'Short Break', icon: Clock, color: 'text-green-500' };
+        ? { text: 'Long break', icon: Clock, color: 'text-night' }
+        : { text: 'Short break', icon: Clock, color: 'text-night' };
     }
-    return { text: 'Focus Time', icon: Target, color: 'text-primary' };
+    return { text: 'Focus', icon: Target, color: 'text-primary' };
   };
 
   const sessionType = getSessionType();
@@ -552,6 +552,7 @@ export function usePomodoro() {
     circumference,
     currentSessionTime,
     sessionType,
+    isBreak,
     timerContainerRef,
     toggleTimer,
     resetTimer,
