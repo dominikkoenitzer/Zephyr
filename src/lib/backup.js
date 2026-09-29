@@ -88,3 +88,20 @@ export function wipeAllData() {
   doomed.forEach((key) => localStorage.removeItem(key));
   return doomed.length;
 }
+
+/**
+ * "Delete all data" in Settings: every Zephyr key goes, and the count is of
+ * what was really there. Settings used to clear the keys first and count
+ * afterwards, so it always reported "Cleared 0 stored items".
+ *
+ * @returns {number} how many keys were removed.
+ */
+export function deleteAllData() {
+  const removed = wipeAllData();
+  try {
+    window.dispatchEvent(new CustomEvent('zephyr:change', { detail: { key: null } }));
+  } catch {
+    // Outside a browser there is nothing listening.
+  }
+  return removed;
+}
