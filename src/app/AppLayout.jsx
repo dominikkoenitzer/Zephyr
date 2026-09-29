@@ -11,6 +11,7 @@ import ShortcutsDialog from '../components/Shortcuts/ShortcutsDialog';
 import { Toaster } from '../components/ui/toast';
 import { themeService } from '../services/themeService';
 import { notificationService } from '../services/notificationService';
+import { requestPersistentStorage } from '../lib/backup';
 import { useAppShortcuts } from '../hooks/useAppShortcuts';
 import { usePwaUpdate } from '../hooks/usePwaUpdate';
 
@@ -30,6 +31,9 @@ function AppLayout() {
 
     // Start notification checking
     notificationService.startChecking();
+
+    // Everything lives in this browser; ask it not to clear that (lib/backup).
+    requestPersistentStorage();
 
     return () => {
       notificationService.stopChecking();
