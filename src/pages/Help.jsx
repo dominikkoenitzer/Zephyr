@@ -1,7 +1,6 @@
-import { Link } from 'react-router-dom';
 import { Card, CardTitle } from '../components/ui/card';
 import { NightSurface } from '../components/ui/night-surface';
-import { HelpCircle, Zap, Shield, FileText, Timer, Settings, WifiOff, Trash2, Cloud, Keyboard, Command } from 'lucide-react';
+import { HelpCircle, Zap, FileText, Timer, Settings, WifiOff, Trash2, Cloud, Keyboard, Command } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import ShortcutTable from '../components/Shortcuts/ShortcutTable';
 import PageHeader from '../components/Layout/PageHeader';
@@ -30,7 +29,7 @@ function IconTitle({ icon: Icon, children, id }) {
 
 // Privacy and Terms used to be tabs here, held in useState, which kept them
 // out of the DOM (and out of every crawler) unless clicked. They are real
-// routes now (/privacy, /terms), linked in the header.
+// routes now (/privacy, /terms), linked from the footer on every page.
 function Help() {
   usePageMeta(ROUTE_META['/help']);
 
@@ -86,29 +85,10 @@ function Help() {
     }
   ];
 
-  const legalLinks = [
-    { to: '/privacy', label: 'Privacy Policy', icon: Shield },
-    { to: '/terms', label: 'Terms of Service', icon: FileText },
-  ];
-
   return (
     <PageContainer>
       <PageHeader
         title="Help"
-        actions={legalLinks.map((link) => {
-          const Icon = link.icon;
-          return (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="inline-flex h-9 items-center gap-2 rounded-full border border-foreground/15 bg-card px-4 text-sm font-semibold text-foreground transition-colors hover:border-foreground/30 hover:bg-accent"
-            >
-              <Icon className="h-4 w-4" />
-              <span className="hidden sm:inline">{link.label}</span>
-              <span className="sm:hidden">{link.label.split(' ')[0]}</span>
-            </Link>
-          );
-        })}
       />
 
       <div className="grid grid-cols-1 gap-(--panel-gap) xl:grid-cols-5">
