@@ -10,6 +10,7 @@ import { ROUTE_META } from '../../routes/meta';
 import { formatTime } from '../../lib/time';
 import { longBreakDue as isLongBreakDue, nextPhase } from '../../lib/timer';
 import { useStoreValue } from '../../hooks/useStore';
+import { focusToday } from '../../lib/dashboard';
 import { mergeStoredPresets, presetsToStore } from '../../lib/presets';
 
 // Re-exported so the Focus page keeps importing it from here.
@@ -199,8 +200,6 @@ export function usePomodoro() {
     setPhaseCount((n) => n + 1);
 
     if (isWorkComplete) {
-      const newSessionsCompleted = next.sessionsCompleted;
-
       const sessions = localStorageService.getFocusSessions();
       sessions.push({
         date: new Date().toISOString(),
@@ -209,6 +208,8 @@ export function usePomodoro() {
         task: sessionTask
       });
       localStorageService.saveFocusSessions(sessions);
+      const doneToday = focusToday(sessions).sessions;
+      const summary = `${doneToday} session${doneToday !== 1 ? 's' : ''} today. Time for a break.`;
       localStorageService.saveOnboarding({ focusStarted: true });
       updateStreakCounters();
       localStorageService.saveLastSession({
@@ -220,7 +221,7 @@ export function usePomodoro() {
       notificationService.createNotification(
         'timer',
         'Session complete',
-        `${newSessionsCompleted} session${newSessionsCompleted !== 1 ? 's' : ''} completed. Time for a break.`,
+        summary,
         { type: 'navigate', path: '/focus' },
         {},
         // Every finished session is its own event. Without a key these fell
@@ -229,7 +230,7 @@ export function usePomodoro() {
         `timer:complete:${Date.now()}`
       );
 
-      showNotification('Session complete', `${newSessionsCompleted} session${newSessionsCompleted !== 1 ? 's' : ''} completed. Time for a break.`);
+      showNotification('Session complete', summary);
 
       // An in-app toast as well as the OS notification, which the browser may
       // have denied. When the session was tied to a task, finishing it is one
@@ -452,7 +453,6 @@ export function usePomodoro() {
   const currentSessionTime = isBreak ? (longBreakDue ? longBreakTime : breakTime) : workTime;
   const progress = ((currentSessionTime - timeLeft) / currentSessionTime) * 100;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
-  const totalFocusTime = Math.floor((sessionsCompleted * workTime) / 60);
   const getSessionType = () => {
     if (isBreak) {
       return longBreakDue
@@ -607,7 +607,6 @@ export function usePomodoro() {
 
     // Session bookkeeping
     sessionsCompleted,
-    totalFocusTime,
     sessionTask,
     setSessionTask,
 

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { useStoreValue, useTasks } from '../../hooks/useStore';
 import { localStorageService } from '../../services/localStorage';
 import { activeStreak, streakAtRisk } from '../../lib/streak';
+import { focusToday } from '../../lib/dashboard';
 import { sortByUrgency } from '../../lib/taskFilters';
 import { DEFAULT_PRESETS } from './presets';
 import FullScreenMode from './FullScreenMode';
@@ -18,6 +19,7 @@ import { formatTime, usePomodoro } from './usePomodoro';
 const NO_TASK = 'none';
 
 const readStreak = () => localStorageService.getFocusStreak();
+const readSessions = () => localStorageService.getFocusSessions();
 
 const PomodoroTimer = () => {
   const {
@@ -31,8 +33,6 @@ const PomodoroTimer = () => {
     toggleTimer,
     resetTimer,
     skipSession,
-    sessionsCompleted,
-    totalFocusTime,
     sessionTask,
     setSessionTask,
     presets,
@@ -60,6 +60,11 @@ const PomodoroTimer = () => {
   const [streak] = useStoreValue(readStreak);
   const streakDays = activeStreak(streak);
   const atRisk = streakAtRisk(streak);
+
+  // Today's figures come from the session log, like the dashboard's. The
+  // timer's own counter is its place in the long-break rhythm and never resets.
+  const [sessions] = useStoreValue(readSessions);
+  const today = focusToday(sessions);
 
   // What you can point this session at. A task picked earlier stays listed
   // even after it is completed, so the picker never blanks out mid-session.
@@ -315,8 +320,8 @@ const PomodoroTimer = () => {
           <h2 id="today-title" className="text-[17px] font-semibold tracking-[-0.015em]">So far</h2>
           <dl className="mt-4 grid grid-cols-3 gap-2">
             {[
-              { label: 'Sessions', value: sessionsCompleted },
-              { label: 'Minutes', value: totalFocusTime },
+              { label: 'Sessions', value: today.sessions },
+              { label: 'Minutes', value: today.minutes },
               { label: 'Day streak', value: streakDays, quiet: streakDays === 0 },
             ].map((f) => (
               <div key={f.label} className="flex flex-col-reverse rounded-2xl bg-accent px-3 py-3">
