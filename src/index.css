@@ -150,7 +150,11 @@
   
   html {
     min-height: 100%;
-    overflow-x: hidden;
+    /* clip, not hidden: hidden makes the root a scroll container and the
+       sticky top bar stops sticking. The gutter stays reserved so pages of
+       different lengths don't slide sideways. */
+    overflow-x: clip;
+    scrollbar-gutter: stable;
     font-size: clamp(16px, 0.7vw, 19px);
   }
   
@@ -163,7 +167,7 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
   
   #root {
@@ -247,7 +251,7 @@
      so headings line up on the same left edge from one route to the next. */
   .page-width {
     width: 100%;
-    max-width: 64rem;
+    max-width: 90rem;
     margin-left: auto;
     margin-right: auto;
   }

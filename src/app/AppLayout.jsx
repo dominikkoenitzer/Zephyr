@@ -3,6 +3,8 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LazyMotion, domMax, MotionConfig, m } from 'motion/react';
 import { toast } from 'sonner';
 import TopBar from '../components/Layout/TopBar';
+import Sidebar from '../components/Layout/Sidebar';
+import MobileNav from '../components/Layout/MobileNav';
 import Footer from '../components/Layout/Footer';
 import CommandPalette from '../components/CommandPalette/CommandPalette';
 import ShortcutsDialog from '../components/Shortcuts/ShortcutsDialog';
@@ -64,7 +66,7 @@ function AppLayout() {
   return (
     <LazyMotion features={domMax} strict>
       <MotionConfig reducedMotion="user">
-        <div className="flex min-h-dvh flex-col overflow-x-hidden bg-background transition-colors duration-300">
+        <div className="min-h-dvh bg-background transition-colors duration-300">
           {/* Keyboard / screen-reader users can jump straight to the content */}
           <a
             href="#main-content"
@@ -73,26 +75,34 @@ function AppLayout() {
             Skip to main content
           </a>
 
-          <TopBar onSearchClick={openPalette} />
+          <Sidebar />
 
-          <main
-            id="main-content"
-            tabIndex={-1}
-            className="scroll-stable flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pt-(--header-height) focus:outline-none"
-          >
-            {/* Re-keyed per route so every page mounts with a quick
-                fade-and-rise. Enter-only (no exit) keeps navigation snappy. */}
-            <m.div
-              key={location.pathname}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-              className="flex min-h-0 w-full flex-1 flex-col gap-(--panel-gap) px-responsive py-responsive"
+          {/* The content column. The window scrolls, the sidebar stays put
+              beside it and the top bar sticks to the top of the column. */}
+          <div className="flex min-h-dvh flex-col lg:pl-(--sidebar-width)">
+            <TopBar onSearchClick={openPalette} />
+
+            <main
+              id="main-content"
+              tabIndex={-1}
+              className="flex flex-1 flex-col px-responsive pb-8 focus:outline-none lg:pl-3"
             >
-              <Outlet />
-            </m.div>
+              {/* Re-keyed per route so every page mounts with a quick
+                  fade-and-rise. Enter-only (no exit) keeps navigation snappy. */}
+              <m.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+                className="page-width flex flex-1 flex-col"
+              >
+                <Outlet />
+              </m.div>
+            </main>
             <Footer />
-          </main>
+          </div>
+
+          <MobileNav />
 
           <CommandPalette
             open={paletteOpen}
