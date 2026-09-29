@@ -23,7 +23,7 @@ export const SHORTCUT_GROUPS = [
   {
     title: 'Go to',
     items: [
-      { keys: ['G', 'H'], label: 'Home' },
+      { keys: ['G', 'H'], label: 'Dashboard' },
       { keys: ['G', 'T'], label: 'Tasks' },
       { keys: ['G', 'F'], label: 'Focus timer' },
       { keys: ['G', 'S'], label: 'Settings' },
