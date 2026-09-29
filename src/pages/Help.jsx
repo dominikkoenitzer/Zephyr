@@ -112,9 +112,9 @@ function Help() {
         })}
       />
 
-      <div className="grid grid-cols-1 items-start gap-(--panel-gap) xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-(--panel-gap) xl:grid-cols-5">
         {/* Quick start */}
-        <NightSurface className="animate-fade-in-up p-6 pb-10 xl:col-span-2" style={{ animationDelay: '0.1s' }}>
+        <NightSurface className="animate-fade-in-up p-6 pb-32 xl:col-span-2" style={{ animationDelay: '0.1s' }}>
           <h2 className="flex items-center gap-3 text-[17px] font-semibold tracking-[-0.015em]">
             <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10">
               <Zap className="h-[18px] w-[18px] text-primary" />
