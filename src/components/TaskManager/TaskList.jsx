@@ -717,7 +717,7 @@ const TaskList = () => {
                     Focus
                   </Button>
                 </div>
-                <div className="flex gap-2">
+                <div className="ml-auto flex gap-2">
                   <Button variant="outline" onClick={() => setEditingTask(null)}>
                     Cancel
                   </Button>
