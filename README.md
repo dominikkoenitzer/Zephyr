@@ -160,7 +160,7 @@ src/
 │   ├── FocusTimer/ # Pomodoro timer
 │   ├── Shortcuts/  # The printed keyboard map
 │   ├── TaskManager/# Tasks, filters & quick add
-│   ├── Layout/     # TopBar (the whole navigation), PageHeader
+│   ├── Layout/     # Sidebar, MobileNav, TopBar, PageHeader, the mark
 │   └── ui/         # Reusable shadcn-style primitives
 ├── hooks/          # useStore (reactive data hooks), useAppShortcuts, useTheme, usePageMeta, usePwaUpdate
 ├── lib/            # quickParse (NL parser), taskFilters, shortcuts, backup, utils
