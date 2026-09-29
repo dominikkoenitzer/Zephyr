@@ -7,21 +7,28 @@
 
 @layer base {
   :root {
-    /* Zephyr Light Theme - airy, cool, glassy */
-    --background: 220 40% 97%;
-    --foreground: 224 30% 12%;
+    /* Light: a pale green-grey ground with white cards floating on it, one deep
+       green for everything that acts. Near-black type, grey for the quiet parts. */
+    --background: 140 7% 94.5%;
+    --foreground: 150 12% 8%;
     --card: 0 0% 100%;
-    --card-foreground: 224 30% 12%;
+    --card-foreground: 150 12% 8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 224 30% 12%;
+    --popover-foreground: 150 12% 8%;
 
-    /* Primary: Clean Blue; brand gradient runs primary → violet */
-    --primary: 217 91% 50%;
+    --primary: 151 55% 26%;
     --primary-foreground: 0 0% 100%;
-    /* Primary as text on a primary tint, the same split --destructive
-       already needed. --primary at 14px on bg-primary/10 is 4.07:1; this is
-       4.8:1 on the same tint. Fills stay on --primary. */
-    --primary-strong: 217 91% 45%;
+    /* Primary as text on its own tint. Deep enough already, so the same value. */
+    --primary-strong: 151 60% 22%;
+    /* The green family around the accent: the dark end of the hero gradient,
+       and the light green the charts use next to it. */
+    --primary-deep: 153 62% 13%;
+    --primary-soft: 147 42% 56%;
+    /* The hero surfaces (the first stat card, the timer card) are green in both
+       modes, so they get their own pair instead of borrowing --primary. */
+    --hero-from: 151 52% 28%;
+    --hero-to: 154 64% 12%;
+    --hero-foreground: 0 0% 100%;
 
     /* Focus-timer preset colours. See the dark block for why these exist. */
     --preset-blue: 217 91% 50%;
@@ -29,16 +36,15 @@
     --preset-violet: 262 83% 58%;
     --preset-rose: 340 82% 52%;
     --preset-amber: 32 95% 44%;
-    --preset-green: 145 65% 24%;
+    --preset-green: 151 55% 26%;
 
-    /* Secondary: Neutral */
-    --secondary: 220 16% 96%;
-    --secondary-foreground: 220 20% 25%;
+    --secondary: 140 8% 94%;
+    --secondary-foreground: 150 12% 12%;
 
-    --muted: 220 16% 96%;
-    --muted-foreground: 220 9% 44%;
-    --accent: 220 16% 95%;
-    --accent-foreground: 220 22% 20%;
+    --muted: 140 8% 95%;
+    --muted-foreground: 150 4% 40%;
+    --accent: 140 9% 93%;
+    --accent-foreground: 150 12% 10%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -47,51 +53,56 @@
      * fill has to stay dark enough to carry white text, and on a dark surface
      * that same red reads at 3.6:1 as text.
      */
-    --destructive-strong: 0 72% 45%;
+    --destructive-strong: 0 72% 42%;
+    --warning-strong: 32 90% 34%;
 
-    --border: 220 20% 90%;
-    --input: 220 20% 92%;
-    --ring: 217 91% 55%;
-    --radius: 1rem;
-    
+    --border: 140 7% 89%;
+    --input: 140 7% 88%;
+    --ring: 151 55% 32%;
+    --radius: 1.5rem;
+
     /* Glassmorphism variables */
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.3);
     --glass-shadow: rgba(0, 0, 0, 0.1);
 
-    /* Elevation shadows: dark-based so they read as real shadows in both modes */
-    --shadow-sm: 0 1px 2px hsl(220 25% 13% / 0.06);
-    --shadow-card: 0 1px 2px hsl(220 25% 13% / 0.05), 0 6px 18px hsl(220 25% 13% / 0.06);
-    --shadow-overlay: 0 20px 50px hsl(220 25% 13% / 0.18);
+    /* Elevation. Cards barely lift; the grey ground does the separating. */
+    --shadow-sm: 0 1px 2px hsl(150 12% 8% / 0.04);
+    --shadow-card: 0 1px 2px hsl(150 12% 8% / 0.03), 0 8px 24px hsl(150 12% 8% / 0.04);
+    --shadow-overlay: 0 24px 60px hsl(150 12% 8% / 0.16);
 
     /* Layout tokens */
     --layout-max: 1400px;
     --layout-wide: 1680px;
-    --gutter-x: clamp(1rem, 3vw, 2.25rem);
-    --gutter-y: clamp(1rem, 2.5vw, 2rem);
+    --gutter-x: clamp(1rem, 2.4vw, 2rem);
+    --gutter-y: clamp(1rem, 2vw, 1.75rem);
     --section-gap: clamp(1.25rem, 3vw, 2.5rem);
-    --panel-gap: clamp(0.75rem, 2vw, 1.5rem);
-    /* The bar is two rows: a small utility row and the nav type under it.
-       Pages offset themselves by this, so it has to cover the border too. */
-    --header-height: 6.6rem;
+    --panel-gap: clamp(0.75rem, 1.2vw, 1.25rem);
+    --sidebar-width: 16.5rem;
+    /* The top bar inside the content column. Pages start below it. */
+    --header-height: 4.5rem;
     --font-sans: 'Manrope Variable', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    --font-display: 'Space Grotesk Variable', 'Manrope Variable', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-display: var(--font-sans);
   }
 
   .dark {
-    /* Zephyr Dark Theme - deep blue-black */
-    --background: 226 35% 6%;
-    --foreground: 214 30% 96%;
-    --card: 226 30% 9%;
-    --card-foreground: 214 30% 96%;
-    --popover: 226 30% 9%;
-    --popover-foreground: 214 30% 96%;
+    /* Dark: the same build in reverse. A near-black green ground, cards a step
+       lighter, and a brighter green so it still reads as the one accent. */
+    --background: 150 10% 4.5%;
+    --foreground: 140 12% 94%;
+    --card: 150 8% 8.5%;
+    --card-foreground: 140 12% 94%;
+    --popover: 150 8% 9.5%;
+    --popover-foreground: 140 12% 94%;
 
-    /* Primary: Clean Blue; brand gradient runs primary → violet */
-    --primary: 217 91% 62%;
-    --primary-foreground: 226 47% 8%;
-    /* On dark, the tint is dark and --primary already clears 4.5:1. */
-    --primary-strong: 217 91% 62%;
+    --primary: 146 50% 50%;
+    --primary-foreground: 152 60% 7%;
+    --primary-strong: 146 55% 60%;
+    --primary-deep: 152 55% 22%;
+    --primary-soft: 146 38% 36%;
+    --hero-from: 150 50% 24%;
+    --hero-to: 154 60% 9%;
+    --hero-foreground: 0 0% 100%;
 
     /* Focus-timer preset colours. Presets used UI tokens (--primary, --ring,
        --accent and so on) which are not meant to differ from one another: two
@@ -102,33 +113,32 @@
     --preset-violet: 262 83% 70%;
     --preset-rose: 340 82% 66%;
     --preset-amber: 38 92% 58%;
-    --preset-green: 145 48% 44%;
+    --preset-green: 146 50% 50%;
 
-    /* Secondary: Neutral */
-    --secondary: 226 22% 16%;
-    --secondary-foreground: 214 25% 90%;
+    --secondary: 150 7% 13%;
+    --secondary-foreground: 140 12% 90%;
 
-    --muted: 226 22% 14%;
-    --muted-foreground: 220 16% 64%;
-    --accent: 226 24% 16%;
-    --accent-foreground: 214 25% 92%;
+    --muted: 150 7% 12%;
+    --muted-foreground: 140 5% 62%;
+    --accent: 150 7% 14%;
+    --accent-foreground: 140 12% 92%;
 
     --destructive: 0 63% 48%;
     --destructive-foreground: 210 20% 98%;
-    --destructive-strong: 0 63% 62%;
+    --destructive-strong: 0 70% 66%;
+    --warning-strong: 38 90% 60%;
 
-    --border: 226 22% 17%;
-    --input: 226 22% 17%;
-    --ring: 217 91% 62%;
-    
+    --border: 150 6% 15%;
+    --input: 150 6% 17%;
+    --ring: 146 50% 50%;
+
     /* Glassmorphism variables for dark mode */
     --glass-bg: rgba(30, 41, 59, 0.7);
     --glass-border: rgba(255, 255, 255, 0.1);
     --glass-shadow: rgba(0, 0, 0, 0.3);
 
-    /* Elevation shadows: deeper, pure black for true dark-mode depth */
     --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.4);
-    --shadow-card: 0 1px 2px hsl(0 0% 0% / 0.3), 0 6px 18px hsl(0 0% 0% / 0.45);
+    --shadow-card: 0 1px 2px hsl(0 0% 0% / 0.3), 0 8px 24px hsl(0 0% 0% / 0.35);
     --shadow-overlay: 0 24px 60px hsl(0 0% 0% / 0.6);
   }
 }
@@ -170,16 +180,7 @@
 
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
-  }
-
-  /* The nav type steps up at sm, so the bar does too. Pages offset by
-     this variable, and a value under the real height hides the first few
-     pixels of content behind the fixed bar. */
-  @media (min-width: 640px) {
-    :root {
-      --header-height: 7.4rem;
-    }
+    letter-spacing: -0.025em;
   }
 
   /* Improve readability on very large monitors (QHD+/4K) */
@@ -190,7 +191,6 @@
       --panel-gap: clamp(1rem, 1.6vw, 1.8rem);
       --section-gap: clamp(1.5rem, 2.8vw, 3rem);
       --layout-wide: 1820px;
-      --header-height: 7rem;
     }
 
     .text-xs {
