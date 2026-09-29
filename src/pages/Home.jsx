@@ -53,7 +53,7 @@ function StatCard({ to, label, value, note, lead = false }) {
     <m.div variants={rise}>
       <Link
         to={to}
-        className="group block h-full rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="group block h-full rounded-3xl transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <Surface className={cn('h-full p-5 sm:p-6', !lead && panel)}>
           <div className="flex items-start justify-between gap-3">
