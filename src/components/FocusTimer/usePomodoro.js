@@ -8,6 +8,7 @@ import { DEFAULT_PRESETS, normalizePresetColor, THEME_COLOR_OPTIONS, toHexColor 
 import { ROUTE_META } from '../../routes/meta';
 
 import { formatTime } from '../../lib/time';
+import { longBreakDue as isLongBreakDue } from '../../lib/timer';
 
 // Re-exported so the Focus page keeps importing it from here.
 export { formatTime };
@@ -166,7 +167,7 @@ export function usePomodoro() {
       setSessionsCompleted(newSessionsCompleted);
       setIsBreak(true);
       
-      const nextBreakTime = newSessionsCompleted % sessionsUntilLongBreak === 0 ? longBreakTime : breakTime;
+      const nextBreakTime = isLongBreakDue(newSessionsCompleted, sessionsUntilLongBreak) ? longBreakTime : breakTime;
       setTimeLeft(nextBreakTime);
       
       const sessions = localStorageService.getFocusSessions();
@@ -295,7 +296,7 @@ export function usePomodoro() {
     const sessionTypeChanged = prevIsBreakRef.current !== isBreak;
     
     if ((presetChanged || sessionTypeChanged) && !isRunning) {
-      const longDue = sessionsCompleted > 0 && sessionsCompleted % sessionsUntilLongBreak === 0;
+      const longDue = isLongBreakDue(sessionsCompleted, sessionsUntilLongBreak);
       setTimeLeft(isBreak ? (longDue ? longBreakTime : breakTime) : workTime);
     }
     
@@ -386,9 +387,8 @@ export function usePomodoro() {
     return () => window.removeEventListener('resize', updateCircumference);
   }, []);
 
-  // The long break follows every Nth finished session, and never the zeroth:
-  // with nothing finished yet, 0 % N === 0 used to hand out a long break.
-  const longBreakDue = sessionsCompleted > 0 && sessionsCompleted % sessionsUntilLongBreak === 0;
+  // Whether the next break is the long one; the rule lives in lib/timer.
+  const longBreakDue = isLongBreakDue(sessionsCompleted, sessionsUntilLongBreak);
 
   const toggleTimer = () => {
     if (!isRunning) {
@@ -483,7 +483,7 @@ export function usePomodoro() {
     const preset = presets.find(p => p.id === presetId);
     if (preset) {
       const n = preset.sessionsUntilLongBreak || 4;
-      const long = sessionsCompleted > 0 && sessionsCompleted % n === 0;
+      const long = isLongBreakDue(sessionsCompleted, n);
       setTimeLeft(isBreak ? (long ? preset.longBreak : preset.shortBreak) : preset.workTime);
     }
   };
@@ -503,7 +503,7 @@ export function usePomodoro() {
     if (selectedPreset === editingPreset.id) {
       setSelectedPreset(editingPreset.id);
       const n = updatedPreset.sessionsUntilLongBreak || 4;
-      const long = sessionsCompleted > 0 && sessionsCompleted % n === 0;
+      const long = isLongBreakDue(sessionsCompleted, n);
       const currentTime = isBreak ? (long ? updatedPreset.longBreak : updatedPreset.shortBreak) : updatedPreset.workTime;
       if (!isRunning) {
         setTimeLeft(currentTime);
