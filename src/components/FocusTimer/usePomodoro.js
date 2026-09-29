@@ -437,12 +437,14 @@ export function usePomodoro() {
   // The timer's own keys: Space start/pause, R reset, S skip, F full screen
   // (Esc leaves it). They stand down while you are typing, while a dialog is
   // open, and when a modifier is held so they never shadow a browser shortcut.
+  // A key something else already handled (the second key of a `g` chord, a
+  // choice in the open task list) is not theirs either.
   useEffect(() => {
     const onKeyDown = (e) => {
-      if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.defaultPrevented || e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
       const tag = e.target.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON' || e.target.isContentEditable) return;
-      if (document.querySelector('[role="dialog"][data-state="open"]')) return;
+      if (document.querySelector('[role="dialog"][data-state="open"], [role="listbox"][data-state="open"]')) return;
 
       if (e.code === 'Space') {
         e.preventDefault();
