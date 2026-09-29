@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { NightSurface } from '../components/ui/night-surface';
 import usePageMeta from '../hooks/usePageMeta';
 import { NOT_FOUND_META } from '../routes/meta';
 
@@ -11,19 +13,25 @@ const NotFound = () => {
 
   return (
     <section className="w-full flex-1 min-h-0 overflow-y-auto">
-      <div className="page-width py-2 sm:py-4">
-        <p className="text-[12px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-          404
-        </p>
-        <h1 className="mt-3 text-[2.5rem] font-semibold leading-[0.95] tracking-[-0.035em] text-foreground sm:text-6xl lg:text-7xl">
-          Page not found
-        </h1>
-        <p className="mt-4 text-base text-muted-foreground">
-          The link may be old, or the address may have a typo in it.{' '}
-          <Link to="/" className="text-foreground underline underline-offset-4">
+      <div className="page-width flex min-h-[60vh] items-center justify-center py-6 sm:py-10">
+        <NightSurface className="w-full max-w-xl px-6 pb-24 pt-10 text-center sm:px-10 sm:pb-28 sm:pt-12">
+          <p className="text-[5.5rem] font-semibold leading-none tracking-[-0.06em] tabular-nums sm:text-[7.5rem]">
+            404
+          </p>
+          <h1 className="mt-4 text-[1.75rem] font-semibold leading-tight tracking-[-0.03em] sm:text-[2.25rem]">
+            Page not found
+          </h1>
+          <p className="mx-auto mt-3 max-w-sm text-[15px] text-hero-foreground/75">
+            The link may be old, or the address may have a typo in it.
+          </p>
+          <Link
+            to="/"
+            className="mt-7 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-hero-to"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Back to Home
           </Link>
-        </p>
+        </NightSurface>
       </div>
     </section>
   );
