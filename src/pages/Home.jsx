@@ -169,14 +169,16 @@ function UpNext({ task }) {
         </>
       ) : (
         <>
-          <p className="mt-5 text-[1.625rem] font-semibold leading-[1.15] tracking-[-0.025em]">Nothing waiting</p>
-          <Link
-            to="/tasks?new=1"
-            className="mt-6 flex h-12 items-center justify-center gap-2 rounded-full border border-foreground/15 text-[15px] font-semibold transition-colors hover:bg-accent"
-          >
-            <Plus className="h-4 w-4" />
-            Add a task
-          </Link>
+          <div className="my-auto py-5 text-center">
+            <p className="text-[1.625rem] font-semibold leading-[1.15] tracking-[-0.025em]">Nothing waiting</p>
+            <Link
+              to="/tasks?new=1"
+              className="mx-auto mt-5 flex h-12 max-w-xs items-center justify-center gap-2 rounded-full border border-foreground/15 text-[15px] font-semibold transition-colors hover:bg-accent"
+            >
+              <Plus className="h-4 w-4" />
+              Add a task
+            </Link>
+          </div>
         </>
       )}
     </m.section>
