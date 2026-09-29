@@ -1,9 +1,9 @@
 import { useId } from 'react';
 
 /**
- * The mark: a square of dusk with three lines of west wind through it, the
- * middle one in apricot. The same drawing is rendered into every icon size
- * under public/, so this and the favicon never drift apart.
+ * The mark: dusk. An apricot sun half under the horizon on a square of night,
+ * the end of the working day. The same drawing is rendered into every icon
+ * size under public/, so this and the favicon never drift apart.
  */
 function ZephyrMark({ size = 32, className }) {
   const id = useId();
@@ -21,11 +21,11 @@ function ZephyrMark({ size = 32, className }) {
           <stop offset="1" stopColor="#110E24" />
         </linearGradient>
       </defs>
-      <rect width="64" height="64" rx="18" fill={`url(#${id}-dusk)`} />
-      <g fill="none" strokeLinecap="round" strokeWidth="5">
-        <path d="M15 23 C 24 17, 33 29, 45 22" stroke="#F6F1E9" />
-        <path d="M15 35 C 26 28, 37 42, 50 33" stroke="#F8A66C" />
-        <path d="M15 47 C 22 43, 29 50, 38 46" stroke="#F6F1E9" strokeOpacity="0.55" />
+      <rect width="64" height="64" rx="16" fill={`url(#${id}-dusk)`} />
+      <path d="M17 40 A 15 15 0 0 1 47 40 Z" fill="#F8A66C" />
+      <g fill="none" strokeLinecap="round" strokeWidth="4.5">
+        <path d="M12 40 H52" stroke="#F6F1E9" />
+        <path d="M22 49 H42" stroke="#F6F1E9" strokeOpacity="0.5" />
       </g>
     </svg>
   );
