@@ -645,7 +645,6 @@ const TaskList = () => {
                   value={editingTask.title}
                   onChange={(e) => setEditingTask({ ...editingTask, title: e.target.value })}
                   className="h-11 w-full text-base"
-                  placeholder="What needs doing"
                 />
               </div>
               <div className="space-y-2">
