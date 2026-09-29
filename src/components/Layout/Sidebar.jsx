@@ -112,7 +112,8 @@ function Sidebar() {
           </ul>
         </nav>
 
-        <div className="mt-auto pt-8">{pathname !== '/focus' && <FocusCard />}</div>
+        {/* The dashboard and Focus carry their own timer, so the card stands down there. */}
+        <div className="mt-auto pt-8">{pathname !== '/focus' && pathname !== '/' && <FocusCard />}</div>
       </div>
     </aside>
   );
