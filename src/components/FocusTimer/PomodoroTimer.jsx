@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import {
-  Play, Pause, SkipForward, Maximize2, RotateCcw, Plus, Trash2, Edit2, Target,
+  Play, Pause, SkipForward, Maximize2, PictureInPicture2, RotateCcw, Plus, Trash2, Edit2, Target,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { NightSurface } from '../ui/night-surface';
@@ -12,6 +12,7 @@ import { focusToday } from '../../lib/dashboard';
 import { sortByUrgency } from '../../lib/taskFilters';
 import { DEFAULT_PRESETS } from './presets';
 import FullScreenMode from './FullScreenMode';
+import { usePip } from './pip';
 import SunDial from './SunDial';
 import PresetSettingsDialog from './PresetSettingsDialog';
 import { formatTime, usePomodoro } from './usePomodoro';
@@ -60,6 +61,19 @@ const PomodoroTimer = () => {
   const [streak] = useStoreValue(readStreak);
   const streakDays = activeStreak(streak);
   const atRisk = streakAtRisk(streak);
+
+  // While Focus is open, the mini timer's button starts and pauses this timer.
+  // A ref, so the controller is handed over once, not on every tick.
+  const pip = usePip();
+  const { setController } = pip;
+  const toggleRef = useRef(toggleTimer);
+  useEffect(() => {
+    toggleRef.current = toggleTimer;
+  });
+  useEffect(() => {
+    setController({ toggle: () => toggleRef.current() });
+    return () => setController(null);
+  }, [setController]);
 
   // Today's figures come from the session log, like the dashboard's. The
   // timer's own counter is its place in the long-break rhythm and never resets.
@@ -156,16 +170,30 @@ const PomodoroTimer = () => {
               </div>
             ) : null}
           </div>
-          <button
-            ref={fullScreenButtonRef}
-            type="button"
-            onClick={() => setIsFullScreen(true)}
-            className={cn(roundControl, 'h-10 w-10')}
-            aria-label="Full screen"
-            title="Full screen (F)"
-          >
-            <Maximize2 className="h-4 w-4" />
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            {pip.supported && (
+              <button
+                type="button"
+                onClick={pip.isOpen ? pip.close : pip.open}
+                className={cn(roundControl, 'h-10 w-10')}
+                aria-label={pip.isOpen ? 'Close mini timer' : 'Mini timer'}
+                aria-pressed={pip.isOpen}
+                title={pip.isOpen ? 'Close mini timer' : 'Mini timer, on top of other windows'}
+              >
+                <PictureInPicture2 className="h-4 w-4" />
+              </button>
+            )}
+            <button
+              ref={fullScreenButtonRef}
+              type="button"
+              onClick={() => setIsFullScreen(true)}
+              className={cn(roundControl, 'h-10 w-10')}
+              aria-label="Full screen"
+              title="Full screen (F)"
+            >
+              <Maximize2 className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* The day the session is: the sun crosses the sky and sets at the end */}
