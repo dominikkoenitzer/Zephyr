@@ -175,6 +175,31 @@ test.describe('settings', () => {
   });
 });
 
+test.describe('overlays', () => {
+  const rootBg = (page) => page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor);
+
+  test('a dialog tints the reserved scrollbar edge along with the page', async ({ page }) => {
+    await seed(page);
+    await page.goto('/tasks');
+    expect(await rootBg(page)).toBe('rgba(0, 0, 0, 0)');
+    await page.keyboard.press('Control+k');
+    await expect(page.getByRole('dialog')).toBeVisible();
+    expect(await rootBg(page)).not.toBe('rgba(0, 0, 0, 0)');
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect.poll(() => rootBg(page)).toBe('rgba(0, 0, 0, 0)');
+  });
+
+  test('full screen tints the reserved scrollbar edge, and gives it back', async ({ page }) => {
+    await seed(page);
+    await page.goto('/focus');
+    await page.getByRole('button', { name: 'Full screen' }).click();
+    expect(await rootBg(page)).not.toBe('rgba(0, 0, 0, 0)');
+    await page.keyboard.press('Escape');
+    await expect.poll(() => rootBg(page)).toBe('rgba(0, 0, 0, 0)');
+  });
+});
+
 test.describe('on a phone', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
