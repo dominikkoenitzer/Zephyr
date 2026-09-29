@@ -36,7 +36,7 @@ function MobileNav() {
                   <m.span
                     layoutId="mobile-nav-active"
                     transition={{ type: 'spring', stiffness: 420, damping: 36 }}
-                    className="absolute inset-0 -z-10 rounded-full bg-linear-to-br from-hero-from to-hero-to"
+                    className="absolute inset-0 -z-10 rounded-full bg-linear-to-br from-hero-from to-hero-to dark:ring-1 dark:ring-inset dark:ring-white/12"
                   />
                 )}
                 <Icon className="h-[18px] w-[18px]" />
