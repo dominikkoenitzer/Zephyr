@@ -43,3 +43,7 @@ lerna-debug.log*
 # Coverage
 coverage
 .vercel
+
+# Browser test output
+test-results/
+playwright-report/
