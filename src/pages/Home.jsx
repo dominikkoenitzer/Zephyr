@@ -260,12 +260,7 @@ function sessionWhen(iso) {
 function RecentSessions({ sessions }) {
   return (
     <m.section variants={rise} className={panel} aria-labelledby="sessions-title">
-      <div className="flex items-center justify-between gap-3">
-        <h2 id="sessions-title" className={panelTitle}>Recent sessions</h2>
-        <Link to="/focus" className="text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground">
-          Open Focus
-        </Link>
-      </div>
+      <h2 id="sessions-title" className={panelTitle}>Recent sessions</h2>
       {sessions.length === 0 ? (
         <p className="mt-5 text-sm text-muted-foreground">No sessions yet</p>
       ) : (
