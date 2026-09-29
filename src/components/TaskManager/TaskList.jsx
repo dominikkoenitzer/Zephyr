@@ -625,7 +625,7 @@ const TaskList = () => {
       {/* Edit task dialog */}
       {editingTask && (
         <Dialog open={!!editingTask} onOpenChange={() => setEditingTask(null)}>
-          <DialogContent className="max-h-[90vh] w-[95vw] overflow-y-auto sm:max-w-md">
+          <DialogContent className="max-h-[90vh] w-[calc(100vw-1.5rem)] overflow-y-auto sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Edit task</DialogTitle>
             </DialogHeader>
