@@ -11,27 +11,27 @@ import { cva } from "class-variance-authority"
 import { cn } from "../../lib/utils"
 
 const buttonVariants = cva(
-  "btn-glow inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ring-offset-background",
+  "btn-glow inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ring-offset-background",
   {
     variants: {
       variant: {
         // Filled variants carry the sweep; it needs a solid surface to read against.
         default: "btn-shine bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
         destructive: "btn-shine bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        secondary: "btn-shine bg-secondary/85 text-secondary-foreground shadow-sm hover:bg-secondary",
+        secondary: "btn-shine bg-secondary text-secondary-foreground hover:bg-accent",
         // `outline` and `ghost` are 33 of the ~35 buttons in the app, so this is
         // the hover state that actually gets seen.
         outline:
-          "border border-input/80 bg-background/70 backdrop-blur shadow-sm hover:border-primary/45 hover:bg-accent/60 hover:text-accent-foreground hover:shadow-md",
+          "border border-foreground/15 bg-card text-foreground hover:border-foreground/30 hover:bg-accent",
         ghost:
-          "hover:bg-accent/70 hover:text-accent-foreground hover:shadow-sm",
+          "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 px-3",
-        lg: "h-11 px-8",
-        icon: "h-10 w-10",
+        default: "h-11 px-5",
+        sm: "h-9 px-4",
+        lg: "h-12 px-7 text-[15px]",
+        icon: "h-11 w-11",
       },
     },
     defaultVariants: {
