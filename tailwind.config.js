@@ -55,6 +55,7 @@ export default {
           to: "hsl(var(--hero-to))",
           foreground: "hsl(var(--hero-foreground))",
         },
+        night: "hsl(var(--night))",
         warning: {
           strong: "hsl(var(--warning-strong))",
         },
