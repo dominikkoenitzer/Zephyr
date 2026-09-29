@@ -446,6 +446,12 @@ export function usePomodoro() {
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.defaultPrevented || e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+      // Esc leaves full screen whatever has focus there, its buttons included.
+      if (e.key === 'Escape' && isFullScreen) {
+        e.preventDefault();
+        setIsFullScreen(false);
+        return;
+      }
       const tag = e.target.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON' || e.target.isContentEditable) return;
       if (document.querySelector('[role="dialog"][data-state="open"], [role="listbox"][data-state="open"]')) return;
@@ -470,12 +476,6 @@ export function usePomodoro() {
         case 'f':
           e.preventDefault();
           setIsFullScreen((full) => !full);
-          break;
-        case 'escape':
-          if (isFullScreen) {
-            e.preventDefault();
-            setIsFullScreen(false);
-          }
           break;
         default:
           break;
