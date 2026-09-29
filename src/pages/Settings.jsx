@@ -173,7 +173,7 @@ function Settings() {
                       className={cn(
                         'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-semibold transition-colors',
                         active
-                          ? 'bg-primary text-primary-foreground shadow-(--shadow-sm)'
+                          ? 'bg-hero-to bg-linear-to-br from-hero-from to-hero-to text-hero-foreground shadow-(--shadow-sm)'
                           : 'text-muted-foreground hover:text-foreground'
                       )}
                     >
