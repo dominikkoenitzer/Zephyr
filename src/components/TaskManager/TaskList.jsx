@@ -687,7 +687,7 @@ const TaskList = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-between gap-2 border-t border-border pt-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4">
                 {/* Phones never see the row's hover actions, so deleting and
                     focusing live here too. */}
                 <div className="flex items-center gap-1">
