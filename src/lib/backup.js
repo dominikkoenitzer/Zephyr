@@ -57,6 +57,7 @@ export function downloadBackup() {
   a.download = fileName;
   a.click();
   URL.revokeObjectURL(url);
+  localStorageService.saveLastBackup();
   return { fileName, keys: Object.keys(data).length };
 }
 
