@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import ShortcutsDialog from '../components/Shortcuts/ShortcutsDialog';
 import { notificationService } from '../services/notificationService';
 import { localStorageService } from '../services/localStorage';
-import { applyBackup, downloadBackup, isValidBackup, wipeAllData } from '../lib/backup';
+import { applyBackup, deleteAllData, downloadBackup, isValidBackup } from '../lib/backup';
 import { cn } from '../lib/utils';
 import { useStoreValue } from '../hooks/useStore';
 import { useTheme } from '../hooks/useTheme';
@@ -121,13 +121,11 @@ function Settings() {
 
   const handleClearAllLocalStorage = () => {
     try {
-      // Scoped on purpose: this used to finish with localStorage.clear(),
-      // which empties the whole origin rather than just what Zephyr owns.
-      localStorageService.clearAllData();
-      const removed = wipeAllData();
+      // Only what Zephyr owns, and counted before it goes (lib/backup).
+      deleteAllData();
 
       setNotificationSettings(notificationService.getSettings());
-      toast.success(`Cleared ${removed} stored item${removed === 1 ? '' : 's'}. The page will reload.`);
+      toast.success('All data deleted. Reloading.');
 
       setTimeout(() => window.location.reload(), 1600);
     } catch (error) {
