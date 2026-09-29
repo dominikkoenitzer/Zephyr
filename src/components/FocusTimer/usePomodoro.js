@@ -94,7 +94,7 @@ function readPersistedTimer() {
  * something else.
  */
 export function usePomodoro() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [restored] = useState(readPersistedTimer);
   const [timeLeft, setTimeLeft] = useState(restored.timeLeft);
   const [isRunning, setIsRunning] = useState(restored.isRunning);
@@ -278,6 +278,12 @@ export function usePomodoro() {
       setHasAutoStarted(true);
     }
   }
+
+  // Once answered, the intent leaves the address bar. Left there, `?start=1`
+  // started the timer again on every reload.
+  useEffect(() => {
+    if (intent) setSearchParams({}, { replace: true });
+  }, [intent, setSearchParams]);
 
   // The onboarding flag is a write to storage, so it waits for the commit.
   useEffect(() => {
