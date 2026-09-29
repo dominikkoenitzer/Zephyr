@@ -79,7 +79,7 @@ Email Sam tomorrow !high #work
 
 | Token | Examples | Becomes |
 |---|---|---|
-| **Date** | `today`, `tonight`, `tomorrow`, `next monday`, `friday`, `in 3 days`, `aug 5`, `12/25`, `2026-08-05` | Due date |
+| **Date** | `today`, `tonight`, `tomorrow`, `next monday`, `friday`, `in 3 days`, `aug 5`, `5 aug`, `12/25`, `2026-08-05`, with or without a `by`/`on`/`due` in front | Due date |
 | **Time** | `at 3pm`, `15:30` | Due today, or tomorrow once that time has passed. The time stays in the title |
 | **Priority** | `!high` · `!med` · `!low` (also `!h`/`!m`/`!l`, `!1`/`!2`/`!3`, `p1`/`p2`/`p3`) | Priority |
 | **Tag** | `#work`, `#family` | Tags (lowercased, de-duplicated) |
