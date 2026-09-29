@@ -1,17 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Clock, Target, Timer as TimerIcon } from 'lucide-react';
-import { toast } from 'sonner';
 import { localStorageService } from '../../services/localStorage';
-import { notificationService } from '../../services/notificationService';
-import { DEFAULT_PRESETS, normalizePresetColor, THEME_COLOR_OPTIONS, toHexColor } from './presets';
+import { DEFAULT_PRESETS, THEME_COLOR_OPTIONS, toHexColor } from './presets';
 import { ROUTE_META } from '../../routes/meta';
 
 import { formatTime } from '../../lib/time';
-import { longBreakDue as isLongBreakDue, nextPhase } from '../../lib/timer';
+import { longBreakDue as isLongBreakDue } from '../../lib/timer';
 import { useStoreValue } from '../../hooks/useStore';
-import { focusToday } from '../../lib/dashboard';
-import { mergeStoredPresets, presetsToStore } from '../../lib/presets';
+import { finishPhase, PRESETS_KEY, readPresets, SELECTED_PRESET_KEY } from '../../services/focusTimer';
+import { presetsToStore } from '../../lib/presets';
 
 // Re-exported so the Focus page keeps importing it from here.
 export { formatTime };
@@ -20,25 +18,6 @@ export { formatTime };
 // component a fresh settings object and a second render each tick.
 const readAutoStartBreaks = () => Boolean(localStorageService.getSettings()?.autoStartBreaks);
 const readAutoStartFocus = () => Boolean(localStorageService.getSettings()?.autoStartFocus);
-
-const PRESETS_KEY = 'focusTimerPresets';
-const SELECTED_PRESET_KEY = 'selectedFocusPreset';
-
-/** Saved presets: the built-ins with any stored edits, then the custom ones. */
-function readPresets() {
-  const saved = localStorage.getItem(PRESETS_KEY);
-  if (!saved) return [...DEFAULT_PRESETS];
-  try {
-    const parsed = JSON.parse(saved).map((p) => ({
-      ...p,
-      color: normalizePresetColor(p.color),
-    }));
-    return mergeStoredPresets(parsed, DEFAULT_PRESETS);
-  } catch (error) {
-    console.error('Failed to load presets:', error);
-    return [...DEFAULT_PRESETS];
-  }
-}
 
 /**
  * The persisted timer, resolved against the wall clock so a session that ran
@@ -147,113 +126,25 @@ export function usePomodoro() {
   const longBreakTime = currentPreset.longBreak;
   const sessionsUntilLongBreak = currentPreset.sessionsUntilLongBreak || 4;
 
-  const showNotification = (title, message) => {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(title, { body: message, icon: '/favicon.ico' });
-    }
-  };
-
-  const updateStreakCounters = () => {
-    const today = new Date();
-    const todayKey = today.toDateString();
-    const existing = localStorageService.getFocusStreak();
-    const lastDate = existing.lastDate ? new Date(existing.lastDate) : null;
-    let nextCount = 1;
-
-    if (lastDate) {
-      // Calendar days between the two dates, from midnight to midnight and
-      // rounded, so the 25-hour day in October does not count as two.
-      const startOfToday = new Date(today).setHours(0, 0, 0, 0);
-      const startOfLast = new Date(lastDate).setHours(0, 0, 0, 0);
-      const diff = Math.round((startOfToday - startOfLast) / (1000 * 60 * 60 * 24));
-      if (diff === 0) {
-        nextCount = existing.count || 1;
-      } else if (diff === 1) {
-        nextCount = (existing.count || 0) + 1;
-      }
-    }
-
-    localStorageService.saveFocusStreak({ count: nextCount, lastDate: todayKey });
-  };
-
-
   // `endedAt` is when the phase really ran out, which a background tab or a
   // closed one learns late; lib/timer decides what comes next from it.
   const handleComplete = useCallback((endedAt = Date.now()) => {
-    const isWorkComplete = !isBreak;
-    const next = nextPhase({
+    const next = finishPhase({
       isBreak,
       completed: sessionsCompleted,
-      every: sessionsUntilLongBreak,
-      workTime,
-      breakTime,
-      longBreakTime,
+      preset: currentPreset,
+      selectedPreset,
+      sessionTask,
       autoStartBreaks,
       autoStartFocus,
       endedAt,
-      now: Date.now(),
     });
     setSessionsCompleted(next.sessionsCompleted);
     setIsBreak(next.isBreak);
     setTimeLeft(next.timeLeft);
     setIsRunning(next.isRunning);
     setPhaseCount((n) => n + 1);
-
-    if (isWorkComplete) {
-      const sessions = localStorageService.getFocusSessions();
-      sessions.push({
-        date: new Date().toISOString(),
-        duration: workTime,
-        type: 'work',
-        task: sessionTask
-      });
-      localStorageService.saveFocusSessions(sessions);
-      const doneToday = focusToday(sessions).sessions;
-      const summary = `${doneToday} session${doneToday !== 1 ? 's' : ''} today. Time for a break.`;
-      localStorageService.saveOnboarding({ focusStarted: true });
-      updateStreakCounters();
-      localStorageService.saveLastSession({
-        presetId: selectedPreset,
-        duration: workTime,
-        task: sessionTask,
-        completedAt: new Date().toISOString()
-      });
-      notificationService.createNotification(
-        'timer',
-        'Session complete',
-        summary,
-        { type: 'navigate', path: '/focus' },
-        {},
-        // Every finished session is its own event. Without a key these fell
-        // into the 60s same-title duplicate guard, which swallowed the record
-        // and with it the chime whenever two sessions landed close together.
-        `timer:complete:${Date.now()}`
-      );
-
-      showNotification('Session complete', summary);
-
-      // An in-app toast as well as the OS notification, which the browser may
-      // have denied. When the session was tied to a task, finishing it is one
-      // click from here instead of a trip back to the task list.
-      if (sessionTask?.id) {
-        toast.success('Session complete', {
-          description: sessionTask.title,
-          duration: 8000,
-          action: {
-            label: 'Mark done',
-            onClick: () => localStorageService.updateTask(sessionTask.id, { completed: true }),
-          },
-        });
-      } else {
-        toast.success('Session complete', { description: 'Time for a break.' });
-      }
-    } else {
-      showNotification('Break over', next.isRunning ? 'The next session has started.' : 'The next session is ready when you are.');
-      // The break end writes no notification record, so its chime has to be
-      // asked for directly or the timer simply goes quiet.
-      notificationService.playChime();
-    }
-  }, [isBreak, sessionsCompleted, breakTime, longBreakTime, workTime, sessionsUntilLongBreak, selectedPreset, sessionTask, autoStartBreaks, autoStartFocus]);
+  }, [isBreak, sessionsCompleted, currentPreset, selectedPreset, sessionTask, autoStartBreaks, autoStartFocus]);
 
   // A session that ran out while the tab was closed still owes its completion
   // work: the streak, the session log and the notification. It is finished as
