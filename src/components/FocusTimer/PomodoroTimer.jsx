@@ -223,14 +223,22 @@ const PomodoroTimer = () => {
                       style={{ backgroundColor: preset.color, opacity: isSelected ? 1 : 0.45 }}
                       aria-hidden="true"
                     />
-                    <span
+                    {/* The row takes a click anywhere; the name is its button
+                        so a keyboard can choose the preset too. */}
+                    <button
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePresetChange(preset.id);
+                      }}
                       className={cn(
-                        'min-w-0 flex-1 truncate text-[15px]',
+                        'min-w-0 flex-1 truncate rounded-md text-left text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                         isSelected ? 'font-semibold text-foreground' : 'font-medium text-muted-foreground group-hover/preset:text-foreground'
                       )}
                     >
                       {preset.name}
-                    </span>
+                    </button>
 
                     <span className="relative shrink-0">
                       <span className="block rounded-full bg-card px-2.5 py-0.5 text-[12px] font-semibold tabular-nums text-foreground transition-opacity sm:group-hover/preset:opacity-0 sm:group-focus-within/preset:opacity-0">
