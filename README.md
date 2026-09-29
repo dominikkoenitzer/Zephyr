@@ -154,7 +154,7 @@ That's it. No `.env`, no database, no API keys.
 
 ```
 src/
-├── app/            # AppLayout, the shell around the top bar
+├── app/            # AppLayout: the sidebar, the top bar and the page column
 ├── components/
 │   ├── CommandPalette/ # Cmd/Ctrl+K search and commands
 │   ├── FocusTimer/ # Pomodoro timer
