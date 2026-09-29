@@ -267,7 +267,9 @@ class NotificationService {
       const dueDate = new Date(dueDateParts[0], dueDateParts[1] - 1, dueDateParts[2]);
       dueDate.setHours(0, 0, 0, 0);
 
-      const daysUntilDue = Math.floor((dueDate - today) / (1000 * 60 * 60 * 24));
+      // Rounded: across the spring clock change a day is 23 hours long, and
+      // flooring made a task due tomorrow count as due today.
+      const daysUntilDue = Math.round((dueDate - today) / (1000 * 60 * 60 * 24));
 
       // Overdue
       if (settings.tasks.overdue && daysUntilDue < 0) {
