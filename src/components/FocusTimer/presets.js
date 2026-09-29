@@ -62,9 +62,13 @@ export const normalizePresetColor = (color) => {
   return LEGACY_PRESET_COLOR_MAP[lower] || trimmed;
 };
 
+// What the colour field shows when a stored colour cannot be resolved: the
+// first preset colour, apricot.
+const FALLBACK_HEX = '#eb5f24';
+
 export const toHexColor = (inputColor) => {
   try {
-    if (!inputColor || typeof inputColor !== 'string') return '#3b82f6';
+    if (!inputColor || typeof inputColor !== 'string') return FALLBACK_HEX;
     const color = inputColor.trim();
 
     if (/^#[0-9a-f]{6}$/i.test(color)) {
@@ -77,7 +81,7 @@ export const toHexColor = (inputColor) => {
     }
 
     if (typeof window === 'undefined' || typeof document === 'undefined' || !document.body) {
-      return '#3b82f6';
+      return FALLBACK_HEX;
     }
 
     const el = document.createElement('div');
@@ -87,12 +91,12 @@ export const toHexColor = (inputColor) => {
     document.body.removeChild(el);
 
     const match = computed.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
-    if (!match) return '#3b82f6';
+    if (!match) return FALLBACK_HEX;
 
     const toHex = (n) => Number.parseInt(n, 10).toString(16).padStart(2, '0');
     return `#${toHex(match[1])}${toHex(match[2])}${toHex(match[3])}`;
   } catch {
-    return '#3b82f6';
+    return FALLBACK_HEX;
   }
 };
 
