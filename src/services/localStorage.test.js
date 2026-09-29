@@ -83,3 +83,27 @@ describe('localStorageService: view preferences', () => {
     expect(localStorageService.getViewPrefs()).toEqual({});
   });
 });
+
+describe('localStorageService: backup and storage dates', () => {
+  it('stores the last export as an ISO date and tells the open views', () => {
+    const seen = [];
+    const listen = (e) => seen.push(e.detail.key);
+    window.addEventListener(CHANGE_EVENT, listen);
+    const at = localStorageService.saveLastBackup(new Date('2026-09-29T10:00:00Z'));
+    window.removeEventListener(CHANGE_EVENT, listen);
+
+    expect(at).toBe('2026-09-29T10:00:00.000Z');
+    expect(localStorageService.getLastBackup()).toBe(at);
+    expect(seen).toEqual(['zephyr_last_backup']);
+  });
+
+  it('has no last export before the first one', () => {
+    expect(localStorageService.getLastBackup()).toBeNull();
+  });
+
+  it('remembers when it asked to keep the storage', () => {
+    expect(localStorageService.getPersistAsked()).toBeNull();
+    localStorageService.savePersistAsked(new Date('2026-09-29T10:00:00Z'));
+    expect(localStorageService.getPersistAsked()).toBe('2026-09-29T10:00:00.000Z');
+  });
+});
