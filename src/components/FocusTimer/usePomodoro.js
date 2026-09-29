@@ -263,7 +263,7 @@ export function usePomodoro() {
     if (titleParam) {
       setSessionTask({
         id: taskId || null,
-        title: decodeURIComponent(titleParam)
+        title: titleParam
       });
     } else if (searchParams.get('resume') === '1') {
       const last = localStorageService.getLastSession();
