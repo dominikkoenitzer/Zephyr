@@ -60,15 +60,13 @@ function FocusCard() {
           )}
         </>
       ) : (
-        <p className="mt-2 text-[17px] font-semibold leading-snug tracking-[-0.01em]">
-          {minutes} minutes on one thing.
-        </p>
+        <p className="mt-2 text-3xl font-semibold tabular-nums tracking-[-0.02em]">{formatTime(minutes * 60)}</p>
       )}
       <Link
         to={live ? '/focus' : '/focus?start=1'}
         className="mt-5 flex h-10 items-center justify-center rounded-full bg-hero-foreground text-sm font-semibold text-hero-to transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun"
       >
-        {running ? 'Open the timer' : paused ? 'Pick it back up' : 'Start a session'}
+        {running ? 'Open' : paused ? 'Resume' : 'Start'}
       </Link>
     </NightSurface>
   );
