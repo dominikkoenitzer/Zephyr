@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import {
   Bell, Volume2, CheckSquare, Timer, Trash2, Download, Upload,
-  Palette, Monitor, Moon, Sun, HardDrive, Keyboard,
+  Palette, Monitor, Moon, Sun, HardDrive, Keyboard, Clock, Target,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardTitle } from '../components/ui/card';
@@ -14,7 +14,7 @@ import { notificationService } from '../services/notificationService';
 import { localStorageService } from '../services/localStorage';
 import { applyBackup, deleteAllData, downloadBackup, isValidBackup } from '../lib/backup';
 import { cn } from '../lib/utils';
-import { useStoreValue } from '../hooks/useStore';
+import { useSettings, useStoreValue } from '../hooks/useStore';
 import { useTheme } from '../hooks/useTheme';
 import PageHeader from '../components/Layout/PageHeader';
 import PageContainer from '../components/Layout/PageContainer';
@@ -75,6 +75,12 @@ function Settings() {
   const { preference, setPreference } = useTheme();
   // Re-reads itself on every write, so the figure moves as you use the app.
   const [storageInfo] = useStoreValue(readStorageInfo);
+  const [settings] = useSettings();
+
+  // The timer reads these when a phase runs out (lib/timer nextPhase).
+  const handleSettingsChange = (updates) => {
+    localStorageService.saveSettings({ ...localStorageService.getSettings(), ...updates });
+  };
 
   const handleExport = () => {
     const { fileName } = downloadBackup();
@@ -252,6 +258,20 @@ function Settings() {
                 onCheckedChange={(checked) => handleNotificationSettingsChange({
                   timer: { ...notificationSettings.timer, enabled: checked }
                 })}
+              />
+            </SettingRow>
+            <SettingRow icon={Clock} title="Start breaks automatically">
+              <Checkbox
+                aria-label="Start breaks automatically"
+                checked={Boolean(settings.autoStartBreaks)}
+                onCheckedChange={(checked) => handleSettingsChange({ autoStartBreaks: checked === true })}
+              />
+            </SettingRow>
+            <SettingRow icon={Target} title="Start focus automatically">
+              <Checkbox
+                aria-label="Start focus automatically"
+                checked={Boolean(settings.autoStartFocus)}
+                onCheckedChange={(checked) => handleSettingsChange({ autoStartFocus: checked === true })}
               />
             </SettingRow>
           </div>
