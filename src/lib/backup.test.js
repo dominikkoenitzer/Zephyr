@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
-  applyBackup, backupFileName, collectBackupData, deleteAllData, isBackupKey, isValidBackup, wipeAllData,
+  applyBackup, backupFileName, collectBackupData, deleteAllData, isBackupKey, isValidBackup, lastBackupLabel,
+  shouldAskPersist, wipeAllData,
 } from './backup';
 
 beforeEach(() => {
@@ -13,6 +14,10 @@ describe('isBackupKey', () => {
       .forEach((k) => expect(isBackupKey(k)).toBe(true));
   });
 
+  it('leaves out the keys that describe this browser', () => {
+    ['zephyr_last_backup', 'zephyr_storage_persist_asked'].forEach((k) => expect(isBackupKey(k)).toBe(false));
+  });
+
   it('leaves other sites on the origin alone', () => {
     ['sentry-session', 'token', '', null, undefined].forEach((k) => expect(isBackupKey(k)).toBe(false));
   });
@@ -23,6 +28,8 @@ describe('collectBackupData', () => {
     localStorage.setItem('zephyr_tasks', '{"tasks":[]}');
     localStorage.setItem('theme', 'dark');
     localStorage.setItem('someone-elses-key', 'nope');
+
+    localStorage.setItem('zephyr_last_backup', '2026-09-28T10:00:00.000Z');
 
     const data = collectBackupData();
     expect(Object.keys(data).sort()).toEqual(['theme', 'zephyr_tasks']);
@@ -52,6 +59,12 @@ describe('applyBackup', () => {
     expect(localStorage.getItem('evil')).toBeNull();
     expect(localStorage.getItem('nested')).toBeNull();
   });
+
+  it('keeps the last export date of this browser when an old file comes in', () => {
+    localStorage.setItem('zephyr_last_backup', '2026-09-28T10:00:00.000Z');
+    applyBackup({ app: 'zephyr', data: { zephyr_last_backup: '2026-01-01T10:00:00.000Z' } });
+    expect(localStorage.getItem('zephyr_last_backup')).toBe('2026-09-28T10:00:00.000Z');
+  });
 });
 
 describe('wipeAllData', () => {
@@ -62,7 +75,10 @@ describe('wipeAllData', () => {
     localStorage.setItem('gardenTheme', '1');
     localStorage.setItem('unrelated-app', 'keep me');
 
-    expect(wipeAllData()).toBe(4);
+    localStorage.setItem('zephyr_last_backup', '1');
+
+    expect(wipeAllData()).toBe(5);
+    expect(localStorage.getItem('zephyr_last_backup')).toBeNull();
     expect(localStorage.getItem('zephyr_tasks')).toBeNull();
     expect(localStorage.getItem('gardenTheme')).toBeNull();
     expect(localStorage.getItem('unrelated-app')).toBe('keep me');
@@ -94,5 +110,54 @@ describe('deleteAllData', () => {
     deleteAllData();
     window.removeEventListener('zephyr:change', listen);
     expect(seen).toEqual([null]);
+  });
+});
+
+describe('lastBackupLabel', () => {
+  const now = new Date(2026, 8, 29, 14, 0);
+
+  it('says Never without a date', () => {
+    expect(lastBackupLabel(null, now)).toBe('Never');
+    expect(lastBackupLabel('not a date', now)).toBe('Never');
+  });
+
+  it('counts calendar days, not 24-hour stretches', () => {
+    expect(lastBackupLabel(new Date(2026, 8, 29, 9, 0).toISOString(), now)).toBe('Today');
+    expect(lastBackupLabel(new Date(2026, 8, 28, 23, 50).toISOString(), now)).toBe('Yesterday');
+    expect(lastBackupLabel(new Date(2026, 8, 26, 20, 0).toISOString(), now)).toBe('3 days ago');
+  });
+
+  it('keeps a day a day across the October clock change', () => {
+    const after = new Date(2026, 9, 26, 0, 30);
+    expect(lastBackupLabel(new Date(2026, 9, 25, 0, 30).toISOString(), after)).toBe('Yesterday');
+  });
+
+  it('moves to weeks and then months', () => {
+    expect(lastBackupLabel(new Date(2026, 8, 16).toISOString(), now)).toBe('13 days ago');
+    expect(lastBackupLabel(new Date(2026, 8, 15).toISOString(), now)).toBe('2 weeks ago');
+    expect(lastBackupLabel(new Date(2026, 5, 1).toISOString(), now)).toBe('4 months ago');
+  });
+
+  it('treats a date ahead of the clock as today', () => {
+    expect(lastBackupLabel(new Date(2026, 9, 2).toISOString(), now)).toBe('Today');
+  });
+});
+
+describe('shouldAskPersist', () => {
+  const now = new Date('2026-09-29T12:00:00Z');
+
+  it('asks when it has never asked', () => {
+    expect(shouldAskPersist({ persisted: false, permission: 'prompt', askedAt: null, now })).toBe(true);
+    expect(shouldAskPersist({ persisted: false, askedAt: 'garbage', now })).toBe(true);
+  });
+
+  it('does not ask when the storage is already kept or the answer was no', () => {
+    expect(shouldAskPersist({ persisted: true, askedAt: null, now })).toBe(false);
+    expect(shouldAskPersist({ persisted: false, permission: 'denied', askedAt: null, now })).toBe(false);
+  });
+
+  it('asks again only after a month', () => {
+    expect(shouldAskPersist({ persisted: false, askedAt: '2026-09-10T12:00:00Z', now })).toBe(false);
+    expect(shouldAskPersist({ persisted: false, askedAt: '2026-08-30T12:00:00Z', now })).toBe(true);
   });
 });

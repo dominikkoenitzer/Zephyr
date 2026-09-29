@@ -3,11 +3,23 @@
 // small envelope so a foreign JSON file can be rejected before it overwrites
 // anything.
 
+import { STORAGE_KEYS } from '../services/localStorage';
+
 // Keys that belong to the app but aren't `zephyr`-prefixed.
 export const EXTRA_BACKUP_KEYS = ['focusTimerPresets', 'selectedFocusPreset', 'theme'];
 
+/**
+ * Zephyr's keys that describe this browser, not the user's data: when this
+ * browser last exported, and when it last asked to keep its storage. They
+ * stay out of a backup, so importing an old file cannot make the last export
+ * look older or newer than it was. "Delete my data" still removes them.
+ */
+export const DEVICE_KEYS = [STORAGE_KEYS.LAST_BACKUP, STORAGE_KEYS.PERSIST_ASKED];
+
 export const isBackupKey = (key) =>
-  typeof key === 'string' && (key.startsWith('zephyr') || EXTRA_BACKUP_KEYS.includes(key));
+  typeof key === 'string'
+  && !DEVICE_KEYS.includes(key)
+  && (key.startsWith('zephyr') || EXTRA_BACKUP_KEYS.includes(key));
 
 export const BACKUP_VERSION = 1;
 
@@ -83,7 +95,7 @@ export function wipeAllData() {
   const doomed = [];
   for (let i = 0; i < localStorage.length; i += 1) {
     const key = localStorage.key(i);
-    if (isBackupKey(key) || LEGACY_KEYS.includes(key)) doomed.push(key);
+    if (isBackupKey(key) || DEVICE_KEYS.includes(key) || LEGACY_KEYS.includes(key)) doomed.push(key);
   }
   doomed.forEach((key) => localStorage.removeItem(key));
   return doomed.length;
@@ -104,4 +116,36 @@ export function deleteAllData() {
     // Outside a browser there is nothing listening.
   }
   return removed;
+}
+
+const startOfDay = (date) => new Date(date).setHours(0, 0, 0, 0);
+
+/**
+ * "Last backup" in Settings: how long ago the last export was, in calendar
+ * days (rounded, so a clock change does not add one), or "Never".
+ */
+export function lastBackupLabel(at, now = new Date()) {
+  const then = at ? new Date(at) : null;
+  if (!then || Number.isNaN(then.getTime())) return 'Never';
+  const days = Math.round((startOfDay(now) - startOfDay(then)) / 86_400_000);
+  if (days <= 0) return 'Today';
+  if (days === 1) return 'Yesterday';
+  if (days < 14) return `${days} days ago`;
+  if (days < 60) return `${Math.floor(days / 7)} weeks ago`;
+  return `${Math.floor(days / 30)} months ago`;
+}
+
+export const PERSIST_ASK_EVERY_DAYS = 30;
+
+/**
+ * Whether to ask the browser to keep Zephyr's storage through a clean-up.
+ * Not when it already does, not when the answer was no, and not more than
+ * once a month otherwise: Chromium decides quietly and may say yes later,
+ * but Firefox asks the person, and a prompt on every visit is spam.
+ */
+export function shouldAskPersist({ persisted, permission, askedAt, now = new Date() }) {
+  if (persisted || permission === 'denied') return false;
+  const asked = askedAt ? new Date(askedAt).getTime() : NaN;
+  if (Number.isNaN(asked)) return true;
+  return new Date(now).getTime() - asked >= PERSIST_ASK_EVERY_DAYS * 86_400_000;
 }
