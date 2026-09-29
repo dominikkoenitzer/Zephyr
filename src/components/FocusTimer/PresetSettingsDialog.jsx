@@ -145,7 +145,7 @@ const PresetSettingsDialog = ({
                       onPresetChange({ ...preset, color: val.toLowerCase() });
                     }
                   }}
-                  placeholder="#3b82f6"
+                  placeholder="#eb5f24"
                   className="w-full sm:max-w-[220px] font-mono uppercase"
                 />
                 <p className="text-xs text-muted-foreground">
