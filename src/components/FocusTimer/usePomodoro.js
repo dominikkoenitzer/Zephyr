@@ -189,7 +189,7 @@ export function usePomodoro() {
       });
       notificationService.createNotification(
         'timer',
-        'Session Complete',
+        'Session complete',
         `${newSessionsCompleted} session${newSessionsCompleted !== 1 ? 's' : ''} completed. Time for a break.`,
         { type: 'navigate', path: '/focus' },
         {},
@@ -199,7 +199,7 @@ export function usePomodoro() {
         `timer:complete:${Date.now()}`
       );
 
-      showNotification('Work Session Complete', `${newSessionsCompleted} session${newSessionsCompleted !== 1 ? 's' : ''} completed. Time for a break.`);
+      showNotification('Session complete', `${newSessionsCompleted} session${newSessionsCompleted !== 1 ? 's' : ''} completed. Time for a break.`);
 
       // An in-app toast as well as the OS notification, which the browser may
       // have denied. When the session was tied to a task, finishing it is one
@@ -219,7 +219,7 @@ export function usePomodoro() {
     } else {
       setIsBreak(false);
       setTimeLeft(workTime);
-      showNotification('Break Complete', 'The next session is ready when you are.');
+      showNotification('Break over', 'The next session is ready when you are.');
       // The break end writes no notification record, so its chime has to be
       // asked for directly or the timer simply goes quiet.
       notificationService.playChime();
