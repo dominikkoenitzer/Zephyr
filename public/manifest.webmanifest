@@ -56,9 +56,9 @@
   ],
   "shortcuts": [
     {
-      "name": "Home",
-      "short_name": "Home",
-      "description": "Today's list and the week so far",
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "What is due, and the week so far",
       "url": "/",
       "icons": [
         {

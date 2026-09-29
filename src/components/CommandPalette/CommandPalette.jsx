@@ -151,7 +151,7 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
     }
 
     list.push(
-      { id: 'go-home', group: 'Go to', label: 'Home', icon: House, keywords: ['dashboard', 'today'], run: () => go('/') },
+      { id: 'go-home', group: 'Go to', label: 'Dashboard', icon: House, keywords: ['home', 'today'], run: () => go('/') },
       { id: 'go-tasks', group: 'Go to', label: 'Tasks', icon: SquareCheck, keywords: ['todo', 'list'], run: () => go('/tasks') },
       { id: 'go-focus', group: 'Go to', label: 'Focus timer', icon: Timer, keywords: ['pomodoro', 'session'], run: () => go('/focus') },
       { id: 'go-settings', group: 'Go to', label: 'Settings', icon: SettingsIcon, keywords: ['preferences', 'notifications', 'data'], run: () => go('/settings') },
