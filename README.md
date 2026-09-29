@@ -58,7 +58,7 @@ Most productivity apps want an account, a subscription, and a copy of your data 
 | Feature | What it does |
 |---|---|
 | **Tasks** | Due dates, priorities and `#tags`. [Natural-language quick add](#natural-language-quick-add) understands plain English as you type. Filter by due window or tag, and the list groups itself into Overdue / Today / Tomorrow / This week / Later. |
-| **Focus Timer** | A Pomodoro timer with four built-in [presets](#focus-presets) plus your own, fully customizable durations, session tracking, and a day streak that tells you when it is about to lapse. |
+| **Focus Timer** | A Pomodoro timer drawn as a sunset: the sun crosses the sky and sets as the session ends, a moon on breaks. Four built-in [presets](#focus-presets) plus your own, session tracking, and a day streak that tells you when it is about to lapse. |
 | **Dashboard** | The day and the week at a glance: open and overdue tasks, focus time, what's up next and due soon, recent sessions and how much of the list is done. A first visit shows only what can be acted on. |
 | **Command palette** | <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> from anywhere, a phone included, searches your tasks and runs any command: new task, start a session, switch theme, export a backup. |
 | **Keyboard-first** | [Single-key shortcuts](#command-palette--keyboard) for everything you do often, and <kbd>?</kbd> prints the map. |
