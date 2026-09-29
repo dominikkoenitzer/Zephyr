@@ -1,5 +1,6 @@
 import PomodoroTimer from '../components/FocusTimer/PomodoroTimer';
 import PageContainer from '../components/Layout/PageContainer';
+import PageHeader from '../components/Layout/PageHeader';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { ROUTE_META } from '../routes/meta';
 
@@ -8,8 +9,7 @@ function FocusTimer() {
 
   return (
     <PageContainer>
-      {/* Titled by the top bar; see TasksPage. */}
-      <h1 className="sr-only">Focus timer</h1>
+      <PageHeader title="Focus" description="Pick a length, pick a task, and let the rest wait." />
       <PomodoroTimer />
     </PageContainer>
   );
