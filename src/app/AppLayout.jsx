@@ -15,6 +15,7 @@ import { requestPersistentStorage } from '../lib/backup';
 import { useAppShortcuts } from '../hooks/useAppShortcuts';
 import { usePwaUpdate } from '../hooks/usePwaUpdate';
 import { useTimerWatch } from '../hooks/useTimerWatch';
+import { PipProvider } from '../components/FocusTimer/MiniTimer';
 
 const THEME_LABEL = { light: 'Light theme', dark: 'Dark theme', system: 'Matching your system' };
 
@@ -78,6 +79,7 @@ function AppLayout() {
   return (
     <LazyMotion features={domMax} strict>
       <MotionConfig reducedMotion="user">
+        <PipProvider>
         <div className="min-h-dvh bg-background transition-colors duration-300">
           {/* Keyboard / screen-reader users can jump straight to the content */}
           <a
@@ -127,6 +129,7 @@ function AppLayout() {
           <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
           <Toaster />
         </div>
+        </PipProvider>
       </MotionConfig>
     </LazyMotion>
   );
