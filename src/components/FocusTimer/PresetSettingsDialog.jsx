@@ -30,9 +30,6 @@ const PresetSettingsDialog = ({
       <DialogHeader>
         <div className="px-5 pt-6 pb-2 sm:px-7 sm:pt-7">
           <DialogTitle>Edit timer preset</DialogTitle>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-            Set the four durations and pick a color for the ring.
-          </p>
         </div>
       </DialogHeader>
       {preset && (
