@@ -94,7 +94,7 @@ Single keys work whenever you're not typing in a field:
 | <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> · <kbd>/</kbd> | Command palette |
 | <kbd>N</kbd> | New task |
 | <kbd>T</kbd> | Cycle light → dark → system |
-| <kbd>G</kbd> then <kbd>H</kbd>/<kbd>T</kbd>/<kbd>F</kbd>/<kbd>S</kbd> | Go to Home / Tasks / Focus / Settings |
+| <kbd>G</kbd> then <kbd>H</kbd>/<kbd>T</kbd>/<kbd>F</kbd>/<kbd>S</kbd> | Go to Dashboard / Tasks / Focus / Settings |
 | <kbd>?</kbd> | The full list |
 
 On the focus timer: <kbd>Space</kbd> starts and pauses, <kbd>R</kbd> resets, <kbd>S</kbd> skips, <kbd>F</kbd> goes full screen.
