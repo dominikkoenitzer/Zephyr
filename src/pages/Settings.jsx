@@ -149,9 +149,12 @@ function Settings() {
         title="Settings"
       />
 
-      <div className="grid grid-cols-1 items-start gap-(--panel-gap) xl:grid-cols-2">
+      {/* Two columns that stack on their own, so a tall card never leaves a
+          gap under its neighbour. On a phone the cards read in page order. */}
+      <div className="flex flex-col gap-(--panel-gap) xl:grid xl:grid-cols-2 xl:items-start">
+        <div className="contents xl:flex xl:flex-col xl:gap-(--panel-gap)">
         {/* Appearance */}
-        <Card className="p-6">
+        <Card className="order-1 p-6 xl:order-none">
           <SettingsCardTitle icon={Palette}>Appearance</SettingsCardTitle>
           <div className="mt-4 -mx-3 space-y-1">
             <SettingRow
@@ -201,8 +204,55 @@ function Settings() {
           </div>
         </Card>
 
+        {/* Data */}
+        <Card className="order-4 p-6 xl:order-none">
+          <SettingsCardTitle icon={HardDrive}>Data</SettingsCardTitle>
+          <div className="mt-4 -mx-3 space-y-1">
+            <SettingRow icon={Download} title="Backup" description={`Last backup: ${lastBackupLabel(lastBackup)}`}>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={cn(pill, 'bg-accent tabular-nums text-muted-foreground')}>
+                  {storageInfo.totalSizeFormatted || '0 Bytes'}
+                </span>
+                <Button variant="outline" size="sm" onClick={handleExport}>
+                  <Download className="h-4 w-4" />
+                  Export
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => importInputRef.current?.click()}>
+                  <Upload className="h-4 w-4" />
+                  Import
+                </Button>
+                <input
+                  ref={importInputRef}
+                  type="file"
+                  accept="application/json,.json"
+                  className="hidden"
+                  aria-label="Import a Zephyr backup file"
+                  onChange={handleImportFile}
+                />
+              </div>
+            </SettingRow>
+            <SettingRow icon={Trash2} title="Delete all data">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowClearDialog(true);
+                }}
+                className="border-destructive/30 text-destructive-strong hover:border-destructive/50 hover:bg-destructive/10"
+              >
+                Delete
+              </Button>
+            </SettingRow>
+          </div>
+        </Card>
+        </div>
+
+        <div className="contents xl:flex xl:flex-col xl:gap-(--panel-gap)">
         {/* Notifications */}
-        <Card className="p-6 xl:row-span-2">
+        <Card className="order-2 p-6 xl:order-none">
           <SettingsCardTitle icon={Bell}>Notifications</SettingsCardTitle>
           <div className="mt-4 -mx-3 space-y-1">
             <SettingRow icon={Bell} title="On">
@@ -262,6 +312,13 @@ function Settings() {
                 })}
               />
             </SettingRow>
+          </div>
+        </Card>
+
+        {/* Focus timer */}
+        <Card className="order-3 p-6 xl:order-none">
+          <SettingsCardTitle icon={Timer}>Focus timer</SettingsCardTitle>
+          <div className="mt-4 -mx-3 space-y-1">
             <SettingRow icon={Clock} title="Start breaks automatically">
               <Checkbox
                 aria-label="Start breaks automatically"
@@ -278,51 +335,7 @@ function Settings() {
             </SettingRow>
           </div>
         </Card>
-
-        {/* Data */}
-        <Card className="p-6">
-          <SettingsCardTitle icon={HardDrive}>Data</SettingsCardTitle>
-          <div className="mt-4 -mx-3 space-y-1">
-            <SettingRow icon={Download} title="Backup" description={`Last backup: ${lastBackupLabel(lastBackup)}`}>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className={cn(pill, 'bg-accent tabular-nums text-muted-foreground')}>
-                  {storageInfo.totalSizeFormatted || '0 Bytes'}
-                </span>
-                <Button variant="outline" size="sm" onClick={handleExport}>
-                  <Download className="h-4 w-4" />
-                  Export
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => importInputRef.current?.click()}>
-                  <Upload className="h-4 w-4" />
-                  Import
-                </Button>
-                <input
-                  ref={importInputRef}
-                  type="file"
-                  accept="application/json,.json"
-                  className="hidden"
-                  aria-label="Import a Zephyr backup file"
-                  onChange={handleImportFile}
-                />
-              </div>
-            </SettingRow>
-            <SettingRow icon={Trash2} title="Delete all data">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowClearDialog(true);
-                }}
-                className="border-destructive/30 text-destructive-strong hover:border-destructive/50 hover:bg-destructive/10"
-              >
-                Delete
-              </Button>
-            </SettingRow>
-          </div>
-        </Card>
+        </div>
       </div>
 
       {/* Clear confirmation */}
