@@ -150,6 +150,7 @@ That's it. No `.env`, no database, no API keys.
 | `bun run preview` | Serve the production build, also on [http://localhost:1000](http://localhost:1000) |
 | `bun run lint` | Run ESLint (`--max-warnings 0`, so warnings fail) |
 | `bun run test` | Run the Vitest unit suite |
+| `bun run e2e` | Build, serve and run the Playwright browser tests |
 
 ## Project structure
 
