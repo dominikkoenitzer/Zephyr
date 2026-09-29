@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { localStorageService } from '../../services/localStorage';
 import { notificationService } from '../../services/notificationService';
 import { DEFAULT_PRESETS, normalizePresetColor, THEME_COLOR_OPTIONS, toHexColor } from './presets';
+import { ROUTE_META } from '../../routes/meta';
 
 /** mm:ss for a duration in seconds. */
 export const formatTime = (seconds) => {
@@ -343,13 +344,15 @@ export function usePomodoro() {
 
   // Show the countdown in the browser tab while a session is running, so
   // the timer stays visible when you switch tabs to do the actual work.
-  // (Navigating to another route re-runs usePageMeta, which resets the title.)
+  // Pausing puts back the Focus page's own title. It used to put back
+  // whatever title was there when the countdown began, and arriving from Help
+  // with a session running left the Focus page called "Help & FAQ".
   useEffect(() => {
     if (isRunning) {
-      if (originalTitleRef.current === null) originalTitleRef.current = document.title;
+      originalTitleRef.current = true;
       document.title = `${formatTime(timeLeft)} · ${isBreak ? 'Break' : 'Focus'} | Zephyr`;
-    } else if (originalTitleRef.current !== null) {
-      document.title = originalTitleRef.current;
+    } else if (originalTitleRef.current) {
+      document.title = ROUTE_META['/focus'].title;
       originalTitleRef.current = null;
     }
   }, [isRunning, timeLeft, isBreak]);
