@@ -9,7 +9,7 @@ import { cn } from '../../lib/utils';
  * it is one CSS transform and the one-second ticks glide instead of jumping.
  * Children (the clock) sit inside the dome.
  */
-function SunDial({ progress = 0, isBreak = false, className, children }) {
+function SunDial({ progress = 0, isBreak = false, running = false, className, children }) {
   const id = useId();
   const p = Math.min(100, Math.max(0, progress));
   const angle = (p / 100) * 180;
@@ -63,7 +63,13 @@ function SunDial({ progress = 0, isBreak = false, className, children }) {
             transition: 'transform 1s linear',
           }}
         >
-          <circle cx="30" cy="200" r="34" fill={`url(#${id}-glow)`} />
+          <circle
+            cx="30"
+            cy="200"
+            r="34"
+            fill={`url(#${id}-glow)`}
+            className={running ? 'motion-safe:animate-[sun-breathe_3.2s_ease-in-out_infinite]' : undefined}
+          />
           <circle cx="30" cy="200" r="13" fill={body} mask={isBreak ? `url(#${id}-crescent)` : undefined} />
         </g>
       </svg>
