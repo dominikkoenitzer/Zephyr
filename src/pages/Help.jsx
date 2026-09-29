@@ -44,7 +44,7 @@ function Help() {
     },
     {
       question: "Can I customize timer durations?",
-      answer: "Yes. Zephyr ships presets for Pomodoro, Short Focus, Deep Work and Meditation, and you can add your own with whatever work, short break and long break durations you want. On the Focus page, pick a preset from the list on the right; hover one to rename or retime it, or use the New preset button to add another.",
+      answer: "Yes. Zephyr ships presets for Pomodoro, Short Focus, Deep Work and Meditation, and you can add your own with whatever work, short break and long break durations you want. On the Focus page, pick a preset from the Presets card; hover one to edit it, or press New to add another.",
       icon: Settings,
       iconColor: "text-primary-strong",
       bgColor: "bg-primary/10"
