@@ -212,8 +212,8 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
         onClick={openPicker}
         onKeyDown={handleTriggerKeyDown}
         className={cn(
-          "flex h-11 w-full items-center gap-2 rounded-xl border border-border/70 bg-background/80 px-3 py-2",
-          "shadow-sm transition-colors hover:border-primary/60 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+          "flex h-11 w-full items-center gap-2 rounded-2xl bg-accent px-4 py-2 text-sm font-medium",
+          "transition-colors hover:bg-accent/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
           // Room for the clear button, which overlays the trigger rather than
           // sitting inside it.
           selectedDate && "pr-11",
@@ -254,7 +254,7 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
             onClick={() => setIsOpen(false)}
           />
           <div
-            className="fixed z-50 rounded-2xl border border-border/60 bg-background shadow-2xl ring-1 ring-border/60 max-h-[calc(100vh-1rem)] overflow-y-auto"
+            className="fixed z-50 max-h-[calc(100vh-1rem)] overflow-y-auto rounded-3xl bg-popover shadow-(--shadow-overlay)"
             style={{
               top: panelPosition.top,
               left: panelPosition.left,
@@ -288,7 +288,7 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
             <div className="mt-4 px-4 pb-4">
               <div className="grid grid-cols-7 gap-1.5 text-[11px] font-medium text-muted-foreground/80">
                 {DAYS.map((day) => (
-                  <div key={day} className="text-center uppercase tracking-wide">
+                  <div key={day} className="text-center font-semibold">
                     {day}
                   </div>
                 ))}
@@ -301,10 +301,10 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
                     key={date.toISOString()}
                     onClick={() => handleDateSelect(date)}
                     className={cn(
-                      "relative flex aspect-square items-center justify-center rounded-lg text-sm font-semibold transition-all",
+                      "relative flex aspect-square items-center justify-center rounded-full text-sm font-semibold transition-all",
                       inCurrentMonth ? "text-foreground" : "text-muted-foreground/50",
                       "hover:bg-accent hover:text-accent-foreground",
-                      isToday(date) && !isSelected(date) && "ring-1 ring-primary/60 text-primary",
+                      isToday(date) && !isSelected(date) && "bg-primary/10 text-primary-strong",
                       isSelected(date) && "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
                     )}
                   >
@@ -316,7 +316,7 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
                 ))}
               </div>
 
-              <div className="mt-4 flex flex-col gap-2 border-t border-border/60 pt-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mt-4 flex flex-col gap-2 border-t border-border pt-3 sm:flex-row sm:items-center sm:justify-between">
                 <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={goToToday}>
                   Today
                 </Button>
