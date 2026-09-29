@@ -161,9 +161,6 @@ const PomodoroTimer = () => {
             </p>
           </SunDial>
         </div>
-        <p className="-mt-2 mb-6 text-center text-sm font-medium text-hero-foreground/65">
-          {Math.round(progress)}% through
-        </p>
 
         {/* Controls */}
         <div className="flex items-center justify-center gap-4">
@@ -190,12 +187,6 @@ const PomodoroTimer = () => {
             <SkipForward className="h-5 w-5" />
           </button>
         </div>
-
-        {currentPreset.description && (
-          <p className="mx-auto mt-6 max-w-md text-center text-[13px] leading-relaxed text-hero-foreground/65">
-            {currentPreset.description}
-          </p>
-        )}
       </NightSurface>
 
       <div className="space-y-(--panel-gap) xl:col-span-4">
