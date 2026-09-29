@@ -13,15 +13,18 @@ bun run dev        # http://localhost:1000
 
 ## Before you open a pull request
 
-Run the same gate CI runs. All three have to pass:
+Run the same gate CI runs. All four have to pass:
 
 ```bash
 bun run lint       # --max-warnings 0, so warnings fail too
 bun run test
 bun run build
+bun run e2e        # Playwright against the production build
 ```
 
-Tests are Vitest + jsdom and cover the pure logic (`quickParse`, `localStorageService`, `searchService`). Prefer testing pure functions there; verify UI flows by actually running the app.
+Unit tests are Vitest + jsdom and cover the pure logic in `src/lib` and `src/services` (quick add, task filters, the dashboard figures, the timer rules, backups, storage, search, notifications). Put new behaviour there, with a test next to it.
+
+The browser tests in `e2e/` open the built app and check what a unit test cannot see: every page in both themes at desktop and phone width (errors, overflow, colours outside the palette, stale copy, accessibility with axe), and the timer, task and delete flows. When a mistake gets through, add a test that fails on it, and check that it does by putting the mistake back.
 
 ## Code style
 
