@@ -78,6 +78,22 @@ test.describe('the focus timer', () => {
     expect(new Date(loggedAt).toDateString()).toBe(yesterday.toDateString());
   });
 
+  test('a break that already ran out unseen is not announced', async ({ page }) => {
+    await seed(page, {
+      sessions: [],
+      extra: {
+        zephyr_settings: JSON.stringify({ autoStartBreaks: true }),
+        zephyr_timer_state: JSON.stringify({
+          timeLeft: 60, isRunning: true, isBreak: false, pomodorosCompleted: 0,
+          workTime: 1500, breakTime: 300, longBreakTime: 900, focusTask: null, lastSaved: Date.now() - 3600_000,
+        }),
+      },
+    });
+    await page.goto('/focus');
+    await expect(page.getByText('Ready for the next one.')).toBeVisible();
+    await expect(page.getByText('Time for a break.')).toHaveCount(0);
+  });
+
   test('So far counts today, from the session log', async ({ page }) => {
     await seed(page, {
       extra: {
