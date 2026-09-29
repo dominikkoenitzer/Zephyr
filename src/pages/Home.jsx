@@ -82,16 +82,11 @@ function StatCard({ to, label, value, note, lead = false }) {
 
 /* ---------------------------------------------------------- week chart */
 
-function WeekChart({ days, total }) {
+function WeekChart({ days }) {
   const max = Math.max(60, ...days.map((d) => d.minutes));
   return (
     <m.section variants={rise} className={cn(panel, 'flex flex-col')} aria-labelledby="week-title">
-      <div className="flex items-baseline justify-between gap-4">
-        <h2 id="week-title" className={panelTitle}>Focus this week</h2>
-        <p className="text-sm text-muted-foreground">
-          <span className="font-semibold text-foreground">{formatMinutes(total)}</span> so far
-        </p>
-      </div>
+      <h2 id="week-title" className={panelTitle}>Focus this week</h2>
 
       <ol className="mt-6 grid flex-1 grid-cols-7 items-end gap-2 sm:gap-4" aria-label="Minutes focused per day">
         {days.map((d) => {
@@ -497,7 +492,7 @@ function Home() {
 
         <m.div variants={stagger} className="grid grid-cols-1 gap-(--panel-gap) md:grid-cols-2 xl:grid-cols-12">
           <div className="md:col-span-2 xl:col-span-6 [&>*]:h-full">
-            <WeekChart days={week} total={stats.focusMinutes} />
+            <WeekChart days={week} />
           </div>
           <div className="xl:col-span-3 [&>*]:h-full">
             <UpNext task={next} />
