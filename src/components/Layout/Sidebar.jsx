@@ -102,7 +102,7 @@ function Sidebar() {
             ))}
           </ul>
 
-          <p className="mb-2 mt-8 px-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">General</p>
+          <p className="mb-2 mt-8 px-3.5 text-[13px] font-semibold text-muted-foreground">General</p>
           <ul className="space-y-1">
             {GENERAL.map((item) => (
               <li key={item.href}>
