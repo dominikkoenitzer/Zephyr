@@ -246,15 +246,18 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
         </button>
       )}
 
+      {/* Portalled to the body, which a modal Radix dialog sets to
+          pointer-events: none; both layers opt back in, or a date inside the
+          task editor cannot be clicked and the click closes the dialog. */}
       {isOpen && typeof document !== "undefined" && createPortal(
         <>
           <div
-            className="fixed inset-0 z-40"
+            className="pointer-events-auto fixed inset-0 z-40"
             aria-hidden="true"
             onClick={() => setIsOpen(false)}
           />
           <div
-            className="fixed z-50 max-h-[calc(100vh-1rem)] overflow-y-auto rounded-3xl bg-popover shadow-(--shadow-overlay)"
+            className="pointer-events-auto fixed z-50 max-h-[calc(100vh-1rem)] overflow-y-auto rounded-3xl bg-popover shadow-(--shadow-overlay)"
             style={{
               top: panelPosition.top,
               left: panelPosition.left,
