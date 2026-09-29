@@ -7,12 +7,10 @@ import { notificationService } from '../../services/notificationService';
 import { DEFAULT_PRESETS, normalizePresetColor, THEME_COLOR_OPTIONS, toHexColor } from './presets';
 import { ROUTE_META } from '../../routes/meta';
 
-/** mm:ss for a duration in seconds. */
-export const formatTime = (seconds) => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-};
+import { formatTime } from '../../lib/time';
+
+// Re-exported so the Focus page keeps importing it from here.
+export { formatTime };
 
 const PRESETS_KEY = 'focusTimerPresets';
 const SELECTED_PRESET_KEY = 'selectedFocusPreset';
