@@ -102,6 +102,8 @@ function WeekChart({ days }) {
                   transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
                   className={cn(
                     'relative w-full max-w-12 rounded-full',
+                    // Never shorter than it is wide, or a short day draws a dot.
+                    !empty && 'min-h-14',
                     empty
                       ? cn('border-2 border-dashed', d.isToday ? 'border-primary/60' : 'border-border')
                       : d.isToday
@@ -148,6 +150,9 @@ function UpNext({ task }) {
           >
             {task.title}
           </Link>
+          {task.description?.trim() && (
+            <p className="mt-2 line-clamp-2 text-[14px] leading-snug text-muted-foreground">{task.description}</p>
+          )}
           <div className="mt-3 flex flex-wrap gap-1.5">
             <Chip className={late ? 'bg-destructive/10 text-destructive-strong' : 'bg-accent text-foreground'}>
               {dueLabel(task.dueDate)}
