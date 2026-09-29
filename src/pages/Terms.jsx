@@ -14,7 +14,6 @@ function Terms() {
     <PageContainer>
       <PageHeader
         title="Terms of Service"
-        description="The terms for using Zephyr, and the legal notices"
       />
 
       <div className="grid grid-cols-1 items-start gap-(--panel-gap) xl:grid-cols-5">
