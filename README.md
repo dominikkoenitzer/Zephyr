@@ -50,7 +50,7 @@ Most productivity apps want an account, a subscription, and a copy of your data 
 - **Local-first.** Every task and focus session lives in your browser's `localStorage`. Nothing is ever uploaded.
 - **No login.** Open the app and start. There is no sign-up flow because there is no server.
 - **Works offline.** Zephyr is an installable Progressive Web App. Install it and it keeps working without a connection, and when a new version ships it asks before reloading instead of swapping itself out mid-session.
-- **Fast and distraction-free.** Two screens, a keyboard-first interface, and light, dark or system themes.
+- **Fast and distraction-free.** A dashboard, a list and a timer, a keyboard-first interface, and light, dark or system themes.
 - **Small on purpose.** Notes, a journal and a calendar all lived here once and were removed. What is left is the part people actually used.
 
 ## Features
