@@ -195,4 +195,14 @@ test.describe('on a phone', () => {
     expect(box.x + box.width).toBeLessThanOrEqual(390);
     await expect(dialog.getByRole('button', { name: 'Save' })).toBeInViewport();
   });
+
+  test('the filter row shows which way it goes on', async ({ page }) => {
+    await seed(page);
+    await page.goto('/tasks');
+    const row = page.getByRole('group', { name: 'Filter tasks' });
+    await expect(row).toHaveAttribute('data-more-right', '');
+    await row.evaluate((el) => el.scrollTo({ left: el.scrollWidth }));
+    await expect(row).toHaveAttribute('data-more-left', '');
+    await expect(row).not.toHaveAttribute('data-more-right', '');
+  });
 });
