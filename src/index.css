@@ -21,13 +21,15 @@
     --primary-foreground: 0 0% 100%;
     /* Primary as text on its own tint: one step darker so it clears 4.5:1. */
     --primary-strong: 16 84% 38%;
-    /* The light apricot the charts and the wind lines use next to it. */
-    --primary-soft: 24 92% 72%;
     /* The night surfaces (the lead stat, the timer, the sidebar card) are dark
        in both modes, so they get their own pair instead of borrowing a token. */
     --hero-from: 247 36% 25%;
     --hero-to: 249 44% 10%;
     --hero-foreground: 36 30% 97%;
+    /* The sun on the night surfaces (the timer, the wind's apricot line). The
+       surfaces are dark in both modes, so it never changes with the theme.
+       The light end of the charts' apricot gradient uses it too. */
+    --sun: 24 92% 72%;
     /* Indigo as data (chart bars, the open arc) rather than as a surface. The
        dark theme lifts it, because night on night disappears. */
     --night: 247 36% 27%;
@@ -102,7 +104,6 @@
     --primary: 20 90% 62%;
     --primary-foreground: 249 44% 8%;
     --primary-strong: 22 92% 68%;
-    --primary-soft: 18 60% 40%;
     --hero-from: 247 34% 22%;
     --hero-to: 250 42% 8%;
     --hero-foreground: 36 30% 97%;

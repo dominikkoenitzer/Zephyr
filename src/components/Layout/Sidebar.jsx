@@ -65,7 +65,7 @@ function FocusCard() {
       )}
       <Link
         to={running ? '/focus' : '/focus?start=1'}
-        className="mt-5 flex h-10 items-center justify-center rounded-full bg-hero-foreground text-sm font-semibold text-hero-to transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-soft"
+        className="mt-5 flex h-10 items-center justify-center rounded-full bg-hero-foreground text-sm font-semibold text-hero-to transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun"
       >
         {running ? 'Open the timer' : 'Start a session'}
       </Link>

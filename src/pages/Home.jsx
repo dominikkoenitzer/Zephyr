@@ -109,7 +109,7 @@ function WeekChart({ days, total }) {
                     empty
                       ? cn('border-2 border-dashed', d.isToday ? 'border-primary/60' : 'border-border')
                       : d.isToday
-                        ? 'bg-linear-to-t from-primary to-primary-soft'
+                        ? 'bg-linear-to-t from-primary to-sun'
                         : 'bg-night'
                   )}
                 >
@@ -395,7 +395,7 @@ function TimerCard({ timer, defaultMinutes }) {
           <Link
             to={running ? '/focus' : '/focus?start=1'}
             aria-label={running ? 'Open the running timer' : 'Start the timer'}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-hero-foreground text-hero-to transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-soft"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-hero-foreground text-hero-to transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun"
           >
             {running ? <Pause className="h-5 w-5" /> : <Play className="ml-0.5 h-5 w-5" />}
           </Link>

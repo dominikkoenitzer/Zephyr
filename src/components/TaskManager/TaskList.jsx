@@ -518,7 +518,7 @@ const TaskList = () => {
                   initial={{ width: 0 }}
                   animate={{ width: `${donePct}%` }}
                   transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-                  className="h-full rounded-full bg-linear-to-r from-primary to-primary-soft"
+                  className="h-full rounded-full bg-linear-to-r from-primary to-sun"
                 />
               </div>
               <ul className="mt-5 space-y-0.5">
