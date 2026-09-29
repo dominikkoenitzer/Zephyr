@@ -4,8 +4,8 @@
   "description": "A to-do list and Pomodoro focus timer that runs in your browser. There is no account and no server, and it works offline.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#f0eeea",
+  "theme_color": "#f0eeea",
   "scope": "/",
   "icons": [
     {
