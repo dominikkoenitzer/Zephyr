@@ -48,7 +48,6 @@ export default {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
           strong: "hsl(var(--primary-strong))",
-          soft: "hsl(var(--primary-soft))",
         },
         hero: {
           from: "hsl(var(--hero-from))",
@@ -56,6 +55,7 @@ export default {
           foreground: "hsl(var(--hero-foreground))",
         },
         night: "hsl(var(--night))",
+        sun: "hsl(var(--sun))",
         warning: {
           strong: "hsl(var(--warning-strong))",
         },
