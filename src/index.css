@@ -164,6 +164,16 @@
     scrollbar-gutter: stable;
     font-size: clamp(16px, 0.7vw, 19px);
   }
+
+  /* No overlay can paint the reserved gutter; only the root's own background
+     shows there. While a dialog dims the page, or full screen covers it, the
+     root takes the same colour, so no light strip is left at the right edge. */
+  html:has([data-dim][data-state='open']) {
+    background-color: color-mix(in srgb, hsl(var(--background)), hsl(var(--hero-to)) 35%);
+  }
+  html[data-fullscreen] {
+    background-color: color-mix(in srgb, hsl(var(--hero-from)) 40%, hsl(var(--hero-to)));
+  }
   
   body {
     min-height: 100vh;
