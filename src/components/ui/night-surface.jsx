@@ -29,7 +29,7 @@ function NightSurface({ as: Tag = 'div', className, children, ...props }) {
   return (
     <Tag
       className={cn(
-        'relative isolate overflow-hidden rounded-3xl bg-linear-to-br from-hero-from to-hero-to text-hero-foreground',
+        'relative isolate overflow-hidden rounded-3xl bg-linear-to-br from-hero-from to-hero-to text-hero-foreground dark:ring-1 dark:ring-inset dark:ring-white/8',
         className
       )}
       {...props}
