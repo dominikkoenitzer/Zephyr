@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import ShortcutsDialog from '../components/Shortcuts/ShortcutsDialog';
 import { notificationService } from '../services/notificationService';
 import { localStorageService } from '../services/localStorage';
-import { applyBackup, deleteAllData, downloadBackup, isValidBackup } from '../lib/backup';
+import { applyBackup, deleteAllData, downloadBackup, isValidBackup, lastBackupLabel } from '../lib/backup';
 import { cn } from '../lib/utils';
 import { useSettings, useStoreValue } from '../hooks/useStore';
 import { useTheme } from '../hooks/useTheme';
@@ -28,6 +28,7 @@ const THEME_OPTIONS = [
 ];
 
 const readStorageInfo = () => localStorageService.getStorageInfo();
+const readLastBackup = () => localStorageService.getLastBackup();
 
 const pill = 'rounded-full bg-card px-2.5 py-0.5 text-[12px] font-semibold text-foreground';
 
@@ -76,6 +77,7 @@ function Settings() {
   // Re-reads itself on every write, so the figure moves as you use the app.
   const [storageInfo] = useStoreValue(readStorageInfo);
   const [settings] = useSettings();
+  const [lastBackup] = useStoreValue(readLastBackup);
 
   // The timer reads these when a phase runs out (lib/timer nextPhase).
   const handleSettingsChange = (updates) => {
@@ -281,7 +283,7 @@ function Settings() {
         <Card className="p-6">
           <SettingsCardTitle icon={HardDrive}>Data</SettingsCardTitle>
           <div className="mt-4 -mx-3 space-y-1">
-            <SettingRow icon={Download} title="Backup">
+            <SettingRow icon={Download} title="Backup" description={`Last backup: ${lastBackupLabel(lastBackup)}`}>
               <div className="flex flex-wrap items-center gap-2">
                 <span className={cn(pill, 'bg-accent tabular-nums text-muted-foreground')}>
                   {storageInfo.totalSizeFormatted || '0 Bytes'}
