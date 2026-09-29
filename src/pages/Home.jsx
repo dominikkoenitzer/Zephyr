@@ -387,7 +387,7 @@ function TimerCard({ timer, defaultMinutes }) {
           </span>
         </div>
         <div className="mt-auto pt-4">
-          <SunDial progress={progress} isBreak={Boolean(timer?.isBreak)}>
+          <SunDial progress={progress} isBreak={Boolean(timer?.isBreak)} running={running}>
             <p className="text-[2.25rem] font-semibold leading-none tracking-[-0.03em] tabular-nums">{formatTime(seconds)}</p>
           </SunDial>
         </div>
