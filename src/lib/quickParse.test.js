@@ -67,6 +67,20 @@ describe('parseQuickTask', () => {
     expect(parseQuickTask('Trip 12/25').dueDate).toMatch(/-12-25$/);
   });
 
+  it('leaves days that do not exist in the title instead of rolling them over', () => {
+    expect(parseQuickTask('Pay 2/30')).toMatchObject({ dueDate: null, title: 'Pay 2/30' });
+    expect(parseQuickTask('Party 25/12').dueDate).toBeNull();
+    expect(parseQuickTask('Ship 2030-02-30').dueDate).toBeNull();
+    expect(parseQuickTask('Call feb 31').dueDate).toBeNull();
+  });
+
+  it('moves a yearless M/D that has passed to next year, like a month name', () => {
+    const past = todayStart();
+    past.setDate(past.getDate() - 3);
+    const r = parseQuickTask(`Renew ${past.getMonth() + 1}/${past.getDate()}`);
+    expect(r.dueDate).toBe(`${past.getFullYear() + 1}-${pad(past.getMonth() + 1)}-${pad(past.getDate())}`);
+  });
+
   it('parses a combined quick-add string', () => {
     const r = parseQuickTask('Email Sam tomorrow !high #work');
     expect(r.title).toBe('Email Sam');
