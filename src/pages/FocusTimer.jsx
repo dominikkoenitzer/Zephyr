@@ -9,7 +9,7 @@ function FocusTimer() {
 
   return (
     <PageContainer>
-      <PageHeader title="Focus" description="Pick a length, pick a task, and let the rest wait." />
+      <PageHeader title="Focus" />
       <PomodoroTimer />
     </PageContainer>
   );
