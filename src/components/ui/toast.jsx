@@ -2,7 +2,8 @@ import { Toaster as SonnerToaster } from "sonner"
 
 const Toaster = () => (
   <SonnerToaster
-    richColors
+    // No richColors: it paints success green and error red onto the icon and
+    // the close button, and green is not a colour this app has.
     closeButton
     position="bottom-right"
     // On phones the nav floats at the bottom; toasts sit above it.
@@ -15,6 +16,8 @@ const Toaster = () => (
         description: "text-muted-foreground",
         actionButton: "!rounded-full !bg-primary !px-3 !font-semibold !text-primary-foreground",
         cancelButton: "!rounded-full !bg-accent !text-foreground",
+        closeButton: "!border-0 !bg-accent !text-muted-foreground hover:!text-foreground",
+        icon: "!text-primary-strong",
       },
     }}
   />
