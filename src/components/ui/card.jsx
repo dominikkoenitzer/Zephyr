@@ -1,13 +1,12 @@
 import * as React from "react"
 import { cn } from "../../lib/utils"
 
-// A quiet grouping, not a floating tile: a hairline edge and a flat surface,
-// with no translucency, blur or drop shadow. Emphasis on these pages comes from
-// type and whitespace, so a card should barely register.
+// A white card on the stone ground: large radius, no border, the faintest lift.
+// The ground does the separating, so the card itself stays plain.
 const Card = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("rounded-xl border border-border bg-card text-card-foreground", className)}
+    className={cn("rounded-3xl bg-card text-card-foreground shadow-(--shadow-card)", className)}
     {...props}
   />
 ))
@@ -21,7 +20,7 @@ CardHeader.displayName = "CardHeader"
 const CardTitle = React.forwardRef(({ className, ...props }, ref) => (
   <h2
     ref={ref}
-    className={cn("text-[11px] font-medium uppercase leading-none tracking-[0.22em] text-muted-foreground", className)}
+    className={cn("text-[17px] font-semibold leading-tight tracking-[-0.015em] text-foreground", className)}
     {...props}
   />
 ))
