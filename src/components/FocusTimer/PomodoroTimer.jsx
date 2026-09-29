@@ -265,6 +265,36 @@ const PomodoroTimer = () => {
                         )}
                       </span>
                     </span>
+
+                    {/* Phones never hover, so the row's actions are always there. */}
+                    <span className="flex items-center gap-1 sm:hidden">
+                      <button
+                        type="button"
+                        aria-label={`Edit ${preset.name}`}
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm)"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingPreset(preset);
+                          setNewPresetName(preset.name);
+                          setIsSettingsOpen(true);
+                        }}
+                      >
+                        <Edit2 className="h-3.5 w-3.5" />
+                      </button>
+                      {!isDefault && (
+                        <button
+                          type="button"
+                          aria-label={`Delete ${preset.name}`}
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm)"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePreset(preset.id);
+                          }}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </span>
                   </div>
                 </li>
               );
