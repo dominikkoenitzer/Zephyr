@@ -640,16 +640,18 @@ const TaskList = () => {
               }}
             >
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">Title</label>
+                <label htmlFor="edit-task-title" className="block text-sm font-medium text-foreground">Title</label>
                 <Input
+                  id="edit-task-title"
                   value={editingTask.title}
                   onChange={(e) => setEditingTask({ ...editingTask, title: e.target.value })}
                   className="h-11 w-full text-base"
                 />
               </div>
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">Description</label>
+                <label htmlFor="edit-task-description" className="block text-sm font-medium text-foreground">Description</label>
                 <Input
+                  id="edit-task-description"
                   value={editingTask.description || ''}
                   onChange={(e) => setEditingTask({ ...editingTask, description: e.target.value })}
                   className="h-11 w-full text-base"
@@ -678,8 +680,12 @@ const TaskList = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">Due date</label>
+                <label className="block text-sm font-medium text-foreground" id="edit-due-label">Due date</label>
+                {/* The picker's trigger is a button, not a field, so the label
+                    names it by id, followed by the date it shows. */}
                 <CalendarPicker
+                  id="edit-due-trigger"
+                  aria-labelledby="edit-due-label edit-due-trigger"
                   value={editingTask.dueDate ? editingTask.dueDate.split('T')[0] : ''}
                   onChange={(e) => setEditingTask({ ...editingTask, dueDate: e.target.value || null })}
                   className="w-full"
