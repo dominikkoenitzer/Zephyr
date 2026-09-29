@@ -23,7 +23,9 @@ export function timerSnapshot(state, now = Date.now()) {
   const ticking = Boolean(state.isRunning);
   const elapsed = ticking && state.lastSaved ? Math.max(0, Math.floor((now - state.lastSaved) / 1000)) : 0;
   const timeLeft = Math.max(0, (Number(state.timeLeft) || 0) - elapsed);
-  const total = (state.isBreak ? state.breakTime : state.workTime) || state.workTime || 0;
+  // `sessionTotal` is the running phase's own length; a long break is longer
+  // than `breakTime`, and states saved before it existed fall back to that.
+  const total = Number(state.sessionTotal) || (state.isBreak ? state.breakTime : state.workTime) || state.workTime || 0;
 
   return {
     ...state,

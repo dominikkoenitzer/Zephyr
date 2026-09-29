@@ -244,9 +244,12 @@ export function usePomodoro() {
       workTime,
       breakTime,
       longBreakTime,
+      sessionTotal: isBreak
+        ? (isLongBreakDue(sessionsCompleted, sessionsUntilLongBreak) ? longBreakTime : breakTime)
+        : workTime,
       focusTask: sessionTask,
     });
-  }, [timeLeft, isRunning, isBreak, sessionsCompleted, workTime, breakTime, longBreakTime, sessionTask]);
+  }, [timeLeft, isRunning, isBreak, sessionsCompleted, sessionsUntilLongBreak, workTime, breakTime, longBreakTime, sessionTask]);
 
   // Inbound intent (task -> focus, resume, auto-start). Answered during render
   // so the session name and a `start=1` countdown are already right in the

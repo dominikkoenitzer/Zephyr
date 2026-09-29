@@ -56,4 +56,11 @@ describe('timerSnapshot', () => {
     expect(s.total).toBe(300);
     expect(s.progress).toBe(50);
   });
+
+  it('measures a long break against its own length when that was saved', () => {
+    const s = timerSnapshot({ ...saved, isRunning: false, isBreak: true, sessionTotal: 900, timeLeft: 600 }, 0);
+    expect(s.total).toBe(900);
+    expect(s.paused).toBe(true);
+    expect(Math.round(s.progress)).toBe(33);
+  });
 });
