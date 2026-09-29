@@ -276,11 +276,14 @@ export function usePomodoro() {
     };
 
     const interval = setInterval(tick, 1000);
-    // Resync the display the moment the tab becomes visible again.
+    // Resync the display the moment the tab becomes visible again, and on the
+    // mini timer's unthrottled beat while the tab sits in the background.
     document.addEventListener('visibilitychange', tick);
+    window.addEventListener('zephyr:tick', tick);
     return () => {
       clearInterval(interval);
       document.removeEventListener('visibilitychange', tick);
+      window.removeEventListener('zephyr:tick', tick);
     };
   }, [isRunning, handleComplete, phaseCount]);
 

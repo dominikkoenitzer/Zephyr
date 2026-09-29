@@ -15,9 +15,11 @@ export function useTimerWatch(active) {
     check();
     const id = setInterval(check, 1000);
     document.addEventListener('visibilitychange', check);
+    window.addEventListener('zephyr:tick', check);
     return () => {
       clearInterval(id);
       document.removeEventListener('visibilitychange', check);
+      window.removeEventListener('zephyr:tick', check);
     };
   }, [active]);
 }
