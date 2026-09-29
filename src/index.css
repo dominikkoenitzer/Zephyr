@@ -493,6 +493,17 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* A scroller fades the edge it continues past (hooks/useScrollEdges). */
+  .scroll-edges[data-more-right] {
+    mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+  }
+  .scroll-edges[data-more-left] {
+    mask-image: linear-gradient(to left, #000 calc(100% - 2rem), transparent);
+  }
+  .scroll-edges[data-more-left][data-more-right] {
+    mask-image: linear-gradient(to right, transparent, #000 2rem, #000 calc(100% - 2rem), transparent);
+  }
   
   /* Smooth momentum scrolling for mobile */
   .scroll-smooth-momentum {
