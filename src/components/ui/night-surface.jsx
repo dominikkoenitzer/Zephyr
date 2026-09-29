@@ -13,7 +13,7 @@ function WindLines({ className }) {
       aria-hidden="true"
       viewBox="0 0 400 200"
       preserveAspectRatio="none"
-      className={cn('pointer-events-none absolute inset-x-0 bottom-0 h-3/4 w-full', className)}
+      className={cn('pointer-events-none absolute inset-x-0 bottom-0 h-3/4 max-h-44 w-full', className)}
       fill="none"
     >
       <path d="M-20 150 C 70 110, 150 185, 250 140 S 380 95, 430 120" stroke="white" strokeOpacity="0.10" strokeWidth="1.25" />
