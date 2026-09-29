@@ -483,7 +483,7 @@ function Home() {
           />
           <StatCard
             to="/focus"
-            label="Focus this week"
+            label="Focus time"
             value={formatMinutes(stats.focusMinutes)}
             note={`${stats.sessions} ${stats.sessions === 1 ? 'session' : 'sessions'}`}
           />
