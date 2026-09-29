@@ -21,7 +21,7 @@ Last updated: 2026-08-30
 - Free. No signup, no login, no account, no paid tier.
 - Local-first: all data lives in the browser's localStorage under `zephyr_` keys. Nothing is uploaded and there is no telemetry of user content.
 - Works offline as an installable PWA. A new version asks before reloading rather than replacing itself mid-session.
-- Backup: export all data as a file and import it on another device, from Settings, Data Management.
+- Backup: export all data as a file and import it on another device, from Settings, Data.
 - Command palette on Ctrl/Cmd+K searches tasks and reaches every command.
 - Light, dark and system themes.
 - Topics: productivity, time management, pomodoro technique, task manager, to-do list, offline app, privacy-friendly productivity.
