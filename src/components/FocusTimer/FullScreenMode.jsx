@@ -42,9 +42,6 @@ const FullScreenMode = ({
             <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: preset.color }} aria-hidden="true" />
             {sessionType.text}
           </h2>
-          {preset.description && (
-            <p className="mx-auto mt-4 max-w-xl text-sm text-hero-foreground/65">{preset.description}</p>
-          )}
         </div>
 
         <div className="w-full max-w-3xl">
@@ -53,9 +50,6 @@ const FullScreenMode = ({
               {formatTime(timeLeft)}
             </div>
           </SunDial>
-          <div className="mt-3 text-center text-sm font-medium text-hero-foreground/65 sm:text-base">
-            {Math.round(progress)}% through
-          </div>
         </div>
 
         <div className="flex items-center justify-center gap-5">
