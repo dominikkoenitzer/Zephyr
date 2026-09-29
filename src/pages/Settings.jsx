@@ -4,7 +4,7 @@ import {
   Palette, Monitor, Moon, Sun, HardDrive, Keyboard,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardTitle } from '../components/ui/card';
 import { Checkbox } from '../components/ui/checkbox';
 import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
@@ -28,6 +28,40 @@ const THEME_OPTIONS = [
 ];
 
 const readStorageInfo = () => localStorageService.getStorageInfo();
+
+const pill = 'rounded-full bg-card px-2.5 py-0.5 text-[12px] font-semibold text-foreground';
+
+/** A card's title with its small round icon. */
+function SettingsCardTitle({ icon: Icon, children }) {
+  return (
+    <CardTitle className="flex items-center gap-3">
+      <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+        <Icon className="h-[18px] w-[18px] text-primary-strong" />
+      </span>
+      {children}
+    </CardTitle>
+  );
+}
+
+/** One setting: label and description on the left, its control on the right. */
+function SettingRow({ icon: Icon, title, description, children, small = false }) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 rounded-2xl px-3 py-3 transition-colors hover:bg-accent/60">
+      <div className="flex min-w-0 flex-1 basis-56 items-center gap-3">
+        {Icon && (
+          <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card shadow-(--shadow-sm)">
+            <Icon className="h-[18px] w-[18px] text-muted-foreground" />
+          </span>
+        )}
+        <div className="min-w-0">
+          <h3 className={cn('font-semibold text-foreground', small ? 'text-sm' : 'text-[15px]')}>{title}</h3>
+          <p className={cn('mt-0.5 text-muted-foreground', small ? 'text-[12px]' : 'text-[13px]')}>{description}</p>
+        </div>
+      </div>
+      <div className="shrink-0">{children}</div>
+    </div>
+  );
+}
 
 function Settings() {
   usePageMeta(ROUTE_META['/settings']);
@@ -71,7 +105,7 @@ function Settings() {
     const newSettings = { ...notificationSettings, ...updates };
     setNotificationSettings(newSettings);
     notificationService.saveSettings(newSettings);
-    
+
     // Restart checking with new settings
     notificationService.stopChecking();
     notificationService.startChecking();
@@ -108,32 +142,23 @@ function Settings() {
         description="Theme, notifications and what happens to your data"
       />
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-(--panel-gap)">
-        {/* Appearance Card */}
-        <Card className="h-fit lg:col-span-2">
-          <CardHeader className="pb-3 sm:pb-4">
-            <CardTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl text-foreground">
-              <div className="p-1.5 sm:p-2 rounded-lg bg-primary/15 text-primary shadow-sm ring-1 ring-primary/20">
-                <Palette className="h-4 w-4 sm:h-5 sm:w-5" />
-              </div>
-              Appearance
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div className="min-w-0">
-                <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Theme</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  {preference === 'system'
-                    ? `Following your system, which is currently ${colorMode}.`
-                    : `Always ${preference}, whatever your system does.`}
-                </p>
-              </div>
+      <div className="grid grid-cols-1 items-start gap-(--panel-gap) xl:grid-cols-2">
+        {/* Appearance */}
+        <Card className="p-6">
+          <SettingsCardTitle icon={Palette}>Appearance</SettingsCardTitle>
+          <div className="mt-4 -mx-3 space-y-1">
+            <SettingRow
+              title="Theme"
+              description={
+                preference === 'system'
+                  ? `Following your system, which is currently ${colorMode}.`
+                  : `Always ${preference}, whatever your system does.`
+              }
+            >
               <div
                 role="radiogroup"
                 aria-label="Theme"
-                className="flex items-center gap-1 rounded-full border border-border bg-background/70 p-1"
+                className="flex items-center gap-1 rounded-full bg-accent p-1"
               >
                 {THEME_OPTIONS.map((option) => {
                   const Icon = option.icon;
@@ -146,10 +171,10 @@ function Settings() {
                       aria-checked={active}
                       onClick={() => setPreference(option.value)}
                       className={cn(
-                        'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                        'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-semibold transition-colors',
                         active
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground'
+                          ? 'bg-primary text-primary-foreground shadow-(--shadow-sm)'
+                          : 'text-muted-foreground hover:text-foreground'
                       )}
                     >
                       <Icon className="h-4 w-4" aria-hidden="true" />
@@ -158,243 +183,186 @@ function Settings() {
                   );
                 })}
               </div>
-            </div>
+            </SettingRow>
 
-            <div className="flex flex-wrap items-end justify-between gap-4 border-t border-border/50 pt-4">
-              <div className="min-w-0">
-                <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Keyboard shortcuts</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground">
+            <SettingRow
+              title="Keyboard shortcuts"
+              description={
+                <>
                   Press <kbd className="kbd">?</kbd> anywhere for this list, or <kbd className="kbd">Ctrl</kbd>
                   <kbd className="kbd">K</kbd> for the command palette.
-                </p>
-              </div>
-              <Button variant="outline" onClick={() => setShowShortcuts(true)}>
-                <Keyboard className="h-4 w-4 mr-1.5" />
+                </>
+              }
+            >
+              <Button variant="outline" size="sm" onClick={() => setShowShortcuts(true)}>
+                <Keyboard className="h-4 w-4" />
                 View shortcuts
               </Button>
-            </div>
-          </CardContent>
+            </SettingRow>
+          </div>
         </Card>
 
-        {/* Notifications Card */}
-        <Card className="h-fit">
-        <CardHeader className="pb-3 sm:pb-4">
-          <CardTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl text-foreground">
-            <div className="p-1.5 sm:p-2 rounded-lg bg-primary/15 text-primary shadow-sm ring-1 ring-primary/20">
-              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-            </div>
-            Notifications
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6">
-          {/* Global Settings */}
-          <div className="space-y-2 sm:space-y-3">
-            <div className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-background/70 border border-border/60 hover:border-primary/30 hover:shadow-sm transition-colors">
-              <div className="flex-1 min-w-0 pr-2">
-                <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Enable Notifications</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground">Master switch for all notifications</p>
-              </div>
+        {/* Notifications */}
+        <Card className="p-6 xl:row-span-2">
+          <SettingsCardTitle icon={Bell}>Notifications</SettingsCardTitle>
+          <div className="mt-4 -mx-3 space-y-1">
+            <SettingRow title="Enable Notifications" description="Master switch for all notifications">
               <Checkbox
                 aria-label="Enable notifications"
                 checked={notificationSettings.enabled}
                 onCheckedChange={(checked) => handleNotificationSettingsChange({ enabled: checked })}
               />
-            </div>
-            
-            <div className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-background/70 border border-border/60 hover:border-primary/30 hover:shadow-sm transition-colors">
-              <div className="flex-1 flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
-                <Volume2 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0" />
-                <div className="min-w-0">
-                  <h3 className="text-sm sm:text-base font-semibold text-foreground mb-0.5 sm:mb-1">Notification Sound</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Play sound when notifications arrive</p>
-                </div>
-              </div>
+            </SettingRow>
+            <SettingRow
+              icon={Volume2}
+              title="Notification Sound"
+              description="Play sound when notifications arrive"
+            >
               <Checkbox
                 aria-label="Notification sound"
                 checked={notificationSettings.soundEnabled}
                 onCheckedChange={(checked) => handleNotificationSettingsChange({ soundEnabled: checked })}
               />
-            </div>
+            </SettingRow>
           </div>
 
-          {/* Notification Types */}
-          <div className="border-t border-border/50 pt-6 space-y-4">
-            <h3 className="font-semibold text-foreground text-base mb-4">Notification Types</h3>
-            
-            {/* Task Notifications */}
-            <div className="relative rounded-xl border border-border/60 bg-background/80 hover:border-primary/30 hover:shadow-md transition-colors">
-              <div className="relative p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/15 border border-primary/20 text-primary">
-                      <CheckSquare className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-foreground">Task Notifications</h4>
-                      <p className="text-xs text-muted-foreground mt-0.5">Reminders for due and overdue tasks</p>
-                    </div>
-                  </div>
-                  <Checkbox
-                    aria-label="Task notifications"
-                    checked={notificationSettings.tasks.enabled}
-                    onCheckedChange={(checked) => handleTaskSettingsChange({ enabled: checked })}
-                  />
-                </div>
-                {notificationSettings.tasks.enabled && (
-                  <div className="mt-4 pt-4 border-t border-border/50 space-y-3">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-foreground mb-1">Due Date Reminder</p>
-                        <p className="text-xs text-muted-foreground">Days before due date</p>
-                      </div>
-                      <Select
-                        value={String(notificationSettings.tasks.dueDateReminder)}
-                        onValueChange={(value) => handleTaskSettingsChange({ dueDateReminder: parseInt(value) })}
-                      >
-                        <SelectTrigger aria-label="Due date reminder" className="w-32">
-                          <SelectValue placeholder="Select reminder" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">1 day</SelectItem>
-                          <SelectItem value="2">2 days</SelectItem>
-                          <SelectItem value="3">3 days</SelectItem>
-                          <SelectItem value="7">1 week</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-foreground mb-1">Overdue Tasks</p>
-                        <p className="text-xs text-muted-foreground">Notify about overdue tasks</p>
-                      </div>
-                      <Checkbox
-                        aria-label="Overdue tasks"
-                        checked={notificationSettings.tasks.overdue}
-                        onCheckedChange={(checked) => handleTaskSettingsChange({ overdue: checked })}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Timer Notifications */}
-            <div className="relative rounded-xl border border-border/50 bg-background/30 hover:bg-background/40 transition-colors">
-              <div className="relative p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-green-500/10 border border-green-500/20">
-                      <Timer className="h-5 w-5 text-green-500" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-foreground">Timer Notifications</h4>
-                      <p className="text-xs text-muted-foreground mt-0.5">Alerts when sessions complete</p>
-                    </div>
-                  </div>
-                  <Checkbox
-                    aria-label="Timer notifications"
-                    checked={notificationSettings.timer.enabled}
-                    onCheckedChange={(checked) => handleNotificationSettingsChange({ 
-                      timer: { ...notificationSettings.timer, enabled: checked }
-                    })}
-                  />
-                </div>
-                {notificationSettings.timer.enabled && (
-                  <div className="mt-4 pt-4 border-t border-border/50">
-                    <p className="text-sm text-muted-foreground">A chime and a notification when a work or break session ends</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-        {/* Data Management Card */}
-        <Card className="h-fit">
-          <CardHeader className="pb-4 sm:pb-6">
-            <CardTitle className="flex items-center gap-2 sm:gap-4 text-lg sm:text-xl md:text-2xl">
-              <div className="p-2 sm:p-3 rounded-lg bg-destructive/15 shadow-sm ring-1 ring-destructive/20">
-                <Trash2 className="h-5 w-5 sm:h-6 sm:w-6 text-destructive" />
-              </div>
-              Data Management
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-6">
-            {/* Backup & restore */}
-            <div className="p-4 sm:p-6 rounded-xl bg-background/70 border border-border/60 space-y-4">
-              <div className="flex items-start gap-3 sm:gap-4">
-                <Download className="h-5 w-5 sm:h-6 sm:w-6 text-primary mt-1 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-base sm:text-lg text-foreground mb-1 sm:mb-2">Backup &amp; Restore</h3>
-                  <p className="text-sm sm:text-base text-muted-foreground">
-                    Download all your data as a single file, or restore a backup on any device.
-                    The file is written by your browser, so nothing is uploaded.
-                  </p>
-                </div>
-              </div>
-              <p className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                <HardDrive className="h-4 w-4 shrink-0" aria-hidden="true" />
-                Zephyr is currently storing {storageInfo.totalSizeFormatted || '0 Bytes'} in this browser.
-              </p>
-              <div className="flex gap-2 flex-wrap">
-                <Button variant="outline" onClick={handleExport}>
-                  <Download className="h-4 w-4 mr-1.5" />
-                  Export data
-                </Button>
-                <Button variant="outline" onClick={() => importInputRef.current?.click()}>
-                  <Upload className="h-4 w-4 mr-1.5" />
-                  Import backup
-                </Button>
-                <input
-                  ref={importInputRef}
-                  type="file"
-                  accept="application/json,.json"
-                  className="hidden"
-                  aria-label="Import a Zephyr backup file"
-                  onChange={handleImportFile}
+          <h3 className="mt-6 text-[13px] font-semibold text-muted-foreground">Notification Types</h3>
+          <div className="mt-3 space-y-3">
+            {/* Task notifications */}
+            <div className="rounded-2xl bg-accent/50 p-1">
+              <SettingRow
+                icon={CheckSquare}
+                title="Task Notifications"
+                description="Reminders for due and overdue tasks"
+              >
+                <Checkbox
+                  aria-label="Task notifications"
+                  checked={notificationSettings.tasks.enabled}
+                  onCheckedChange={(checked) => handleTaskSettingsChange({ enabled: checked })}
                 />
-              </div>
+              </SettingRow>
+              {notificationSettings.tasks.enabled && (
+                <div className="space-y-1 pb-1 sm:pl-13">
+                  <SettingRow title="Due Date Reminder" description="Days before due date" small>
+                    <Select
+                      value={String(notificationSettings.tasks.dueDateReminder)}
+                      onValueChange={(value) => handleTaskSettingsChange({ dueDateReminder: parseInt(value) })}
+                    >
+                      <SelectTrigger aria-label="Due date reminder" className="w-32">
+                        <SelectValue placeholder="Select reminder" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1 day</SelectItem>
+                        <SelectItem value="2">2 days</SelectItem>
+                        <SelectItem value="3">3 days</SelectItem>
+                        <SelectItem value="7">1 week</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </SettingRow>
+                  <SettingRow title="Overdue Tasks" description="Notify about overdue tasks" small>
+                    <Checkbox
+                      aria-label="Overdue tasks"
+                      checked={notificationSettings.tasks.overdue}
+                      onCheckedChange={(checked) => handleTaskSettingsChange({ overdue: checked })}
+                    />
+                  </SettingRow>
+                </div>
+              )}
             </div>
 
-            <div className="p-4 sm:p-6 rounded-xl bg-background/80 border border-border/60 space-y-4 sm:space-y-6">
-              <div className="flex items-start gap-3 sm:gap-4">
-                <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-destructive mt-1 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-base sm:text-lg text-foreground mb-1 sm:mb-2">Clear All Local Storage</h3>
-                  <p className="text-sm sm:text-base text-muted-foreground mb-2 sm:mb-3">
-                    This will permanently delete all data stored locally in your browser, including:
-                  </p>
-                  <ul className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3 ml-4 sm:ml-6 list-disc space-y-1 sm:space-y-2">
-                    <li>Tasks</li>
-                                        <li>Focus timer sessions and presets</li>
-                    <li>Settings and preferences</li>
-                    <li>Notification history</li>
-                  </ul>
-                  <p className="text-sm sm:text-base text-destructive-strong font-semibold mt-3 sm:mt-4">
-                    This action cannot be undone. The page will reload after clearing.
-                  </p>
-                </div>
-              </div>
-              <div className="flex justify-start pt-2">
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="lg"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowClearDialog(true);
-                  }}
-                  className="w-full sm:w-auto cursor-pointer text-sm sm:text-base px-4 sm:px-6 py-4 sm:py-6"
-                >
-                  <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
-                  <span className="hidden sm:inline">Clear All Local Storage</span>
-                  <span className="sm:hidden">Clear All Data</span>
-                </Button>
-              </div>
+            {/* Timer notifications */}
+            <div className="rounded-2xl bg-accent/50 p-1">
+              <SettingRow
+                icon={Timer}
+                title="Timer Notifications"
+                description="Alerts when sessions complete"
+              >
+                <Checkbox
+                  aria-label="Timer notifications"
+                  checked={notificationSettings.timer.enabled}
+                  onCheckedChange={(checked) => handleNotificationSettingsChange({
+                    timer: { ...notificationSettings.timer, enabled: checked }
+                  })}
+                />
+              </SettingRow>
+              {notificationSettings.timer.enabled && (
+                <p className="px-3 pb-3 text-[13px] text-muted-foreground sm:pl-16">
+                  A chime and a notification when a work or break session ends
+                </p>
+              )}
             </div>
-          </CardContent>
+          </div>
+        </Card>
+
+        {/* Data management */}
+        <Card className="p-6">
+          <SettingsCardTitle icon={HardDrive}>Data Management</SettingsCardTitle>
+
+          <div className="mt-5">
+            <h3 className="flex items-center gap-2 text-[15px] font-semibold text-foreground">
+              <Download className="h-4 w-4 text-primary-strong" aria-hidden="true" />
+              Backup &amp; Restore
+            </h3>
+            <p className="mt-1 max-w-[62ch] text-sm text-muted-foreground">
+              Download all your data as a single file, or restore a backup on any device.
+              The file is written by your browser, so nothing is uploaded.
+            </p>
+            <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-accent px-2.5 py-0.5 text-[12px] font-semibold text-foreground">
+              <HardDrive className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              Zephyr is currently storing {storageInfo.totalSizeFormatted || '0 Bytes'} in this browser.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button variant="outline" onClick={handleExport}>
+                <Download className="h-4 w-4" />
+                Export data
+              </Button>
+              <Button variant="outline" onClick={() => importInputRef.current?.click()}>
+                <Upload className="h-4 w-4" />
+                Import backup
+              </Button>
+              <input
+                ref={importInputRef}
+                type="file"
+                accept="application/json,.json"
+                className="hidden"
+                aria-label="Import a Zephyr backup file"
+                onChange={handleImportFile}
+              />
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-2xl bg-destructive/6 p-4 sm:p-5">
+            <h3 className="flex items-center gap-2 text-[15px] font-semibold text-foreground">
+              <AlertTriangle className="h-4 w-4 text-destructive-strong" aria-hidden="true" />
+              Clear All Local Storage
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              This will permanently delete all data stored locally in your browser, including:
+            </p>
+            <ul className="mt-3 flex flex-wrap gap-1.5">
+              <li className={pill}>Tasks</li>
+              <li className={pill}>Focus timer sessions and presets</li>
+              <li className={pill}>Settings and preferences</li>
+              <li className={pill}>Notification history</li>
+            </ul>
+            <p className="mt-3 text-sm font-semibold text-destructive-strong">
+              This action cannot be undone. The page will reload after clearing.
+            </p>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowClearDialog(true);
+              }}
+              className="mt-4 w-full cursor-pointer sm:w-auto"
+            >
+              <Trash2 className="h-4 w-4" />
+              <span className="hidden sm:inline">Clear All Local Storage</span>
+              <span className="sm:hidden">Clear All Data</span>
+            </Button>
+          </div>
         </Card>
       </div>
 
