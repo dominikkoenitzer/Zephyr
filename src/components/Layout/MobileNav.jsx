@@ -29,7 +29,7 @@ function MobileNav() {
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'relative isolate flex h-12 flex-col items-center justify-center gap-0.5 rounded-full text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                  active ? 'text-hero-foreground' : 'text-muted-foreground'
+                  active ? 'bg-hero-to text-hero-foreground' : 'text-muted-foreground'
                 )}
               >
                 {active && (

@@ -347,7 +347,9 @@ const TaskList = () => {
       aria-pressed={active}
       className={cn(
         'relative isolate flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        active ? 'text-hero-foreground' : 'text-muted-foreground hover:text-foreground'
+        // The sliding pill paints the active state; the button's own fill is
+        // the same night underneath, so the text never sits on white.
+        active ? 'bg-hero-to text-hero-foreground' : 'text-muted-foreground hover:text-foreground'
       )}
     >
       {active && (
