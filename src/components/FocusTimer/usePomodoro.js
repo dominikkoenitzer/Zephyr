@@ -404,9 +404,18 @@ export function usePomodoro() {
     setTimeLeft(isBreak ? (longBreakDue ? longBreakTime : breakTime) : workTime);
   };
 
+  // Skipping is not finishing. It moves on to the next phase and records
+  // nothing: no session in the log, no streak, no notification. It used to
+  // call handleComplete, so five quick skips logged five 25-minute sessions.
   const skipSession = () => {
     setIsRunning(false);
-    handleComplete();
+    if (isBreak) {
+      setIsBreak(false);
+      setTimeLeft(workTime);
+    } else {
+      setIsBreak(true);
+      setTimeLeft(longBreakDue ? longBreakTime : breakTime);
+    }
   };
 
   const currentSessionTime = isBreak ? (longBreakDue ? longBreakTime : breakTime) : workTime;
