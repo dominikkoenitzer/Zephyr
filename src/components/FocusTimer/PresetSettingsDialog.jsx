@@ -52,7 +52,7 @@ const PresetSettingsDialog = ({
               <label htmlFor="preset-work-time" className="text-sm font-medium mb-2 block text-foreground">Focus time (min)</label>
               <CustomNumberInput
                 id="preset-work-time"
-                label="Focus Time"
+                label="Focus time"
                 min={1}
                 max={120}
                 step={1}
@@ -68,7 +68,7 @@ const PresetSettingsDialog = ({
               <label htmlFor="preset-short-break" className="text-sm font-medium mb-2 block text-foreground">Short break (min)</label>
               <CustomNumberInput
                 id="preset-short-break"
-                label="Short Break"
+                label="Short break"
                 min={1}
                 max={60}
                 step={1}
@@ -84,7 +84,7 @@ const PresetSettingsDialog = ({
               <label htmlFor="preset-long-break" className="text-sm font-medium mb-2 block text-foreground">Long break (min)</label>
               <CustomNumberInput
                 id="preset-long-break"
-                label="Long Break"
+                label="Long break"
                 min={1}
                 max={120}
                 step={1}
@@ -100,7 +100,7 @@ const PresetSettingsDialog = ({
               <label htmlFor="preset-sessions" className="text-sm font-medium mb-2 block text-foreground">Sessions until long break</label>
               <CustomNumberInput
                 id="preset-sessions"
-                label="Sessions Until Long Break"
+                label="Sessions until long break"
                 min={1}
                 max={10}
                 step={1}
