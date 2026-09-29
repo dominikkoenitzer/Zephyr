@@ -18,6 +18,7 @@ import {
   TASK_GROUPS, TASK_VIEWS, TASK_VIEW_IDS, collectTags, countsByView, filterActive, groupTasks, todayKey,
 } from '../../lib/taskFilters';
 import { useTasks } from '../../hooks/useStore';
+import { useScrollEdges } from '../../hooks/useScrollEdges';
 
 // Medium is the default every task gets, so printing it on every row says
 // nothing. Only a deliberate priority earns a word.
@@ -349,6 +350,10 @@ const TaskList = () => {
     );
   };
 
+  // Both filter rows scroll on a phone; each fades the edge it continues past.
+  const viewsRef = useScrollEdges(view);
+  const tagsRef = useScrollEdges(tagFilter);
+
   const filterButton = (label, active, onClick, count, key, group = 'view') => (
     <button
       key={key}
@@ -437,31 +442,37 @@ const TaskList = () => {
       {/* Filters: one segmented pill for the views, one for the tags */}
       {activeTotal > 0 && (
         <div className="mt-5 flex flex-wrap items-center gap-2">
-          <div
-            className={cn(card, 'scrollbar-hide flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full p-1')}
-            role="group"
-            aria-label="Filter tasks"
-          >
-            {TASK_VIEWS.map((v) =>
-              filterButton(v.label, view === v.id, () => chooseView(v.id), counts[v.id], v.id)
-            )}
+          <div className={cn(card, 'max-w-full overflow-hidden rounded-full p-1')}>
+            <div
+              ref={viewsRef}
+              className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full"
+              role="group"
+              aria-label="Filter tasks"
+            >
+              {TASK_VIEWS.map((v) =>
+                filterButton(v.label, view === v.id, () => chooseView(v.id), counts[v.id], v.id)
+              )}
+            </div>
           </div>
           {allTags.length > 0 && (
-            <div
-              className={cn(card, 'scrollbar-hide flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full p-1')}
-              role="group"
-              aria-label="Filter by tag"
-            >
-              {allTags.map((tag) =>
-                filterButton(
-                  `#${tag}`,
-                  tagFilter === tag,
-                  () => chooseTag(tagFilter === tag ? '' : tag),
-                  undefined,
-                  `tag:${tag}`,
-                  'tag'
-                )
-              )}
+            <div className={cn(card, 'max-w-full overflow-hidden rounded-full p-1')}>
+              <div
+                ref={tagsRef}
+                className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full"
+                role="group"
+                aria-label="Filter by tag"
+              >
+                {allTags.map((tag) =>
+                  filterButton(
+                    `#${tag}`,
+                    tagFilter === tag,
+                    () => chooseTag(tagFilter === tag ? '' : tag),
+                    undefined,
+                    `tag:${tag}`,
+                    'tag'
+                  )
+                )}
+              </div>
             </div>
           )}
         </div>
