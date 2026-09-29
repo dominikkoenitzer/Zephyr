@@ -38,6 +38,9 @@ export const DEFAULT_SETTINGS = {
   soundEnabled: true,
   notificationsEnabled: true,
   theme: 'system',
+  // Whether the next phase starts by itself when one runs out (lib/timer).
+  autoStartBreaks: false,
+  autoStartFocus: false,
 };
 
 /**
