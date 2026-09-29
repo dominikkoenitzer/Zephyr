@@ -3,7 +3,7 @@ import { m } from 'motion/react';
 import { cn } from '../../lib/utils';
 import { useTasks } from '../../hooks/useStore';
 import { useTimerSnapshot } from '../../hooks/useTimerSnapshot';
-import { formatTime } from '../FocusTimer/usePomodoro';
+import { formatTime } from '../../lib/time';
 import { NightSurface } from '../ui/night-surface';
 import ZephyrMark from './ZephyrMark';
 import { GENERAL, MENU } from './navItems';
