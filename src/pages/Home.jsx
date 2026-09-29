@@ -17,7 +17,7 @@ import {
   recentSessions,
   upNext,
 } from '../lib/dashboard';
-import { formatTime } from '../components/FocusTimer/usePomodoro';
+import { formatTime } from '../lib/time';
 import SunDial from '../components/FocusTimer/SunDial';
 import PageHeader from '../components/Layout/PageHeader';
 import { Button } from '../components/ui/button';
