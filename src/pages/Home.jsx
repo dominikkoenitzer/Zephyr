@@ -18,6 +18,7 @@ import {
   upNext,
 } from '../lib/dashboard';
 import { formatTime } from '../components/FocusTimer/usePomodoro';
+import SunDial from '../components/FocusTimer/SunDial';
 import PageHeader from '../components/Layout/PageHeader';
 import { Button } from '../components/ui/button';
 import { NightSurface } from '../components/ui/night-surface';
@@ -374,6 +375,7 @@ function TimerCard({ timer, defaultMinutes }) {
   const running = Boolean(timer?.running && timer.timeLeft > 0);
   const paused = Boolean(timer && !timer.running && timer.total && timer.timeLeft > 0 && timer.timeLeft < timer.total);
   const seconds = timer?.timeLeft || defaultMinutes * 60;
+  const progress = timer?.total ? ((timer.total - timer.timeLeft) / timer.total) * 100 : 0;
   const state = running ? (timer.isBreak ? 'On a break' : 'Running') : paused ? 'Paused' : 'Ready';
 
   return (
@@ -385,16 +387,18 @@ function TimerCard({ timer, defaultMinutes }) {
             {state}
           </span>
         </div>
-        <p className="mt-auto pt-6 text-[3.25rem] font-semibold leading-none tracking-[-0.03em] tabular-nums">
-          {formatTime(seconds)}
-        </p>
+        <div className="mt-auto pt-4">
+          <SunDial progress={progress} isBreak={Boolean(timer?.isBreak)}>
+            <p className="text-[2.25rem] font-semibold leading-none tracking-[-0.03em] tabular-nums">{formatTime(seconds)}</p>
+          </SunDial>
+        </div>
         {timer?.focusTask?.title && (
-          <p className="mt-2 truncate text-sm text-hero-foreground/70">{timer.focusTask.title}</p>
+          <p className="mt-3 truncate text-sm text-hero-foreground/70">{timer.focusTask.title}</p>
         )}
-        <div className="mt-6 flex items-center gap-3">
+        <div className="mt-5 flex items-center gap-3">
           <Link
-            to={running ? '/focus' : '/focus?start=1'}
-            aria-label={running ? 'Open the running timer' : 'Start the timer'}
+            to={running || paused ? '/focus' : '/focus?start=1'}
+            aria-label={running ? 'Open the running timer' : paused ? 'Open the paused timer' : 'Start the timer'}
             className="flex h-12 w-12 items-center justify-center rounded-full bg-hero-foreground text-hero-to transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun"
           >
             {running ? <Pause className="h-5 w-5" /> : <Play className="ml-0.5 h-5 w-5" />}
@@ -418,10 +422,8 @@ function Home() {
   const timer = useTimerSnapshot();
 
   const now = new Date();
-  const hour = now.getHours();
-  // Before 5am still reads as "evening"; at 00:19 "Good morning" is just wrong.
-  const greeting =
-    hour < 5 ? 'Good evening' : hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const weekday = now.toLocaleDateString('en-GB', { weekday: 'long' });
+  const date = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
 
   const stats = useMemo(() => dashboardStats(tasks, sessions), [tasks, sessions]);
   const week = useMemo(() => focusByDay(sessions), [sessions]);
@@ -430,21 +432,22 @@ function Home() {
   const recent = useMemo(() => recentSessions(sessions, 3), [sessions]);
   const defaultMinutes = Math.round((timer?.workTime || 1500) / 60);
 
-  const summary =
+  const due =
     stats.dueToday || stats.overdue
       ? [stats.dueToday && `${stats.dueToday} due today`, stats.overdue && `${stats.overdue} overdue`]
           .filter(Boolean)
-          .join(', ') + '.'
-      : 'Nothing due today.';
+          .join(', ')
+      : 'nothing due today';
+  const summary = `${date}, ${due}.`;
 
   return (
     <div className="pb-4">
-      {/* The h1 Google indexes says what the app is; the greeting keeps its
-          type as a paragraph. */}
+      {/* The h1 Google indexes says what the app is; the day keeps the
+          title's type as a paragraph. */}
       <h1 className="sr-only">Zephyr, a to-do list and Pomodoro focus timer</h1>
       <PageHeader
         as="p"
-        title={greeting}
+        title={weekday}
         description={summary}
         actions={
           <>
