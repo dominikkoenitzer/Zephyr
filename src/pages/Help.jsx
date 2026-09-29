@@ -137,10 +137,7 @@ function Help() {
 
         {/* FAQ */}
         <Card className="animate-fade-in-up p-6 xl:col-span-3" style={{ animationDelay: '0.2s' }}>
-          <IconTitle icon={HelpCircle}>Frequently Asked Questions</IconTitle>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Answers about storage, offline use and backups
-          </p>
+          <IconTitle icon={HelpCircle}>Questions</IconTitle>
           <Accordion type="single" className="-mx-3 mt-4 w-auto space-y-1">
             {faqs.map((faq, index) => {
               const Icon = faq.icon;
