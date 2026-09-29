@@ -174,9 +174,6 @@ function Help() {
         {/* Keyboard shortcuts */}
         <Card className="animate-fade-in-up p-6 xl:col-span-5" style={{ animationDelay: '0.15s' }}>
           <IconTitle icon={Keyboard}>Keyboard shortcuts</IconTitle>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Single keys work whenever you are not typing in a field. Press ? anywhere to see this list.
-          </p>
           <div className="mt-5">
             <ShortcutTable />
           </div>
