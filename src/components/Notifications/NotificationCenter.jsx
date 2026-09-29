@@ -83,6 +83,7 @@ const NotificationCenter = ({ onClose }) => {
               navigate('/settings');
               onClose();
             }}
+            aria-label="Notification settings"
             className="h-7 w-7 sm:h-8 sm:w-8"
           >
             <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
