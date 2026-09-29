@@ -141,3 +141,40 @@ describe('parseQuickTask: times of day', () => {
     expect(parseQuickTask('Chapter 3:5').dueDate).toBeNull();
   });
 });
+
+describe('parseQuickTask: words that lead into the date', () => {
+  it('takes "by", "on", "due" and "until" away with the date they introduce', () => {
+    expect(parseQuickTask('Submit report by tomorrow').title).toBe('Submit report');
+    expect(parseQuickTask('Do thing on 2031-10-05')).toMatchObject({ title: 'Do thing', dueDate: '2031-10-05' });
+    expect(parseQuickTask('Report due tomorrow').title).toBe('Report');
+    expect(parseQuickTask('Hold the room until tomorrow').title).toBe('Hold the room');
+  });
+
+  it('leaves those words alone when no date follows them', () => {
+    expect(parseQuickTask('Pay rent on the 1st').title).toBe('Pay rent on the 1st');
+    expect(parseQuickTask('Stand by me').title).toBe('Stand by me');
+  });
+});
+
+describe('parseQuickTask: day before month', () => {
+  it('reads "5 oct" and "5th October" like "oct 5"', () => {
+    const year = new Date().getFullYear();
+    const expected = parseQuickTask('Dentist oct 5').dueDate;
+    expect(parseQuickTask('Dentist 5 oct')).toMatchObject({ title: 'Dentist', dueDate: expected });
+    expect(parseQuickTask('Dentist 5th October').dueDate).toBe(expected);
+    expect(expected.startsWith(String(year)) || expected.startsWith(String(year + 1))).toBe(true);
+  });
+
+  it('refuses a day the month does not have', () => {
+    expect(parseQuickTask('Party 31 feb').dueDate).toBeNull();
+  });
+});
+
+describe('parseQuickTask: month names', () => {
+  it('reads only real month names, never a word that starts like one', () => {
+    expect(parseQuickTask('Buy 2 mars bars')).toMatchObject({ title: 'Buy 2 mars bars', dueDate: null });
+    expect(parseQuickTask('Mayday 5 drill').dueDate).toBeNull();
+    expect(parseQuickTask('Trip sept 3').dueDate).not.toBeNull();
+    expect(parseQuickTask('Trip september 3rd').dueDate).toBe(parseQuickTask('Trip sep 3').dueDate);
+  });
+});
