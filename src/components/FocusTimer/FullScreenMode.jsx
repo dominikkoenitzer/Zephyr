@@ -45,7 +45,7 @@ const FullScreenMode = ({
         </div>
 
         <div className="w-full max-w-3xl">
-          <SunDial progress={progress} isBreak={isBreak}>
+          <SunDial progress={progress} isBreak={isBreak} running={isRunning}>
             <div className="text-[4rem] font-semibold leading-none tracking-[-0.04em] tabular-nums sm:text-[6rem] md:text-[7.5rem]">
               {formatTime(timeLeft)}
             </div>
