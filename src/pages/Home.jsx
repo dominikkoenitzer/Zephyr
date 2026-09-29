@@ -419,6 +419,8 @@ function Home() {
   const next = useMemo(() => upNext(tasks), [tasks]);
   const soon = useMemo(() => dueSoon(tasks, 4), [tasks]);
   const recent = useMemo(() => recentSessions(sessions, 3), [sessions]);
+  // A brand-new visitor: no task written, no session finished.
+  const fresh = tasks.length === 0 && sessions.length === 0;
   const defaultMinutes = Math.round((timer?.workTime || 1500) / 60);
 
   const due =
@@ -457,6 +459,7 @@ function Home() {
       />
 
       <m.div variants={stagger} initial="hidden" animate="show" className="space-y-(--panel-gap)">
+        {!fresh && (
         <m.div variants={stagger} className="grid grid-cols-2 gap-(--panel-gap) xl:grid-cols-4">
           <StatCard
             lead
@@ -484,7 +487,22 @@ function Home() {
             note={`${stats.doneThisWeek} this week`}
           />
         </m.div>
+        )}
 
+        {fresh ? (
+          /* Nothing written and nothing focused yet: show only what can be
+             acted on. The figures, the chart and the gauge arrive with the
+             first task or session instead of greeting a new visitor with zeros. */
+          <m.div variants={stagger} className="grid grid-cols-1 gap-(--panel-gap) md:grid-cols-2">
+            <div className="[&>*]:h-full">
+              <UpNext task={next} />
+            </div>
+            <div>
+              <TimerCard timer={timer} defaultMinutes={defaultMinutes} />
+            </div>
+          </m.div>
+        ) : (
+        <>
         <m.div variants={stagger} className="grid grid-cols-1 gap-(--panel-gap) md:grid-cols-2 xl:grid-cols-12">
           <div className="md:col-span-2 xl:col-span-6 [&>*]:h-full">
             <WeekChart days={week} />
@@ -508,6 +526,8 @@ function Home() {
             <TimerCard timer={timer} defaultMinutes={defaultMinutes} />
           </div>
         </m.div>
+        </>
+        )}
       </m.div>
     </div>
   );
