@@ -8,11 +8,17 @@ import { DEFAULT_PRESETS, normalizePresetColor, THEME_COLOR_OPTIONS, toHexColor 
 import { ROUTE_META } from '../../routes/meta';
 
 import { formatTime } from '../../lib/time';
-import { longBreakDue as isLongBreakDue } from '../../lib/timer';
+import { longBreakDue as isLongBreakDue, nextPhase } from '../../lib/timer';
+import { useStoreValue } from '../../hooks/useStore';
 import { mergeStoredPresets, presetsToStore } from '../../lib/presets';
 
 // Re-exported so the Focus page keeps importing it from here.
 export { formatTime };
+
+// Read as booleans, so the timer's once-a-second save does not hand the
+// component a fresh settings object and a second render each tick.
+const readAutoStartBreaks = () => Boolean(localStorageService.getSettings()?.autoStartBreaks);
+const readAutoStartFocus = () => Boolean(localStorageService.getSettings()?.autoStartFocus);
 
 const PRESETS_KEY = 'focusTimerPresets';
 const SELECTED_PRESET_KEY = 'selectedFocusPreset';
@@ -54,7 +60,7 @@ function readPersistedTimer() {
     isBreak: false,
     sessionsCompleted: 0,
     sessionTask: null,
-    expiredWhileAway: false,
+    expiredAt: null,
   };
 
   const state = localStorageService.getTimerState();
@@ -74,7 +80,8 @@ function readPersistedTimer() {
       ...restored,
       timeLeft,
       isRunning: timeLeft > 0,
-      expiredWhileAway: timeLeft === 0 && state.timeLeft > 0,
+      // When it ran out, so an automatic next phase starts from then.
+      expiredAt: timeLeft === 0 && state.timeLeft > 0 ? state.lastSaved + state.timeLeft * 1000 : null,
     };
   }
 
@@ -127,6 +134,11 @@ export function usePomodoro() {
   const prevIsBreakRef = useRef(isBreak);
   const originalTitleRef = useRef(null);
   const [hasAutoStarted, setHasAutoStarted] = useState(false);
+  // Counts finished phases, so the countdown re-anchors after every one, even
+  // when an automatic start leaves it running in the same kind of phase.
+  const [phaseCount, setPhaseCount] = useState(0);
+  const [autoStartBreaks] = useStoreValue(readAutoStartBreaks);
+  const [autoStartFocus] = useStoreValue(readAutoStartFocus);
 
   const currentPreset = presets.find(p => p.id === selectedPreset) || presets[0];
   const workTime = currentPreset.workTime;
@@ -164,16 +176,31 @@ export function usePomodoro() {
   };
 
 
-  const handleComplete = useCallback(() => {
+  // `endedAt` is when the phase really ran out, which a background tab or a
+  // closed one learns late; lib/timer decides what comes next from it.
+  const handleComplete = useCallback((endedAt = Date.now()) => {
     const isWorkComplete = !isBreak;
+    const next = nextPhase({
+      isBreak,
+      completed: sessionsCompleted,
+      every: sessionsUntilLongBreak,
+      workTime,
+      breakTime,
+      longBreakTime,
+      autoStartBreaks,
+      autoStartFocus,
+      endedAt,
+      now: Date.now(),
+    });
+    setSessionsCompleted(next.sessionsCompleted);
+    setIsBreak(next.isBreak);
+    setTimeLeft(next.timeLeft);
+    setIsRunning(next.isRunning);
+    setPhaseCount((n) => n + 1);
+
     if (isWorkComplete) {
-      const newSessionsCompleted = sessionsCompleted + 1;
-      setSessionsCompleted(newSessionsCompleted);
-      setIsBreak(true);
-      
-      const nextBreakTime = isLongBreakDue(newSessionsCompleted, sessionsUntilLongBreak) ? longBreakTime : breakTime;
-      setTimeLeft(nextBreakTime);
-      
+      const newSessionsCompleted = next.sessionsCompleted;
+
       const sessions = localStorageService.getFocusSessions();
       sessions.push({
         date: new Date().toISOString(),
@@ -220,23 +247,22 @@ export function usePomodoro() {
         toast.success('Session complete', { description: 'Time for a break.' });
       }
     } else {
-      setIsBreak(false);
-      setTimeLeft(workTime);
-      showNotification('Break over', 'The next session is ready when you are.');
+      showNotification('Break over', next.isRunning ? 'The next session has started.' : 'The next session is ready when you are.');
       // The break end writes no notification record, so its chime has to be
       // asked for directly or the timer simply goes quiet.
       notificationService.playChime();
     }
-    setIsRunning(false);
-  }, [isBreak, sessionsCompleted, breakTime, longBreakTime, workTime, sessionsUntilLongBreak, selectedPreset, sessionTask]);
+  }, [isBreak, sessionsCompleted, breakTime, longBreakTime, workTime, sessionsUntilLongBreak, selectedPreset, sessionTask, autoStartBreaks, autoStartFocus]);
 
   // A session that ran out while the tab was closed still owes its completion
-  // work: the streak, the session log and the notification.
-  const expiredWhileAwayRef = useRef(restored.expiredWhileAway);
+  // work: the streak, the session log and the notification. It is finished as
+  // of when it ran out, so an automatic next phase has already been running.
+  const expiredAtRef = useRef(restored.expiredAt);
   useEffect(() => {
-    if (!expiredWhileAwayRef.current) return;
-    expiredWhileAwayRef.current = false;
-    handleComplete();
+    if (!expiredAtRef.current) return;
+    const endedAt = expiredAtRef.current;
+    expiredAtRef.current = null;
+    handleComplete(endedAt);
   }, [handleComplete]);
 
   useEffect(() => {
@@ -333,7 +359,7 @@ export function usePomodoro() {
       setTimeLeft(remaining);
       if (remaining === 0) {
         completed = true;
-        handleComplete();
+        handleComplete(endAt);
       }
     };
 
@@ -344,7 +370,7 @@ export function usePomodoro() {
       clearInterval(interval);
       document.removeEventListener('visibilitychange', tick);
     };
-  }, [isRunning, handleComplete]);
+  }, [isRunning, handleComplete, phaseCount]);
 
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
