@@ -10,7 +10,7 @@ A free, **local-first** productivity app: a to-do list and a Pomodoro focus time
 No login, no signup, no backend. Your data never leaves your browser.
 
 [![CI](https://github.com/dominikkoenitzer/Zephyr/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Zephyr/actions/workflows/ci.yml)
-[![Live](https://img.shields.io/badge/live-zephyr.punds.ch-0ea5e9?logo=vercel&logoColor=white)](https://zephyr.punds.ch)
+[![Live](https://img.shields.io/badge/live-zephyr.punds.ch-d4531f?logo=vercel&logoColor=white)](https://zephyr.punds.ch)
 [![PWA](https://img.shields.io/badge/PWA-installable-5a0fc8?logo=pwa&logoColor=white)](https://zephyr.punds.ch)
 ![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white)
