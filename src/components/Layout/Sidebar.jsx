@@ -38,20 +38,21 @@ function NavItem({ item, active, badge }) {
 }
 
 /**
- * The card at the foot of the sidebar. While a session runs it is the timer,
- * readable from any page; otherwise it is the way into one.
+ * The card at the foot of the sidebar. While a session runs, or waits paused,
+ * it is the timer, readable from any page; otherwise it is the way into one.
  */
 function FocusCard() {
   const timer = useTimerSnapshot();
-  const running = timer?.running && timer.timeLeft > 0;
+  const running = Boolean(timer?.running && timer.timeLeft > 0);
+  const paused = Boolean(timer && !timer.running && timer.total && timer.timeLeft > 0 && timer.timeLeft < timer.total);
+  const live = running || paused;
   const minutes = Math.round((timer?.workTime || 1500) / 60);
+  const label = running ? (timer.isBreak ? 'On a break' : 'In focus') : paused ? 'Paused' : 'Focus';
 
   return (
     <NightSurface className="p-5">
-      <p className="text-[12px] font-medium uppercase tracking-[0.16em] text-hero-foreground/65">
-        {running ? (timer.isBreak ? 'On a break' : 'In focus') : 'Focus'}
-      </p>
-      {running ? (
+      <p className="text-[12px] font-medium uppercase tracking-[0.16em] text-hero-foreground/65">{label}</p>
+      {live ? (
         <>
           <p className="mt-2 text-3xl font-semibold tabular-nums tracking-[-0.02em]">{formatTime(timer.timeLeft)}</p>
           {timer.focusTask?.title && (
@@ -64,10 +65,10 @@ function FocusCard() {
         </p>
       )}
       <Link
-        to={running ? '/focus' : '/focus?start=1'}
+        to={live ? '/focus' : '/focus?start=1'}
         className="mt-5 flex h-10 items-center justify-center rounded-full bg-hero-foreground text-sm font-semibold text-hero-to transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun"
       >
-        {running ? 'Open the timer' : 'Start a session'}
+        {running ? 'Open the timer' : paused ? 'Pick it back up' : 'Start a session'}
       </Link>
     </NightSurface>
   );
