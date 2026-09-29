@@ -1,5 +1,5 @@
 import { Card } from '../components/ui/card';
-import { FileText, Scale, AlertCircle } from 'lucide-react';
+import { Scale, AlertCircle } from 'lucide-react';
 import PageHeader from '../components/Layout/PageHeader';
 import PageContainer from '../components/Layout/PageContainer';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -18,29 +18,23 @@ function Terms() {
 
       <div className="grid grid-cols-1 items-start gap-(--panel-gap) xl:grid-cols-5">
         <Card className="p-6 sm:p-8 xl:col-span-3">
-          <h2 className="flex items-center gap-3 text-[17px] font-semibold leading-tight tracking-[-0.015em] text-foreground">
-            <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
-              <FileText className="h-[18px] w-[18px] text-primary-strong" />
-            </span>
-            Terms of Service
-          </h2>
-          <div className="mt-5 max-w-[70ch] text-[15px] leading-relaxed text-muted-foreground">
+          <div className="max-w-[70ch] text-[15px] leading-relaxed text-muted-foreground">
             <p className="inline-flex rounded-full bg-accent px-2.5 py-0.5 text-[12px] font-semibold text-foreground">Last updated: August 30, 2026</p>
 
-            <h3 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">1. Acceptance of Terms</h3>
+            <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">1. Acceptance of Terms</h2>
             <p className="mb-4">
               By accessing and using Zephyr, you accept and agree to be bound by the terms and provision of this agreement.
               If you do not agree to these terms, please do not use this application.
             </p>
 
-            <h3 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">2. License</h3>
+            <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">2. License</h2>
             <p className="mb-4">
               Zephyr&apos;s source code is open source under the <a href="https://github.com/dominikkoenitzer/Zephyr/blob/main/LICENSE" className="font-semibold text-primary-strong underline underline-offset-4">MIT License</a>,
               which lets you use, copy, and modify it under that license&apos;s terms. The hosted application at
               zephyr.punds.ch is provided free of charge for personal use.
             </p>
 
-            <h3 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">3. Disclaimer</h3>
+            <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">3. Disclaimer</h2>
             <p className="mb-4">
               The materials in Zephyr are provided on an &apos;as is&apos; basis. Zephyr makes no warranties, expressed or implied,
               and hereby disclaims and negates all other warranties including, without limitation, implied warranties or
@@ -48,7 +42,7 @@ function Terms() {
               or other violation of rights.
             </p>
 
-            <h3 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">4. Limitations</h3>
+            <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">4. Limitations</h2>
             <p className="mb-4">
               In no event shall Zephyr or its suppliers be liable for any damages (including, without limitation, damages for
               loss of data or profit, or due to business interruption) arising out of the use or inability to use Zephyr,
@@ -56,26 +50,26 @@ function Terms() {
               of such damage.
             </p>
 
-            <h3 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">5. Data Responsibility</h3>
+            <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">5. Data Responsibility</h2>
             <p className="mb-4">
               You are solely responsible for backing up your data. Zephyr stores all data locally on your device, and we
               are not responsible for any data loss resulting from device failure, browser issues, or user actions such as
               clearing browser data.
             </p>
 
-            <h3 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">6. Accuracy of Materials</h3>
+            <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">6. Accuracy of Materials</h2>
             <p className="mb-4">
               The materials appearing in Zephyr could include technical, typographical, or photographic errors. Zephyr does
               not warrant that any of the materials on its application are accurate, complete, or current.
             </p>
 
-            <h3 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">7. Modifications</h3>
+            <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">7. Modifications</h2>
             <p className="mb-4">
               Zephyr may revise these terms of service at any time without notice. By using this application you are agreeing
               to be bound by the then current version of these terms of service.
             </p>
 
-            <h3 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">8. Prohibited Uses</h3>
+            <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">8. Prohibited Uses</h2>
             <p className="mb-2">You may not use Zephyr:</p>
             <ul className="mb-4 list-disc space-y-1 pl-5 marker:text-primary">
               <li>In any way that violates any applicable law or regulation</li>
@@ -84,19 +78,19 @@ function Terms() {
               <li>In any manner that could damage, disable, or impair the application</li>
             </ul>
 
-            <h3 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">9. Termination</h3>
+            <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">9. Termination</h2>
             <p className="mb-4">
               We reserve the right to terminate or suspend access to Zephyr immediately, without prior notice or liability,
               for any reason whatsoever, including without limitation if you breach the Terms.
             </p>
 
-            <h3 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">10. Governing Law</h3>
+            <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">10. Governing Law</h2>
             <p className="mb-4">
               These terms and conditions are governed by and construed in accordance with applicable laws. Any disputes
               relating to these terms shall be subject to the exclusive jurisdiction of the courts in the applicable jurisdiction.
             </p>
 
-            <h3 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">11. Contact Information</h3>
+            <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">11. Contact Information</h2>
             <p>
               For questions about these Terms of Service, please contact us at: <a href="https://github.com/dominikkoenitzer/Zephyr/issues" className="font-semibold text-primary-strong underline underline-offset-4">GitHub</a>
             </p>
