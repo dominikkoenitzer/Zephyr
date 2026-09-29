@@ -14,6 +14,7 @@ import { notificationService } from '../services/notificationService';
 import { requestPersistentStorage } from '../lib/backup';
 import { useAppShortcuts } from '../hooks/useAppShortcuts';
 import { usePwaUpdate } from '../hooks/usePwaUpdate';
+import { useTimerWatch } from '../hooks/useTimerWatch';
 
 const THEME_LABEL = { light: 'Light theme', dark: 'Dark theme', system: 'Matching your system' };
 
@@ -25,6 +26,10 @@ function AppLayout() {
 
   // Registers the service worker, and offers a reload when a new build lands.
   usePwaUpdate();
+
+  // Focus runs its own countdown; on every other page the shell finishes a
+  // session that runs out.
+  useTimerWatch(location.pathname !== '/focus');
 
   useEffect(() => {
     themeService.initialize();
