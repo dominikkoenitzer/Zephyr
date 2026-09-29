@@ -43,8 +43,8 @@ function NavItem({ item, active, badge }) {
  */
 function FocusCard() {
   const timer = useTimerSnapshot();
-  const running = Boolean(timer?.running && timer.timeLeft > 0);
-  const paused = Boolean(timer && !timer.running && timer.total && timer.timeLeft > 0 && timer.timeLeft < timer.total);
+  const running = Boolean(timer?.running);
+  const paused = Boolean(timer?.paused);
   const live = running || paused;
   const minutes = Math.round((timer?.workTime || 1500) / 60);
   const label = running ? (timer.isBreak ? 'On a break' : 'In focus') : paused ? 'Paused' : 'Focus';
