@@ -152,7 +152,8 @@ function Help() {
         </Card>
 
         {/* Keyboard shortcuts */}
-        <Card className="animate-fade-in-up p-6 xl:col-span-5" style={{ animationDelay: '0.15s' }}>
+        {/* Phones have no keyboard, so the key map only shows from md up. */}
+        <Card className="animate-fade-in-up hidden p-6 md:block xl:col-span-5" style={{ animationDelay: '0.15s' }}>
           <IconTitle icon={Keyboard}>Keyboard shortcuts</IconTitle>
           <div className="mt-5">
             <ShortcutTable />
