@@ -9,7 +9,6 @@ import { routes } from './routes/routes';
 // Self-hosted, so the first paint waits on no third-party stylesheet and
 // no visitor's address goes to a font CDN.
 import '@fontsource-variable/manrope/wght.css';
-import '@fontsource-variable/space-grotesk/wght.css';
 import './index.css';
 import { themeService } from './services/themeService';
 
