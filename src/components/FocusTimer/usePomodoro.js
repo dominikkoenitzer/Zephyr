@@ -9,6 +9,7 @@ import { ROUTE_META } from '../../routes/meta';
 
 import { formatTime } from '../../lib/time';
 import { longBreakDue as isLongBreakDue } from '../../lib/timer';
+import { mergeStoredPresets, presetsToStore } from '../../lib/presets';
 
 // Re-exported so the Focus page keeps importing it from here.
 export { formatTime };
@@ -16,7 +17,7 @@ export { formatTime };
 const PRESETS_KEY = 'focusTimerPresets';
 const SELECTED_PRESET_KEY = 'selectedFocusPreset';
 
-/** Saved presets, defaults first so a custom one can never shadow them. */
+/** Saved presets: the built-ins with any stored edits, then the custom ones. */
 function readPresets() {
   const saved = localStorage.getItem(PRESETS_KEY);
   if (!saved) return [...DEFAULT_PRESETS];
@@ -25,8 +26,7 @@ function readPresets() {
       ...p,
       color: normalizePresetColor(p.color),
     }));
-    const defaultIds = DEFAULT_PRESETS.map((p) => p.id);
-    return [...DEFAULT_PRESETS, ...parsed.filter((p) => !defaultIds.includes(p.id))];
+    return mergeStoredPresets(parsed, DEFAULT_PRESETS);
   } catch (error) {
     console.error('Failed to load presets:', error);
     return [...DEFAULT_PRESETS];
@@ -500,8 +500,7 @@ export function usePomodoro() {
     );
     
     setPresets(updatedPresets);
-    const customPresets = updatedPresets.filter(p => !DEFAULT_PRESETS.find(dp => dp.id === p.id));
-    localStorage.setItem('focusTimerPresets', JSON.stringify(customPresets));
+    localStorage.setItem(PRESETS_KEY, JSON.stringify(presetsToStore(updatedPresets, DEFAULT_PRESETS)));
     
     if (selectedPreset === editingPreset.id) {
       setSelectedPreset(editingPreset.id);
@@ -532,8 +531,7 @@ export function usePomodoro() {
     
     const updatedPresets = [...presets, newPreset];
     setPresets(updatedPresets);
-    const customPresets = updatedPresets.filter(p => !DEFAULT_PRESETS.find(dp => dp.id === p.id));
-    localStorage.setItem('focusTimerPresets', JSON.stringify(customPresets));
+    localStorage.setItem(PRESETS_KEY, JSON.stringify(presetsToStore(updatedPresets, DEFAULT_PRESETS)));
     setSelectedPreset(newPreset.id);
     setEditingPreset(newPreset);
     setNewPresetName('New Timer');
@@ -545,8 +543,7 @@ export function usePomodoro() {
     
     const updatedPresets = presets.filter(p => p.id !== presetId);
     setPresets(updatedPresets);
-    const customPresets = updatedPresets.filter(p => !DEFAULT_PRESETS.find(dp => dp.id === p.id));
-    localStorage.setItem('focusTimerPresets', JSON.stringify(customPresets));
+    localStorage.setItem(PRESETS_KEY, JSON.stringify(presetsToStore(updatedPresets, DEFAULT_PRESETS)));
     
     if (selectedPreset === presetId) {
       setSelectedPreset('pomodoro');
