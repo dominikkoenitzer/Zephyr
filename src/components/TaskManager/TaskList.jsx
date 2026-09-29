@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { m, AnimatePresence } from 'motion/react';
 import {
-  Check, Plus, Trash2, Target, Edit2, ArrowRight,
+  Check, Plus, Trash2, Edit2, ArrowRight,
   Timer as TimerIcon, Sparkles,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -11,7 +11,6 @@ import { CalendarPicker } from '../ui/calendar-picker';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { EmptyState } from '../ui/empty-state';
 import { localStorageService } from '../../services/localStorage';
 import { parseQuickTask } from '../../lib/quickParse';
 import { clearCompletedWithUndo, deleteTaskWithUndo } from '../../lib/taskActions';
@@ -384,7 +383,7 @@ const TaskList = () => {
           <input
             ref={newTaskInputRef}
             autoFocus
-            placeholder='Add a task, like "Call mum friday !high #home"'
+            placeholder="Add a task"
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
             onKeyDown={(e) => {
@@ -485,7 +484,7 @@ const TaskList = () => {
             ) : activeTotal > 0 ? (
               /* Nothing matches the current filter, but tasks do exist */
               <div className="px-3 py-8">
-                <p className="text-lg font-medium">No open tasks match this filter.</p>
+                <p className="text-lg font-medium">Nothing here</p>
                 <button
                   type="button"
                   onClick={() => { chooseView('all'); chooseTag(''); }}
@@ -497,8 +496,7 @@ const TaskList = () => {
               </div>
             ) : (
               <div className="px-3 py-8">
-                <p className="text-lg font-medium">Everything is done.</p>
-                <p className="mt-1 text-sm text-muted-foreground">Add the next thing above.</p>
+                <p className="text-lg font-medium">All done</p>
               </div>
             )}
           </section>
@@ -620,11 +618,7 @@ const TaskList = () => {
       {/* Empty state */}
       {tasks.length === 0 && (
         <div className={cn(card, 'mt-5')}>
-          <EmptyState
-            icon={Target}
-            title="No tasks yet"
-            description="Add your first task in the field above. Type a due date, a priority or a #tag into it and Zephyr picks them up as you write."
-          />
+          <p className="px-6 py-10 text-center text-[15px] text-muted-foreground">No tasks yet</p>
         </div>
       )}
 
