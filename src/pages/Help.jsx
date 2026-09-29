@@ -58,7 +58,7 @@ function Help() {
     },
     {
       question: "How do I track my progress?",
-      answer: "Zephyr tracks your focus sessions and your completed tasks. The home screen adds up the week: active tasks, tasks finished, focus minutes and sessions. The timer keeps a daily streak alongside that, and everything is saved as it happens.",
+      answer: "The dashboard adds up your week: open and overdue tasks, focus time, recent sessions and how much of your list is done. The timer keeps a daily streak.",
       icon: FileText,
       iconColor: "text-primary-strong",
       bgColor: "bg-primary/10"
