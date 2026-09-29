@@ -9,7 +9,7 @@ Last updated: 2026-08-30
 ## Features
 
 - [Tasks](https://zephyr.punds.ch/tasks): Tasks with due dates, priorities and #tags. Natural-language quick add reads plain English as you type, so "Email Sam tomorrow !high #work" sets the due date, priority and tag by itself. The list groups into Overdue, Today, Tomorrow, This week and Later, and filters by due window or tag. Deleting a task offers an undo that restores its original position.
-- [Focus Timer](https://zephyr.punds.ch/focus): A Pomodoro timer with presets for Pomodoro (25 min work / 5 min break), Short Focus (15/3), Deep Work (45/10) and Meditation (10/2), plus custom presets with their own colours. The Pomodoro preset schedules a longer 15-minute break after every fourth session. Sessions are logged, a daily streak is tracked, and a session can be tied to a specific task.
+- [Focus Timer](https://zephyr.punds.ch/focus): A Pomodoro timer with presets for Pomodoro (25 min work / 5 min break), Short Focus (15/3), Deep Work (45/10) and Meditation (10/2), plus custom presets with their own colours. The Pomodoro preset schedules a longer 15-minute break after every fourth session. Sessions are logged, a daily streak is tracked, and a session can be tied to a specific task. Breaks and the next session can start by themselves.
 - [Dashboard](https://zephyr.punds.ch/): The day and the week at a glance: open and overdue tasks, focus time, what is up next and due soon, recent sessions and progress.
 - [Settings](https://zephyr.punds.ch/settings): Theme, notification preferences, and data export/import.
 - [Help & FAQ](https://zephyr.punds.ch/help): How the app works, keyboard shortcuts, and data handling.
@@ -21,7 +21,7 @@ Last updated: 2026-08-30
 - Free. No signup, no login, no account, no paid tier.
 - Local-first: all data lives in the browser's localStorage under `zephyr_` keys. Nothing is uploaded and there is no telemetry of user content.
 - Works offline as an installable PWA. A new version asks before reloading rather than replacing itself mid-session.
-- Backup: export all data as a file and import it on another device, from Settings, Data.
+- Backup: export all data as a file and import it on another device, from Settings, Data, which also shows when the last export was made.
 - Command palette on Ctrl/Cmd+K searches tasks and reaches every command.
 - Light, dark and system themes.
 - Topics: productivity, time management, pomodoro technique, task manager, to-do list, offline app, privacy-friendly productivity.

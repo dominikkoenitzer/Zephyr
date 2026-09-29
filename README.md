@@ -58,14 +58,14 @@ Most productivity apps want an account, a subscription, and a copy of your data 
 | Feature | What it does |
 |---|---|
 | **Tasks** | Due dates, priorities and `#tags`. [Natural-language quick add](#natural-language-quick-add) understands plain English as you type. Filter by due window or tag, and the list groups itself into Overdue / Today / Tomorrow / This week / Later. |
-| **Focus Timer** | A Pomodoro timer drawn as a sunset: the sun crosses the sky and sets as the session ends, a moon on breaks. Four built-in [presets](#focus-presets) plus your own, session tracking, and a day streak that tells you when it is about to lapse. |
+| **Focus Timer** | A Pomodoro timer drawn as a sunset: the sun crosses the sky and sets as the session ends, a moon on breaks. Four built-in [presets](#focus-presets) plus your own, session tracking, and a day streak that tells you when it is about to lapse. Breaks and the next session can start by themselves. |
 | **Dashboard** | The day and the week at a glance: open and overdue tasks, focus time, what's up next and due soon, recent sessions and how much of the list is done. A first visit shows only what can be acted on. |
 | **Command palette** | <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> from anywhere, a phone included, searches your tasks and runs any command: new task, start a session, switch theme, export a backup. |
 | **Keyboard-first** | [Single-key shortcuts](#command-palette--keyboard) for everything you do often, and <kbd>?</kbd> prints the map. |
 | **Undo** | Deleting a task or clearing completed ones offers an Undo that restores them in place. |
 | **Notifications** | Optional in-app reminders for upcoming due dates, plus a chime when a focus session ends. All toggleable. |
 | **Light, dark, or system** | Pick a scheme or follow the OS. It changes live when your system does, and every open tab follows. |
-| **Backup and restore** | Export everything to one JSON file and import it on any device. Settings shows how much storage Zephyr is using. |
+| **Backup and restore** | Export everything to one JSON file and import it on any device. Settings shows how much storage Zephyr is using and when you last exported, and Zephyr asks the browser to keep its storage. |
 
 ## Natural-language quick add
 
@@ -80,6 +80,7 @@ Email Sam tomorrow !high #work
 | Token | Examples | Becomes |
 |---|---|---|
 | **Date** | `today`, `tonight`, `tomorrow`, `next monday`, `friday`, `in 3 days`, `aug 5`, `12/25`, `2026-08-05` | Due date |
+| **Time** | `at 3pm`, `15:30` | Due today, or tomorrow once that time has passed. The time stays in the title |
 | **Priority** | `!high` · `!med` · `!low` (also `!h`/`!m`/`!l`, `!1`/`!2`/`!3`, `p1`/`p2`/`p3`) | Priority |
 | **Tag** | `#work`, `#family` | Tags (lowercased, de-duplicated) |
 
