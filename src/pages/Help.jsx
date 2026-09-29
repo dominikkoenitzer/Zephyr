@@ -79,7 +79,7 @@ function Help() {
     },
     {
       question: "How do I clear all my data?",
-      answer: "To clear all your data, go to Settings > Data Management. Click the 'Clear All Local Storage' button. You'll be asked to confirm this action as it permanently deletes all tasks, timer sessions, settings, and preferences. This action cannot be undone and will reload the page. Export a backup first (Settings > Data Management > Export data) if you want to keep anything.",
+      answer: "Settings > Data > Delete all data. It asks first, and it can't be undone. Export a backup before if you want to keep anything.",
       icon: Trash2,
       iconColor: "text-destructive-strong",
       bgColor: "bg-destructive/10"
