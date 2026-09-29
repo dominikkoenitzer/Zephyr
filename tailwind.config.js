@@ -48,7 +48,6 @@ export default {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
           strong: "hsl(var(--primary-strong))",
-          deep: "hsl(var(--primary-deep))",
           soft: "hsl(var(--primary-soft))",
         },
         hero: {
