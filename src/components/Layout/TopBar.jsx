@@ -16,7 +16,7 @@ const roundButton =
 
 /**
  * The bar above every page, inside the content column: the search pill on the
- * left, the date and the round utility buttons on the right. On phones the
+ * left, the round utility buttons on the right. On phones the
  * sidebar is gone, so the mark takes the search pill's place and search
  * becomes one more round button.
  */
@@ -28,7 +28,6 @@ function TopBar({ onSearchClick }) {
   const ThemeIcon = THEME_ICON[preference] || Monitor;
   const themeLabel =
     preference === 'system' ? `System (${colorMode})` : preference === 'dark' ? 'Dark' : 'Light';
-  const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 
   useEffect(() => {
     // Updates instantly when notifications change (via the in-app change
@@ -84,8 +83,6 @@ function TopBar({ onSearchClick }) {
         </button>
 
         <div className="ml-auto flex items-center gap-2">
-          <p className="mr-3 hidden text-sm font-medium text-muted-foreground xl:block">{today}</p>
-
           <button
             type="button"
             onClick={onSearchClick}
