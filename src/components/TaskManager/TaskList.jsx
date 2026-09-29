@@ -16,7 +16,7 @@ import { localStorageService } from '../../services/localStorage';
 import { parseQuickTask } from '../../lib/quickParse';
 import { clearCompletedWithUndo, deleteTaskWithUndo } from '../../lib/taskActions';
 import {
-  TASK_VIEWS, TASK_VIEW_IDS, collectTags, countsByView, filterActive, groupTasks, todayKey,
+  TASK_GROUPS, TASK_VIEWS, TASK_VIEW_IDS, collectTags, countsByView, filterActive, groupTasks, todayKey,
 } from '../../lib/taskFilters';
 import { useTasks } from '../../hooks/useStore';
 
@@ -35,18 +35,32 @@ const rowMotion = {
   transition: { type: 'spring', stiffness: 520, damping: 42 },
 };
 
-/** A group heading: the label, a hairline running to the count, the count. */
+/** A group heading: the label and its count in a small pill. */
 function GroupHeading({ label, count, tone = 'muted' }) {
   return (
-    <h2 className="mb-1 flex items-center gap-3 text-[12px] font-medium uppercase tracking-[0.22em]">
-      <span className={tone === 'alert' ? 'text-destructive-strong' : 'text-muted-foreground'}>
-        {label}
+    <h2 className="mb-1 flex items-center gap-2 px-3 text-[13px] font-semibold">
+      <span className={tone === 'alert' ? 'text-destructive-strong' : 'text-foreground'}>{label}</span>
+      <span
+        className={cn(
+          'rounded-full px-2 py-px text-[11px] tabular-nums',
+          tone === 'alert' ? 'bg-destructive/10 text-destructive-strong' : 'bg-accent text-muted-foreground'
+        )}
+      >
+        {count}
       </span>
-      <span className="h-px flex-1 bg-border" aria-hidden="true" />
-      <span className="tabular-nums text-muted-foreground">{count}</span>
     </h2>
   );
 }
+
+/** Which filter view each summary row opens. */
+const GROUP_VIEW = {
+  overdue: 'overdue',
+  today: 'today',
+  tomorrow: 'upcoming',
+  week: 'upcoming',
+  later: 'upcoming',
+  undated: 'undated',
+};
 
 const TaskList = () => {
   const navigate = useNavigate();
@@ -204,42 +218,76 @@ const TaskList = () => {
   };
 
   /**
-   * One task. No card and no border of its own; the list's hairlines separate
-   * the rows, the meta sits quiet on the right, and the row's actions take the
+   * One task: a row inside the list card that lights up under the cursor. The
+   * meta sits on the right as small pills, and the row's actions take the
    * meta's place on hover so nothing moves under the cursor.
    */
   const renderTask = (task) => {
     const due = formatDate(task.dueDate);
     const overdue = isOverdue(task.dueDate);
     const priority = PRIORITY_TEXT[task.priority];
+    const meta = (
+      <>
+                {priority && (
+                  <span
+                    className={cn(
+                      'rounded-full px-2.5 py-0.5',
+                      priority === 'high' ? 'bg-primary/10 text-primary-strong' : 'bg-accent text-muted-foreground'
+                    )}
+                  >
+                    {priority}
+                  </span>
+                )}
+                {/* Only the date goes red when it is late: a low-priority task
+                    that happens to be overdue is not suddenly urgent. */}
+                {due && (
+                  <span
+                    className={cn(
+                      'rounded-full px-2.5 py-0.5',
+                      overdue ? 'bg-destructive/10 text-destructive-strong' : 'bg-accent text-foreground'
+                    )}
+                  >
+                    {due}
+                  </span>
+                )}
+      </>
+    );
+    const roundAction =
+      'flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
     return (
       <m.li key={task.id} {...rowMotion} className="group/row">
         <div
           onClick={() => setEditingTask(task)}
-          className="flex cursor-pointer items-start gap-4 py-3.5 pr-1"
+          className="flex cursor-pointer items-start gap-3.5 rounded-2xl px-3 py-3 transition-colors hover:bg-accent/60"
         >
           <button
             type="button"
             aria-label={`Mark "${task.title}" complete`}
             onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
-            className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-muted-foreground/50 text-transparent transition-colors hover:border-primary-strong hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="mt-px flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full border-2 border-muted-foreground/40 text-transparent transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
           >
-            <Check className="h-3 w-3" strokeWidth={3} />
+            <Check className="h-3 w-3" strokeWidth={3.5} />
           </button>
 
           <div className="min-w-0 flex-1">
-            <p className="text-[16px] leading-6 text-foreground">{task.title}</p>
-            {(task.description || (task.tags && task.tags.length > 0)) && (
-              <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
-                {task.description && <span className="truncate">{task.description}</span>}
+            <p className="text-[15.5px] font-medium leading-6 text-foreground">{task.title}</p>
+            {(task.description || (task.tags && task.tags.length > 0) || priority || due) && (
+              <p
+                className={cn(
+                  'mt-1.5 flex-wrap items-center gap-1.5 text-[12px] text-muted-foreground',
+                  task.description || task.tags?.length ? 'flex' : 'flex sm:hidden'
+                )}
+              >
+                <span className="flex items-center gap-1.5 font-semibold tabular-nums sm:hidden">{meta}</span>
+                {task.description && <span className="mr-1 truncate text-[13px]">{task.description}</span>}
                 {(task.tags || []).map((tag) => (
                   <button
                     key={tag}
                     type="button"
                     onClick={(e) => { e.stopPropagation(); chooseTag(tagFilter === tag ? '' : tag); }}
                     aria-label={`Filter by ${tag}`}
-                    className="transition-colors hover:text-foreground"
+                    className="rounded-full bg-accent px-2 py-0.5 font-semibold transition-colors hover:bg-foreground hover:text-background"
                   >
                     #{tag}
                   </button>
@@ -250,19 +298,12 @@ const TaskList = () => {
 
           {/* Meta and actions share one slot: the meta fades out as the actions
               fade in, so the row never reflows under the cursor. */}
-          <div className="relative mt-0.5 shrink-0">
-            <span
-              className={cn(
-                'flex items-center gap-3 text-[13px] leading-6 tabular-nums text-muted-foreground transition-opacity duration-150 sm:group-hover/row:opacity-0 sm:group-focus-within/row:opacity-0'
-              )}
-            >
-              {priority && <span>{priority}</span>}
-              {/* Only the date goes red when it is late: a low-priority task
-                  that happens to be overdue is not suddenly urgent. */}
-              {due && <span className={overdue ? 'text-destructive-strong' : undefined}>{due}</span>}
+          <div className="relative hidden shrink-0 sm:block">
+            <span className="flex items-center gap-1.5 text-[12px] font-semibold leading-6 tabular-nums transition-opacity duration-150 sm:group-hover/row:opacity-0 sm:group-focus-within/row:opacity-0">
+              {meta}
             </span>
 
-            <div className="pointer-events-none absolute -top-1.5 right-0 hidden items-center gap-0.5 opacity-0 transition-opacity duration-150 sm:flex sm:group-hover/row:pointer-events-auto sm:group-hover/row:opacity-100 sm:group-focus-within/row:pointer-events-auto sm:group-focus-within/row:opacity-100">
+            <div className="pointer-events-none absolute -top-1 right-0 hidden items-center gap-1 opacity-0 transition-opacity duration-150 sm:flex sm:group-hover/row:pointer-events-auto sm:group-hover/row:opacity-100 sm:group-focus-within/row:pointer-events-auto sm:group-focus-within/row:opacity-100">
               <button
                 type="button"
                 aria-label={`Start a focus session on "${task.title}"`}
@@ -271,7 +312,7 @@ const TaskList = () => {
                   e.stopPropagation();
                   navigate(`/focus?taskId=${task.id}&title=${encodeURIComponent(task.title)}&start=1`);
                 }}
-                className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className={cn(roundAction, 'hover:text-foreground')}
               >
                 <TimerIcon className="h-4 w-4" />
               </button>
@@ -279,7 +320,7 @@ const TaskList = () => {
                 type="button"
                 aria-label={`Edit "${task.title}"`}
                 onClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
-                className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className={cn(roundAction, 'hover:text-foreground')}
               >
                 <Edit2 className="h-4 w-4" />
               </button>
@@ -287,7 +328,7 @@ const TaskList = () => {
                 type="button"
                 aria-label={`Delete "${task.title}"`}
                 onClick={(e) => { e.stopPropagation(); deleteTaskWithUndo(task.id); }}
-                className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className={cn(roundAction, 'hover:text-destructive-strong')}
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -298,30 +339,46 @@ const TaskList = () => {
     );
   };
 
-  const filterButton = (label, active, onClick, count, key) => (
+  const filterButton = (label, active, onClick, count, key, group = 'view') => (
     <button
       key={key}
       type="button"
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'flex shrink-0 items-center gap-1.5 border-b-2 pb-1.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors',
-        active
-          ? 'border-foreground text-foreground'
-          : 'border-transparent text-muted-foreground hover:text-foreground'
+        'relative isolate flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        active ? 'text-hero-foreground' : 'text-muted-foreground hover:text-foreground'
       )}
     >
+      {active && (
+        <m.span
+          layoutId={`task-${group}-active`}
+          transition={{ type: 'spring', stiffness: 420, damping: 36 }}
+          className="absolute inset-0 -z-10 rounded-full bg-linear-to-br from-hero-from to-hero-to"
+        />
+      )}
       {label}
-      {count !== undefined && <span className="tabular-nums opacity-60">{count}</span>}
+      {count !== undefined && <span className="tabular-nums opacity-70">{count}</span>}
     </button>
   );
 
+  // The summary card's rows: every heading the list can show, with its count.
+  const groupCounts = useMemo(() => {
+    const all = groupTasks(tasks.filter((t) => !t.completed), today);
+    return TASK_GROUPS.map((g) => ({ ...g, count: all.find((x) => x.id === g.id)?.tasks.length || 0 }));
+  }, [tasks, today]);
+  const donePct = totalCount ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  const card = 'rounded-3xl bg-card shadow-(--shadow-card)';
+
   return (
     <div className="w-full">
-      {/* Quick add: a line to write on, not a box. */}
+      {/* Quick add: a white pill to write in, with the add button inside it. */}
       <form onSubmit={addTask}>
-        <div className="flex items-center gap-3 border-b border-border pb-3 transition-colors focus-within:border-foreground">
-          <Plus className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+        <div className={cn(card, 'flex h-16 items-center gap-3 rounded-full pl-3 pr-2 transition-shadow focus-within:ring-2 focus-within:ring-primary/35')}>
+          <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary-strong">
+            <Plus className="h-5 w-5" />
+          </span>
           <input
             ref={newTaskInputRef}
             autoFocus
@@ -337,174 +394,236 @@ const TaskList = () => {
               else e.currentTarget.blur();
             }}
             aria-label="Add a task"
-            className="w-full min-w-0 bg-transparent py-1 text-[18px] text-foreground placeholder:text-muted-foreground focus:outline-none"
+            className="w-full min-w-0 bg-transparent text-[16px] font-medium text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:outline-none sm:text-[17px]"
           />
           {newTask.trim() && (
-            <button
-              type="submit"
-              aria-label="Add task"
-              className="flex shrink-0 items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
+            <Button type="submit" aria-label="Add task" className="h-12 shrink-0">
               Add
-              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-            </button>
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Button>
           )}
         </div>
 
         {newTask.trim() && (parsed.dueDate || parsed.priority || parsed.tags.length > 0) && (
-          <p className="animate-fade-in mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[13px] text-muted-foreground">
-            <Sparkles className="h-3.5 w-3.5 text-primary-strong" aria-hidden="true" />
+          <p className="animate-fade-in mt-3 flex flex-wrap items-center gap-1.5 px-3 text-[12px] font-semibold">
+            <Sparkles className="mr-1 h-3.5 w-3.5 text-primary-strong" aria-hidden="true" />
             {[
               parsed.dueDate && formatDate(parsed.dueDate),
               parsed.priority && `${parsed.priority} priority`,
               ...parsed.tags.map((t) => `#${t}`),
             ]
               .filter(Boolean)
-              .map((label, index, all) => (
-                <span key={label} className="text-foreground/80">
+              .map((label) => (
+                <span key={label} className="rounded-full bg-card px-2.5 py-1 text-foreground shadow-(--shadow-sm)">
                   {label}
-                  {index < all.length - 1 && <span className="ml-2.5 text-muted-foreground">·</span>}
                 </span>
               ))}
           </p>
         )}
       </form>
 
-      {/* Filters: words on a rule, not a row of pills */}
+      {/* Filters: one segmented pill for the views, one for the tags */}
       {activeTotal > 0 && (
-        <div className="mt-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-border">
+        <div className="mt-5 flex flex-wrap items-center gap-2">
           <div
-            className="scrollbar-hide -mx-1 flex max-w-full flex-nowrap items-end gap-x-5 overflow-x-auto px-1 sm:mx-0 sm:flex-wrap sm:gap-y-2 sm:overflow-visible sm:px-0"
+            className={cn(card, 'scrollbar-hide flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full p-1')}
             role="group"
             aria-label="Filter tasks"
           >
             {TASK_VIEWS.map((v) =>
               filterButton(v.label, view === v.id, () => chooseView(v.id), counts[v.id], v.id)
             )}
-            {allTags.length > 0 && (
-              <span className="mb-2 hidden h-3 w-px bg-border sm:block" aria-hidden="true" />
-            )}
-            {allTags.map((tag) =>
-              filterButton(
-                `#${tag}`,
-                tagFilter === tag,
-                () => chooseTag(tagFilter === tag ? '' : tag),
-                undefined,
-                tag
-              )
-            )}
           </div>
-          <p className="pb-1.5 text-[12px] font-medium uppercase tracking-[0.16em] tabular-nums text-muted-foreground">
-            {completedCount} of {totalCount} done
-          </p>
-        </div>
-      )}
-
-      {/* Active tasks */}
-      {activeTasks.length > 0 && (
-        <section className="mt-7">
-          {grouped ? (
-            <div className="space-y-7">
-              {grouped.map((group) => (
-                <div key={group.id}>
-                  <GroupHeading
-                    label={group.label}
-                    count={group.tasks.length}
-                    tone={group.id === 'overdue' ? 'alert' : 'muted'}
-                  />
-                  <ul className="divide-y divide-border">
-                    <AnimatePresence initial={false}>{group.tasks.map(renderTask)}</AnimatePresence>
-                  </ul>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <ul className="divide-y divide-border border-t border-border">
-              <AnimatePresence initial={false}>{activeTasks.map(renderTask)}</AnimatePresence>
-            </ul>
-          )}
-        </section>
-      )}
-
-      {/* Nothing matches the current filter, but tasks do exist */}
-      {activeTasks.length === 0 && activeTotal > 0 && (
-        <div className="mt-10">
-          <p className="text-lg text-muted-foreground">No active tasks match this filter.</p>
-          <button
-            type="button"
-            onClick={() => { chooseView('all'); chooseTag(''); }}
-            className="mt-3 inline-flex items-center gap-1.5 text-sm text-foreground transition-colors hover:text-primary-strong"
-          >
-            Show all {activeTotal}
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-          </button>
-        </div>
-      )}
-
-      {/* Completed: collapsed by default; the list is about what is left */}
-      {completedTasks.length > 0 && (
-        <section className="mt-12 border-t border-border pt-4">
-          <div className="flex items-center justify-between gap-4">
-            <button
-              type="button"
-              onClick={() => setShowCompleted(!showCompleted)}
-              aria-expanded={showCompleted}
-              className="text-[12px] font-medium uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-foreground"
+          {allTags.length > 0 && (
+            <div
+              className={cn(card, 'scrollbar-hide flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full p-1')}
+              role="group"
+              aria-label="Filter by tag"
             >
-              Completed · <span className="tabular-nums">{completedTasks.length}</span>
-            </button>
-            {showCompleted && (
-              <button
-                type="button"
-                onClick={() => clearCompletedWithUndo()}
-                className="text-[12px] font-medium uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:text-destructive-strong"
-              >
-                Clear
-              </button>
+              {allTags.map((tag) =>
+                filterButton(
+                  `#${tag}`,
+                  tagFilter === tag,
+                  () => chooseTag(tagFilter === tag ? '' : tag),
+                  undefined,
+                  `tag:${tag}`,
+                  'tag'
+                )
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {tasks.length > 0 && (
+        <div className="mt-5 grid grid-cols-1 items-start gap-(--panel-gap) xl:grid-cols-12">
+          {/* The list */}
+          <section className={cn(card, 'p-3 sm:p-4 xl:col-span-8')} aria-label="Open tasks">
+            {activeTasks.length > 0 ? (
+              grouped ? (
+                <div className="space-y-5 py-1">
+                  {grouped.map((group) => (
+                    <div key={group.id}>
+                      <GroupHeading
+                        label={group.label}
+                        count={group.tasks.length}
+                        tone={group.id === 'overdue' ? 'alert' : 'muted'}
+                      />
+                      <ul>
+                        <AnimatePresence initial={false}>{group.tasks.map(renderTask)}</AnimatePresence>
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <ul>
+                  <AnimatePresence initial={false}>{activeTasks.map(renderTask)}</AnimatePresence>
+                </ul>
+              )
+            ) : activeTotal > 0 ? (
+              /* Nothing matches the current filter, but tasks do exist */
+              <div className="px-3 py-8">
+                <p className="text-lg font-medium">No open tasks match this filter.</p>
+                <button
+                  type="button"
+                  onClick={() => { chooseView('all'); chooseTag(''); }}
+                  className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-strong transition-colors hover:text-foreground"
+                >
+                  Show all {activeTotal}
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              </div>
+            ) : (
+              <div className="px-3 py-8">
+                <p className="text-lg font-medium">Everything is done.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Add the next thing above.</p>
+              </div>
+            )}
+          </section>
+
+          <div className="space-y-(--panel-gap) xl:col-span-4">
+            {/* Summary: how far through the list you are, and each heading's
+                count as a row that filters to it. */}
+            <section className={cn(card, 'p-6')} aria-labelledby="summary-title">
+              <div className="flex items-baseline justify-between gap-3">
+                <h2 id="summary-title" className="text-[17px] font-semibold tracking-[-0.015em]">Summary</h2>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-semibold tabular-nums text-foreground">{completedCount}</span> of {totalCount} done
+                </p>
+              </div>
+              <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-accent" aria-hidden="true">
+                <m.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${donePct}%` }}
+                  transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+                  className="h-full rounded-full bg-linear-to-r from-primary to-primary-soft"
+                />
+              </div>
+              <ul className="mt-5 space-y-0.5">
+                {groupCounts.map((g) => (
+                  <li key={g.id}>
+                    <button
+                      type="button"
+                      disabled={g.count === 0}
+                      onClick={() => chooseView(GROUP_VIEW[g.id])}
+                      className="-mx-2 flex w-[calc(100%+1rem)] items-center gap-3 rounded-xl px-2 py-1.5 text-left text-[14px] transition-colors hover:bg-accent/70 disabled:pointer-events-none disabled:opacity-45"
+                    >
+                      <span className={cn('flex-1 font-medium', g.id === 'overdue' && g.count ? 'text-destructive-strong' : 'text-foreground')}>
+                        {g.label}
+                      </span>
+                      <span className="w-24 overflow-hidden rounded-full bg-accent" aria-hidden="true">
+                        <span
+                          className={cn('block h-1.5 rounded-full', g.id === 'overdue' ? 'bg-destructive' : 'bg-night')}
+                          style={{ width: `${activeTotal ? Math.round((g.count / activeTotal) * 100) : 0}%` }}
+                        />
+                      </span>
+                      <span className="w-5 text-right font-semibold tabular-nums">{g.count}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            {/* Completed: collapsed by default; the list is about what is left */}
+            {completedTasks.length > 0 && (
+              <section className={cn(card, 'p-6')}>
+                <div className="flex items-center justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowCompleted(!showCompleted)}
+                    aria-expanded={showCompleted}
+                    className="flex items-center gap-2 text-[17px] font-semibold tracking-[-0.015em] transition-colors hover:text-primary-strong"
+                  >
+                    Completed
+                    <span className="rounded-full bg-accent px-2 py-px text-[12px] tabular-nums text-muted-foreground">
+                      {completedTasks.length}
+                    </span>
+                  </button>
+                  {showCompleted ? (
+                    <button
+                      type="button"
+                      onClick={() => clearCompletedWithUndo()}
+                      className="rounded-full px-3 py-1 text-[13px] font-semibold text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive-strong"
+                    >
+                      Clear
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowCompleted(true)}
+                      className="rounded-full px-3 py-1 text-[13px] font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    >
+                      Show
+                    </button>
+                  )}
+                </div>
+
+                {showCompleted && (
+                  <ul className="mt-3">
+                    <AnimatePresence initial={false}>
+                      {completedTasks.map((task) => (
+                        <m.li key={task.id} {...rowMotion} className="group/row">
+                          <div className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-accent/60">
+                            <button
+                              type="button"
+                              aria-label={`Mark "${task.title}" not complete`}
+                              onClick={() => toggleTask(task.id)}
+                              className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                            >
+                              <Check className="h-3 w-3" strokeWidth={3.5} />
+                            </button>
+                            <span className="min-w-0 flex-1 truncate text-[14px] text-muted-foreground line-through">
+                              {task.title}
+                            </span>
+                            <button
+                              type="button"
+                              aria-label={`Delete "${task.title}"`}
+                              onClick={() => deleteTaskWithUndo(task.id)}
+                              className="rounded-full p-1.5 text-muted-foreground transition-opacity hover:text-destructive-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:opacity-0 sm:group-hover/row:opacity-100 sm:group-focus-within/row:opacity-100"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </m.li>
+                      ))}
+                    </AnimatePresence>
+                  </ul>
+                )}
+              </section>
             )}
           </div>
-
-          {showCompleted && (
-            <ul className="mt-1 divide-y divide-border">
-              <AnimatePresence initial={false}>
-                {completedTasks.map((task) => (
-                  <m.li key={task.id} {...rowMotion} className="group/row">
-                    <div className="flex items-center gap-4 py-3">
-                      <button
-                        type="button"
-                        aria-label={`Mark "${task.title}" not complete`}
-                        onClick={() => toggleTask(task.id)}
-                        className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-primary-strong/50 bg-primary/10 text-primary-strong transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                      >
-                        <Check className="h-3 w-3" strokeWidth={3} />
-                      </button>
-                      <span className="min-w-0 flex-1 truncate text-[16px] text-muted-foreground line-through">
-                        {task.title}
-                      </span>
-                      <button
-                        type="button"
-                        aria-label={`Delete "${task.title}"`}
-                        onClick={() => deleteTaskWithUndo(task.id)}
-                        className="rounded-md p-1.5 text-muted-foreground transition-opacity hover:text-destructive-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:opacity-0 sm:group-hover/row:opacity-100 sm:group-focus-within/row:opacity-100"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </m.li>
-                ))}
-              </AnimatePresence>
-            </ul>
-          )}
-        </section>
+        </div>
       )}
 
       {/* Empty state */}
       {tasks.length === 0 && (
-        <EmptyState
-          icon={Target}
-          title="No tasks yet"
-          description="Add your first task on the line above. Type a due date, a priority or a #tag into it and Zephyr picks them up as you write."
-        />
+        <div className={cn(card, 'mt-5')}>
+          <EmptyState
+            icon={Target}
+            title="No tasks yet"
+            description="Add your first task in the field above. Type a due date, a priority or a #tag into it and Zephyr picks them up as you write."
+          />
+        </div>
       )}
 
       {/* Edit task dialog */}
