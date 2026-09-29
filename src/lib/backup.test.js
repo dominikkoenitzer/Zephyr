@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   applyBackup, backupFileName, collectBackupData, deleteAllData, isBackupKey, isValidBackup, lastBackupLabel,
-  shouldAskPersist, wipeAllData,
+  requestPersistentStorage, resetPersistRequest, shouldAskPersist, wipeAllData,
 } from './backup';
 
 beforeEach(() => {
@@ -159,5 +159,53 @@ describe('shouldAskPersist', () => {
   it('asks again only after a month', () => {
     expect(shouldAskPersist({ persisted: false, askedAt: '2026-09-10T12:00:00Z', now })).toBe(false);
     expect(shouldAskPersist({ persisted: false, askedAt: '2026-08-30T12:00:00Z', now })).toBe(true);
+  });
+});
+
+describe('requestPersistentStorage', () => {
+  const fakeStorage = ({ persisted = false, grant = true } = {}) => {
+    const calls = { persist: 0 };
+    return {
+      calls,
+      persisted: async () => persisted,
+      persist: async () => {
+        calls.persist += 1;
+        return grant;
+      },
+    };
+  };
+
+  beforeEach(() => resetPersistRequest());
+
+  it('asks once, remembers it, and does not ask again this month', async () => {
+    const storage = fakeStorage();
+    expect(await requestPersistentStorage({ storage, now: new Date('2026-09-29T12:00:00Z') })).toBe(true);
+    expect(localStorage.getItem('zephyr_storage_persist_asked')).toBe('2026-09-29T12:00:00.000Z');
+
+    resetPersistRequest();
+    expect(await requestPersistentStorage({ storage, now: new Date('2026-10-05T12:00:00Z') })).toBe(false);
+    expect(storage.calls.persist).toBe(1);
+  });
+
+  it('asks only once however often the page calls it', async () => {
+    const storage = fakeStorage();
+    await Promise.all([requestPersistentStorage({ storage }), requestPersistentStorage({ storage })]);
+    expect(storage.calls.persist).toBe(1);
+  });
+
+  it('does not ask when the storage is already kept or the answer was no', async () => {
+    const kept = fakeStorage({ persisted: true });
+    expect(await requestPersistentStorage({ storage: kept })).toBe(true);
+    expect(kept.calls.persist).toBe(0);
+
+    resetPersistRequest();
+    const storage = fakeStorage();
+    const permissions = { query: async () => ({ state: 'denied' }) };
+    expect(await requestPersistentStorage({ storage, permissions })).toBe(false);
+    expect(storage.calls.persist).toBe(0);
+  });
+
+  it('does nothing where the browser has no storage manager', async () => {
+    expect(await requestPersistentStorage({ storage: undefined })).toBe(false);
   });
 });

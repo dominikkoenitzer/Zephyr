@@ -3,7 +3,7 @@
 // small envelope so a foreign JSON file can be rejected before it overwrites
 // anything.
 
-import { STORAGE_KEYS } from '../services/localStorage';
+import { STORAGE_KEYS, localStorageService } from '../services/localStorage';
 
 // Keys that belong to the app but aren't `zephyr`-prefixed.
 export const EXTRA_BACKUP_KEYS = ['focusTimerPresets', 'selectedFocusPreset', 'theme'];
@@ -149,3 +149,45 @@ export function shouldAskPersist({ persisted, permission, askedAt, now = new Dat
   if (Number.isNaN(asked)) return true;
   return new Date(now).getTime() - asked >= PERSIST_ASK_EVERY_DAYS * 86_400_000;
 }
+
+let persistRequest = null;
+
+/**
+ * Ask the browser once per visit, and within shouldAskPersist's limits, not
+ * to clear Zephyr's storage when space runs low. Everything lives in this
+ * browser, so an eviction would be the whole list gone.
+ *
+ * @returns {Promise<boolean>} whether the storage is kept.
+ */
+export function requestPersistentStorage({
+  storage = globalThis.navigator?.storage,
+  permissions = globalThis.navigator?.permissions,
+  now = new Date(),
+} = {}) {
+  if (!persistRequest) {
+    persistRequest = (async () => {
+      if (typeof storage?.persist !== 'function' || typeof storage?.persisted !== 'function') return false;
+      try {
+        if (await storage.persisted()) return true;
+        let permission;
+        try {
+          permission = (await permissions?.query?.({ name: 'persistent-storage' }))?.state;
+        } catch {
+          // Not every browser knows this permission's name.
+        }
+        const askedAt = localStorageService.getPersistAsked();
+        if (!shouldAskPersist({ persisted: false, permission, askedAt, now })) return false;
+        localStorageService.savePersistAsked(now);
+        return Boolean(await storage.persist());
+      } catch {
+        return false;
+      }
+    })();
+  }
+  return persistRequest;
+}
+
+/** For tests: forget this visit's request. */
+export const resetPersistRequest = () => {
+  persistRequest = null;
+};
