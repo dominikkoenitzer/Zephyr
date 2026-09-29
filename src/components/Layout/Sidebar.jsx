@@ -93,7 +93,7 @@ function Sidebar() {
         </Link>
 
         <nav aria-label="Primary" className="mt-10">
-          <p className="mb-2 px-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Menu</p>
+          <p className="mb-2 px-3.5 text-[13px] font-semibold text-muted-foreground">Menu</p>
           <ul className="space-y-1">
             {MENU.map((item) => (
               <li key={item.href}>
