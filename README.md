@@ -118,6 +118,7 @@ Every duration is adjustable, and you can save your own custom presets. Complete
 - **[Motion](https://motion.dev/)** for animations: page transitions, layout animations, micro-interactions, all respecting reduced-motion
 - **[lucide-react](https://lucide.dev/)** icons · **[sonner](https://sonner.emilkowal.ski/)** toasts
 - **[Vitest](https://vitest.dev/)** + jsdom for unit tests
+- **[Playwright](https://playwright.dev/)** + [axe](https://github.com/dequelabs/axe-core) for browser tests: every page in both themes at desktop and phone width, plus the timer, task and delete flows
 - **[Bun](https://bun.sh/)** as the runtime, package manager, and script runner
 - **[Vercel](https://vercel.com/)** hosting + `@vercel/analytics`
 - **No backend.** State lives in the browser via `localStorage`
