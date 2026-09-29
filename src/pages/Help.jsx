@@ -13,7 +13,7 @@ const QUICK_START = [
   { title: 'Write today down', text: 'Open the Tasks page and add what actually has to happen today.' },
   { title: 'Start a session', text: 'Go to Focus and press play. The default session runs 25 minutes.' },
   { title: 'Take the break', text: 'When the timer ends, leave the screen. Five minutes away is the point of the method.' },
-  { title: 'Check the week', text: 'The home screen adds up tasks finished, focus minutes and sessions.' },
+  { title: 'Check the week', text: 'The dashboard adds up what you finished and how long you focused.' },
 ];
 
 /** A card title with its small round icon. */
