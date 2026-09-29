@@ -36,3 +36,49 @@ export function timerSnapshot(state, now = Date.now()) {
     progress: total ? Math.min(100, ((total - timeLeft) / total) * 100) : 0,
   };
 }
+
+/**
+ * Where the timer goes when a phase runs out at `endedAt`, seen at `now`.
+ *
+ * Focus is followed by a break (the long one when it is due) and a break by
+ * focus. The next phase starts by itself only when its auto-start setting is
+ * on, and then from the moment the last one ended rather than from `now`: a
+ * background tab ticks late and a closed one not at all, and the break should
+ * not grow by that delay.
+ *
+ * Only the phase that was really running is finished here, so a session is
+ * counted once however long the timer went unwatched. A break that ran out
+ * unseen is simply over; a focus session that would have run out unseen is
+ * never started, so nothing is logged for time no one was there. Either way
+ * the timer comes to rest on a focus session, ready.
+ */
+export function nextPhase({
+  isBreak,
+  completed = 0,
+  every = 4,
+  workTime,
+  breakTime,
+  longBreakTime,
+  autoStartBreaks = false,
+  autoStartFocus = false,
+  endedAt,
+  now = Date.now(),
+}) {
+  const sessionsCompleted = isBreak ? completed : completed + 1;
+  const ready = { isBreak: false, sessionsCompleted, timeLeft: workTime, isRunning: false };
+  const since = (start) => Math.max(0, Math.floor((now - (Number(start) || now)) / 1000));
+
+  const startFocus = (start) => {
+    if (!autoStartFocus) return ready;
+    const timeLeft = workTime - since(start);
+    return timeLeft > 0 ? { ...ready, timeLeft, isRunning: true } : ready;
+  };
+
+  if (isBreak) return startFocus(endedAt);
+
+  const length = longBreakDue(sessionsCompleted, every) ? longBreakTime : breakTime;
+  if (!autoStartBreaks) return { isBreak: true, sessionsCompleted, timeLeft: length, isRunning: false };
+  const timeLeft = length - since(endedAt);
+  if (timeLeft > 0) return { isBreak: true, sessionsCompleted, timeLeft, isRunning: true };
+  return startFocus((Number(endedAt) || now) + length * 1000);
+}
