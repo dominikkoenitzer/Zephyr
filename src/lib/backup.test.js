@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
-  applyBackup, backupFileName, collectBackupData, isBackupKey, isValidBackup, wipeAllData,
+  applyBackup, backupFileName, collectBackupData, deleteAllData, isBackupKey, isValidBackup, wipeAllData,
 } from './backup';
 
 beforeEach(() => {
@@ -72,5 +72,27 @@ describe('wipeAllData', () => {
 describe('backupFileName', () => {
   it('is dated so two exports never collide in a downloads folder', () => {
     expect(backupFileName(new Date('2026-08-21T10:00:00Z'))).toBe('zephyr-backup-2026-08-21.json');
+  });
+});
+
+describe('deleteAllData', () => {
+  it('counts what was stored before it goes, not what is left after', () => {
+    localStorage.setItem('zephyr_tasks', '1');
+    localStorage.setItem('zephyr_focus_sessions', '1');
+    localStorage.setItem('theme', 'dark');
+    localStorage.setItem('unrelated-app', 'keep me');
+
+    expect(deleteAllData()).toBe(3);
+    expect(localStorage.getItem('zephyr_tasks')).toBeNull();
+    expect(localStorage.getItem('unrelated-app')).toBe('keep me');
+  });
+
+  it('tells the open views that everything changed', () => {
+    const seen = [];
+    const listen = (e) => seen.push(e.detail.key);
+    window.addEventListener('zephyr:change', listen);
+    deleteAllData();
+    window.removeEventListener('zephyr:change', listen);
+    expect(seen).toEqual([null]);
   });
 });
