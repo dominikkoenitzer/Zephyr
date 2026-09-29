@@ -481,7 +481,7 @@ function Home() {
             to="/tasks"
             label="Done"
             value={stats.done}
-            note={`${stats.doneThisWeek} this week, ${stats.total} in total`}
+            note={`${stats.doneThisWeek} this week`}
           />
         </m.div>
 
