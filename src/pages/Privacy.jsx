@@ -64,7 +64,7 @@ function Privacy() {
 
             <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">6. Data Deletion</h2>
             <p className="mb-4">
-              You can delete all your data at any time by using the &quot;Clear All Local Storage&quot; feature in Settings.
+              You can delete all your data at any time with &quot;Delete all data&quot; in Settings.
               This action permanently removes all stored data and cannot be undone.
             </p>
 
