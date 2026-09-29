@@ -246,6 +246,27 @@ test.describe('the command palette', () => {
   });
 });
 
+test.describe('the mini timer', () => {
+  test('floats the countdown, and its button starts and pauses the timer', async ({ page }) => {
+    await seed(page);
+    await page.goto('/focus');
+    test.skip(!(await page.evaluate(() => 'documentPictureInPicture' in window)), 'no picture-in-picture here');
+    await page.getByRole('button', { name: 'Mini timer' }).click();
+    // A headless shell has the API but may not open the window.
+    await page.waitForTimeout(1500);
+    test.skip(!(await page.evaluate(() => Boolean(window.documentPictureInPicture.window))), 'this browser cannot open one');
+    const pipText = () => page.evaluate(() => window.documentPictureInPicture.window?.document.body.innerText || '');
+    await expect.poll(pipText).toContain('25:00');
+    await page.evaluate(() => window.documentPictureInPicture.window.document.querySelector('button').click());
+    await expect(page.getByRole('button', { name: 'Pause timer' })).toBeVisible();
+    await expect.poll(pipText, { timeout: 5000 }).toMatch(/24:5\d/);
+    await page.evaluate(() => window.documentPictureInPicture.window.document.querySelector('button').click());
+    await expect(page.getByRole('button', { name: 'Start timer' })).toBeVisible();
+    await page.getByRole('button', { name: 'Close mini timer' }).click();
+    await expect.poll(() => page.evaluate(() => Boolean(window.documentPictureInPicture.window))).toBe(false);
+  });
+});
+
 test.describe('overlays', () => {
   const rootBg = (page) => page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor);
 
