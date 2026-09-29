@@ -365,7 +365,6 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
               <kbd className="kbd">esc</kbd>
               close
             </span>
-            <span className="ml-auto">Type “shortcuts” for the full key map</span>
           </div>
         </DialogPrimitive.Content>
       </DialogPortal>
