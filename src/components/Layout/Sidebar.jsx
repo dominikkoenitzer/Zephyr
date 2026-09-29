@@ -51,7 +51,7 @@ function FocusCard() {
 
   return (
     <NightSurface className="p-5">
-      <p className="text-[12px] font-medium uppercase tracking-[0.16em] text-hero-foreground/65">{label}</p>
+      <p className="text-[13px] font-semibold text-hero-foreground/65">{label}</p>
       {live ? (
         <>
           <p className="mt-2 text-3xl font-semibold tabular-nums tracking-[-0.02em]">{formatTime(timer.timeLeft)}</p>
