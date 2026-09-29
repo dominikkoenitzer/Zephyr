@@ -49,7 +49,7 @@ describe('notificationService: task reminders', () => {
     notificationService.checkTaskDueDates();
 
     const titles = notificationService.getNotifications().map((n) => n.title).sort();
-    expect(titles).toEqual(['Task Due Soon', 'Task Due Today', 'Task Overdue']);
+    expect(titles).toEqual(['Task due soon', 'Task due today', 'Task overdue']);
   });
 
   it('still announces a task again the next day', () => {
