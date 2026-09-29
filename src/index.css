@@ -181,6 +181,11 @@
     min-height: 100vh;
     min-height: 100dvh;
   }
+
+  /* Selected text takes the apricot tint instead of the browser's blue. */
+  ::selection {
+    background-color: hsl(var(--primary) / 0.22);
+  }
   
   /* Smooth scrolling for all scrollable elements */
   * {
