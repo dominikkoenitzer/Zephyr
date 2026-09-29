@@ -35,8 +35,9 @@ const PresetSettingsDialog = ({
       {preset && (
         <div className="space-y-6 px-5 py-5 sm:px-7">
           <div className="space-y-2">
-            <label className="text-sm font-medium mb-2 block text-foreground">Preset name</label>
+            <label htmlFor="preset-name" className="text-sm font-medium mb-2 block text-foreground">Preset name</label>
             <Input
+              id="preset-name"
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
               placeholder="Enter preset name"
@@ -132,8 +133,9 @@ const PresetSettingsDialog = ({
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Hex value</label>
+                <label htmlFor="preset-hex" className="text-sm font-medium text-foreground">Hex value</label>
                 <Input
+                  id="preset-hex"
                   value={colorDraft}
                   onChange={(e) => {
                     const val = e.target.value.trim();
