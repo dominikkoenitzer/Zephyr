@@ -38,6 +38,15 @@ const nextWeekday = (targetDow, allowToday = false) => {
 const collapse = (text) => text.replace(/\s{2,}/g, ' ').trim();
 
 /**
+ * The date, or null when the day does not exist in that month: `new Date`
+ * rolls 2/30 over to 2 March and 25/12 to a January two years on.
+ */
+const realDate = (year, monthIndex, day) => {
+  const d = new Date(year, monthIndex, day);
+  return d.getFullYear() === year && d.getMonth() === monthIndex && d.getDate() === day ? d : null;
+};
+
+/**
  * @param {string} input Raw task text the user typed.
  * @returns {{ title: string, dueDate: string|null, priority: string|null, tags: string[] }}
  */
@@ -71,13 +80,17 @@ export function parseQuickTask(input) {
   const today = startOfToday();
   const dateRules = [
     // ISO date: 2026-08-05
-    { re: /(^|\s)(\d{4})-(\d{2})-(\d{2})(?=\s|$)/, run: (m) => new Date(Number(m[2]), Number(m[3]) - 1, Number(m[4])) },
+    { re: /(^|\s)(\d{4})-(\d{2})-(\d{2})(?=\s|$)/, run: (m) => realDate(Number(m[2]), Number(m[3]) - 1, Number(m[4])) },
     // M/D or M/D/YYYY
     {
       re: /(^|\s)(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?(?=\s|$)/,
       run: (m) => {
-        const year = m[4] ? Number(m[4].length === 2 ? `20${m[4]}` : m[4]) : today.getFullYear();
-        return new Date(year, Number(m[2]) - 1, Number(m[3]));
+        const month = Number(m[2]) - 1;
+        const day = Number(m[3]);
+        if (m[4]) return realDate(Number(m[4].length === 2 ? `20${m[4]}` : m[4]), month, day);
+        // Without a year it is the next such day, as with a month name.
+        const d = realDate(today.getFullYear(), month, day);
+        return d && d < today ? realDate(today.getFullYear() + 1, month, day) : d;
       },
     },
     // Month name + day: "aug 5", "august 5th"
@@ -86,9 +99,8 @@ export function parseQuickTask(input) {
       run: (m) => {
         const month = MONTHS.indexOf(m[2].slice(0, 3).toLowerCase());
         const day = Number(m[3]);
-        let d = new Date(today.getFullYear(), month, day);
-        if (d < today) d = new Date(today.getFullYear() + 1, month, day);
-        return d;
+        const d = realDate(today.getFullYear(), month, day);
+        return d && d < today ? realDate(today.getFullYear() + 1, month, day) : d;
       },
     },
     // "in 3 days" / "in 2 weeks"
