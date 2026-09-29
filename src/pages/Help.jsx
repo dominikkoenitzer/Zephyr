@@ -95,7 +95,6 @@ function Help() {
     <PageContainer>
       <PageHeader
         title="Help & Support"
-        description="How Zephyr works, from shortcuts to backups"
         actions={legalLinks.map((link) => {
           const Icon = link.icon;
           return (

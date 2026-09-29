@@ -14,7 +14,6 @@ function Privacy() {
     <PageContainer>
       <PageHeader
         title="Privacy Policy"
-        description="What Zephyr stores, where it lives, and who can see it"
       />
 
       <div className="grid grid-cols-1 gap-(--panel-gap)">
