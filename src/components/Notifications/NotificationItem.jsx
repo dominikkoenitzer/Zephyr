@@ -9,9 +9,9 @@ const NOTIFICATION_ICONS = {
 };
 
 const NOTIFICATION_COLORS = {
-  task: 'text-blue-500',
-  timer: 'text-green-500',
-  note: 'text-indigo-500'
+  task: 'text-primary-strong',
+  timer: 'text-night',
+  note: 'text-muted-foreground'
 };
 
 const NotificationItem = ({ notification, onRead, onDelete, onClick }) => {
@@ -36,9 +36,9 @@ const NotificationItem = ({ notification, onRead, onDelete, onClick }) => {
   return (
     <div
       className={cn(
-        "group flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg transition-colors cursor-pointer",
+        "group flex cursor-pointer items-start gap-3 rounded-2xl p-2.5 transition-colors",
         notification.read 
-          ? "bg-transparent hover:bg-accent/30" 
+          ? "bg-transparent hover:bg-accent/60" 
           : "bg-accent/50 hover:bg-accent"
       )}
       onClick={() => {
@@ -50,7 +50,7 @@ const NotificationItem = ({ notification, onRead, onDelete, onClick }) => {
         }
       }}
     >
-      <div className={cn("p-1.5 sm:p-2 rounded-lg bg-background shrink-0", iconColor)}>
+      <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-card shadow-(--shadow-sm)", iconColor)}>
         <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
       </div>
       
