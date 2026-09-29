@@ -72,7 +72,7 @@ function Help() {
     },
     {
       question: "Is my data backed up?",
-      answer: "Zephyr stores all data locally on your device. We cannot see it, and there is no automatic cloud backup. You can download a full backup anytime from Settings > Data Management > Export data, and restore it on any device with Import backup. Clearing your browser's site data will remove everything, so export a backup first if your data matters.",
+      answer: "Not automatically. Everything lives in your browser, and nobody else can see it. Settings > Data > Export saves a backup file; Import restores it on any device. Clearing your browser's site data removes everything, so export first if it matters.",
       icon: Cloud,
       iconColor: "text-primary-strong",
       bgColor: "bg-primary/10"
