@@ -5,6 +5,8 @@ const Toaster = () => (
     richColors
     closeButton
     position="bottom-right"
+    // On phones the nav floats at the bottom; toasts sit above it.
+    mobileOffset={{ bottom: '6rem' }}
     theme="system"
     toastOptions={{
       classNames: {
