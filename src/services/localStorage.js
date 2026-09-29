@@ -290,6 +290,45 @@ class LocalStorageService {
     }
   }
 
+  // When this browser last exported a backup (an ISO string), for Settings.
+  saveLastBackup(date = new Date()) {
+    try {
+      const at = new Date(date).toISOString();
+      localStorage.setItem(STORAGE_KEYS.LAST_BACKUP, at);
+      emitChange(STORAGE_KEYS.LAST_BACKUP);
+      return at;
+    } catch (error) {
+      console.error('Failed to save last backup:', error);
+      return null;
+    }
+  }
+
+  getLastBackup() {
+    try {
+      return localStorage.getItem(STORAGE_KEYS.LAST_BACKUP);
+    } catch {
+      return null;
+    }
+  }
+
+  // When this browser was last asked to keep Zephyr's storage (lib/backup).
+  savePersistAsked(date = new Date()) {
+    try {
+      localStorage.setItem(STORAGE_KEYS.PERSIST_ASKED, new Date(date).toISOString());
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  getPersistAsked() {
+    try {
+      return localStorage.getItem(STORAGE_KEYS.PERSIST_ASKED);
+    } catch {
+      return null;
+    }
+  }
+
   getLastSession() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.LAST_SESSION);
