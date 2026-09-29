@@ -53,11 +53,10 @@ const NotificationCenter = ({ onClose }) => {
   const readNotifications = notifications.filter(n => n.read);
 
   return (
-    <div className="absolute top-full right-0 mt-6 sm:mt-7 w-[calc(100vw-1.5rem)] sm:w-96 max-w-[calc(100vw-1.5rem)] sm:max-w-96 bg-background border border-border rounded-lg shadow-lg max-h-[calc(100vh-5rem)] sm:max-h-[600px] flex flex-col z-50">
-      <div className="flex items-center justify-between p-2.5 sm:p-4 border-b border-border">
+    <div className="absolute top-full right-0 z-50 mt-3 flex max-h-[calc(100vh-6rem)] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-3xl bg-popover shadow-(--shadow-overlay) sm:max-h-[600px] sm:w-96 sm:max-w-96">
+      <div className="flex items-center justify-between px-5 pb-3 pt-5">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
-          <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-foreground shrink-0" />
-          <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">Notifications</h3>
+                    <h3 className="truncate text-[17px] font-semibold tracking-[-0.015em] text-foreground">Notifications</h3>
           {unreadCount > 0 && (
             <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-medium bg-primary text-primary-foreground rounded-full shrink-0">
               {unreadCount}
@@ -114,8 +113,8 @@ const NotificationCenter = ({ onClose }) => {
                   />
                 ))}
                 {readNotifications.length > 0 && (
-                  <div className="pt-1.5 sm:pt-2 mt-1.5 sm:mt-2 border-t border-border">
-                    <div className="px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  <div className="mt-2 pt-2">
+                    <div className="px-3 py-1 text-[12px] font-semibold text-muted-foreground">
                       Earlier
                     </div>
                   </div>
