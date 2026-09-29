@@ -80,7 +80,8 @@ const NotificationItem = ({ notification, onRead, onDelete, onClick }) => {
       <Button
         variant="ghost"
         size="icon"
-        className="h-6 w-6 sm:h-7 sm:w-7 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0"
+        aria-label={`Delete notification: ${notification.title}`}
+        className="h-6 w-6 sm:h-7 sm:w-7 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100 transition-opacity shrink-0"
         onClick={(e) => {
           e.stopPropagation();
           onDelete(notification.id);
