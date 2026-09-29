@@ -185,7 +185,7 @@ Every write broadcasts a `zephyr:change` event. Reactive hooks in **`src/hooks/u
 Zephyr is built around a simple promise: **your data is yours and stays on your device.**
 
 - All content is stored in your browser's `localStorage`. There is no server, no account, and no telemetry of your content.
-- Because data is local there is no automatic cloud backup, but you can **export a full backup file** and import it on any device from **Settings → Data Management**. Clearing your browser data (or using **Clear All Local Storage**) removes everything permanently.
+- Because data is local there is no automatic cloud backup, but you can **export a full backup file** and import it on any device from **Settings → Data**. Clearing your browser data (or using **Clear All Local Storage**) removes everything permanently.
 
 ## Deployment & CI/CD
 
