@@ -41,7 +41,9 @@ test.describe('the task list', () => {
     await page.waitForTimeout(300);
     await page.keyboard.press('Shift+Tab');
     await expect(page.locator('button:focus')).toHaveCount(1);
-    expect(await page.evaluate(() => document.activeElement.closest('[role="dialog"]'))).toBeNull();
+    expect(await page.evaluate(() => document.activeElement.closest('[role="dialog"]')?.getAttribute('aria-label'))).toBe(
+      'Choose a date',
+    );
 
     await page.keyboard.press('Escape');
     await expect(next).toHaveCount(0);
