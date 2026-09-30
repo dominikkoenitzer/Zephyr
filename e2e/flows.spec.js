@@ -175,6 +175,19 @@ test.describe('settings', () => {
   });
 });
 
+test.describe('the command palette', () => {
+  test('finds a task by characters that mean something in a pattern', async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    await seed(page, { tasks: [{ id: 'cpp', title: 'Learn c++ (basics)', priority: 'low', dueDate: null, tags: [], completed: false, subtasks: [], description: '', createdAt: new Date().toISOString() }] });
+    await page.goto('/tasks');
+    await page.keyboard.press('Control+k');
+    await page.getByRole('combobox').fill('c++ (');
+    await expect(page.getByRole('option', { name: /Learn c\+\+ \(basics\)/ })).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+});
+
 test.describe('overlays', () => {
   const rootBg = (page) => page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor);
 
