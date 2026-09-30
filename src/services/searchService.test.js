@@ -45,4 +45,11 @@ describe('searchService', () => {
     const res = searchService.searchAll('   ');
     expect(searchService.getTotalCount(res)).toBe(0);
   });
+
+  it('takes characters that mean something in a pattern literally', () => {
+    localStorage.setItem('zephyr_tasks', JSON.stringify({ tasks: [{ id: 'c', title: 'Learn c++ (basics)', tags: [] }] }));
+    expect(searchService.searchAll('c++').tasks).toHaveLength(1);
+    expect(searchService.searchAll('(basics').tasks).toHaveLength(1);
+    expect(searchService.searchAll('[').tasks).toHaveLength(0);
+  });
 });
