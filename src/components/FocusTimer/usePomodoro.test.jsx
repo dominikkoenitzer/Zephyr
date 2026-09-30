@@ -77,6 +77,24 @@ describe('usePomodoro', () => {
     expect(timer.currentSessionTime).toBe(3000);
   });
 
+  it('gives a short break for a session skipped right after the long break', () => {
+    localStorageService.saveTimerState({
+      timeLeft: 1500, isRunning: false, isBreak: false, pomodorosCompleted: 4,
+      workTime: 1500, breakTime: 300, longBreakTime: 900, sessionTotal: 1500, focusTask: null,
+    });
+    mount();
+    act(() => timer.toggleTimer());
+    seconds(60);
+    act(() => timer.skipSession());
+
+    expect(timer.isBreak).toBe(true);
+    expect(timer.sessionType.text).toBe('Short break');
+    expect(timer.timeLeft).toBe(300);
+    expect(timer.currentSessionTime).toBe(300);
+    expect(timer.progress).toBe(0);
+    expect(localStorageService.getTimerState().sessionTotal).toBe(300);
+  });
+
   it('still gives the long break after the session that earns it', () => {
     localStorageService.saveTimerState({
       timeLeft: 1500, isRunning: false, isBreak: false, pomodorosCompleted: 3,
