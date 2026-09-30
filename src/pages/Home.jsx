@@ -107,9 +107,9 @@ function WeekChart({ days }) {
                   animate={{ height: `${height}%` }}
                   transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
                   className={cn(
-                    'relative w-full max-w-12 rounded-full',
-                    // Never shorter than it is wide, or a short day draws a dot.
-                    !empty && 'min-h-14',
+                    // Never shorter than it is wide, or a short day draws a dot and an
+                    // empty one a squashed ring.
+                    'relative min-h-14 w-full max-w-12 rounded-full',
                     empty
                       ? cn('border-2 border-dashed', d.isToday ? 'border-primary/60' : 'border-border')
                       : d.isToday
