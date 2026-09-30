@@ -25,6 +25,7 @@ function TopBar({ onSearchClick }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const notificationContainerRef = useRef(null);
   const notificationPanelId = useId();
+  const bellRef = useRef(null);
   const { preference, colorMode, cycle } = useTheme();
   const ThemeIcon = THEME_ICON[preference] || Monitor;
   const themeLabel =
@@ -59,6 +60,19 @@ function TopBar({ onSearchClick }) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!showNotifications) return undefined;
+    // Escape closes the panel from anywhere and puts focus back on the bell,
+    // so a keyboard user lands where they opened it.
+    const handleEscape = (event) => {
+      if (event.key !== 'Escape') return;
+      setShowNotifications(false);
+      bellRef.current?.focus();
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [showNotifications]);
 
   return (
     <header className="sticky top-0 z-40 bg-background/85 px-responsive pt-3 backdrop-blur-xl lg:pl-3">
@@ -106,6 +120,7 @@ function TopBar({ onSearchClick }) {
 
           <div className="relative" ref={notificationContainerRef}>
             <button
+              ref={bellRef}
               type="button"
               onClick={() => setShowNotifications(!showNotifications)}
               className={roundButton}
