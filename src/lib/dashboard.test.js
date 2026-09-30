@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  barHeights,
   dashboardStats,
   dueLabel,
   donePercent,
@@ -65,6 +66,29 @@ describe('focusToday', () => {
 
   it('starts every day at zero', () => {
     expect(focusToday([{ date: at(29), duration: 1500 }], NOW)).toEqual({ sessions: 0, minutes: 0 });
+  });
+});
+
+describe('barHeights', () => {
+  const week = (...minutes) => weekDays(NOW).map((d, i) => ({ ...d, minutes: minutes[i] }));
+
+  it('never draws an empty day taller than a day with minutes', () => {
+    const heights = barHeights(week(0, 1, 0, 0, 0, 0, 0));
+    const real = heights[1];
+    heights.forEach((h, i) => {
+      if (i !== 1) expect(h).toBeLessThanOrEqual(real);
+    });
+  });
+
+  it('keeps the days still to come lower than the empty days behind', () => {
+    const [past, , today, future] = barHeights(week(0, 90, 0, 0, 0, 0, 0));
+    expect(today).toBe(past);
+    expect(future).toBeLessThan(past);
+  });
+
+  it('scales days with minutes against the longest one', () => {
+    const heights = barHeights(week(120, 60, 30, 0, 0, 0, 0));
+    expect(heights.slice(0, 3)).toEqual([100, 50, 25]);
   });
 });
 
