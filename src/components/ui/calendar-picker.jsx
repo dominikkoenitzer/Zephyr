@@ -255,6 +255,8 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
         ref={triggerRef}
         onClick={openPicker}
         onKeyDown={handleTriggerKeyDown}
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
         className={cn(
           "flex h-11 w-full items-center gap-2 rounded-2xl bg-accent px-4 py-2 text-sm font-medium",
           "transition-colors hover:bg-accent/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
@@ -302,6 +304,8 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
           />
           <div
             ref={panelRef}
+            role="dialog"
+            aria-label="Choose a date"
             className="pointer-events-auto fixed z-50 max-h-[calc(100vh-1rem)] overflow-y-auto rounded-3xl bg-popover shadow-(--shadow-overlay)"
             style={{
               top: panelPosition.top,
@@ -349,6 +353,9 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
                     key={date.toISOString()}
                     data-start-focus={(selectedDate ? isSelected(date) : isToday(date)) || undefined}
                     onClick={() => handleDateSelect(date)}
+                    aria-label={date.toLocaleDateString(undefined, { dateStyle: "full" })}
+                    aria-pressed={isSelected(date)}
+                    aria-current={isToday(date) ? "date" : undefined}
                     className={cn(
                       "relative flex aspect-square items-center justify-center rounded-full text-sm font-semibold transition-all",
                       inCurrentMonth ? "text-foreground" : "text-muted-foreground/50",
