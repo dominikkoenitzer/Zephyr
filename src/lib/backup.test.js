@@ -67,6 +67,28 @@ describe('applyBackup', () => {
   });
 });
 
+describe('the running timer', () => {
+  const running = JSON.stringify({ timeLeft: 600, isRunning: true, isBreak: false, lastSaved: 1 });
+
+  it('stays out of an export', () => {
+    localStorage.setItem('zephyr_timer_state', running);
+    localStorage.setItem('zephyr_tasks', '{"tasks":[]}');
+    expect(Object.keys(collectBackupData())).toEqual(['zephyr_tasks']);
+  });
+
+  it('is not imported, so an old file cannot finish a session that ran long ago', () => {
+    const restored = applyBackup({ app: 'zephyr', data: { zephyr_timer_state: running } });
+    expect(restored).toBe(0);
+    expect(localStorage.getItem('zephyr_timer_state')).toBeNull();
+  });
+
+  it('still goes with "Delete my data"', () => {
+    localStorage.setItem('zephyr_timer_state', running);
+    wipeAllData();
+    expect(localStorage.getItem('zephyr_timer_state')).toBeNull();
+  });
+});
+
 describe('wipeAllData', () => {
   it('removes every key Zephyr owns and nothing else', () => {
     localStorage.setItem('zephyr_tasks', '1');

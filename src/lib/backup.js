@@ -10,11 +10,14 @@ export const EXTRA_BACKUP_KEYS = ['focusTimerPresets', 'selectedFocusPreset', 't
 
 /**
  * Zephyr's keys that describe this browser, not the user's data: when this
- * browser last exported, and when it last asked to keep its storage. They
- * stay out of a backup, so importing an old file cannot make the last export
- * look older or newer than it was. "Delete my data" still removes them.
+ * browser last exported, when it last asked to keep its storage, and the
+ * timer as it stands right now. They stay out of a backup, so importing an
+ * old file cannot make the last export look older or newer than it was, nor
+ * bring back a session that was running when the file was made, which the
+ * timer would then find long expired and log as finished. "Delete my data"
+ * still removes them.
  */
-export const DEVICE_KEYS = [STORAGE_KEYS.LAST_BACKUP, STORAGE_KEYS.PERSIST_ASKED];
+export const DEVICE_KEYS = [STORAGE_KEYS.LAST_BACKUP, STORAGE_KEYS.PERSIST_ASKED, STORAGE_KEYS.TIMER_STATE];
 
 export const isBackupKey = (key) =>
   typeof key === 'string'
