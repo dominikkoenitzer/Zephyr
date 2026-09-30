@@ -9,6 +9,7 @@ import {
   msUntilNextDay,
   recentSessions,
   startOfDay,
+  tasksViewHref,
   upNext,
   weekDays,
   weekStart,
@@ -146,5 +147,12 @@ describe('msUntilNextDay and startOfDay', () => {
     const after = dashboardStats(tasks, [], startOfDay('2026-10-01'));
     expect(after.dueToday).toBe(0);
     expect(after.overdue).toBe(1);
+  });
+});
+
+describe('tasksViewHref', () => {
+  it('opens the list on the view a card counts, whatever filter was left on', () => {
+    expect(tasksViewHref('overdue')).toBe('/tasks?view=overdue');
+    expect(tasksViewHref('all')).toBe('/tasks?view=all');
   });
 });
