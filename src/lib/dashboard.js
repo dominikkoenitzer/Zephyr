@@ -67,6 +67,21 @@ export const focusToday = (sessions, now = new Date()) => {
   };
 };
 
+const MIN_BAR = 22;
+
+/**
+ * Bar heights for the week chart, in percent of the tallest bar. An empty day
+ * is a placeholder at the shortest a real bar can be (lower still for days to
+ * come), so it never outgrows a day with minutes.
+ */
+export const barHeights = (days) => {
+  const max = Math.max(60, ...days.map((d) => d.minutes));
+  return days.map((d) => {
+    if (d.minutes === 0) return d.isFuture ? 16 : MIN_BAR;
+    return Math.max(MIN_BAR, Math.round((d.minutes / max) * 100));
+  });
+};
+
 /** The headline figures. */
 export const dashboardStats = (tasks, sessions, now = new Date()) => {
   const today = toDayKey(now);

@@ -10,6 +10,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 import { ROUTE_META } from '../routes/meta';
 import { cn } from '../lib/utils';
 import {
+  barHeights,
   dashboardStats,
   donePercent,
   dueLabel,
@@ -88,15 +89,15 @@ function StatCard({ to, label, value, note, lead = false }) {
 /* ---------------------------------------------------------- week chart */
 
 function WeekChart({ days }) {
-  const max = Math.max(60, ...days.map((d) => d.minutes));
+  const heights = barHeights(days);
   return (
     <m.section variants={rise} className={cn(panel, 'flex flex-col')} aria-labelledby="week-title">
       <h2 id="week-title" className={panelTitle}>Focus this week</h2>
 
       <ol className="mt-6 grid flex-1 grid-cols-7 items-end gap-2 sm:gap-4" aria-label="Minutes focused per day">
-        {days.map((d) => {
+        {days.map((d, i) => {
           const empty = d.minutes === 0;
-          const height = empty ? (d.isFuture ? 34 : 46) : Math.max(22, Math.round((d.minutes / max) * 100));
+          const height = heights[i];
           return (
             <li key={d.key} className="flex h-full min-h-44 flex-col items-center justify-end gap-3">
               <span className="sr-only">{`${d.name}: ${d.minutes} minutes`}</span>
