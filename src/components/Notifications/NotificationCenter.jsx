@@ -1,45 +1,28 @@
-import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Settings, CheckCheck } from 'lucide-react';
 import { Button } from '../ui/button';
 import NotificationItem from './NotificationItem';
 import { notificationService } from '../../services/notificationService';
+import { useStoreValue } from '../../hooks/useStore';
+
+const readNotifications = () => notificationService.getNotifications();
 
 const NotificationCenter = ({ onClose }) => {
-  // Seeded from the service rather than filled in by an effect, so the panel
-  // opens on its real contents instead of flashing the empty state first.
-  const [notifications, setNotifications] = useState(() =>
-    notificationService.getNotifications()
-  );
-  const [unreadCount, setUnreadCount] = useState(() =>
-    notificationService.getUnreadCount()
-  );
+  // Live like the bell badge: every save in the service broadcasts a change,
+  // so a reminder that arrives while the panel is open shows at once.
+  const [notifications] = useStoreValue(readNotifications);
   const navigate = useNavigate();
-
-  const loadNotifications = useCallback(() => {
-    setNotifications(notificationService.getNotifications());
-    setUnreadCount(notificationService.getUnreadCount());
-  }, []);
-
-  // Only keeps the seeded list fresh while the panel stays open.
-  useEffect(() => {
-    const interval = setInterval(loadNotifications, 30000);
-    return () => clearInterval(interval);
-  }, [loadNotifications]);
 
   const handleRead = (notificationId) => {
     notificationService.markAsRead(notificationId);
-    loadNotifications();
   };
 
   const handleDelete = (notificationId) => {
     notificationService.deleteNotification(notificationId);
-    loadNotifications();
   };
 
   const handleMarkAllRead = () => {
     notificationService.markAllAsRead();
-    loadNotifications();
   };
 
   const handleNotificationClick = (notification) => {
@@ -50,7 +33,8 @@ const NotificationCenter = ({ onClose }) => {
   };
 
   const unreadNotifications = notifications.filter(n => !n.read);
-  const readNotifications = notifications.filter(n => n.read);
+  const earlierNotifications = notifications.filter(n => n.read);
+  const unreadCount = unreadNotifications.length;
 
   return (
     <div className="absolute top-full right-0 z-50 mt-3 flex max-h-[calc(100vh-6rem)] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-3xl bg-popover shadow-(--shadow-overlay) sm:max-h-[600px] sm:w-96 sm:max-w-96">
@@ -113,7 +97,7 @@ const NotificationCenter = ({ onClose }) => {
                     onClick={handleNotificationClick}
                   />
                 ))}
-                {readNotifications.length > 0 && (
+                {earlierNotifications.length > 0 && (
                   <div className="mt-2 pt-2">
                     <div className="px-3 py-1 text-[12px] font-semibold text-muted-foreground">
                       Earlier
@@ -122,7 +106,7 @@ const NotificationCenter = ({ onClose }) => {
                 )}
               </>
             )}
-            {readNotifications.map(notification => (
+            {earlierNotifications.map(notification => (
               <NotificationItem
                 key={notification.id}
                 notification={notification}
