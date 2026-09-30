@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Bell, Monitor, Moon, Search, Sun } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import NotificationCenter from '../Notifications/NotificationCenter';
@@ -26,10 +26,19 @@ function TopBar({ onSearchClick }) {
   const notificationContainerRef = useRef(null);
   const notificationPanelId = useId();
   const bellRef = useRef(null);
+  const { pathname } = useLocation();
+  const [panelPath, setPanelPath] = useState(pathname);
   const { preference, colorMode, cycle } = useTheme();
   const ThemeIcon = THEME_ICON[preference] || Monitor;
   const themeLabel =
     preference === 'system' ? `System (${colorMode})` : preference === 'dark' ? 'Dark' : 'Light';
+
+  // A new page closes the panel. Back and forward move the route without a
+  // click, so the outside-click handler never sees them.
+  if (panelPath !== pathname) {
+    setPanelPath(pathname);
+    setShowNotifications(false);
+  }
 
   useEffect(() => {
     // Updates instantly when notifications change (via the in-app change
