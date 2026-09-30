@@ -62,8 +62,9 @@ function FocusCard() {
       ) : (
         <p className="mt-2 text-3xl font-semibold tabular-nums tracking-[-0.02em]">{formatTime(minutes * 60)}</p>
       )}
+      {/* Paused, `start=1` picks the session up where it stopped, so Resume resumes. */}
       <Link
-        to={live ? '/focus' : '/focus?start=1'}
+        to={running ? '/focus' : '/focus?start=1'}
         className="mt-5 flex h-10 items-center justify-center rounded-full bg-hero-foreground text-sm font-semibold text-hero-to transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun"
       >
         {running ? 'Open' : paused ? 'Resume' : 'Start'}
