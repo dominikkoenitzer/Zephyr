@@ -99,23 +99,31 @@ const TaskList = () => {
   // add, `?task=<id>` opens that task's editor. Answered during render, the
   // same way the palette deep-links, so the dialog is open on the first
   // paint; the param is stripped afterwards so the same link works twice.
+  // `?view=<id>` comes from a dashboard card: it opens the view the card counts
+  // and clears the tag, so a filter left on cannot hide those tasks.
   const newParam = searchParams.get('new');
   const taskParam = searchParams.get('task');
+  const viewParam = TASK_VIEW_IDS.includes(searchParams.get('view')) ? searchParams.get('view') : null;
   const [handledParams, setHandledParams] = useState(null);
-  const paramKey = `${newParam || ''}|${taskParam || ''}`;
+  const paramKey = `${newParam || ''}|${taskParam || ''}|${viewParam || ''}`;
   if (paramKey !== handledParams) {
     setHandledParams(paramKey);
     if (taskParam) {
       const target = tasks.find((t) => t.id === taskParam);
       if (target) setEditingTask(target);
     }
+    if (viewParam) {
+      setView(viewParam);
+      setTagFilter('');
+    }
   }
 
   useEffect(() => {
-    if (!newParam && !taskParam) return;
+    if (!newParam && !taskParam && !viewParam) return;
     if (newParam) newTaskInputRef.current?.focus();
+    if (viewParam) localStorageService.saveViewPrefs({ taskView: viewParam, taskTag: '' });
     setSearchParams({}, { replace: true });
-  }, [newParam, taskParam, setSearchParams]);
+  }, [newParam, taskParam, viewParam, setSearchParams]);
 
   const addTask = (e) => {
     e.preventDefault();

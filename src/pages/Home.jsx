@@ -17,6 +17,7 @@ import {
   formatMinutes,
   recentSessions,
   startOfDay,
+  tasksViewHref,
   upNext,
 } from '../lib/dashboard';
 import { formatTime } from '../lib/time';
@@ -475,13 +476,13 @@ function Home() {
         <m.div variants={stagger} className="grid grid-cols-2 gap-(--panel-gap) xl:grid-cols-4">
           <StatCard
             lead
-            to="/tasks"
+            to={tasksViewHref('all')}
             label="Open tasks"
             value={stats.open}
             note={`${stats.dueToday} due today`}
           />
           <StatCard
-            to="/tasks"
+            to={tasksViewHref('overdue')}
             label="Overdue"
             value={stats.overdue}
             note={stats.overdue ? 'Late' : 'On time'}

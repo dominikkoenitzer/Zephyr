@@ -88,6 +88,9 @@ export const dashboardStats = (tasks, sessions, now = new Date()) => {
   };
 };
 
+/** The task list opened on the view a stat card counts; the list clears its tag filter for it. */
+export const tasksViewHref = (view) => `/tasks?view=${encodeURIComponent(view)}`;
+
 /** The one task that most needs doing: overdue first, then soonest due, then priority. */
 export const upNext = (tasks) => sortByUrgency(tasks.filter((t) => !t.completed))[0] || null;
 
