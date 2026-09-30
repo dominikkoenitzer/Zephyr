@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, Monitor, Moon, Search, Sun } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -24,6 +24,7 @@ function TopBar({ onSearchClick }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const notificationContainerRef = useRef(null);
+  const notificationPanelId = useId();
   const { preference, colorMode, cycle } = useTheme();
   const ThemeIcon = THEME_ICON[preference] || Monitor;
   const themeLabel =
@@ -108,6 +109,8 @@ function TopBar({ onSearchClick }) {
               type="button"
               onClick={() => setShowNotifications(!showNotifications)}
               className={roundButton}
+              aria-expanded={showNotifications}
+              aria-controls={notificationPanelId}
               title={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
               aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
             >
@@ -117,7 +120,10 @@ function TopBar({ onSearchClick }) {
               )}
             </button>
             {showNotifications && (
-              <NotificationCenter onClose={() => setShowNotifications(false)} />
+              <NotificationCenter
+                id={notificationPanelId}
+                onClose={() => setShowNotifications(false)}
+              />
             )}
           </div>
         </div>

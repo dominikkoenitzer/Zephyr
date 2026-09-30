@@ -7,7 +7,7 @@ import { useStoreValue } from '../../hooks/useStore';
 
 const readNotifications = () => notificationService.getNotifications();
 
-const NotificationCenter = ({ onClose }) => {
+const NotificationCenter = ({ id, onClose }) => {
   // Live like the bell badge: every save in the service broadcasts a change,
   // so a reminder that arrives while the panel is open shows at once.
   const [notifications] = useStoreValue(readNotifications);
@@ -37,7 +37,10 @@ const NotificationCenter = ({ onClose }) => {
   const unreadCount = unreadNotifications.length;
 
   return (
-    <div className="absolute top-full right-0 z-50 mt-3 flex max-h-[calc(100vh-6rem)] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-3xl bg-popover shadow-(--shadow-overlay) sm:max-h-[600px] sm:w-96 sm:max-w-96">
+    <div
+      id={id}
+      className="absolute top-full right-0 z-50 mt-3 flex max-h-[calc(100vh-6rem)] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-3xl bg-popover shadow-(--shadow-overlay) sm:max-h-[600px] sm:w-96 sm:max-w-96"
+    >
       <div className="flex items-center justify-between px-5 pb-3 pt-5">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
                     <h3 className="truncate text-[17px] font-semibold tracking-[-0.015em] text-foreground">Notifications</h3>
