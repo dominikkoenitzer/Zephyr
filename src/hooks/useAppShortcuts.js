@@ -15,6 +15,13 @@ const isOverlayOpen = () =>
     '[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"], [role="listbox"][data-state="open"]'
   );
 
+/**
+ * Keys that only change what the next key types. `?` is Shift+/ in the US, and
+ * `/` is Shift+7 in Switzerland, so the Shift on its way down must not disarm a
+ * waiting `g`.
+ */
+const MODIFIER_KEYS = new Set(['Shift', 'Control', 'Alt', 'Meta', 'AltGraph']);
+
 /** How long a `g` stays armed while you reach for the second key. */
 const CHORD_MS = 1400;
 
@@ -66,6 +73,7 @@ export function useAppShortcuts(handlers) {
         return;
       }
 
+      if (MODIFIER_KEYS.has(event.key)) return;
       if (mod || event.altKey || event.repeat) return;
       if (isTyping(event.target) || isOverlayOpen()) return;
 
