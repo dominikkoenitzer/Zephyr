@@ -44,9 +44,7 @@ const trigger = () => container.querySelector('[role="button"]');
 const label = () => trigger().querySelector('span').textContent;
 const panel = () => document.querySelector('.fixed.z-50');
 const dayButton = (text) =>
-  [...panel().querySelectorAll('button')].find(
-    (b) => b.textContent.trim() === String(text) && !b.getAttribute('aria-label')
-  );
+  [...panel().querySelectorAll('button')].find((b) => b.textContent.trim() === String(text));
 const nav = (ariaLabel) => panel().querySelector(`button[aria-label="${ariaLabel}"]`);
 // The nav buttons carry `font-semibold` too and hold only an icon, so match
 // the heading by its content rather than by class.
