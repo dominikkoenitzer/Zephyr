@@ -338,7 +338,7 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
             </div>
 
             <div className="mt-4 px-4 pb-4">
-              <div className="grid grid-cols-7 gap-1.5 text-[11px] font-medium text-muted-foreground/80">
+              <div className="grid grid-cols-7 gap-1.5 text-[11px] font-medium text-muted-foreground">
                 {DAYS.map((day) => (
                   <div key={day} className="text-center font-semibold">
                     {day}
@@ -358,7 +358,8 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
                     aria-current={isToday(date) ? "date" : undefined}
                     className={cn(
                       "relative flex aspect-square items-center justify-center rounded-full text-sm font-semibold transition-all",
-                      inCurrentMonth ? "text-foreground" : "text-muted-foreground/50",
+                      // Neighbouring months stay readable; a lighter weight sets them apart.
+                      inCurrentMonth ? "text-foreground" : "font-normal text-muted-foreground",
                       "hover:bg-accent hover:text-accent-foreground",
                       isToday(date) && !isSelected(date) && "bg-primary/10 text-primary-strong",
                       isSelected(date) && "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
