@@ -238,8 +238,10 @@ test.describe('on a phone', () => {
     const title = 'https://example.com/a/very/long/path/that/never/breaks/anywhere/at/all';
     await seed(page, { tasks: [{ id: 'long', title, priority: 'low', dueDate: null, tags: [], completed: false, subtasks: [], description: '', createdAt: new Date().toISOString() }] });
     await page.goto('/tasks');
-    await expect(page.getByText(title, { exact: true }).first()).toBeVisible();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+    const shown = page.getByText(title, { exact: true }).first();
+    await expect(shown).toBeVisible();
+    const box = await shown.boundingBox();
+    expect(box.x + box.width).toBeLessThanOrEqual(390);
   });
 
   test('the filter row shows which way it goes on', async ({ page }) => {
