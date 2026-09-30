@@ -130,6 +130,64 @@ test.describe('the focus timer', () => {
   });
 });
 
+test.describe('the focus timer, around its breaks and presets', () => {
+  const restingOn = (state) =>
+    JSON.stringify({
+      timeLeft: 1500, isRunning: false, isBreak: false, pomodorosCompleted: 0,
+      workTime: 1500, breakTime: 300, longBreakTime: 900, focusTask: null, lastSaved: Date.now(), ...state,
+    });
+
+  test('choosing the preset that is already chosen leaves a running session alone', async ({ page }) => {
+    await seed(page);
+    await page.goto('/focus');
+    await page.getByRole('button', { name: 'Start timer' }).click();
+    await page.getByRole('button', { name: 'Pomodoro', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Pause timer' })).toBeVisible();
+  });
+
+  test('a break that has not started can be skipped', async ({ page }) => {
+    await seed(page, { extra: { zephyr_timer_state: restingOn({ isBreak: true, timeLeft: 300, pomodorosCompleted: 1 }) } });
+    await page.goto('/focus');
+    await page.getByRole('button', { name: 'Skip session' }).click();
+    await expect(page.getByText('25:00', { exact: true })).toBeVisible();
+  });
+
+  test('Start focus starts focus, even while a break is waiting', async ({ page }) => {
+    await seed(page, { extra: { zephyr_timer_state: restingOn({ isBreak: true, timeLeft: 300, pomodorosCompleted: 1 }) } });
+    await page.goto('/focus?start=1');
+    await expect(page.getByRole('button', { name: 'Pause timer' })).toBeVisible();
+    await expect(page.getByText('Short break', { exact: true })).toHaveCount(0);
+  });
+
+  test('saving the chosen preset keeps a paused session where it was', async ({ page }) => {
+    await seed(page, { extra: { zephyr_timer_state: restingOn({ timeLeft: 754 }) } });
+    await page.goto('/focus');
+    await expect(page.getByText('12:34', { exact: true })).toBeVisible();
+    await page.getByRole('listitem').filter({ hasText: 'Pomodoro' }).first().hover();
+    await page.locator('button[aria-label="Edit Pomodoro"]:visible').first().click();
+    await page.getByRole('button', { name: 'Save preset' }).click();
+    await expect(page.getByText('12:34', { exact: true })).toBeVisible();
+  });
+
+  test('a new preset stays chosen after a reload', async ({ page }) => {
+    await seed(page);
+    await page.goto('/focus');
+    await page.getByRole('button', { name: 'New', exact: true }).click();
+    await page.getByLabel('Preset name').fill('Long haul');
+    await page.getByRole('button', { name: 'Save preset' }).click();
+    await page.reload();
+    await expect(page.getByRole('button', { name: 'Long haul', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('R, S and F still work after clicking one of the timer buttons', async ({ page }) => {
+    await seed(page);
+    await page.goto('/focus');
+    await page.getByRole('button', { name: 'Start timer' }).click();
+    await page.keyboard.press('f');
+    await expect(page.getByRole('dialog', { name: 'Full screen timer' })).toBeVisible();
+  });
+});
+
 test.describe('tasks', () => {
   test('quick add reads the date, the priority and the tag', async ({ page }) => {
     await seed(page, { tasks: [] });
