@@ -187,7 +187,7 @@ const PomodoroTimer = () => {
             aria-label="Skip session"
             title="Skip (S)"
             className={roundControl}
-            disabled={timeLeft === currentSessionTime}
+            disabled={!isBreak && timeLeft === currentSessionTime}
           >
             <SkipForward className="h-5 w-5" />
           </button>
