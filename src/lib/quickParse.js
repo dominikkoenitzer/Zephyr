@@ -14,6 +14,8 @@ const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', '
 // starts like one: "mars bars" is not March.
 const MONTH_WORD =
   '(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec)';
+// An optional four-digit year after a month and day: "dec 5 2027", "dec 5, 2027".
+const YEAR = '(?:,?\\s+(\\d{4}))?';
 
 const PRIORITY_MAP = {
   '!high': 'high', '!h': 'high', '!1': 'high', p1: 'high',
@@ -104,6 +106,14 @@ export function parseQuickTask(input) {
 
   // 3) Due date. First match wins, so patterns run most to least specific.
   const today = startOfToday();
+  // A typed year is taken as it stands; without one it is the next such day.
+  const monthDay = (monthWord, dayText, yearText) => {
+    const month = MONTHS.indexOf(monthWord.slice(0, 3).toLowerCase());
+    const day = Number(dayText);
+    if (yearText) return realDate(Number(yearText), month, day);
+    const d = realDate(today.getFullYear(), month, day);
+    return d && d < today ? realDate(today.getFullYear() + 1, month, day) : d;
+  };
   const dateRules = [
     // ISO date: 2026-08-05
     { re: /(^|\s)(\d{4})-(\d{2})-(\d{2})(?=\s|$)/, run: (m) => realDate(Number(m[2]), Number(m[3]) - 1, Number(m[4])) },
@@ -119,25 +129,15 @@ export function parseQuickTask(input) {
         return d && d < today ? realDate(today.getFullYear() + 1, month, day) : d;
       },
     },
-    // Month name + day: "aug 5", "august 5th"
+    // Month name + day: "aug 5", "august 5th", "dec 5 2027", "october 5, 2027"
     {
-      re: new RegExp(`(^|\\s)(${MONTH_WORD})\\.?\\s+(\\d{1,2})(?:st|nd|rd|th)?(?=\\s|$)`, 'i'),
-      run: (m) => {
-        const month = MONTHS.indexOf(m[2].slice(0, 3).toLowerCase());
-        const day = Number(m[3]);
-        const d = realDate(today.getFullYear(), month, day);
-        return d && d < today ? realDate(today.getFullYear() + 1, month, day) : d;
-      },
+      re: new RegExp(`(^|\\s)(${MONTH_WORD})\\.?\\s+(\\d{1,2})(?:st|nd|rd|th)?${YEAR}(?=\\s|$)`, 'i'),
+      run: (m) => monthDay(m[2], m[3], m[4]),
     },
-    // Day + month name: "5 oct", "5th october", the way most of the world writes it
+    // Day + month name: "5 oct", "5th october", "5 oct 2027", the way most of the world writes it
     {
-      re: new RegExp(`(^|\\s)(\\d{1,2})(?:st|nd|rd|th)?\\s+(${MONTH_WORD})\\.?(?=\\s|$)`, 'i'),
-      run: (m) => {
-        const month = MONTHS.indexOf(m[3].slice(0, 3).toLowerCase());
-        const day = Number(m[2]);
-        const d = realDate(today.getFullYear(), month, day);
-        return d && d < today ? realDate(today.getFullYear() + 1, month, day) : d;
-      },
+      re: new RegExp(`(^|\\s)(\\d{1,2})(?:st|nd|rd|th)?\\s+(${MONTH_WORD})\\.?${YEAR}(?=\\s|$)`, 'i'),
+      run: (m) => monthDay(m[3], m[2], m[4]),
     },
     // "in 3 days" / "in 2 weeks"
     {
