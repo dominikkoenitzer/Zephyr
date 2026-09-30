@@ -33,12 +33,6 @@ export function readPresets() {
   }
 }
 
-const showOsNotification = (title, body) => {
-  if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification(title, { body, icon: '/favicon.ico' });
-  }
-};
-
 /** Counts the day the session ended on, which is not always today. */
 const updateStreak = (endedAt) => {
   const day = new Date(endedAt);
@@ -109,10 +103,10 @@ export function finishPhase({
   });
 
   if (isBreak) {
-    showOsNotification('Break over', next.isRunning ? 'The next session has started.' : 'The next session is ready when you are.');
+    notificationService.showOsNotification('timer', 'Break over', next.isRunning ? 'The next session has started.' : 'The next session is ready when you are.');
     // The break end writes no notification record, so its chime has to be
     // asked for directly or the timer simply goes quiet.
-    notificationService.playChime();
+    notificationService.playChime('timer');
     return next;
   }
 
@@ -153,7 +147,7 @@ export function finishPhase({
     // and with it the chime whenever two sessions landed close together.
     `timer:complete:${endedAt}`
   );
-  showOsNotification('Session complete', summary);
+  notificationService.showOsNotification('timer', 'Session complete', summary);
 
   // An in-app toast as well as the OS notification, which the browser may
   // have denied. When the session was tied to a task, finishing it is one

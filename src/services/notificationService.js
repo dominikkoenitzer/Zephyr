@@ -103,13 +103,21 @@ class NotificationService {
   /**
    * Create a new notification
    */
+  /**
+   * Whether an alert of this type may reach the user at all: the main switch
+   * and the switch for its type. Everything that alerts asks this, so a chime
+   * or a system notification cannot slip past a switch the list respects.
+   */
+  allows(type, settings = this.getSettings()) {
+    if (!settings.enabled) return false;
+    if (type === 'task' && !settings.tasks?.enabled) return false;
+    if (type === 'timer' && !settings.timer?.enabled) return false;
+    return true;
+  }
+
   createNotification(type, title, message, action = null, metadata = {}, dedupeKey = null) {
     const settings = this.getSettings();
-    if (!settings.enabled) return null;
-
-    // Check if this notification type is enabled
-    if (type === 'task' && !settings.tasks.enabled) return null;
-    if (type === 'timer' && !settings.timer.enabled) return null;
+    if (!this.allows(type, settings)) return null;
 
     const notification = {
       id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -159,11 +167,25 @@ class NotificationService {
   /**
    * A chime for an event the user should hear on its own account, whether or
    * not a notification record was written for it. The focus timer's break
-   * completion writes no record but still has to be audible.
+   * completion writes no record but still has to be audible, unless its
+   * type is switched off.
    */
-  playChime() {
-    if (!this.getSettings().soundEnabled) return;
+  playChime(type) {
+    const settings = this.getSettings();
+    if (!this.allows(type, settings) || !settings.soundEnabled) return;
     this.playNotificationSound();
+  }
+
+  /** A system notification, if its type is on and the browser allows one. */
+  showOsNotification(type, title, body) {
+    if (!this.allows(type)) return;
+    try {
+      if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+        new Notification(title, { body, icon: '/favicon.ico' });
+      }
+    } catch (error) {
+      console.error('Failed to show system notification:', error);
+    }
   }
 
   /**
