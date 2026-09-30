@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import {
   Play, Pause, SkipForward, Maximize2, RotateCcw, Plus, Trash2, Edit2, Target,
 } from 'lucide-react';
@@ -86,6 +86,15 @@ const PomodoroTimer = () => {
     if (task) setSessionTask({ id: task.id, title: task.title });
   };
 
+  // Full screen replaces the whole timer, this button included, so leaving
+  // it puts focus on the fresh "Full screen" button instead of <body>.
+  const fullScreenButtonRef = useRef(null);
+  const wasFullScreenRef = useRef(isFullScreen);
+  useEffect(() => {
+    if (wasFullScreenRef.current && !isFullScreen) fullScreenButtonRef.current?.focus();
+    wasFullScreenRef.current = isFullScreen;
+  }, [isFullScreen]);
+
   if (isFullScreen) {
     return (
       <FullScreenMode
@@ -148,6 +157,7 @@ const PomodoroTimer = () => {
             ) : null}
           </div>
           <button
+            ref={fullScreenButtonRef}
             type="button"
             onClick={() => setIsFullScreen(true)}
             className={cn(roundControl, 'h-10 w-10')}
