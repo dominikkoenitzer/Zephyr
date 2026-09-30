@@ -15,10 +15,11 @@ import { localStorageService } from '../../services/localStorage';
 import { parseQuickTask } from '../../lib/quickParse';
 import { clearCompletedWithUndo, deleteTaskWithUndo } from '../../lib/taskActions';
 import {
-  TASK_GROUPS, TASK_VIEWS, TASK_VIEW_IDS, collectTags, countsByView, filterActive, groupTasks, tagInUse, todayKey,
+  TASK_GROUPS, TASK_VIEWS, TASK_VIEW_IDS, collectTags, countsByView, filterActive, groupTasks, tagInUse,
 } from '../../lib/taskFilters';
 import { useTasks } from '../../hooks/useStore';
 import { useScrollEdges } from '../../hooks/useScrollEdges';
+import { useToday } from '../../hooks/useToday';
 
 // Medium is the default every task gets, so printing it on every row says
 // nothing. Only a deliberate priority earns a word.
@@ -172,8 +173,10 @@ const TaskList = () => {
   };
 
   // Sorting, filtering and the due-date headings are all pure functions in
-  // `lib/taskFilters`, and this component only renders what they return.
-  const today = todayKey();
+  // `lib/taskFilters`, and this component only renders what they return. The
+  // day comes from a hook that re-renders at midnight, so a list left open
+  // overnight moves its tasks into the new day's groups.
+  const today = useToday();
   const allTags = useMemo(() => collectTags(tasks), [tasks]);
   const counts = useMemo(() => countsByView(tasks, tagFilter, today), [tasks, tagFilter, today]);
   const activeTasks = useMemo(
