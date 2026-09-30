@@ -90,3 +90,25 @@ test.describe('full screen focus', () => {
     await expect(fullScreen).toHaveCount(0);
   });
 });
+
+test.describe('the sidebar timer card', () => {
+  test('Resume on a paused session starts it again', async ({ page }) => {
+    await seed(page, {
+      extra: {
+        zephyr_timer_state: JSON.stringify({
+          timeLeft: 600, isRunning: false, isBreak: false, pomodorosCompleted: 0,
+          workTime: 1500, breakTime: 300, longBreakTime: 900, sessionTotal: 1500,
+          focusTask: null, lastSaved: Date.now(),
+        }),
+      },
+    });
+    await page.goto('/tasks');
+    const sidebar = page.getByRole('complementary', { name: 'Sidebar' });
+    await expect(sidebar.getByText('Paused', { exact: true })).toBeVisible();
+    await sidebar.getByRole('link', { name: 'Resume' }).click();
+    await expect(page).toHaveURL(/\/focus$/);
+    await expect(page.getByRole('button', { name: 'Pause timer' })).toBeVisible();
+    const left = await page.evaluate(() => JSON.parse(localStorage.getItem('zephyr_timer_state')).timeLeft);
+    expect(left).toBeLessThanOrEqual(600);
+  });
+});
