@@ -63,9 +63,10 @@ class NotificationService {
   }
 
   /**
-   * Get all notifications
+   * Everything stored, deleted reminders included. Only the service itself
+   * reads this; everyone else gets getNotifications().
    */
-  getNotifications() {
+  readStored() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
       return data ? JSON.parse(data) : [];
@@ -73,6 +74,13 @@ class NotificationService {
       console.error('Failed to get notifications:', error);
       return [];
     }
+  }
+
+  /**
+   * Get all notifications
+   */
+  getNotifications() {
+    return this.readStored().filter((n) => !n.deleted);
   }
 
   /**
@@ -115,7 +123,7 @@ class NotificationService {
       createdAt: new Date().toISOString()
     };
 
-    const notifications = this.getNotifications();
+    const notifications = this.readStored();
 
     // A caller that supplies a key owns its own identity: one notification per
     // key, ever (within the 30-day retention). Task reminders key on the task
@@ -128,6 +136,7 @@ class NotificationService {
     if (!dedupeKey) {
       const isDuplicate = notifications.some(
         (n) =>
+          !n.deleted &&
           n.type === type &&
           n.title === title &&
           !n.read &&
@@ -210,7 +219,7 @@ class NotificationService {
    * Mark notification as read
    */
   markAsRead(notificationId) {
-    const notifications = this.getNotifications();
+    const notifications = this.readStored();
     const index = notifications.findIndex(n => n.id === notificationId);
     if (index !== -1) {
       notifications[index].read = true;
@@ -224,7 +233,7 @@ class NotificationService {
    * Mark all notifications as read
    */
   markAllAsRead() {
-    const notifications = this.getNotifications();
+    const notifications = this.readStored();
     notifications.forEach(n => n.read = true);
     this.saveNotifications(notifications);
     return true;
@@ -234,9 +243,18 @@ class NotificationService {
    * Delete notification
    */
   deleteNotification(notificationId) {
-    const notifications = this.getNotifications();
-    const filtered = notifications.filter(n => n.id !== notificationId);
-    this.saveNotifications(filtered);
+    // A keyed reminder leaves a tombstone behind. Removing it outright let the
+    // next poll find its key free and announce the same task again, chime
+    // and all, a minute after it was dismissed. The tombstone keeps its
+    // createdAt, so the 30-day retention prunes it like any other record.
+    const notifications = this.readStored()
+      .map((n) =>
+        n.id === notificationId && n.dedupeKey
+          ? { id: n.id, dedupeKey: n.dedupeKey, createdAt: n.createdAt, read: true, deleted: true }
+          : n
+      )
+      .filter((n) => n.deleted || n.id !== notificationId);
+    this.saveNotifications(notifications);
     return true;
   }
 

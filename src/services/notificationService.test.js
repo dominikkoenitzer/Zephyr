@@ -92,6 +92,36 @@ describe('notificationService: task reminders', () => {
   });
 });
 
+describe('notificationService: deleting', () => {
+  it('keeps a deleted reminder deleted for the rest of the day', () => {
+    localStorageService.addTask({ title: 'Send the invoice', dueDate: dayKey(0) });
+    notificationService.checkTaskDueDates();
+    const [reminder] = notificationService.getNotifications();
+
+    notificationService.deleteNotification(reminder.id);
+    notificationService.checkTaskDueDates();
+
+    expect(notificationService.getNotifications()).toHaveLength(0);
+    expect(notificationService.getUnreadCount()).toBe(0);
+    expect(notificationService.playNotificationSound).toHaveBeenCalledTimes(1);
+  });
+
+  it('lets the 30-day retention prune what was deleted', () => {
+    notificationService.createNotification('task', 'Old', 'old', null, {}, 'task:1:overdue:old');
+    const [old] = notificationService.getNotifications();
+    notificationService.deleteNotification(old.id);
+
+    const stored = JSON.parse(localStorage.getItem('zephyr_notifications'));
+    expect(stored).toHaveLength(1);
+    stored[0].createdAt = new Date(Date.now() - 31 * 86_400_000).toISOString();
+    localStorage.setItem('zephyr_notifications', JSON.stringify(stored));
+
+    notificationService.createNotification('task', 'New', 'new', null, {}, 'task:2:overdue:new');
+    const keys = JSON.parse(localStorage.getItem('zephyr_notifications')).map((n) => n.dedupeKey);
+    expect(keys).toEqual(['task:2:overdue:new']);
+  });
+});
+
 describe('notificationService: unkeyed notifications', () => {
   it('still collapses a repeated timer alert inside a minute', () => {
     notificationService.createNotification('timer', 'Session Complete', 'one');
