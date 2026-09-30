@@ -193,3 +193,26 @@ describe('parseQuickTask: a typed year', () => {
     expect(parseQuickTask('Party feb 29 2028').dueDate).toBe('2028-02-29');
   });
 });
+
+describe('parseQuickTask: short words that look like dates', () => {
+  it('leaves a short weekday inside a sentence alone', () => {
+    expect(parseQuickTask('buy sun cream')).toMatchObject({ title: 'buy sun cream', dueDate: null });
+    expect(parseQuickTask('sat exam results')).toMatchObject({ title: 'sat exam results', dueDate: null });
+    expect(parseQuickTask('get wed in june')).toMatchObject({ title: 'get wed in june', dueDate: null });
+  });
+
+  it('still reads a short weekday after a date word or at the end', () => {
+    const fri = parseQuickTask('Review friday').dueDate;
+    expect(parseQuickTask('Review on fri')).toMatchObject({ title: 'Review', dueDate: fri });
+    expect(parseQuickTask('Review by fri !high')).toMatchObject({ title: 'Review', dueDate: fri });
+    expect(parseQuickTask('Review this fri')).toMatchObject({ title: 'Review', dueDate: fri });
+    expect(parseQuickTask('Review fri #work')).toMatchObject({ title: 'Review', dueDate: fri });
+    expect(parseQuickTask('Review friday with sam')).toMatchObject({ title: 'Review with sam', dueDate: fri });
+  });
+
+  it('never reads an amount as a day of the month', () => {
+    expect(parseQuickTask('buy 1/2 kg flour')).toMatchObject({ title: 'buy 1/2 kg flour', dueDate: null });
+    expect(parseQuickTask('add 3/4 cup sugar').dueDate).toBeNull();
+    expect(parseQuickTask('Trip 12/25').dueDate).toMatch(/-12-25$/);
+  });
+});

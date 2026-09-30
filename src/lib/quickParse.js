@@ -16,6 +16,11 @@ const MONTH_WORD =
   '(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sept|sep|oct|nov|dec)';
 // An optional four-digit year after a month and day: "dec 5 2027", "dec 5, 2027".
 const YEAR = '(?:,?\\s+(\\d{4}))?';
+const SHORT_DAY = `(?:${Object.keys(WEEKDAY_ALIASES).join('|')})`;
+// A clock time as timeOfDay reads it: "3pm", "at 3:30 pm", "15:30".
+const TIME = '(?:at\\s+)?(?:\\d{1,2}(?::[0-5]\\d)?\\s*(?:am|pm)|\\d{1,2}:[0-5]\\d)';
+// Units that follow an amount like "1/2".
+const UNIT = '(?:kg|g|l|ml|cups?|tsp|tbsp|lb|oz|m|km|cm|h|min|x)';
 
 const PRIORITY_MAP = {
   '!high': 'high', '!h': 'high', '!1': 'high', p1: 'high',
@@ -119,7 +124,8 @@ export function parseQuickTask(input) {
     { re: /(^|\s)(\d{4})-(\d{2})-(\d{2})(?=\s|$)/, run: (m) => realDate(Number(m[2]), Number(m[3]) - 1, Number(m[4])) },
     // M/D or M/D/YYYY
     {
-      re: /(^|\s)(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?(?=\s|$)/,
+      // Without a year, "1/2 kg" is an amount, not the 2nd of January.
+      re: new RegExp(`(^|\\s)(\\d{1,2})\\/(\\d{1,2})(?:\\/(\\d{2,4})|(?!\\s+${UNIT}(?=\\s|$)))(?=\\s|$)`, 'i'),
       run: (m) => {
         const month = Number(m[2]) - 1;
         const day = Number(m[3]);
@@ -154,14 +160,19 @@ export function parseQuickTask(input) {
         return nextWeekday(dow);
       },
     },
-    // Bare weekday: "monday", "fri"
+    // Bare weekday: "monday" anywhere
     {
-      re: new RegExp(`(^|\\s)(${WEEKDAYS.join('|')}|${Object.keys(WEEKDAY_ALIASES).join('|')})(?=\\s|$)`, 'i'),
-      run: (m) => {
-        const word = m[2].toLowerCase();
-        const dow = WEEKDAYS.indexOf(word) !== -1 ? WEEKDAYS.indexOf(word) : WEEKDAY_ALIASES[word];
-        return nextWeekday(dow);
-      },
+      re: new RegExp(`(^|\\s)(${WEEKDAYS.join('|')})(?=\\s|$)`, 'i'),
+      run: (m) => nextWeekday(WEEKDAYS.indexOf(m[2].toLowerCase())),
+    },
+    // Short weekday: "fri" only after a date word ("on fri", "this fri") or at
+    // the end, before at most a time. "buy sun cream" is about sun cream.
+    {
+      re: new RegExp(
+        `(^|\\s)(?:(?:on|by|due|until|this)\\s+(${SHORT_DAY})|(${SHORT_DAY})(?=(?:\\s+${TIME})?\\s*$))(?=\\s|$)`,
+        'i'
+      ),
+      run: (m) => nextWeekday(WEEKDAY_ALIASES[(m[2] || m[3]).toLowerCase()]),
     },
     { re: /(^|\s)(today|tonight)(?=\s|$)/i, run: () => today },
     { re: /(^|\s)(tomorrow|tmrw|tmr)(?=\s|$)/i, run: () => addDays(today, 1) },
