@@ -101,11 +101,27 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
     if (!isOpen) return
     const trigger = triggerRef.current
     const inPanel = (node) => Boolean(node && panelRef.current?.contains(node))
-    const handleEscape = (event) => {
-      if (event.key !== "Escape") return
-      event.stopPropagation()
-      event.preventDefault()
-      setIsOpen(false)
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.stopPropagation()
+        event.preventDefault()
+        setIsOpen(false)
+        return
+      }
+      // Tab wraps inside the panel. Past its last control the browser would
+      // walk on to the page behind the modal, which nothing else stops while
+      // the dialog's own trap stands aside.
+      if (event.key !== "Tab" || !panelRef.current) return
+      const controls = [...panelRef.current.querySelectorAll("button:not([disabled])")]
+      if (!controls.length) return
+      const first = controls[0]
+      const last = controls[controls.length - 1]
+      const active = document.activeElement
+      if (event.shiftKey ? active === first || !inPanel(active) : active === last || !inPanel(active)) {
+        event.stopPropagation()
+        event.preventDefault()
+        ;(event.shiftKey ? last : first).focus()
+      }
     }
     const handleFocusIn = (event) => {
       if (inPanel(event.target)) event.stopPropagation()
@@ -113,13 +129,13 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
     const handleFocusOut = (event) => {
       if (inPanel(event.relatedTarget)) event.stopPropagation()
     }
-    window.addEventListener("keydown", handleEscape, true)
+    window.addEventListener("keydown", handleKeyDown, true)
     window.addEventListener("focusin", handleFocusIn, true)
     window.addEventListener("focusout", handleFocusOut, true)
     // Into the panel, on the chosen day or else today, so the keyboard reaches it.
     panelRef.current?.querySelector("[data-start-focus]")?.focus()
     return () => {
-      window.removeEventListener("keydown", handleEscape, true)
+      window.removeEventListener("keydown", handleKeyDown, true)
       window.removeEventListener("focusin", handleFocusIn, true)
       window.removeEventListener("focusout", handleFocusOut, true)
       // The panel took the focus with it; hand it back to the trigger.
