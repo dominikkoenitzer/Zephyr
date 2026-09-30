@@ -23,6 +23,9 @@ function AppLayout() {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const [firstPath] = useState(location.pathname);
+  const [navigated, setNavigated] = useState(false);
+  if (!navigated && location.pathname !== firstPath) setNavigated(true);
 
   // Registers the service worker, and offers a reload when a new build lands.
   usePwaUpdate();
@@ -97,10 +100,12 @@ function AppLayout() {
               className="flex flex-1 flex-col px-responsive pb-8 focus:outline-none lg:pl-3"
             >
               {/* Re-keyed per route so every page mounts with a quick
-                  fade-and-rise. Enter-only (no exit) keeps navigation snappy. */}
+                  fade-and-rise. Enter-only (no exit) keeps navigation snappy.
+                  The first page of a visit appears at once: a fade there only
+                  held back the first paint of the page itself. */}
               <m.div
                 key={location.pathname}
-                initial={{ opacity: 0, y: 10 }}
+                initial={navigated ? { opacity: 0, y: 10 } : false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
                 className="page-width flex flex-1 flex-col"
