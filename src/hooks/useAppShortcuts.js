@@ -23,6 +23,13 @@ const isOverlayOpen = () =>
 const isFullScreenTimerOpen = () => !!document.querySelector('[data-fullscreen-timer]');
 
 /**
+ * The bell's notification panel is open. It is not a Radix overlay, so it
+ * marks itself; every app shortcut stands down until Escape or a click
+ * outside closes it, rather than acting on a page hidden behind it.
+ */
+const isNotificationPanelOpen = () => !!document.querySelector('[data-notification-panel]');
+
+/**
  * Keys that only change what the next key types. `?` is Shift+/ in the US, and
  * `/` is Shift+7 in Switzerland, so the Shift on its way down must not disarm a
  * waiting `g`.
@@ -72,7 +79,7 @@ export function useAppShortcuts(handlers) {
       const h = handlersRef.current;
       const mod = event.metaKey || event.ctrlKey;
 
-      if (isFullScreenTimerOpen()) return;
+      if (isFullScreenTimerOpen() || isNotificationPanelOpen()) return;
 
       // ⌘K / Ctrl+K works even inside a text field. That is the point of it.
       if (mod && !event.altKey && event.key.toLowerCase() === 'k') {
