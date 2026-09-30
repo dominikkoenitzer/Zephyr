@@ -4,6 +4,19 @@ import { bucketOf, sortByUrgency, toDayKey } from './taskFilters';
 
 const DAY_LETTERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
+/** Local midnight of a `YYYY-MM-DD` day key. */
+export const startOfDay = (key) => {
+  const [y, m, d] = key.split('-').map(Number);
+  return new Date(y, m - 1, d);
+};
+
+/** Milliseconds from `now` to the next local midnight, DST included. */
+export const msUntilNextDay = (now = new Date()) => {
+  const next = new Date(now);
+  next.setHours(24, 0, 0, 0);
+  return next - now;
+};
+
 /** Monday 00:00 of the week `now` falls in. */
 export const weekStart = (now = new Date()) => {
   const d = new Date(now);

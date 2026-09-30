@@ -4,6 +4,7 @@ import { m } from 'motion/react';
 import { ArrowUpRight, Pause, Play, Plus, Timer } from 'lucide-react';
 import { useTasks, useStoreValue } from '../hooks/useStore';
 import { useTimerSnapshot } from '../hooks/useTimerSnapshot';
+import { useToday } from '../hooks/useToday';
 import { localStorageService } from '../services/localStorage';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { ROUTE_META } from '../routes/meta';
@@ -15,6 +16,7 @@ import {
   focusByDay,
   formatMinutes,
   recentSessions,
+  startOfDay,
   upNext,
 } from '../lib/dashboard';
 import { formatTime } from '../lib/time';
@@ -417,12 +419,15 @@ function Home() {
   const [sessions] = useStoreValue(readSessions);
   const timer = useTimerSnapshot();
 
-  const now = new Date();
+  // The figures are memoised, so the day has to be one of their inputs or a
+  // page left open past midnight keeps showing yesterday.
+  const today = useToday();
+  const now = useMemo(() => startOfDay(today), [today]);
   const weekday = now.toLocaleDateString('en-GB', { weekday: 'long' });
   const date = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
 
-  const stats = useMemo(() => dashboardStats(tasks, sessions), [tasks, sessions]);
-  const week = useMemo(() => focusByDay(sessions), [sessions]);
+  const stats = useMemo(() => dashboardStats(tasks, sessions, now), [tasks, sessions, now]);
+  const week = useMemo(() => focusByDay(sessions, now), [sessions, now]);
   const next = useMemo(() => upNext(tasks), [tasks]);
   const soon = useMemo(() => dueSoon(tasks, 4), [tasks]);
   const recent = useMemo(() => recentSessions(sessions, 3), [sessions]);
