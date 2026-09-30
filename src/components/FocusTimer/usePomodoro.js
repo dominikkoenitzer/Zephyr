@@ -19,6 +19,10 @@ export { formatTime };
 const readAutoStartBreaks = () => Boolean(localStorageService.getSettings()?.autoStartBreaks);
 const readAutoStartFocus = () => Boolean(localStorageService.getSettings()?.autoStartFocus);
 
+/** How long a phase of `preset` runs: focus, the short break or the long one. */
+const lengthOf = (preset, isBreak, long) =>
+  isBreak ? (long ? preset.longBreak : preset.shortBreak) : preset.workTime;
+
 /**
  * The persisted timer, resolved against the wall clock so a session that ran
  * out while the tab was closed comes back finished rather than frozen.
@@ -41,6 +45,7 @@ function readPersistedTimer() {
     sessionsCompleted: 0,
     sessionTask: null,
     expiredAt: null,
+    phaseTotal: preset.workTime,
   };
 
   const state = localStorageService.getTimerState();
@@ -51,6 +56,11 @@ function readPersistedTimer() {
     isBreak: state.isBreak || false,
     sessionsCompleted: state.pomodorosCompleted || 0,
     sessionTask: state.focusTask || null,
+    // The length the saved phase started with, which a preset edit since then
+    // does not change.
+    phaseTotal:
+      Number(state.sessionTotal) ||
+      lengthOf(preset, state.isBreak, isLongBreakDue(state.pomodorosCompleted || 0, preset.sessionsUntilLongBreak || 4)),
   };
 
   if (state.isRunning && state.lastSaved) {
@@ -91,6 +101,10 @@ export function usePomodoro() {
   const [selectedPreset, setSelectedPreset] = useState(restored.selectedPreset);
   const [presets, setPresets] = useState(restored.presets);
   const [sessionTask, setSessionTask] = useState(restored.sessionTask);
+  // The full length of the phase under way, fixed when it starts. Editing the
+  // preset mid-session changes the next phase, never this one: the countdown,
+  // the sun and the logged duration all keep to the length it began with.
+  const [phaseTotal, setPhaseTotal] = useState(restored.phaseTotal);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [editingPreset, setEditingPreset] = useState(null);
@@ -110,8 +124,6 @@ export function usePomodoro() {
   }
   const timerContainerRef = useRef(null);
   const [circumference, setCircumference] = useState(2 * Math.PI * 180);
-  const prevPresetRef = useRef(selectedPreset);
-  const prevIsBreakRef = useRef(isBreak);
   const originalTitleRef = useRef(null);
   const [hasAutoStarted, setHasAutoStarted] = useState(false);
   // Counts finished phases, so the countdown re-anchors after every one, even
@@ -132,7 +144,9 @@ export function usePomodoro() {
     const next = finishPhase({
       isBreak,
       completed: sessionsCompleted,
-      preset: currentPreset,
+      // A finished focus session is logged at the length it started with; the
+      // next phase takes the preset as it is now.
+      preset: isBreak ? currentPreset : { ...currentPreset, workTime: phaseTotal },
       selectedPreset,
       sessionTask,
       autoStartBreaks,
@@ -142,9 +156,10 @@ export function usePomodoro() {
     setSessionsCompleted(next.sessionsCompleted);
     setIsBreak(next.isBreak);
     setTimeLeft(next.timeLeft);
+    setPhaseTotal(next.total);
     setIsRunning(next.isRunning);
     setPhaseCount((n) => n + 1);
-  }, [isBreak, sessionsCompleted, currentPreset, selectedPreset, sessionTask, autoStartBreaks, autoStartFocus]);
+  }, [isBreak, sessionsCompleted, currentPreset, phaseTotal, selectedPreset, sessionTask, autoStartBreaks, autoStartFocus]);
 
   // A session that ran out while the tab was closed still owes its completion
   // work: the streak, the session log and the notification. It is finished as
@@ -157,21 +172,23 @@ export function usePomodoro() {
     handleComplete(endedAt);
   }, [handleComplete]);
 
+  // The phase under way is saved at the length it started with, so a preset
+  // edit cannot change it for the shell either (finishExpiredPhase keeps the
+  // saved lengths); the other phases carry the preset as it is now.
   useEffect(() => {
+    const longNow = isBreak && isLongBreakDue(sessionsCompleted, sessionsUntilLongBreak);
     localStorageService.saveTimerState({
       timeLeft,
       isRunning,
       isBreak,
       pomodorosCompleted: sessionsCompleted,
-      workTime,
-      breakTime,
-      longBreakTime,
-      sessionTotal: isBreak
-        ? (isLongBreakDue(sessionsCompleted, sessionsUntilLongBreak) ? longBreakTime : breakTime)
-        : workTime,
+      workTime: isBreak ? workTime : phaseTotal,
+      breakTime: isBreak && !longNow ? phaseTotal : breakTime,
+      longBreakTime: longNow ? phaseTotal : longBreakTime,
+      sessionTotal: phaseTotal,
       focusTask: sessionTask,
     });
-  }, [timeLeft, isRunning, isBreak, sessionsCompleted, sessionsUntilLongBreak, workTime, breakTime, longBreakTime, sessionTask]);
+  }, [timeLeft, isRunning, isBreak, sessionsCompleted, sessionsUntilLongBreak, workTime, breakTime, longBreakTime, phaseTotal, sessionTask]);
 
   // Inbound intent (task -> focus, resume, auto-start). Answered during render
   // so the session name and a `start=1` countdown are already right in the
@@ -204,6 +221,7 @@ export function usePomodoro() {
       if (isBreak && !isRunning) {
         setIsBreak(false);
         setTimeLeft(workTime);
+        setPhaseTotal(workTime);
       }
       setIsRunning(true);
       setHasAutoStarted(true);
@@ -220,22 +238,6 @@ export function usePomodoro() {
   useEffect(() => {
     if (hasAutoStarted) localStorageService.saveOnboarding({ focusStarted: true });
   }, [hasAutoStarted]);
-
-  useEffect(() => {
-    // Only reset timer when preset changes or session type changes (work <-> break)
-    // Don't reset when timer is paused
-    const presetChanged = prevPresetRef.current !== selectedPreset;
-    const sessionTypeChanged = prevIsBreakRef.current !== isBreak;
-    
-    if ((presetChanged || sessionTypeChanged) && !isRunning) {
-      const longDue = isLongBreakDue(sessionsCompleted, sessionsUntilLongBreak);
-      setTimeLeft(isBreak ? (longDue ? longBreakTime : breakTime) : workTime);
-    }
-    
-    // Update refs
-    prevPresetRef.current = selectedPreset;
-    prevIsBreakRef.current = isBreak;
-  }, [selectedPreset, isBreak, workTime, breakTime, longBreakTime, sessionsCompleted, sessionsUntilLongBreak, isRunning]);
 
   // Keep a ref of the latest timeLeft so the ticking effect can anchor to
   // wall-clock time without re-running on every second.
@@ -333,9 +335,15 @@ export function usePomodoro() {
     setIsRunning(!isRunning);
   };
 
+  // A phase starting afresh takes the preset's length as it is now.
+  const startPhaseAt = (length) => {
+    setTimeLeft(length);
+    setPhaseTotal(length);
+  };
+
   const resetTimer = () => {
     setIsRunning(false);
-    setTimeLeft(isBreak ? (longBreakDue ? longBreakTime : breakTime) : workTime);
+    startPhaseAt(lengthOf(currentPreset, isBreak, longBreakDue));
   };
 
   // Skipping is not finishing. It moves on to the next phase and records
@@ -345,14 +353,14 @@ export function usePomodoro() {
     setIsRunning(false);
     if (isBreak) {
       setIsBreak(false);
-      setTimeLeft(workTime);
+      startPhaseAt(workTime);
     } else {
       setIsBreak(true);
-      setTimeLeft(longBreakDue ? longBreakTime : breakTime);
+      startPhaseAt(longBreakDue ? longBreakTime : breakTime);
     }
   };
 
-  const currentSessionTime = isBreak ? (longBreakDue ? longBreakTime : breakTime) : workTime;
+  const currentSessionTime = phaseTotal;
   const progress = ((currentSessionTime - timeLeft) / currentSessionTime) * 100;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
   const getSessionType = () => {
@@ -426,7 +434,7 @@ export function usePomodoro() {
     if (preset) {
       const n = preset.sessionsUntilLongBreak || 4;
       const long = isLongBreakDue(sessionsCompleted, n);
-      setTimeLeft(isBreak ? (long ? preset.longBreak : preset.shortBreak) : preset.workTime);
+      startPhaseAt(lengthOf(preset, isBreak, long));
     }
   };
 
@@ -449,7 +457,7 @@ export function usePomodoro() {
       // Only a timer at rest takes the new length; a paused session keeps
       // the time it had left.
       if (!isRunning && timeLeft === currentSessionTime) {
-        setTimeLeft(currentTime);
+        startPhaseAt(currentTime);
       }
     }
     
@@ -478,7 +486,7 @@ export function usePomodoro() {
     if (!isRunning && timeLeft === currentSessionTime) {
       setSelectedPreset(newPreset.id);
       localStorage.setItem(SELECTED_PRESET_KEY, newPreset.id);
-      setTimeLeft(newPreset.workTime);
+      startPhaseAt(newPreset.workTime);
     }
     setEditingPreset(newPreset);
     setNewPresetName('New Timer');
@@ -495,6 +503,13 @@ export function usePomodoro() {
     if (selectedPreset === presetId) {
       setSelectedPreset('pomodoro');
       localStorage.setItem('selectedFocusPreset', 'pomodoro');
+      // A session under way keeps its length; a timer at rest or paused
+      // starts over on the preset it falls back to.
+      const fallback = updatedPresets.find((p) => p.id === 'pomodoro') || updatedPresets[0];
+      if (!isRunning) {
+        const long = isLongBreakDue(sessionsCompleted, fallback.sessionsUntilLongBreak || 4);
+        startPhaseAt(lengthOf(fallback, isBreak, long));
+      }
     }
   };
 
