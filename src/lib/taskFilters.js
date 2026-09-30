@@ -118,3 +118,11 @@ export const countsByView = (tasks, tag = '', today = todayKey()) => {
 /** Every tag in use, lowercased and de-duplicated, alphabetical. */
 export const collectTags = (tasks) =>
   [...new Set(tasks.flatMap((t) => (t.tags || []).map((x) => String(x).toLowerCase())))].sort();
+
+/**
+ * The saved tag filter while some task still carries it, otherwise none. A
+ * filter on a tag nobody has any more hides every task and has no chip left
+ * to switch it off.
+ */
+export const tagInUse = (tag, tasks) =>
+  tag && collectTags(tasks).includes(String(tag).toLowerCase()) ? tag : '';

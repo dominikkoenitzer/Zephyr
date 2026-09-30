@@ -15,7 +15,7 @@ import { localStorageService } from '../../services/localStorage';
 import { parseQuickTask } from '../../lib/quickParse';
 import { clearCompletedWithUndo, deleteTaskWithUndo } from '../../lib/taskActions';
 import {
-  TASK_GROUPS, TASK_VIEWS, TASK_VIEW_IDS, collectTags, countsByView, filterActive, groupTasks, todayKey,
+  TASK_GROUPS, TASK_VIEWS, TASK_VIEW_IDS, collectTags, countsByView, filterActive, groupTasks, tagInUse, todayKey,
 } from '../../lib/taskFilters';
 import { useTasks } from '../../hooks/useStore';
 import { useScrollEdges } from '../../hooks/useScrollEdges';
@@ -79,9 +79,12 @@ const TaskList = () => {
     const saved = localStorageService.getViewPrefs().taskView;
     return TASK_VIEW_IDS.includes(saved) ? saved : 'all';
   });
-  const [tagFilter, setTagFilter] = useState(
+  const [savedTag, setTagFilter] = useState(
     () => localStorageService.getViewPrefs().taskTag || ''
   );
+  // A saved tag no task carries any more would hide the whole list behind a
+  // chip that is no longer shown, so it counts as no filter.
+  const tagFilter = tagInUse(savedTag, tasks);
 
   const chooseView = (next) => {
     setView(next);

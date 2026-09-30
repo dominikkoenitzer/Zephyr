@@ -8,6 +8,7 @@ import {
   groupTasks,
   matchesView,
   sortByUrgency,
+  tagInUse,
 } from './taskFilters';
 
 // Every case pins "today" explicitly so none of this depends on the clock.
@@ -174,5 +175,20 @@ describe('collectTags', () => {
   it('lowercases, de-duplicates and sorts', () => {
     const tasks = [task('a', { tags: ['Work', 'home'] }), task('b', { tags: ['work'] }), task('c')];
     expect(collectTags(tasks)).toEqual(['home', 'work']);
+  });
+});
+
+describe('tagInUse', () => {
+  const tasks = [task('a', { tags: ['Work'] }), task('b', { completed: true, tags: ['old'] }), task('c')];
+
+  it('keeps a tag some task still carries, completed ones included', () => {
+    expect(tagInUse('work', tasks)).toBe('work');
+    expect(tagInUse('old', tasks)).toBe('old');
+  });
+
+  it('drops a saved tag no task has any more, so the list is not left empty', () => {
+    expect(tagInUse('gone', tasks)).toBe('');
+    expect(tagInUse('', tasks)).toBe('');
+    expect(filterActive(tasks, { tag: tagInUse('gone', tasks) }, TODAY)).toHaveLength(2);
   });
 });
