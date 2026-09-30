@@ -73,6 +73,9 @@ const TaskList = () => {
   const [editingTask, setEditingTask] = useState(null);
   const newTaskInputRef = useRef(null);
   const listRef = useRef(null);
+  // Set by the editor's Delete: the row that takes focus once the editor has
+  // closed, since the row that opened it is gone.
+  const focusAfterEditRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Which filter you left the list on survives a reload. An unfiltered list
@@ -236,13 +239,18 @@ const TaskList = () => {
   // with the row, back to the top of the page. It moves to the next row's
   // checkbox instead, the previous one after the last row, or the quick add
   // once the list is empty.
-  const moveFocusFrom = (taskId, trigger) => {
-    if (document.activeElement !== trigger) return;
+  const rowAfter = (taskId) => {
     const order = grouped ? grouped.flatMap((g) => g.tasks) : activeTasks;
     const at = order.findIndex((t) => t.id === taskId);
-    const next = order[at + 1] || order[at - 1];
-    const box = next && listRef.current?.querySelector(`[data-task-check="${CSS.escape(next.id)}"]`);
+    return order[at + 1] || order[at - 1];
+  };
+  const focusRow = (task) => {
+    const box = task && listRef.current?.querySelector(`[data-task-check="${CSS.escape(task.id)}"]`);
     (box || newTaskInputRef.current)?.focus();
+  };
+  const moveFocusFrom = (taskId, trigger) => {
+    if (document.activeElement !== trigger) return;
+    focusRow(rowAfter(taskId));
   };
 
   /**
@@ -680,7 +688,16 @@ const TaskList = () => {
       {/* Edit task dialog */}
       {editingTask && (
         <Dialog open={!!editingTask} onOpenChange={() => setEditingTask(null)}>
-          <DialogContent className="max-h-[90vh] w-[calc(100vw-1.5rem)] overflow-y-auto sm:max-w-md">
+          <DialogContent
+            className="max-h-[90vh] w-[calc(100vw-1.5rem)] overflow-y-auto sm:max-w-md"
+            onCloseAutoFocus={(event) => {
+              const after = focusAfterEditRef.current;
+              if (!after) return;
+              focusAfterEditRef.current = null;
+              event.preventDefault();
+              focusRow(after.next);
+            }}
+          >
             <DialogHeader>
               <DialogTitle>Edit task</DialogTitle>
             </DialogHeader>
@@ -756,6 +773,7 @@ const TaskList = () => {
                     size="sm"
                     className="text-muted-foreground hover:text-destructive-strong"
                     onClick={() => {
+                      focusAfterEditRef.current = { next: rowAfter(editingTask.id) };
                       deleteTaskWithUndo(editingTask.id);
                       setEditingTask(null);
                     }}
