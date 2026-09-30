@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   dashboardStats,
   dueLabel,
+  donePercent,
   dueSoon,
   focusByDay,
   focusToday,
+  gaugeSegments,
   formatMinutes,
   msUntilNextDay,
   recentSessions,
@@ -154,5 +156,58 @@ describe('tasksViewHref', () => {
   it('opens the list on the view a card counts, whatever filter was left on', () => {
     expect(tasksViewHref('overdue')).toBe('/tasks?view=overdue');
     expect(tasksViewHref('all')).toBe('/tasks?view=all');
+  });
+});
+
+describe('donePercent', () => {
+  it('only says 100 when everything is done', () => {
+    expect(donePercent(199, 200)).toBe(99);
+    expect(donePercent(200, 200)).toBe(100);
+  });
+
+  it('never says 0 once something is done', () => {
+    expect(donePercent(1, 300)).toBe(1);
+    expect(donePercent(0, 300)).toBe(0);
+    expect(donePercent(0, 0)).toBe(0);
+  });
+
+  it('otherwise rounds down', () => {
+    expect(donePercent(2, 3)).toBe(66);
+    expect(donePercent(1, 2)).toBe(50);
+  });
+});
+
+describe('gaugeSegments', () => {
+  const parts = (done, open, late) => [
+    { key: 'done', value: done },
+    { key: 'open', value: open },
+    { key: 'late', value: late },
+  ];
+
+  it('draws every slice the legend counts, however small', () => {
+    for (const [done, open, late] of [[0, 80, 1], [80, 0, 1], [1, 80, 0], [40, 1, 40], [1, 1, 200]]) {
+      const segs = gaugeSegments(parts(done, open, late));
+      const counted = parts(done, open, late).filter((p) => p.value > 0).map((p) => p.key);
+      expect(segs.map((s) => s.key)).toEqual(counted);
+      segs.forEach((s) => expect(s.to - s.from).toBeGreaterThanOrEqual(4));
+    }
+  });
+
+  it('keeps the slices in order inside the half circle, with gaps between', () => {
+    const segs = gaugeSegments(parts(1, 1, 200));
+    expect(segs[0].from).toBe(180);
+    expect(segs.at(-1).to).toBeCloseTo(360);
+    for (let i = 1; i < segs.length; i += 1) {
+      expect(segs[i].from - segs[i - 1].to).toBeCloseTo(5);
+    }
+  });
+
+  it('shares the arc by value when every slice is large', () => {
+    const [a, b] = gaugeSegments(parts(1, 1, 0));
+    expect(a.to - a.from).toBeCloseTo(b.to - b.from);
+  });
+
+  it('draws nothing when there are no tasks', () => {
+    expect(gaugeSegments(parts(0, 0, 0))).toEqual([]);
   });
 });

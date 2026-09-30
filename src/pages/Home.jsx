@@ -11,10 +11,12 @@ import { ROUTE_META } from '../routes/meta';
 import { cn } from '../lib/utils';
 import {
   dashboardStats,
+  donePercent,
   dueLabel,
   dueSoon,
   focusByDay,
   formatMinutes,
+  gaugeSegments,
   recentSessions,
   startOfDay,
   tasksViewHref,
@@ -307,24 +309,13 @@ const arc = (from, to) => {
 
 function Progress({ done, open, overdue }) {
   const total = done + open;
-  const pct = total ? Math.round((done / total) * 100) : 0;
+  const pct = donePercent(done, total);
   const parts = [
     { key: 'done', label: 'Done', value: done, stroke: 'hsl(var(--primary))', dot: 'bg-primary' },
     { key: 'open', label: 'Open', value: open - overdue, stroke: 'hsl(var(--night))', dot: 'bg-night' },
     { key: 'late', label: 'Overdue', value: overdue, stroke: 'hsl(var(--destructive))', dot: 'bg-destructive' },
   ];
-  const GAP = 5;
-  let cursor = 180;
-  const segments = total
-    ? parts
-        .filter((p) => p.value > 0)
-        .map((p) => {
-          const span = (p.value / total) * 180;
-          const seg = { ...p, from: cursor, to: cursor + span };
-          cursor += span;
-          return seg;
-        })
-    : [];
+  const segments = gaugeSegments(parts);
 
   return (
     <m.section variants={rise} className={cn(panel, 'flex flex-col')} aria-labelledby="progress-title">
@@ -332,23 +323,19 @@ function Progress({ done, open, overdue }) {
       <div className="relative mx-auto mt-4 w-full max-w-64">
         <svg viewBox="0 0 200 112" className="w-full" aria-hidden="true">
           <path d={arc(180, 360)} stroke="hsl(var(--accent))" strokeWidth="22" fill="none" strokeLinecap="round" />
-          {segments.map((s, i) => {
-            const from = s.from + (i === 0 ? 0 : GAP / 2);
-            const to = s.to - (i === segments.length - 1 ? 0 : GAP / 2);
-            return to > from ? (
-              <m.path
-                key={s.key}
-                d={arc(from, to)}
-                stroke={s.stroke}
-                strokeWidth="22"
-                fill="none"
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 0.7, delay: 0.1 + i * 0.15, ease: [0.25, 0.1, 0.25, 1] }}
-              />
-            ) : null;
-          })}
+          {segments.map((s, i) => (
+            <m.path
+              key={s.key}
+              d={arc(s.from, s.to)}
+              stroke={s.stroke}
+              strokeWidth="22"
+              fill="none"
+              strokeLinecap="round"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.7, delay: 0.1 + i * 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+            />
+          ))}
         </svg>
         <div className="absolute inset-x-0 bottom-0 text-center">
           <p className="text-[2.5rem] font-semibold leading-none tracking-[-0.04em] tabular-nums">{pct}%</p>
