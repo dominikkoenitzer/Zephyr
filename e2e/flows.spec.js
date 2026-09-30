@@ -302,6 +302,25 @@ test.describe('on a phone', () => {
     expect(box.x + box.width).toBeLessThanOrEqual(390);
   });
 
+  test('the footer does not jump when a page finishes loading', async ({ page }) => {
+    await seed(page);
+    await page.addInitScript(() => {
+      window.__cls = 0;
+      new PerformanceObserver((list) => {
+        for (const e of list.getEntries()) if (!e.hadRecentInput) window.__cls += e.value;
+      }).observe({ type: 'layout-shift', buffered: true });
+    });
+    // A slow page chunk holds the loader on screen, as on a phone network.
+    await page.route(/\/assets\/FocusTimer-.*\.js$/, async (route) => {
+      await new Promise((r) => setTimeout(r, 800));
+      await route.continue();
+    });
+    await page.goto('/focus');
+    await expect(page.getByRole('button', { name: 'Start timer' })).toBeVisible();
+    await page.waitForTimeout(500);
+    expect(await page.evaluate(() => window.__cls)).toBeLessThan(0.05);
+  });
+
   test('the filter row shows which way it goes on', async ({ page }) => {
     await seed(page);
     await page.goto('/tasks');
