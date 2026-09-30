@@ -178,3 +178,18 @@ describe('parseQuickTask: month names', () => {
     expect(parseQuickTask('Trip september 3rd').dueDate).toBe(parseQuickTask('Trip sep 3').dueDate);
   });
 });
+
+describe('parseQuickTask: a typed year', () => {
+  it('reads the year after a month name, with or without a comma', () => {
+    expect(parseQuickTask('renew passport dec 5 2027')).toMatchObject({ title: 'renew passport', dueDate: '2027-12-05' });
+    expect(parseQuickTask('Trip 5 oct 2027')).toMatchObject({ title: 'Trip', dueDate: '2027-10-05' });
+    expect(parseQuickTask('Trip october 5, 2027')).toMatchObject({ title: 'Trip', dueDate: '2027-10-05' });
+    expect(parseQuickTask('Pay jan 15, 2027')).toMatchObject({ title: 'Pay', dueDate: '2027-01-15' });
+    expect(parseQuickTask('Trip 5th october, 2027').dueDate).toBe('2027-10-05');
+  });
+
+  it('refuses a day that year does not have', () => {
+    expect(parseQuickTask('Party feb 29 2027').dueDate).toBeNull();
+    expect(parseQuickTask('Party feb 29 2028').dueDate).toBe('2028-02-29');
+  });
+});
