@@ -122,6 +122,54 @@ describe('notificationService: deleting', () => {
   });
 });
 
+describe('notificationService: timer alerts outside the list', () => {
+  const shown = [];
+  beforeEach(() => {
+    shown.length = 0;
+    vi.stubGlobal('Notification', class {
+      static permission = 'granted';
+      constructor(title) { shown.push(title); }
+    });
+    return () => vi.unstubAllGlobals();
+  });
+
+  const turnOff = (patch) => {
+    const settings = notificationService.getSettings();
+    notificationService.saveSettings({ ...settings, ...patch(settings) });
+  };
+
+  it('chimes and notifies the system when timer alerts are on', () => {
+    notificationService.playChime('timer');
+    notificationService.showOsNotification('timer', 'Break over', 'Back to it.');
+    expect(notificationService.playNotificationSound).toHaveBeenCalledTimes(1);
+    expect(shown).toEqual(['Break over']);
+  });
+
+  it('stays silent when timer notifications are off', () => {
+    turnOff((s) => ({ timer: { ...s.timer, enabled: false } }));
+    notificationService.playChime('timer');
+    expect(notificationService.playNotificationSound).not.toHaveBeenCalled();
+    notificationService.showOsNotification('timer', 'Break over', 'Back to it.');
+    expect(shown).toEqual([]);
+  });
+
+  it('stays silent when notifications are off altogether', () => {
+    turnOff(() => ({ enabled: false }));
+    notificationService.playChime('timer');
+    expect(notificationService.playNotificationSound).not.toHaveBeenCalled();
+    notificationService.showOsNotification('timer', 'Session complete', 'Take a break.');
+    expect(shown).toEqual([]);
+  });
+
+  it('notifies without the chime when only the sound is off', () => {
+    turnOff(() => ({ soundEnabled: false }));
+    notificationService.playChime('timer');
+    notificationService.showOsNotification('timer', 'Break over', 'Back to it.');
+    expect(notificationService.playNotificationSound).not.toHaveBeenCalled();
+    expect(shown).toEqual(['Break over']);
+  });
+});
+
 describe('notificationService: unkeyed notifications', () => {
   it('still collapses a repeated timer alert inside a minute', () => {
     notificationService.createNotification('timer', 'Session Complete', 'one');

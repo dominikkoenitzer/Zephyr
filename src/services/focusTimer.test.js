@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn() } }));
 vi.mock('./notificationService', () => ({
-  notificationService: { createNotification: vi.fn(), playChime: vi.fn() },
+  notificationService: { createNotification: vi.fn(), playChime: vi.fn(), showOsNotification: vi.fn() },
 }));
 
 const { finishExpiredPhase, finishPhase } = await import('./focusTimer');
