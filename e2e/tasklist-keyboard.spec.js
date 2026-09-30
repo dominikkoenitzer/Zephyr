@@ -48,3 +48,44 @@ test.describe('the task list from the keyboard', () => {
     await expect(check(page, 'Third')).toBeFocused();
   });
 });
+
+test.describe('the task list at midnight', () => {
+  test('a list left open regroups when the day changes', async ({ page }) => {
+    // Local 23:59:50, so the browser's own midnight is ten seconds away. The
+    // clock then runs twenty seconds: past midnight, but short of the
+    // reminder poll's first minute, whose write would re-render the list anyway.
+    const now = new Date(2026, 5, 10, 23, 59, 50);
+    await page.clock.install({ time: now });
+    await seed(page, {
+      sessions: [],
+      tasks: [
+        { title: 'Due on the tenth', dueDate: '2026-06-10' },
+        { title: 'Due on the eleventh', dueDate: '2026-06-11' },
+      ].map((t, i) => ({
+        id: `mid-${i}`,
+        priority: 'medium',
+        tags: [],
+        description: '',
+        subtasks: [],
+        completed: false,
+        createdAt: new Date(2026, 5, 1, 9).toISOString(),
+        ...t,
+      })),
+    });
+    await page.goto('/tasks');
+
+    const list = page.getByRole('region', { name: 'Open tasks' });
+    const group = (label) =>
+      list.locator('div').filter({ has: page.getByRole('heading', { name: new RegExp(`^${label}\\b`) }) }).last();
+
+    await expect(group('Today')).toContainText('Due on the tenth');
+    await expect(group('Tomorrow')).toContainText('Due on the eleventh');
+    await expect(list.getByRole('heading', { name: /^Overdue\b/ })).toHaveCount(0);
+
+    await page.clock.runFor('00:20');
+
+    await expect(group('Overdue')).toContainText('Due on the tenth');
+    await expect(group('Today')).toContainText('Due on the eleventh');
+    await expect(list.getByRole('heading', { name: /^Tomorrow\b/ })).toHaveCount(0);
+  });
+});
