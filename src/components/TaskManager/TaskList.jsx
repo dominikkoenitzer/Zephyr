@@ -71,6 +71,7 @@ const TaskList = () => {
   const [showCompleted, setShowCompleted] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const newTaskInputRef = useRef(null);
+  const listRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Which filter you left the list on survives a reload. An unfiltered list
@@ -228,6 +229,19 @@ const TaskList = () => {
     return due < now;
   };
 
+  // Completing or deleting a row from the keyboard would take the focus down
+  // with the row, back to the top of the page. It moves to the next row's
+  // checkbox instead, the previous one after the last row, or the quick add
+  // once the list is empty.
+  const moveFocusFrom = (taskId, trigger) => {
+    if (document.activeElement !== trigger) return;
+    const order = grouped ? grouped.flatMap((g) => g.tasks) : activeTasks;
+    const at = order.findIndex((t) => t.id === taskId);
+    const next = order[at + 1] || order[at - 1];
+    const box = next && listRef.current?.querySelector(`[data-task-check="${CSS.escape(next.id)}"]`);
+    (box || newTaskInputRef.current)?.focus();
+  };
+
   /**
    * One task: a row inside the list card that lights up under the cursor. The
    * meta sits on the right as small pills, and the row's actions take the
@@ -275,7 +289,8 @@ const TaskList = () => {
           <button
             type="button"
             aria-label={`Mark "${task.title}" complete`}
-            onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
+            data-task-check={task.id}
+            onClick={(e) => { e.stopPropagation(); moveFocusFrom(task.id, e.currentTarget); toggleTask(task.id); }}
             className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[9px] bg-accent text-transparent shadow-[inset_0_0_0_1.5px_hsl(var(--foreground)/0.12)] transition-[background-color,box-shadow,color,transform] active:scale-90 hover:bg-primary hover:text-primary-foreground hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
           >
             <Check className="h-3 w-3" strokeWidth={3.5} />
@@ -349,7 +364,11 @@ const TaskList = () => {
               <button
                 type="button"
                 aria-label={`Delete "${task.title}"`}
-                onClick={(e) => { e.stopPropagation(); deleteTaskWithUndo(task.id); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  moveFocusFrom(task.id, e.currentTarget);
+                  deleteTaskWithUndo(task.id);
+                }}
                 className={cn(roundAction, 'hover:text-destructive-strong')}
               >
                 <Trash2 className="h-4 w-4" />
@@ -492,7 +511,7 @@ const TaskList = () => {
       {tasks.length > 0 && (
         <div className="mt-5 grid grid-cols-1 items-start gap-(--panel-gap) xl:grid-cols-12">
           {/* The list */}
-          <section className={cn(card, 'p-3 sm:p-4 xl:col-span-8')} aria-label="Open tasks">
+          <section ref={listRef} className={cn(card, 'p-3 sm:p-4 xl:col-span-8')} aria-label="Open tasks">
             {activeTasks.length > 0 ? (
               grouped ? (
                 <div className="space-y-5 py-1">
