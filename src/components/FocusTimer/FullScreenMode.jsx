@@ -41,6 +41,7 @@ const FullScreenMode = ({
       role="dialog"
       aria-modal="true"
       aria-label="Full screen timer"
+      data-fullscreen-timer=""
       className="fixed inset-0 z-100 isolate flex flex-col items-center justify-center overflow-hidden bg-linear-to-br from-hero-from to-hero-to p-4 text-hero-foreground sm:p-8">
       <WindLines className="-z-10 max-h-72 opacity-80" />
 

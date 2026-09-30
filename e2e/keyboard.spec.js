@@ -64,3 +64,29 @@ test.describe('the g chord', () => {
     await expect(palette(page)).toHaveCount(0);
   });
 });
+
+test.describe('full screen focus', () => {
+  test('the global shortcuts stand down while the timer is full screen', async ({ page }) => {
+    await seed(page);
+    await page.goto('/focus');
+    await expect(page.getByRole('button', { name: 'Start timer' })).toBeVisible();
+    await page.keyboard.press('f');
+    const fullScreen = page.getByRole('dialog', { name: 'Full screen timer' });
+    await expect(fullScreen).toBeVisible();
+
+    await page.keyboard.down('Shift');
+    await page.keyboard.press('Slash');
+    await page.keyboard.up('Shift');
+    await page.keyboard.press('/');
+    await page.keyboard.press('Control+K');
+    await page.waitForTimeout(300);
+    await expect(shortcutsSheet(page)).toHaveCount(0);
+    await expect(palette(page)).toHaveCount(0);
+
+    // The timer's own keys still work there.
+    await page.keyboard.press('Space');
+    await expect(fullScreen.getByRole('button', { name: 'Pause timer' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(fullScreen).toHaveCount(0);
+  });
+});
