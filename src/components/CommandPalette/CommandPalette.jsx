@@ -71,6 +71,7 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const listRef = useRef(null);
   const inputRef = useRef(null);
+  const returnFocusRef = useRef(null);
   // Live reads, so "Resume" and "Clear N completed" match the storage of the
   // moment the palette opens, not of the moment the page loaded.
   const [tasks] = useTasks();
@@ -271,9 +272,23 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
         <DialogPrimitive.Content
           aria-describedby={undefined}
           onOpenAutoFocus={(event) => {
-            // Focus the field, never the first option.
+            // Remember what had focus, then focus the field, never the first
+            // option.
+            returnFocusRef.current = document.activeElement;
             event.preventDefault();
             inputRef.current?.focus();
+          }}
+          onCloseAutoFocus={(event) => {
+            // The palette opens from a key or a button, never a Radix
+            // Trigger, so Radix would drop focus on <body>. Go back to where
+            // it was, if that is still on the page and a command has not
+            // already put focus somewhere (New task focuses the quick add).
+            const el = returnFocusRef.current;
+            returnFocusRef.current = null;
+            const moved = document.activeElement && document.activeElement !== document.body;
+            if (moved || !el?.isConnected || el === document.body) return;
+            event.preventDefault();
+            el.focus();
           }}
           className="fixed left-1/2 top-4 z-50 w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-3xl bg-card p-0 shadow-(--shadow-overlay) duration-200 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:top-[12vh]"
         >
