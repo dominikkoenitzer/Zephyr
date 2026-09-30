@@ -197,7 +197,14 @@ export function usePomodoro() {
       }
     }
 
-    if (searchParams.get('start') === '1' && !hasAutoStarted) {
+    // "Start a focus session" means focus: a break that is only waiting (not
+    // under way) gives way to it. Every arrival starts the timer, not just the
+    // first one on this page.
+    if (searchParams.get('start') === '1') {
+      if (isBreak && !isRunning) {
+        setIsBreak(false);
+        setTimeLeft(workTime);
+      }
       setIsRunning(true);
       setHasAutoStarted(true);
     }
@@ -374,7 +381,10 @@ export function usePomodoro() {
         return;
       }
       const tag = e.target.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON' || e.target.isContentEditable) return;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable) return;
+      // A focused button answers Space and Enter itself; the letters are still
+      // the timer's, or R, S and F died after any click on a control.
+      if (tag === 'BUTTON' && (e.code === 'Space' || e.key === 'Enter')) return;
       if (document.querySelector('[role="dialog"][data-state="open"], [role="listbox"][data-state="open"]')) return;
 
       if (e.code === 'Space') {
@@ -389,8 +399,9 @@ export function usePomodoro() {
           resetTimer();
           break;
         case 's':
-          // Skipping a session that hasn't started would just log a no-op.
-          if (timeLeft === currentSessionTime) return;
+          // A focus session that hasn't started has nothing to skip; a break
+          // that is only waiting can be skipped straight to focus.
+          if (!isBreak && timeLeft === currentSessionTime) return;
           e.preventDefault();
           skipSession();
           break;
@@ -407,6 +418,7 @@ export function usePomodoro() {
   });
 
   const handlePresetChange = (presetId) => {
+    if (presetId === selectedPreset) return;
     setSelectedPreset(presetId);
     localStorage.setItem('selectedFocusPreset', presetId);
     setIsRunning(false);
@@ -434,7 +446,9 @@ export function usePomodoro() {
       const n = updatedPreset.sessionsUntilLongBreak || 4;
       const long = isLongBreakDue(sessionsCompleted, n);
       const currentTime = isBreak ? (long ? updatedPreset.longBreak : updatedPreset.shortBreak) : updatedPreset.workTime;
-      if (!isRunning) {
+      // Only a timer at rest takes the new length; a paused session keeps
+      // the time it had left.
+      if (!isRunning && timeLeft === currentSessionTime) {
         setTimeLeft(currentTime);
       }
     }
@@ -459,7 +473,13 @@ export function usePomodoro() {
     const updatedPresets = [...presets, newPreset];
     setPresets(updatedPresets);
     localStorage.setItem(PRESETS_KEY, JSON.stringify(presetsToStore(updatedPresets, DEFAULT_PRESETS)));
-    setSelectedPreset(newPreset.id);
+    // Chosen, and remembered as chosen, only while the timer is at rest: a
+    // session under way keeps the preset it started with.
+    if (!isRunning && timeLeft === currentSessionTime) {
+      setSelectedPreset(newPreset.id);
+      localStorage.setItem(SELECTED_PRESET_KEY, newPreset.id);
+      setTimeLeft(newPreset.workTime);
+    }
     setEditingPreset(newPreset);
     setNewPresetName('New Timer');
     setIsSettingsOpen(true);
