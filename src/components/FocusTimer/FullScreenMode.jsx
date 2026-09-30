@@ -25,6 +25,7 @@ const FullScreenMode = ({
   isBreak = false
 }) => {
   const rootRef = useRef(null);
+  const toggleRef = useRef(null);
 
   // Everything behind the night goes inert while it is up, so Tab stays on
   // the three controls and the exit button instead of walking the page.
@@ -33,6 +34,12 @@ const FullScreenMode = ({
     const others = [...document.body.children].filter((el) => el !== self && !el.hasAttribute('inert'));
     others.forEach((el) => el.setAttribute('inert', ''));
     return () => others.forEach((el) => el.removeAttribute('inert'));
+  }, []);
+
+  // The button that opened this view left with the page behind it, so focus
+  // starts on Start/Pause instead of falling to <body>.
+  useEffect(() => {
+    toggleRef.current?.focus();
   }, []);
 
   return createPortal(
@@ -76,6 +83,7 @@ const FullScreenMode = ({
             <RotateCcw className="h-5 w-5" />
           </button>
           <button
+            ref={toggleRef}
             type="button"
             onClick={onToggle}
             aria-label={isRunning ? 'Pause timer' : 'Start timer'}
