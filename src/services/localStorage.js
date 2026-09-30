@@ -22,6 +22,25 @@ export const STORAGE_KEYS = {
   PERSIST_ASKED: 'zephyr_storage_persist_asked',
 };
 
+// Keys that belong to the app but aren't `zephyr`-prefixed.
+export const EXTRA_BACKUP_KEYS = ['focusTimerPresets', 'selectedFocusPreset', 'theme'];
+
+/**
+ * Zephyr's keys that describe this browser, not the user's data: when this
+ * browser last exported, when it last asked to keep its storage, and the
+ * timer as it stands right now. They stay out of a backup, so importing an
+ * old file cannot make the last export look older or newer than it was, nor
+ * bring back a session that was running when the file was made, which the
+ * timer would then find long expired and log as finished. "Delete my data"
+ * still removes them.
+ */
+export const DEVICE_KEYS = [STORAGE_KEYS.LAST_BACKUP, STORAGE_KEYS.PERSIST_ASKED, STORAGE_KEYS.TIMER_STATE];
+
+export const isBackupKey = (key) =>
+  typeof key === 'string'
+  && !DEVICE_KEYS.includes(key)
+  && (key.startsWith('zephyr') || EXTRA_BACKUP_KEYS.includes(key));
+
 // Custom event broadcast on every write so views in the same tab can react
 // instantly (the native `storage` event only fires in other tabs).
 export const CHANGE_EVENT = 'zephyr:change';
@@ -439,13 +458,18 @@ class LocalStorageService {
 
       Object.entries(STORAGE_KEYS).forEach(([name, key]) => {
         const data = localStorage.getItem(key);
-        const size = data ? new Blob([data]).size : 0;
         info[name] = {
-          size,
+          size: data ? new Blob([data]).size : 0,
           hasData: !!data
         };
-        totalSize += size;
       });
+
+      // The total is what an export carries, notifications and the
+      // unprefixed keys included. Summing STORAGE_KEYS alone left them out.
+      for (let i = 0; i < localStorage.length; i += 1) {
+        const key = localStorage.key(i);
+        if (isBackupKey(key)) totalSize += new Blob([localStorage.getItem(key)]).size;
+      }
 
       return {
         ...info,

@@ -107,3 +107,20 @@ describe('localStorageService: backup and storage dates', () => {
     expect(localStorageService.getPersistAsked()).toBe('2026-09-29T10:00:00.000Z');
   });
 });
+
+describe('localStorageService: storage info', () => {
+  it('counts everything a backup would carry, notifications and presets included', () => {
+    const stored = {
+      zephyr_tasks: '{"tasks":[]}',
+      zephyr_notifications: '[{"id":"n1","title":"Task due today"}]',
+      zephyr_notification_settings: '{"enabled":true}',
+      focusTimerPresets: '[{"id":"deep","work":50}]',
+      theme: 'dark',
+    };
+    Object.entries(stored).forEach(([key, value]) => localStorage.setItem(key, value));
+    localStorage.setItem('someone-elses-key', 'x'.repeat(500));
+
+    const expected = Object.values(stored).reduce((sum, value) => sum + new Blob([value]).size, 0);
+    expect(localStorageService.getStorageInfo().totalSize).toBe(expected);
+  });
+});

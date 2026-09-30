@@ -3,26 +3,14 @@
 // small envelope so a foreign JSON file can be rejected before it overwrites
 // anything.
 
-import { STORAGE_KEYS, localStorageService } from '../services/localStorage';
+import {
+  DEVICE_KEYS, EXTRA_BACKUP_KEYS, isBackupKey, localStorageService,
+} from '../services/localStorage';
 
-// Keys that belong to the app but aren't `zephyr`-prefixed.
-export const EXTRA_BACKUP_KEYS = ['focusTimerPresets', 'selectedFocusPreset', 'theme'];
-
-/**
- * Zephyr's keys that describe this browser, not the user's data: when this
- * browser last exported, when it last asked to keep its storage, and the
- * timer as it stands right now. They stay out of a backup, so importing an
- * old file cannot make the last export look older or newer than it was, nor
- * bring back a session that was running when the file was made, which the
- * timer would then find long expired and log as finished. "Delete my data"
- * still removes them.
- */
-export const DEVICE_KEYS = [STORAGE_KEYS.LAST_BACKUP, STORAGE_KEYS.PERSIST_ASKED, STORAGE_KEYS.TIMER_STATE];
-
-export const isBackupKey = (key) =>
-  typeof key === 'string'
-  && !DEVICE_KEYS.includes(key)
-  && (key.startsWith('zephyr') || EXTRA_BACKUP_KEYS.includes(key));
+// Which keys a backup carries is decided next to STORAGE_KEYS, because the
+// storage size in Settings counts the same keys and localStorage.js cannot
+// import this file back.
+export { EXTRA_BACKUP_KEYS, DEVICE_KEYS, isBackupKey };
 
 export const BACKUP_VERSION = 1;
 
