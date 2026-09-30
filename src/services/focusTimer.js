@@ -88,12 +88,12 @@ export function finishPhase({
     now: Date.now(),
   });
   // `total` is the next phase's full length, which it keeps even when the
-  // preset is edited while it runs.
+  // preset is edited while it runs; `longBreak` says which break it is.
+  const longBreak = phase.isBreak && longBreakDue(phase.sessionsCompleted, every);
   const next = {
     ...phase,
-    total: phase.isBreak
-      ? (longBreakDue(phase.sessionsCompleted, every) ? longBreakTime : breakTime)
-      : workTime,
+    longBreak,
+    total: phase.isBreak ? (longBreak ? longBreakTime : breakTime) : workTime,
   };
 
   localStorageService.saveTimerState({
@@ -105,6 +105,7 @@ export function finishPhase({
     breakTime,
     longBreakTime,
     sessionTotal: next.total,
+    longBreak,
     focusTask: sessionTask,
   });
 

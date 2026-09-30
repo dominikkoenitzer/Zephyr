@@ -33,4 +33,24 @@ test.describe('the length of a phase under way', () => {
     await page.getByRole('button', { name: 'Skip session' }).click();
     await expect(page.getByText('50:00', { exact: true })).toBeVisible();
   });
+
+  test('a session skipped right after the long break is followed by a short one', async ({ page }) => {
+    await seed(page, {
+      sessions: [],
+      extra: {
+        zephyr_timer_state: JSON.stringify({
+          timeLeft: 1500, isRunning: false, isBreak: false, pomodorosCompleted: 4,
+          workTime: 1500, breakTime: 300, longBreakTime: 900, sessionTotal: 1500, focusTask: null, lastSaved: Date.now(),
+        }),
+      },
+    });
+    await page.goto('/focus');
+    await page.getByRole('button', { name: 'Start timer' }).click();
+    await page.waitForTimeout(1100);
+    await page.getByRole('button', { name: 'Skip session' }).click();
+
+    await expect(page.getByText('Short break', { exact: true })).toBeVisible();
+    await expect(page.getByText('05:00', { exact: true })).toBeVisible();
+    expect((await timerState(page)).sessionTotal).toBe(300);
+  });
 });
