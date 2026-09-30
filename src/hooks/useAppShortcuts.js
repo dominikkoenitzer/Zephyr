@@ -16,6 +16,13 @@ const isOverlayOpen = () =>
   );
 
 /**
+ * The full-screen timer is up. It sits above the Radix layer, so a palette or
+ * sheet opened from there would land behind it and take the focus with it.
+ * Every app shortcut, Ctrl+K included, stands down until it closes.
+ */
+const isFullScreenTimerOpen = () => !!document.querySelector('[data-fullscreen-timer]');
+
+/**
  * Keys that only change what the next key types. `?` is Shift+/ in the US, and
  * `/` is Shift+7 in Switzerland, so the Shift on its way down must not disarm a
  * waiting `g`.
@@ -64,6 +71,8 @@ export function useAppShortcuts(handlers) {
     const onKeyDown = (event) => {
       const h = handlersRef.current;
       const mod = event.metaKey || event.ctrlKey;
+
+      if (isFullScreenTimerOpen()) return;
 
       // ⌘K / Ctrl+K works even inside a text field. That is the point of it.
       if (mod && !event.altKey && event.key.toLowerCase() === 'k') {
