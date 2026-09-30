@@ -64,6 +64,7 @@ const buildCalendarGrid = (monthDate) => {
 const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props }, ref) => {
   const rootRef = React.useRef(null)
   const triggerRef = React.useRef(null)
+  const panelRef = React.useRef(null)
   const parsedInitial = parseDateValue(value)
   const [isOpen, setIsOpen] = React.useState(false)
   const [selectedDate, setSelectedDate] = React.useState(parsedInitial)
@@ -91,13 +92,40 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
     syncFromValue(value)
   }, [value, syncFromValue])
 
+  // While the panel is open it owns Escape and the focus. The listeners sit on
+  // the window in the capture phase, ahead of a surrounding Radix dialog's own
+  // document listeners: its Escape would close the whole dialog and lose the
+  // edits, and its focus trap would pull focus back out of the panel, which is
+  // portalled outside the dialog's element.
   React.useEffect(() => {
+    if (!isOpen) return
+    const trigger = triggerRef.current
+    const inPanel = (node) => Boolean(node && panelRef.current?.contains(node))
     const handleEscape = (event) => {
-      if (event.key === "Escape") setIsOpen(false)
+      if (event.key !== "Escape") return
+      event.stopPropagation()
+      event.preventDefault()
+      setIsOpen(false)
     }
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape)
-      return () => document.removeEventListener("keydown", handleEscape)
+    const handleFocusIn = (event) => {
+      if (inPanel(event.target)) event.stopPropagation()
+    }
+    const handleFocusOut = (event) => {
+      if (inPanel(event.relatedTarget)) event.stopPropagation()
+    }
+    window.addEventListener("keydown", handleEscape, true)
+    window.addEventListener("focusin", handleFocusIn, true)
+    window.addEventListener("focusout", handleFocusOut, true)
+    // Into the panel, on the chosen day or else today, so the keyboard reaches it.
+    panelRef.current?.querySelector("[data-start-focus]")?.focus()
+    return () => {
+      window.removeEventListener("keydown", handleEscape, true)
+      window.removeEventListener("focusin", handleFocusIn, true)
+      window.removeEventListener("focusout", handleFocusOut, true)
+      // The panel took the focus with it; hand it back to the trigger.
+      if (!document.activeElement || document.activeElement === document.body) {
+        trigger?.focus()
+      }
     }
   }, [isOpen])
 
@@ -257,6 +285,7 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
             onClick={() => setIsOpen(false)}
           />
           <div
+            ref={panelRef}
             className="pointer-events-auto fixed z-50 max-h-[calc(100vh-1rem)] overflow-y-auto rounded-3xl bg-popover shadow-(--shadow-overlay)"
             style={{
               top: panelPosition.top,
@@ -302,6 +331,7 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
                   <button
                     type="button"
                     key={date.toISOString()}
+                    data-start-focus={(selectedDate ? isSelected(date) : isToday(date)) || undefined}
                     onClick={() => handleDateSelect(date)}
                     className={cn(
                       "relative flex aspect-square items-center justify-center rounded-full text-sm font-semibold transition-all",
