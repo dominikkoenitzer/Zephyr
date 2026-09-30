@@ -102,6 +102,50 @@ export const dueSoon = (tasks, limit = 5) =>
 export const recentSessions = (sessions, limit = 4) =>
   [...sessions.filter(isWork)].sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, limit);
 
+/**
+ * Share of tasks done, as the gauge prints it. Rounded down, so 199 of 200 is
+ * 99 and not a 100 with a task still open, but never 0 once one is done.
+ */
+export const donePercent = (done, total) => {
+  if (!total || !done) return 0;
+  if (done >= total) return 100;
+  return Math.max(1, Math.floor((done / total) * 100));
+};
+
+/**
+ * The gauge's slices as angles in degrees, in order, with `gap` between them.
+ * Every slice with a value gets at least `min` degrees, taken from the larger
+ * ones, so a single overdue task among eighty still shows next to its legend.
+ */
+export const gaugeSegments = (parts, { start = 180, sweep = 180, gap = 5, min = 4 } = {}) => {
+  const shown = parts.filter((p) => p.value > 0);
+  if (!shown.length) return [];
+  const drawable = sweep - gap * (shown.length - 1);
+  const spans = new Array(shown.length);
+  const floored = new Set();
+  for (;;) {
+    const free = drawable - min * floored.size;
+    const rest = shown.reduce((sum, p, i) => (floored.has(i) ? sum : sum + p.value), 0);
+    let changed = false;
+    shown.forEach((p, i) => {
+      if (floored.has(i)) return;
+      spans[i] = (p.value / rest) * free;
+      if (spans[i] < min) {
+        floored.add(i);
+        changed = true;
+      }
+    });
+    if (!changed) break;
+  }
+  let cursor = start;
+  return shown.map((p, i) => {
+    const span = floored.has(i) ? min : spans[i];
+    const seg = { ...p, from: cursor, to: cursor + span };
+    cursor += span + gap;
+    return seg;
+  });
+};
+
 /** 125 -> "2h 5m", 45 -> "45m", 0 -> "0m". */
 export const formatMinutes = (minutes) => {
   const m = Math.max(0, Math.round(minutes));
