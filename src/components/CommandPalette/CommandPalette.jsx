@@ -14,8 +14,11 @@ import { clearCompletedWithUndo } from '../../lib/taskActions';
 import { localStorageService } from '../../services/localStorage';
 import { searchService } from '../../services/searchService';
 import { useTheme } from '../../hooks/useTheme';
+import { useStoreValue, useTasks } from '../../hooks/useStore';
 
 const RESULT_LIMIT = 5;
+
+const readLastSession = () => localStorageService.getLastSession();
 
 /** Every word of the query has to appear somewhere in the item's text. */
 const matches = (item, tokens) => {
@@ -68,6 +71,10 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const listRef = useRef(null);
   const inputRef = useRef(null);
+  // Live reads, so "Resume" and "Clear N completed" match the storage of the
+  // moment the palette opens, not of the moment the page loaded.
+  const [tasks] = useTasks();
+  const [last] = useStoreValue(readLastSession);
 
   // Each opening starts clean. Adjusted during render rather than in an effect
   // so the palette's first paint already shows an empty field.
@@ -123,7 +130,6 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
       },
     ];
 
-    const last = localStorageService.getLastSession();
     if (last?.task?.title) {
       list.push({
         id: 'resume-focus',
@@ -135,7 +141,7 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
       });
     }
 
-    const completed = localStorageService.getTasks().filter((t) => t.completed).length;
+    const completed = tasks.filter((t) => t.completed).length;
     if (completed > 0) {
       list.push({
         id: 'clear-completed',
@@ -186,7 +192,7 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
     );
 
     return list;
-  }, [preference, setPreference, navigate, onOpenChange, onNewTask, onShowShortcuts]);
+  }, [preference, setPreference, navigate, onOpenChange, onNewTask, onShowShortcuts, last, tasks]);
 
   const trimmed = query.trim();
 
