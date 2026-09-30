@@ -6,7 +6,9 @@ import {
   focusByDay,
   focusToday,
   formatMinutes,
+  msUntilNextDay,
   recentSessions,
+  startOfDay,
   upNext,
   weekDays,
   weekStart,
@@ -124,5 +126,25 @@ describe('formatMinutes and dueLabel', () => {
     expect(dueLabel('2026-09-29', NOW)).toBe('1 day late');
     expect(dueLabel('2026-09-27', NOW)).toBe('3 days late');
     expect(dueLabel(null, NOW)).toBe('No date');
+  });
+});
+
+describe('msUntilNextDay and startOfDay', () => {
+  it('waits until the next local midnight', () => {
+    expect(msUntilNextDay(NOW)).toBe(9 * 3600000);
+    expect(msUntilNextDay(new Date(2026, 8, 30, 23, 59, 59, 500))).toBe(500);
+    expect(msUntilNextDay(new Date(2026, 8, 30))).toBe(new Date(2026, 9, 1) - new Date(2026, 8, 30));
+  });
+
+  it('turns a day key back into that local midnight', () => {
+    expect(startOfDay('2026-10-01').getTime()).toBe(new Date(2026, 9, 1).getTime());
+  });
+
+  it('moves the figures to the new day once the key changes', () => {
+    const tasks = [{ id: 'a', completed: false, dueDate: '2026-09-30' }];
+    expect(dashboardStats(tasks, [], startOfDay('2026-09-30')).dueToday).toBe(1);
+    const after = dashboardStats(tasks, [], startOfDay('2026-10-01'));
+    expect(after.dueToday).toBe(0);
+    expect(after.overdue).toBe(1);
   });
 });
