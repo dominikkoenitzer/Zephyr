@@ -68,20 +68,10 @@ function fixChunkLoading() {
   }
 }
 
-// Writes a static HTML file per route after the build. Every route is served
-// from index.html, so a crawler that does not execute JavaScript (most AI
-// crawlers) used to see the home page's title, description and canonical on
-// every URL; the canonical told it /tasks was a duplicate of /. usePageMeta
-// corrects the head only after React runs; these files make the served bytes
-// right too. vercel.json rewrites each route here.
-//
-// It also writes 404.html, which Vercel serves, with a real 404 status, for
-// any path no route matches. Without it the catch-all rewrite answered every
-// junk URL with 200 and the home page's head, robots "index, follow" included,
-// so a crawler saw unlimited copies of the home page rather than a not-found.
-// The date the app last changed, for the JSON-LD dateModified, the sitemap's
-// lastmod and llms.txt. Both were typed by hand and fell weeks behind. The last commit is
-// the truth; a build outside git falls back to today.
+// The date the app last changed, for the JSON-LD dateModified and the date in
+// llms.txt, which were typed by hand and fell weeks behind. The last commit is
+// the truth; a build outside git falls back to today. The sitemap's lastmod
+// stays hand-set: it marks the day a page's content changed, not a build.
 function stampDates() {
   let date
   try {
@@ -96,14 +86,23 @@ function stampDates() {
       return html.replace(/("dateModified": ")[^"]*(")/, `$1${date}$2`)
     },
     closeBundle() {
-      const sitemap = resolve(__dirname, 'dist/sitemap.xml')
-      writeFileSync(sitemap, readFileSync(sitemap, 'utf8').replace(/<lastmod>[^<]*<\/lastmod>/g, `<lastmod>${date}</lastmod>`))
       const llms = resolve(__dirname, 'dist/llms.txt')
       writeFileSync(llms, readFileSync(llms, 'utf8').replace(/^Last updated: .*$/m, `Last updated: ${date}`))
     },
   }
 }
 
+// Writes a static HTML file per route after the build. Every route is served
+// from index.html, so a crawler that does not execute JavaScript (most AI
+// crawlers) used to see the home page's title, description and canonical on
+// every URL; the canonical told it /tasks was a duplicate of /. usePageMeta
+// corrects the head only after React runs; these files make the served bytes
+// right too. vercel.json rewrites each route here.
+//
+// It also writes 404.html, which Vercel serves, with a real 404 status, for
+// any path no route matches. Without it the catch-all rewrite answered every
+// junk URL with 200 and the home page's head, robots "index, follow" included,
+// so a crawler saw unlimited copies of the home page rather than a not-found.
 function perRouteHtml() {
   const escapeHtml = (s) =>
     s
