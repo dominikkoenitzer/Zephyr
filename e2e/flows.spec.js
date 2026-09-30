@@ -234,6 +234,14 @@ test.describe('on a phone', () => {
     await expect(dialog.getByRole('button', { name: 'Save' })).toBeInViewport();
   });
 
+  test('a title with no spaces wraps instead of running off the card', async ({ page }) => {
+    const title = 'https://example.com/a/very/long/path/that/never/breaks/anywhere/at/all';
+    await seed(page, { tasks: [{ id: 'long', title, priority: 'low', dueDate: null, tags: [], completed: false, subtasks: [], description: '', createdAt: new Date().toISOString() }] });
+    await page.goto('/tasks');
+    await expect(page.getByText(title, { exact: true }).first()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  });
+
   test('the filter row shows which way it goes on', async ({ page }) => {
     await seed(page);
     await page.goto('/tasks');
