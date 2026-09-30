@@ -39,6 +39,7 @@ const NotificationCenter = ({ id, onClose }) => {
   return (
     <div
       id={id}
+      data-notification-panel=""
       className="absolute top-full right-0 z-50 mt-3 flex max-h-[calc(100vh-6rem)] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-3xl bg-popover shadow-(--shadow-overlay) sm:max-h-[600px] sm:w-96 sm:max-w-96"
     >
       <div className="flex items-center justify-between px-5 pb-3 pt-5">
