@@ -13,6 +13,10 @@ import { longBreakDue, nextPhase } from '../lib/timer';
 export const PRESETS_KEY = 'focusTimerPresets';
 export const SELECTED_PRESET_KEY = 'selectedFocusPreset';
 
+// Ends closer together than this are one session seen twice: a session is at
+// least a minute long, so two real ones never end nearer than that.
+const SAME_SESSION_MS = 60_000;
+
 /** Saved presets: the built-ins with any stored edits, then the custom ones. */
 export function readPresets() {
   const saved = localStorage.getItem(PRESETS_KEY);
@@ -114,6 +118,13 @@ export function finishPhase({
 
   const endedIso = new Date(endedAt).toISOString();
   const sessions = localStorageService.getFocusSessions();
+  // Two open tabs each see the same session run out, a moment apart. The
+  // second finds it already logged and leaves the log, the streak and the
+  // chime to the first.
+  const alreadyLogged = sessions.some(
+    (s) => s.type !== 'break' && Math.abs(new Date(s.date).getTime() - endedAt) < SAME_SESSION_MS
+  );
+  if (alreadyLogged) return next;
   sessions.push({ date: endedIso, duration: workTime, type: 'work', task: sessionTask });
   localStorageService.saveFocusSessions(sessions);
   localStorageService.saveOnboarding({ focusStarted: true });
