@@ -274,7 +274,7 @@ const TaskList = () => {
             {/* The row opens the editor on a click anywhere; the title is its
                 button, because below `sm` the row's own Edit button is hidden
                 and a keyboard had no way in. */}
-            <p className="text-[15.5px] font-medium leading-6 text-foreground">
+            <p className="text-[15.5px] font-medium leading-6 text-foreground wrap-anywhere">
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
