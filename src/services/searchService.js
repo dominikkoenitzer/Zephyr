@@ -32,7 +32,6 @@ class SearchService {
         results.tasks.push({
           ...task,
           matchType: matchesTitle ? 'title' : matchesDescription ? 'description' : 'tag',
-          matchText: this.highlightMatch(task.title || task.description || '', searchTerm)
         });
       }
     });
@@ -45,18 +44,6 @@ class SearchService {
     });
 
     return results;
-  }
-
-  /**
-   * Highlight matching text in search results
-   * @param {string} text - Text to highlight
-   * @param {string} searchTerm - Search term
-   * @returns {string} Text with highlighted matches
-   */
-  highlightMatch(text, searchTerm) {
-    if (!text || !searchTerm) return text;
-    const regex = new RegExp(`(${searchTerm})`, 'gi');
-    return text.replace(regex, '<mark>$1</mark>');
   }
 
   /**
