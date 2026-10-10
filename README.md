@@ -126,7 +126,7 @@ Every duration is adjustable, and you can save your own custom presets. Complete
 
 ## Getting started
 
-**Prerequisites:** [Bun](https://bun.sh/) 1.1.39+ (this repo pins `1.4.2` via `.bun-version`). Bun is the runtime and package manager, so no separate Node.js install is required.
+**Prerequisites:** [Git](https://git-scm.com/) and [Bun](https://bun.sh/) 1.4 or newer (the repo pins `1.4.2` in `.bun-version`). Bun is the runtime and package manager, so no separate Node.js install is needed. On Windows: `winget install --id Git.Git -e` and `winget install --id Oven-sh.Bun -e`.
 
 ```bash
 # Clone
@@ -141,6 +141,8 @@ bun run dev
 ```
 
 That's it. No `.env`, no database, no API keys.
+
+Before the first `bun run e2e`, fetch the test browser once with `bunx playwright install chromium`.
 
 ## Scripts
 
