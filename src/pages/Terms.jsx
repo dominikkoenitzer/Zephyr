@@ -29,7 +29,7 @@ function Terms() {
 
             <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">2. License</h2>
             <p className="mb-4">
-              Zephyr&apos;s source code is open source under the <a href="https://github.com/dominikkoenitzer/Zephyr/blob/main/LICENSE" className="font-semibold text-primary-strong underline underline-offset-4">MIT License</a>,
+              Zephyr&apos;s source code is open source under the MIT License,
               which lets you use, copy, and modify it under that license&apos;s terms. The hosted application at
               zephyr.punds.ch is provided free of charge for personal use.
             </p>
@@ -92,7 +92,7 @@ function Terms() {
 
             <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">11. Contact Information</h2>
             <p>
-              For questions about these Terms of Service, please contact us at: <a href="https://github.com/dominikkoenitzer/Zephyr/issues" className="font-semibold text-primary-strong underline underline-offset-4">GitHub</a>
+              For questions about these Terms of Service, please open an issue in Zephyr&apos;s source repository.
             </p>
           </div>
         </Card>
@@ -153,7 +153,7 @@ function Terms() {
 
               <h3 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">Contact Information</h3>
               <p>
-                For legal inquiries or questions about these terms, please contact us at: <a href="https://github.com/dominikkoenitzer/Zephyr/issues" className="font-semibold text-primary-strong underline underline-offset-4">GitHub</a>
+                For legal inquiries or questions about these terms, please open an issue in Zephyr&apos;s source repository.
               </p>
             </div>
           </Card>

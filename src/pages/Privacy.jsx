@@ -81,7 +81,7 @@ function Privacy() {
 
             <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">9. Contact Us</h2>
             <p>
-              If you have questions about this Privacy Policy, please contact us at: <a href="https://github.com/dominikkoenitzer/Zephyr/issues" className="font-semibold text-primary-strong underline underline-offset-4">GitHub</a>
+              If you have questions about this Privacy Policy, please open an issue in Zephyr&apos;s source repository.
             </p>
           </div>
         </Card>
