@@ -18,12 +18,6 @@ function Footer() {
           <Link className="transition-colors hover:text-foreground" to="/terms">
             Terms
           </Link>
-          <a
-            className="transition-colors hover:text-foreground"
-            href="https://github.com/dominikkoenitzer/Zephyr"
-          >
-            GitHub
-          </a>
         </nav>
       </div>
     </footer>
