@@ -308,15 +308,24 @@ const arc = (from, to) => {
   return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A 80 80 0 ${to - from > 180 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
 };
 
+/* The done arc's fill: 'primary' (apricot) or 'sun' (the timer's peach). The track is the open share. */
+const GAUGE_FILL = 'primary';
+const GAUGE_FILLS = {
+  primary: { stroke: 'hsl(var(--primary))', dot: 'bg-primary' },
+  sun: { stroke: 'hsl(var(--sun))', dot: 'bg-sun' },
+};
+
 function Progress({ done, open, overdue }) {
   const total = done + open;
   const pct = donePercent(done, total);
+  const fill = GAUGE_FILLS[GAUGE_FILL];
   const parts = [
-    { key: 'done', label: 'Done', value: done, stroke: 'hsl(var(--primary))', dot: 'bg-primary' },
-    { key: 'open', label: 'Open', value: open - overdue, stroke: 'hsl(var(--night))', dot: 'bg-night' },
-    { key: 'late', label: 'Overdue', value: overdue, stroke: 'hsl(var(--destructive))', dot: 'bg-destructive' },
+    { key: 'done', label: 'Done', value: done, dot: fill.dot },
+    // The open dot is the track colour, which almost vanishes on the dark card,
+    // so it carries a hairline ring to stay findable in both themes.
+    { key: 'open', label: 'Open', value: open, dot: 'bg-accent ring-1 ring-inset ring-foreground/30' },
   ];
-  const segments = gaugeSegments(parts);
+  const doneArc = gaugeSegments(parts, { gap: 0 }).find((s) => s.key === 'done');
 
   return (
     <m.section variants={rise} className={cn(panel, 'flex flex-col')} aria-labelledby="progress-title">
@@ -324,25 +333,27 @@ function Progress({ done, open, overdue }) {
       <div className="relative mx-auto mt-4 w-full max-w-64">
         <svg viewBox="0 0 200 112" className="w-full" aria-hidden="true">
           <path d={arc(180, 360)} stroke="hsl(var(--accent))" strokeWidth="22" fill="none" strokeLinecap="round" />
-          {segments.map((s, i) => (
+          {doneArc && (
             <m.path
-              key={s.key}
-              d={arc(s.from, s.to)}
-              stroke={s.stroke}
+              d={arc(doneArc.from, doneArc.to)}
+              stroke={fill.stroke}
               strokeWidth="22"
               fill="none"
               strokeLinecap="round"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
-              transition={{ duration: 0.7, delay: 0.1 + i * 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
             />
-          ))}
+          )}
         </svg>
         <div className="absolute inset-x-0 bottom-0 text-center">
           <p className="text-[2.5rem] font-semibold leading-none tracking-[-0.04em] tabular-nums">{pct}%</p>
           <p className="mt-1 text-[13px] text-muted-foreground">done</p>
         </div>
       </div>
+      {overdue > 0 && (
+        <p className="mt-1 text-center text-[13px] font-semibold tabular-nums text-destructive-strong">{overdue} overdue</p>
+      )}
       <ul className="mt-auto flex flex-wrap justify-center gap-x-5 gap-y-2 pt-6 text-[13px]">
         {parts.map((p) => (
           <li key={p.key} className="flex items-center gap-2">

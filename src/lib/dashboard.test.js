@@ -234,4 +234,30 @@ describe('gaugeSegments', () => {
   it('draws nothing when there are no tasks', () => {
     expect(gaugeSegments(parts(0, 0, 0))).toEqual([]);
   });
+
+  describe('as the two-part ring (done on the open track, no gap)', () => {
+    const ring = (done, open) => gaugeSegments([{ key: 'done', value: done }, { key: 'open', value: open }], { gap: 0 });
+
+    it('gives done its share of the half circle', () => {
+      const [d, o] = ring(1, 3);
+      expect(d.from).toBe(180);
+      expect(d.to).toBeCloseTo(225);
+      expect(o.from).toBeCloseTo(d.to);
+      expect(o.to).toBeCloseTo(360);
+    });
+
+    it('keeps one done task visible, and never fills while one is open', () => {
+      const [d] = ring(1, 300);
+      expect(d.to - d.from).toBeGreaterThanOrEqual(4);
+      const [full, left] = ring(300, 1);
+      expect(full.to).toBeLessThanOrEqual(356);
+      expect(left.to - left.from).toBeGreaterThanOrEqual(4);
+    });
+
+    it('fills the whole arc when everything is done', () => {
+      const segs = ring(5, 0);
+      expect(segs.map((s) => s.key)).toEqual(['done']);
+      expect(segs[0].to).toBeCloseTo(360);
+    });
+  });
 });

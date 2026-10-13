@@ -130,7 +130,7 @@ export const donePercent = (done, total) => {
 /**
  * The gauge's slices as angles in degrees, in order, with `gap` between them.
  * Every slice with a value gets at least `min` degrees, taken from the larger
- * ones, so a single overdue task among eighty still shows next to its legend.
+ * ones, so one done task among eighty still shows, and so does one left open.
  */
 export const gaugeSegments = (parts, { start = 180, sweep = 180, gap = 5, min = 4 } = {}) => {
   const shown = parts.filter((p) => p.value > 0);
