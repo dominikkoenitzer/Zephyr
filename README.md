@@ -198,7 +198,7 @@ Zephyr is a static SPA deployed on **[Vercel](https://vercel.com/)** (live at **
 
 One GitHub Actions workflow is included:
 
-- **[`ci.yml`](.github/workflows/ci.yml)** runs on every push and pull request to `main`: install, **lint**, **test**, **build**.
+- **[`ci.yml`](.github/workflows/ci.yml)** runs on every push and pull request to `main` and every six hours: install, **lint**, **test**, **build**, then the **browser tests** in a second job.
 
 [Dependabot](.github/dependabot.yml) keeps the bun and GitHub Actions dependencies up to date weekly.
 
