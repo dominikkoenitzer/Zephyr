@@ -99,7 +99,7 @@ function TopBar({ onSearchClick }) {
           type="button"
           onClick={onSearchClick}
           className="hidden h-12 w-full max-w-md items-center gap-3 rounded-full bg-card pl-5 pr-2 text-left text-[15px] text-muted-foreground shadow-(--shadow-sm) transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:flex"
-          aria-label="Search your tasks, or run a command"
+          aria-label="Search tasks or run a command"
         >
           <Search className="h-[18px] w-[18px] shrink-0" />
           <span className="flex-1 truncate">Search tasks or run a command</span>

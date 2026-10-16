@@ -24,7 +24,7 @@ test.describe('closing a dialog returns focus to what opened it', () => {
 
   test('the command palette, opened from the search button', async ({ page }) => {
     const palette = await openTasks(page);
-    const search = page.getByRole('button', { name: 'Search your tasks, or run a command' });
+    const search = page.getByRole('button', { name: 'Search tasks or run a command' });
     await search.focus();
     await page.keyboard.press('Enter');
     await expect(palette).toBeVisible();
