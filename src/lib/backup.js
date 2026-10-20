@@ -4,7 +4,7 @@
 // anything.
 
 import {
-  DEVICE_KEYS, EXTRA_BACKUP_KEYS, isBackupKey, localStorageService,
+  DEVICE_KEYS, EXTRA_BACKUP_KEYS, STORAGE_KEYS, isBackupKey, localStorageService, readTaskRecord,
 } from '../services/localStorage';
 
 // Which keys a backup carries is decided next to STORAGE_KEYS, because the
@@ -55,6 +55,189 @@ export function downloadBackup() {
 /** True when a parsed object actually looks like one of our backups. */
 export const isValidBackup = (backup) =>
   !!backup && backup.app === 'zephyr' && typeof backup.data === 'object' && backup.data !== null;
+
+const parseJson = (value) => {
+  try {
+    return { ok: true, value: JSON.parse(value) };
+  } catch {
+    return { ok: false };
+  }
+};
+
+const isObject = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
+
+/**
+ * The tasks and sessions inside a backup are checked before anything is
+ * written, so a damaged file is refused whole instead of replacing a working
+ * list with one the app cannot read.
+ */
+function hasReadableData(data) {
+  const tasks = data[STORAGE_KEYS.TASKS];
+  if (tasks !== undefined) {
+    const parsed = typeof tasks === 'string' ? parseJson(tasks) : { ok: false };
+    if (!parsed.ok || !isObject(parsed.value) || !Array.isArray(parsed.value.tasks)) return false;
+    if (!parsed.value.tasks.every((t) => isObject(t) && typeof t.id === 'string')) return false;
+  }
+  const sessions = data[STORAGE_KEYS.FOCUS_SESSIONS];
+  if (sessions !== undefined) {
+    const parsed = typeof sessions === 'string' ? parseJson(sessions) : { ok: false };
+    if (!parsed.ok || !Array.isArray(parsed.value) || !parsed.value.every(isObject)) return false;
+  }
+  return true;
+}
+
+/**
+ * Read a picked file's text as a backup.
+ * @returns {{ ok: true, backup: object } | { ok: false, reason: 'unreadable' | 'foreign' }}
+ */
+export function readBackup(text) {
+  const parsed = parseJson(text);
+  if (!parsed.ok) return { ok: false, reason: 'unreadable' };
+  if (!isValidBackup(parsed.value)) return { ok: false, reason: 'foreign' };
+  if (!hasReadableData(parsed.value.data)) return { ok: false, reason: 'unreadable' };
+  return { ok: true, backup: parsed.value };
+}
+
+/** How many tasks and sessions a set of stored values holds, for the import dialog. */
+export function backupCounts(data) {
+  const tasks = readTaskRecord(data[STORAGE_KEYS.TASKS]).tasks.length;
+  const parsed = parseJson(data[STORAGE_KEYS.FOCUS_SESSIONS] ?? '[]');
+  const sessions = parsed.ok && Array.isArray(parsed.value) ? parsed.value.length : 0;
+  return { tasks, sessions };
+}
+
+const time = (value) => {
+  const t = Date.parse(value);
+  return Number.isNaN(t) ? 0 : t;
+};
+
+/** When a task last changed: edited, finished or made, whichever is latest. */
+export const taskStamp = (task) =>
+  Math.max(time(task?.updatedAt), time(task?.completedAt), time(task?.createdAt));
+
+/**
+ * Two task records as one. Tasks are matched by id; where both sides have
+ * one, the later change wins and a tie keeps this device's. A cleared entry
+ * takes part too: a task cleared after its last change elsewhere stays
+ * cleared, and one changed after it was cleared comes back. This device's
+ * order is kept, the file's new tasks follow in the file's order.
+ *
+ * @returns {{ tasks: object[], cleared: object[], added: number, updated: number }}
+ */
+export function mergeTaskRecords(local, incoming) {
+  const best = new Map();
+  const offer = (id, candidate) => {
+    const current = best.get(id);
+    if (!current || candidate.stamp > current.stamp) best.set(id, candidate);
+  };
+  local.tasks.forEach((task) => offer(task.id, { kind: 'task', item: task, stamp: taskStamp(task) }));
+  local.cleared.forEach((entry) => offer(entry.id, { kind: 'cleared', item: entry, stamp: time(entry.clearedAt) }));
+  incoming.tasks.forEach((task) => offer(task.id, { kind: 'task', item: task, stamp: taskStamp(task) }));
+  incoming.cleared.forEach((entry) => offer(entry.id, { kind: 'cleared', item: entry, stamp: time(entry.clearedAt) }));
+
+  const tasks = [];
+  const placed = new Set();
+  let added = 0;
+  let updated = 0;
+  local.tasks.forEach((task) => {
+    // Two local tasks sharing an id (ids were once a bare timestamp) both stay.
+    if (typeof task.id !== 'string' || placed.has(task.id)) {
+      tasks.push(task);
+      return;
+    }
+    placed.add(task.id);
+    const winner = best.get(task.id);
+    if (winner.kind === 'task') tasks.push(winner.item);
+    if (winner.item !== task) updated += 1;
+  });
+  incoming.tasks.forEach((task) => {
+    if (placed.has(task.id)) return;
+    const winner = best.get(task.id);
+    if (winner.item !== task) return;
+    placed.add(task.id);
+    tasks.push(task);
+    added += 1;
+  });
+
+  const listed = new Set(tasks.map((task) => task.id));
+  const cleared = [...best.entries()]
+    .filter(([id, winner]) => winner.kind === 'cleared' && !listed.has(id))
+    .map(([, winner]) => winner.item);
+  return { tasks, cleared, added, updated };
+}
+
+/** Sessions from both sides, matched by id (or start time), oldest first. */
+export function mergeSessions(local, incoming) {
+  const keyOf = (s) => s.id ?? s.date;
+  const seen = new Set(local.map(keyOf));
+  const fresh = incoming.filter((s) => {
+    const key = keyOf(s);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const sessions = [...local, ...fresh].sort((a, b) => time(a.date) - time(b.date));
+  return { sessions, added: fresh.length };
+}
+
+const readJson = (raw, fallback) => {
+  const parsed = raw == null ? { ok: false } : parseJson(raw);
+  return parsed.ok ? parsed.value : fallback;
+};
+
+/**
+ * Add a validated backup to what this device already has. Tasks and sessions
+ * are merged (mergeTaskRecords, mergeSessions); the streak and the last
+ * session keep whichever is later. Settings, presets, the theme and every
+ * other key are written only where this device has none, so a merge never
+ * changes a choice made here.
+ *
+ * @returns {{ added: number, updated: number }} tasks and sessions added, tasks updated.
+ */
+export function mergeBackup(backup) {
+  const data = Object.fromEntries(
+    Object.entries(backup.data).filter(([key, value]) => isBackupKey(key) && typeof value === 'string')
+  );
+  const writes = {};
+  let added = 0;
+  let updated = 0;
+
+  if (data[STORAGE_KEYS.TASKS] !== undefined) {
+    const merged = mergeTaskRecords(
+      readTaskRecord(localStorage.getItem(STORAGE_KEYS.TASKS)),
+      readTaskRecord(data[STORAGE_KEYS.TASKS])
+    );
+    writes[STORAGE_KEYS.TASKS] = JSON.stringify({ tasks: merged.tasks, cleared: merged.cleared, lastUpdated: Date.now() });
+    added += merged.added;
+    updated += merged.updated;
+  }
+
+  if (data[STORAGE_KEYS.FOCUS_SESSIONS] !== undefined) {
+    const local = readJson(localStorage.getItem(STORAGE_KEYS.FOCUS_SESSIONS), []);
+    const merged = mergeSessions(Array.isArray(local) ? local : [], readJson(data[STORAGE_KEYS.FOCUS_SESSIONS], []));
+    writes[STORAGE_KEYS.FOCUS_SESSIONS] = JSON.stringify(merged.sessions);
+    added += merged.added;
+  }
+
+  const later = (key, stampOf, tieBreak = () => false) => {
+    if (data[key] === undefined) return;
+    const mine = readJson(localStorage.getItem(key), null);
+    const theirs = readJson(data[key], null);
+    if (!theirs) return;
+    const diff = mine ? time(stampOf(theirs)) - time(stampOf(mine)) : 1;
+    if (diff > 0 || (diff === 0 && tieBreak(theirs, mine))) writes[key] = data[key];
+  };
+  later(STORAGE_KEYS.FOCUS_STREAK, (s) => s?.lastDate, (a, b) => (Number(a?.count) || 0) > (Number(b?.count) || 0));
+  later(STORAGE_KEYS.LAST_SESSION, (s) => s?.completedAt);
+
+  const merged = new Set([STORAGE_KEYS.TASKS, STORAGE_KEYS.FOCUS_SESSIONS, STORAGE_KEYS.FOCUS_STREAK, STORAGE_KEYS.LAST_SESSION]);
+  Object.entries(data).forEach(([key, value]) => {
+    if (!merged.has(key) && localStorage.getItem(key) === null) writes[key] = value;
+  });
+
+  Object.entries(writes).forEach(([key, value]) => localStorage.setItem(key, value));
+  return { added, updated };
+}
 
 /**
  * Write a validated backup back into localStorage.
