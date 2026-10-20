@@ -65,7 +65,7 @@ Most productivity apps want an account, a subscription, and a copy of your data 
 | **Undo** | Deleting a task or clearing completed ones offers an Undo that restores them in place. |
 | **Notifications** | Optional in-app reminders for upcoming due dates, plus a chime when a focus session ends. All toggleable. |
 | **Light, dark, or system** | Pick a scheme or follow the OS. It changes live when your system does, and every open tab follows. |
-| **Backup and restore** | Export everything to one JSON file and import it on any device. Settings shows how much storage Zephyr is using and when you last exported, and Zephyr asks the browser to keep its storage. |
+| **Backup and restore** | Export everything to one JSON file and import it on any device. Import asks first: Replace puts the file in place of what is there, Merge adds the file to it, keeps the newer copy of each task and leaves this device's settings alone. Settings shows how much storage Zephyr is using and when you last exported, and Zephyr asks the browser to keep its storage. |
 
 ## Natural-language quick add
 
@@ -190,7 +190,7 @@ Every write broadcasts a `zephyr:change` event. Reactive hooks in **`src/hooks/u
 Zephyr is built around a simple promise: **your data is yours and stays on your device.**
 
 - All content is stored in your browser's `localStorage`. There is no server, no account, and no telemetry of your content.
-- Because data is local there is no automatic cloud backup, but you can **export a full backup file** and import it on any device from **Settings → Data**. Clearing your browser data (or using **Delete all data** in Settings) removes everything permanently.
+- Because data is local there is no automatic cloud backup, but you can **export a full backup file** and import it on any device from **Settings → Data**, replacing what is there or merging with it. Clearing your browser data (or using **Delete all data** in Settings) removes everything permanently.
 
 ## Deployment & CI/CD
 
