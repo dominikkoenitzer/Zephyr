@@ -12,7 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import ShortcutsDialog from '../components/Shortcuts/ShortcutsDialog';
 import { notificationService } from '../services/notificationService';
 import { localStorageService } from '../services/localStorage';
-import { applyBackup, deleteAllData, downloadBackup, isValidBackup, lastBackupLabel } from '../lib/backup';
+import {
+  applyBackup, backupCounts, collectBackupData, deleteAllData, downloadBackup, lastBackupLabel, mergeBackup, readBackup,
+} from '../lib/backup';
 import { cn } from '../lib/utils';
 import { useSettings, useStoreValue } from '../hooks/useStore';
 import { useTheme } from '../hooks/useTheme';
@@ -73,6 +75,9 @@ function Settings() {
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const importInputRef = useRef(null);
+  // The picked file stays while the dialog fades out, so its contents do not blank mid-close.
+  const [pendingImport, setPendingImport] = useState(null);
+  const [importOpen, setImportOpen] = useState(false);
   const { preference, setPreference } = useTheme();
   // Re-reads itself on every write, so the figure moves as you use the app.
   const [storageInfo] = useStoreValue(readStorageInfo);
@@ -89,26 +94,46 @@ function Settings() {
     toast.success('Backup downloaded', { description: fileName });
   };
 
+  // A picked file is checked whole first (lib/backup readBackup); only a
+  // readable one opens the dialog that asks whether to replace or merge.
   const handleImportFile = (e) => {
     const file = e.target.files?.[0];
     e.target.value = ''; // allow picking the same file again later
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      try {
-        const backup = JSON.parse(reader.result);
-        if (!isValidBackup(backup)) {
-          toast.error('That file is not a Zephyr backup.');
-          return;
-        }
+      const result = readBackup(String(reader.result));
+      if (!result.ok) {
+        toast.error(result.reason === 'foreign' ? 'That file is not a Zephyr backup.' : 'Could not read that backup file.');
+        return;
+      }
+      setPendingImport({
+        name: file.name,
+        backup: result.backup,
+        here: backupCounts(collectBackupData()),
+        file: backupCounts(result.backup.data),
+      });
+      setImportOpen(true);
+    };
+    reader.onerror = () => toast.error('Could not read that backup file.');
+    reader.readAsText(file);
+  };
+
+  const finishImport = (mode) => {
+    const { backup } = pendingImport;
+    setImportOpen(false);
+    try {
+      if (mode === 'replace') {
         const restored = applyBackup(backup);
         toast.success(`Restored ${restored} item${restored === 1 ? '' : 's'}. Reloading…`);
-        setTimeout(() => window.location.reload(), 1200);
-      } catch {
-        toast.error('Could not read that backup file.');
+      } else {
+        const { added, updated } = mergeBackup(backup);
+        toast.success(`Merged: ${added} new, ${updated} updated. Reloading…`);
       }
-    };
-    reader.readAsText(file);
+      setTimeout(() => window.location.reload(), 1200);
+    } catch {
+      toast.error('Could not import that backup file.');
+    }
   };
 
   const handleNotificationSettingsChange = (updates) => {
@@ -360,6 +385,49 @@ function Settings() {
             >
               Delete
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Import: replace this device's data with the file, or merge the two (lib/backup) */}
+      <Dialog open={importOpen} onOpenChange={setImportOpen}>
+        <DialogContent className="w-[95vw] sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Import backup</DialogTitle>
+            <DialogDescription className="truncate pt-1">{pendingImport?.name}</DialogDescription>
+          </DialogHeader>
+          {pendingImport && (
+            <table className="w-full text-sm tabular-nums">
+              <thead>
+                <tr className="text-muted-foreground">
+                  <th scope="col" className="sr-only">Kind</th>
+                  <th scope="col" className="pb-2 text-right font-medium">This device</th>
+                  <th scope="col" className="pb-2 text-right font-medium">File</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[['Tasks', 'tasks'], ['Sessions', 'sessions']].map(([label, key]) => (
+                  <tr key={key} className="border-t border-border">
+                    <th scope="row" className="py-2 text-left font-medium">{label}</th>
+                    <td className="py-2 text-right">{pendingImport.here[key]}</td>
+                    <td className="py-2 text-right">{pendingImport.file[key]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setImportOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => finishImport('replace')}
+              className="border-destructive/30 text-destructive-strong hover:border-destructive/50 hover:bg-destructive/10"
+            >
+              Replace
+            </Button>
+            <Button onClick={() => finishImport('merge')}>Merge</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
