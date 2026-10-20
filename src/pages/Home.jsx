@@ -30,6 +30,7 @@ import { Button } from '../components/ui/button';
 import { NightSurface } from '../components/ui/night-surface';
 
 const readSessions = () => localStorageService.getFocusSessions();
+const readCleared = () => localStorageService.getClearedTasks();
 
 const stagger = {
   hidden: {},
@@ -417,6 +418,7 @@ function Home() {
 
   const [tasks] = useTasks();
   const [sessions] = useStoreValue(readSessions);
+  const [cleared] = useStoreValue(readCleared);
   const timer = useTimerSnapshot();
 
   // The figures are memoised, so the day has to be one of their inputs or a
@@ -426,13 +428,13 @@ function Home() {
   const weekday = now.toLocaleDateString('en-GB', { weekday: 'long' });
   const date = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
 
-  const stats = useMemo(() => dashboardStats(tasks, sessions, now), [tasks, sessions, now]);
+  const stats = useMemo(() => dashboardStats(tasks, sessions, now, cleared), [tasks, sessions, now, cleared]);
   const week = useMemo(() => focusByDay(sessions, now), [sessions, now]);
   const next = useMemo(() => upNext(tasks), [tasks]);
   const soon = useMemo(() => dueSoon(tasks, 4), [tasks]);
   const recent = useMemo(() => recentSessions(sessions, 3), [sessions]);
   // A brand-new visitor: no task written, no session finished.
-  const fresh = tasks.length === 0 && sessions.length === 0;
+  const fresh = tasks.length === 0 && sessions.length === 0 && cleared.length === 0;
   const defaultMinutes = Math.round((timer?.workTime || 1500) / 60);
 
   const due =

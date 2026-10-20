@@ -82,21 +82,27 @@ export const barHeights = (days) => {
   });
 };
 
-/** The headline figures. */
-export const dashboardStats = (tasks, sessions, now = new Date()) => {
+/**
+ * The headline figures. `cleared` is the finished tasks that have left the
+ * list (localStorage getClearedTasks), so Done keeps counting them; an entry
+ * whose task is back in the list is the list's to count.
+ */
+export const dashboardStats = (tasks, sessions, now = new Date(), cleared = []) => {
   const today = toDayKey(now);
   const start = weekStart(now).getTime();
   const active = tasks.filter((t) => !t.completed);
   const weekSessions = sessions.filter((s) => isWork(s) && new Date(s.date).getTime() >= start);
+  const listed = new Set(tasks.map((t) => t.id));
+  const finished = [...tasks.filter((t) => t.completed), ...cleared.filter((c) => !listed.has(c.id))];
 
   return {
     open: active.length,
     dueToday: active.filter((t) => bucketOf(t, today) === 'today').length,
     overdue: active.filter((t) => bucketOf(t, today) === 'overdue').length,
-    done: tasks.length - active.length,
+    done: finished.length,
     total: tasks.length,
-    doneThisWeek: tasks.filter(
-      (t) => t.completed && t.completedAt && new Date(t.completedAt).getTime() >= start
+    doneThisWeek: finished.filter(
+      (t) => t.completedAt && new Date(t.completedAt).getTime() >= start
     ).length,
     focusMinutes: Math.round(weekSessions.reduce((sum, s) => sum + (Number(s.duration) || 0), 0) / 60),
     sessions: weekSessions.length,
