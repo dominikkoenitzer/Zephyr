@@ -71,7 +71,7 @@ function Help() {
     },
     {
       question: "Is my data backed up?",
-      answer: "Not automatically. Everything lives in your browser, and nobody else can see it. Settings > Data > Export saves a backup file; Import restores it on any device. Clearing your browser's site data removes everything, so export first if it matters.",
+      answer: "Not automatically. Everything lives in your browser, and nobody else can see it. Settings > Data > Export saves a backup file; Import on any device replaces what is there or merges with it. Clearing your browser's site data removes everything, so export first if it matters.",
       icon: Cloud,
       iconColor: "text-primary-strong",
       bgColor: "bg-primary/10"
