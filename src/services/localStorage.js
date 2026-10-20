@@ -82,6 +82,44 @@ const makeId = (prefix) =>
 // Always hand callers a fresh copy so they can't mutate the shared defaults.
 const clone = (value) => JSON.parse(JSON.stringify(value));
 
+/**
+ * The stored task record, read leniently. `cleared` holds the finished tasks
+ * that have left the list (Clear completed, or a delete), as
+ * `{ id, completedAt, clearedAt }`, so the Done figures keep counting them.
+ * Records written before it existed have no `cleared` and read as none.
+ */
+export function readTaskRecord(raw) {
+  let parsed = null;
+  try {
+    parsed = raw ? JSON.parse(raw) : null;
+  } catch {
+    parsed = null;
+  }
+  const tasks = Array.isArray(parsed?.tasks) ? parsed.tasks : [];
+  const cleared = Array.isArray(parsed?.cleared)
+    ? parsed.cleared.filter((entry) => entry && typeof entry.id === 'string')
+    : [];
+  return { tasks, cleared };
+}
+
+/**
+ * The cleared list after a save: finished tasks that left the list are added,
+ * and any task that is back in the list (an Undo) is taken out again, so one
+ * task is never counted twice.
+ */
+export function nextCleared(previous, tasks, now = new Date()) {
+  const ids = new Set(tasks.map((task) => task?.id));
+  const at = new Date(now).toISOString();
+  const left = previous.tasks
+    .filter((task) => task?.completed && !ids.has(task.id))
+    .map((task) => ({ id: task.id, completedAt: task.completedAt || null, clearedAt: at }));
+  const byId = new Map();
+  [...previous.cleared, ...left].forEach((entry) => {
+    if (!ids.has(entry.id)) byId.set(entry.id, entry);
+  });
+  return [...byId.values()];
+}
+
 class LocalStorageService {
   // Timer state management
   saveTimerState(state) {
@@ -127,8 +165,10 @@ class LocalStorageService {
   // Tasks management
   saveTasks(tasks) {
     try {
+      const previous = readTaskRecord(localStorage.getItem(STORAGE_KEYS.TASKS));
       localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify({
         tasks,
+        cleared: nextCleared(previous, tasks),
         lastUpdated: Date.now()
       }));
       emitChange(STORAGE_KEYS.TASKS);
@@ -148,6 +188,15 @@ class LocalStorageService {
       return parsed.tasks || [];
     } catch (error) {
       console.error('Failed to get tasks:', error);
+      return [];
+    }
+  }
+
+  // Finished tasks that are no longer in the list, for the Done figures.
+  getClearedTasks() {
+    try {
+      return readTaskRecord(localStorage.getItem(STORAGE_KEYS.TASKS)).cleared;
+    } catch {
       return [];
     }
   }
