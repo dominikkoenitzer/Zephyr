@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
-  applyBackup, backupFileName, collectBackupData, deleteAllData, isBackupKey, isValidBackup, lastBackupLabel,
-  requestPersistentStorage, resetPersistRequest, shouldAskPersist, wipeAllData,
+  applyBackup, backupCounts, backupFileName, collectBackupData, deleteAllData, isBackupKey, isValidBackup,
+  lastBackupLabel, mergeBackup, mergeSessions, mergeTaskRecords, readBackup, requestPersistentStorage,
+  resetPersistRequest, shouldAskPersist, wipeAllData,
 } from './backup';
+import { localStorageService } from '../services/localStorage';
 
 beforeEach(() => {
   localStorage.clear();
@@ -229,5 +231,204 @@ describe('requestPersistentStorage', () => {
 
   it('does nothing where the browser has no storage manager', async () => {
     expect(await requestPersistentStorage({ storage: undefined })).toBe(false);
+  });
+});
+
+const T = (id, extra = {}) => ({ id, title: id, completed: false, createdAt: '2026-10-01T08:00:00.000Z', ...extra });
+const record = (tasks, cleared) => JSON.stringify(cleared ? { tasks, cleared, lastUpdated: 1 } : { tasks, lastUpdated: 1 });
+const file = (data) => ({ app: 'zephyr', version: 1, data });
+const stored = () => JSON.parse(localStorage.getItem('zephyr_tasks'));
+const snapshot = () => {
+  const all = {};
+  for (let i = 0; i < localStorage.length; i += 1) all[localStorage.key(i)] = localStorage.getItem(localStorage.key(i));
+  return all;
+};
+
+describe('readBackup', () => {
+  it('accepts an export of this app', () => {
+    const text = JSON.stringify(file({ zephyr_tasks: record([T('a')]), zephyr_focus_sessions: '[]' }));
+    expect(readBackup(text)).toEqual({ ok: true, backup: JSON.parse(text) });
+  });
+
+  it('refuses text that is not JSON, a foreign file, and a file whose tasks cannot be read', () => {
+    expect(readBackup('{oops')).toEqual({ ok: false, reason: 'unreadable' });
+    expect(readBackup(JSON.stringify({ app: 'other', data: {} }))).toEqual({ ok: false, reason: 'foreign' });
+    [
+      { zephyr_tasks: '{broken' },
+      { zephyr_tasks: JSON.stringify({ tasks: 'nope' }) },
+      { zephyr_tasks: JSON.stringify({ tasks: [{ title: 'no id' }] }) },
+      { zephyr_tasks: { tasks: [] } },
+      { zephyr_focus_sessions: '{"not":"a list"}' },
+      { zephyr_focus_sessions: '[1, 2]' },
+    ].forEach((data) => expect(readBackup(JSON.stringify(file(data)))).toEqual({ ok: false, reason: 'unreadable' }));
+  });
+});
+
+describe('backupCounts', () => {
+  it('counts tasks and sessions, and reads missing or damaged values as none', () => {
+    expect(backupCounts({ zephyr_tasks: record([T('a'), T('b')]), zephyr_focus_sessions: '[{},{},{}]' }))
+      .toEqual({ tasks: 2, sessions: 3 });
+    expect(backupCounts({})).toEqual({ tasks: 0, sessions: 0 });
+    expect(backupCounts({ zephyr_focus_sessions: '{bad' })).toEqual({ tasks: 0, sessions: 0 });
+  });
+});
+
+describe('mergeTaskRecords', () => {
+  const none = { tasks: [], cleared: [] };
+
+  it('adds the tasks this device does not have, after its own', () => {
+    const merged = mergeTaskRecords({ tasks: [T('a')], cleared: [] }, { tasks: [T('b'), T('c')], cleared: [] });
+    expect(merged.tasks.map((t) => t.id)).toEqual(['a', 'b', 'c']);
+    expect([merged.added, merged.updated]).toEqual([2, 0]);
+  });
+
+  it("keeps the newer copy when both sides have an id, in this device's place", () => {
+    const mine = { tasks: [T('a', { title: 'old', updatedAt: '2026-10-02T08:00:00.000Z' }), T('b')], cleared: [] };
+    const theirs = { tasks: [T('a', { title: 'new', updatedAt: '2026-10-03T08:00:00.000Z' })], cleared: [] };
+    const merged = mergeTaskRecords(mine, theirs);
+    expect(merged.tasks.map((t) => [t.id, t.title])).toEqual([['a', 'new'], ['b', 'b']]);
+    expect([merged.added, merged.updated]).toEqual([0, 1]);
+
+    const back = mergeTaskRecords(theirs, mine);
+    expect(back.tasks.map((t) => t.title)).toEqual(['new', 'b']);
+    expect([back.added, back.updated]).toEqual([1, 0]);
+  });
+
+  it('uses the time a task was finished when it was never edited', () => {
+    const mine = { tasks: [T('a')], cleared: [] };
+    const theirs = { tasks: [T('a', { completed: true, completedAt: '2026-10-05T08:00:00.000Z' })], cleared: [] };
+    expect(mergeTaskRecords(mine, theirs).tasks[0].completed).toBe(true);
+  });
+
+  it("keeps this device's copy on a tie", () => {
+    const merged = mergeTaskRecords({ tasks: [T('a', { title: 'mine' })], cleared: [] }, { tasks: [T('a', { title: 'theirs' })], cleared: [] });
+    expect(merged.tasks[0].title).toBe('mine');
+    expect(merged.updated).toBe(0);
+  });
+
+  it('takes one copy of an id the file holds twice, the newer one', () => {
+    const theirs = {
+      tasks: [T('a', { title: 'older' }), T('a', { title: 'newer', updatedAt: '2026-10-09T08:00:00.000Z' })],
+      cleared: [],
+    };
+    const merged = mergeTaskRecords(none, theirs);
+    expect(merged.tasks.map((t) => t.title)).toEqual(['newer']);
+    expect(merged.added).toBe(1);
+  });
+
+  it('leaves two local tasks that share an id both in place', () => {
+    const merged = mergeTaskRecords({ tasks: [T('a', { title: 'one' }), T('a', { title: 'two' })], cleared: [] }, none);
+    expect(merged.tasks.map((t) => t.title)).toEqual(['one', 'two']);
+  });
+
+  it('weighs a cleared task by when it was cleared', () => {
+    const cleared = { id: 'a', completedAt: '2026-10-04T08:00:00.000Z', clearedAt: '2026-10-05T08:00:00.000Z' };
+    const olderCopy = T('a', { completed: true, completedAt: '2026-10-04T08:00:00.000Z' });
+    const stays = mergeTaskRecords({ tasks: [], cleared: [cleared] }, { tasks: [olderCopy], cleared: [] });
+    expect(stays.tasks).toEqual([]);
+    expect(stays.cleared).toEqual([cleared]);
+
+    const reopened = T('a', { updatedAt: '2026-10-06T08:00:00.000Z' });
+    const back = mergeTaskRecords({ tasks: [], cleared: [cleared] }, { tasks: [reopened], cleared: [] });
+    expect(back.tasks).toEqual([reopened]);
+    expect(back.cleared).toEqual([]);
+  });
+
+  it('brings over the cleared tasks of the other device once', () => {
+    const entry = { id: 'z', completedAt: '2026-10-04T08:00:00.000Z', clearedAt: '2026-10-05T08:00:00.000Z' };
+    const other = { id: 'y', completedAt: null, clearedAt: '2026-10-06T08:00:00.000Z' };
+    const merged = mergeTaskRecords({ tasks: [], cleared: [entry] }, { tasks: [], cleared: [entry, other] });
+    expect(merged.cleared.map((c) => c.id)).toEqual(['z', 'y']);
+  });
+});
+
+describe('mergeSessions', () => {
+  it('adds the sessions this device lacks, by id or by start time, oldest first', () => {
+    const mine = [{ id: 's1', date: '2026-10-02T08:00:00.000Z' }, { date: '2026-10-03T08:00:00.000Z' }];
+    const theirs = [
+      { id: 's1', date: '2026-10-02T08:00:00.000Z' },
+      { date: '2026-10-03T08:00:00.000Z' },
+      { id: 's0', date: '2026-10-01T08:00:00.000Z' },
+    ];
+    const merged = mergeSessions(mine, theirs);
+    expect(merged.added).toBe(1);
+    expect(merged.sessions.map((s) => s.id ?? s.date)).toEqual(['s0', 's1', '2026-10-03T08:00:00.000Z']);
+  });
+});
+
+describe('Replace and Merge', () => {
+  const mine = () => {
+    localStorage.setItem('zephyr_tasks', record([T('a', { title: 'mine' }), T('b')]));
+    localStorage.setItem('zephyr_focus_sessions', JSON.stringify([{ id: 's1', date: '2026-10-02T08:00:00.000Z' }]));
+    localStorage.setItem('theme', 'dark');
+    localStorage.setItem('zephyr_settings', '{"workDuration":50}');
+  };
+  const theirs = file({
+    zephyr_tasks: record([T('a', { title: 'theirs', updatedAt: '2026-10-08T08:00:00.000Z' }), T('c')]),
+    zephyr_focus_sessions: JSON.stringify([{ id: 's2', date: '2026-10-03T08:00:00.000Z' }]),
+    theme: 'light',
+    zephyr_settings: '{"workDuration":25}',
+    focusTimerPresets: '[{"id":"custom-1"}]',
+  });
+
+  it('Replace puts the file in place of the list, settings included', () => {
+    mine();
+    applyBackup(theirs);
+    expect(stored().tasks.map((t) => t.id)).toEqual(['a', 'c']);
+    expect(localStorage.getItem('theme')).toBe('light');
+    expect(localStorage.getItem('zephyr_settings')).toBe('{"workDuration":25}');
+  });
+
+  it("Merge adds and updates tasks and sessions but keeps this device's settings", () => {
+    mine();
+    expect(mergeBackup(theirs)).toEqual({ added: 2, updated: 1 });
+    expect(stored().tasks.map((t) => [t.id, t.title])).toEqual([['a', 'theirs'], ['b', 'b'], ['c', 'c']]);
+    expect(localStorageService.getFocusSessions().map((s) => s.id)).toEqual(['s1', 's2']);
+    expect(localStorage.getItem('theme')).toBe('dark');
+    expect(localStorage.getItem('zephyr_settings')).toBe('{"workDuration":50}');
+    // A key this device never wrote is taken from the file.
+    expect(localStorage.getItem('focusTimerPresets')).toBe('[{"id":"custom-1"}]');
+  });
+
+  it('Merge twice changes nothing the second time', () => {
+    mine();
+    mergeBackup(theirs);
+    const sessions = localStorage.getItem('zephyr_focus_sessions');
+    const tasks = stored().tasks;
+    expect(mergeBackup(theirs)).toEqual({ added: 0, updated: 0 });
+    expect(stored().tasks).toEqual(tasks);
+    expect(localStorage.getItem('zephyr_focus_sessions')).toBe(sessions);
+  });
+
+  it('Merge keeps the later streak and the later last session', () => {
+    localStorage.setItem('zephyr_focus_streak', '{"count":3,"lastDate":"2026-10-05"}');
+    localStorage.setItem('zephyr_last_focus_session', '{"completedAt":"2026-10-09T08:00:00.000Z"}');
+    mergeBackup(file({
+      zephyr_focus_streak: '{"count":9,"lastDate":"2026-10-07"}',
+      zephyr_last_focus_session: '{"completedAt":"2026-10-01T08:00:00.000Z"}',
+    }));
+    expect(localStorage.getItem('zephyr_focus_streak')).toBe('{"count":9,"lastDate":"2026-10-07"}');
+    expect(localStorage.getItem('zephyr_last_focus_session')).toBe('{"completedAt":"2026-10-09T08:00:00.000Z"}');
+  });
+
+  it('Merge leaves out the keys that describe a browser, like Replace', () => {
+    mergeBackup(file({ zephyr_timer_state: '{"isRunning":true}', zephyr_last_backup: '2026-01-01T00:00:00.000Z' }));
+    expect(localStorage.getItem('zephyr_timer_state')).toBeNull();
+    expect(localStorage.getItem('zephyr_last_backup')).toBeNull();
+  });
+
+  it('Merge keeps the tasks cleared on this device in the Done count', () => {
+    localStorage.setItem('zephyr_tasks', record([], [{ id: 'x', completedAt: '2026-10-04T08:00:00.000Z', clearedAt: '2026-10-04T09:00:00.000Z' }]));
+    mergeBackup(file({ zephyr_tasks: record([T('y', { completed: true, completedAt: '2026-10-05T08:00:00.000Z' })]) }));
+    expect(localStorageService.getClearedTasks().map((c) => c.id)).toEqual(['x']);
+    expect(localStorageService.getTasks().map((t) => t.id)).toEqual(['y']);
+  });
+
+  it('a damaged file is refused and nothing on this device changes', () => {
+    mine();
+    const before = snapshot();
+    const result = readBackup(JSON.stringify(file({ zephyr_tasks: '{"tasks":[{"title":"no id"}]}', theme: 'light' })));
+    expect(result.ok).toBe(false);
+    expect(snapshot()).toEqual(before);
   });
 });
