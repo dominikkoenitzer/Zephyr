@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { localStorageService, CHANGE_EVENT, DEFAULT_SETTINGS } from './localStorage';
+import { localStorageService, CHANGE_EVENT, DEFAULT_SETTINGS, nextCleared, readTaskRecord } from './localStorage';
 
 beforeEach(() => {
   localStorage.clear();
@@ -122,5 +122,36 @@ describe('localStorageService: storage info', () => {
 
     const expected = Object.values(stored).reduce((sum, value) => sum + new Blob([value]).size, 0);
     expect(localStorageService.getStorageInfo().totalSize).toBe(expected);
+  });
+});
+
+describe('localStorageService: cleared tasks', () => {
+  const finished = (id) => ({ id, title: id, completed: true, completedAt: '2026-10-20T08:00:00.000Z' });
+
+  it('reads a record from before the cleared list as having none, and keeps its tasks', () => {
+    localStorage.setItem('zephyr_tasks', JSON.stringify({ tasks: [finished('a')], lastUpdated: 1 }));
+    expect(localStorageService.getClearedTasks()).toEqual([]);
+    expect(localStorageService.getTasks().map((t) => t.id)).toEqual(['a']);
+
+    localStorageService.saveTasks([]);
+    expect(localStorageService.getClearedTasks()).toEqual([
+      expect.objectContaining({ id: 'a', completedAt: '2026-10-20T08:00:00.000Z' }),
+    ]);
+  });
+
+  it('reads a damaged record as empty instead of throwing', () => {
+    expect(readTaskRecord('{not json')).toEqual({ tasks: [], cleared: [] });
+    expect(readTaskRecord(JSON.stringify({ tasks: 'x', cleared: [null, 1, { id: 2 }, { id: 'ok' }] })))
+      .toEqual({ tasks: [], cleared: [{ id: 'ok' }] });
+  });
+
+  it('remembers only finished tasks, once each, and forgets one that comes back', () => {
+    const previous = { tasks: [finished('a'), { id: 'b', completed: false }], cleared: [{ id: 'c', completedAt: null, clearedAt: 'x' }] };
+    const now = new Date('2026-10-21T09:00:00.000Z');
+    expect(nextCleared(previous, [], now)).toEqual([
+      { id: 'c', completedAt: null, clearedAt: 'x' },
+      { id: 'a', completedAt: '2026-10-20T08:00:00.000Z', clearedAt: '2026-10-21T09:00:00.000Z' },
+    ]);
+    expect(nextCleared(previous, [{ id: 'c' }, finished('a')], now)).toEqual([]);
   });
 });
