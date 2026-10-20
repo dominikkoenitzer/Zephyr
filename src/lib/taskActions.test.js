@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { toast } from 'sonner';
 import { clearCompletedWithUndo, deleteTaskWithUndo } from './taskActions';
+import { dashboardStats } from './dashboard';
 import { localStorageService } from '../services/localStorage';
 
 vi.mock('sonner', () => ({ toast: vi.fn() }));
@@ -74,5 +75,45 @@ describe('clearCompletedWithUndo', () => {
     onUndo();
     onUndo();
     expect(ids()).toEqual(['a', 'b', 'new']);
+  });
+});
+
+describe('the Done count around Clear completed', () => {
+  const done = () =>
+    dashboardStats(localStorageService.getTasks(), [], new Date(), localStorageService.getClearedTasks()).done;
+
+  it('stays the same after the completed tasks are cleared', () => {
+    localStorageService.saveTasks([task('a', true), task('b'), task('c', true)]);
+    expect(done()).toBe(2);
+    clearCompletedWithUndo();
+    expect(ids()).toEqual(['b']);
+    expect(done()).toBe(2);
+  });
+
+  it('does not count a task twice after Undo, and drops it when it is reopened', () => {
+    localStorageService.saveTasks([task('a', true), task('b')]);
+    clearCompletedWithUndo();
+    undo()();
+    expect(done()).toBe(1);
+    expect(localStorageService.getClearedTasks()).toEqual([]);
+
+    localStorageService.updateTask('a', { completed: false });
+    expect(done()).toBe(0);
+  });
+
+  it('keeps a finished task counted when it is deleted on its own, but not an open one', () => {
+    localStorageService.saveTasks([task('a', true), task('b')]);
+    deleteTaskWithUndo('a');
+    deleteTaskWithUndo('b');
+    expect(done()).toBe(1);
+  });
+
+  it('survives a reload: the count is read back from storage', () => {
+    localStorageService.saveTasks([task('a', true), task('b', true)]);
+    clearCompletedWithUndo();
+    const stored = localStorage.getItem('zephyr_tasks');
+    localStorage.clear();
+    localStorage.setItem('zephyr_tasks', stored);
+    expect(done()).toBe(2);
   });
 });

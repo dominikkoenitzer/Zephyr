@@ -115,6 +115,24 @@ describe('dashboardStats', () => {
     });
   });
 
+  it('keeps counting finished tasks that have left the list', () => {
+    const cleared = [
+      { id: 'f', completedAt: at(28), clearedAt: at(29) },
+      { id: 'g', completedAt: at(3), clearedAt: at(4) },
+    ];
+    const stats = dashboardStats(tasks, sessions, NOW, cleared);
+    expect(stats.done).toBe(4);
+    expect(stats.doneThisWeek).toBe(2);
+    expect(stats.open).toBe(3);
+  });
+
+  it('counts a task once when it is both back in the list and still marked cleared', () => {
+    const cleared = [{ id: 'd', completedAt: at(29), clearedAt: at(29, 12) }, { id: 'a', completedAt: at(29), clearedAt: at(29) }];
+    const stats = dashboardStats(tasks, sessions, NOW, cleared);
+    expect(stats.done).toBe(2);
+    expect(stats.doneThisWeek).toBe(1);
+  });
+
   it('puts the overdue task up next', () => {
     expect(upNext(tasks).id).toBe('b');
   });
