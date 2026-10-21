@@ -78,6 +78,8 @@ function Settings() {
   // The picked file stays while the dialog fades out, so its contents do not blank mid-close.
   const [pendingImport, setPendingImport] = useState(null);
   const [importOpen, setImportOpen] = useState(false);
+  // One import per picked file, however fast the button is pressed twice.
+  const importing = useRef(false);
   const { preference, setPreference } = useTheme();
   // Re-reads itself on every write, so the figure moves as you use the app.
   const [storageInfo] = useStoreValue(readStorageInfo);
@@ -113,6 +115,7 @@ function Settings() {
         here: backupCounts(collectBackupData()),
         file: backupCounts(result.backup.data),
       });
+      importing.current = false;
       setImportOpen(true);
     };
     reader.onerror = () => toast.error('Could not read that backup file.');
@@ -120,6 +123,8 @@ function Settings() {
   };
 
   const finishImport = (mode) => {
+    if (importing.current) return;
+    importing.current = true;
     const { backup } = pendingImport;
     setImportOpen(false);
     try {
@@ -127,8 +132,8 @@ function Settings() {
         const restored = applyBackup(backup);
         toast.success(`Restored ${restored} item${restored === 1 ? '' : 's'}. Reloading…`);
       } else {
-        const { added, updated } = mergeBackup(backup);
-        toast.success(`Merged: ${added} new, ${updated} updated. Reloading…`);
+        const { added, updated, sessions } = mergeBackup(backup);
+        toast.success(`Merged. Tasks: ${added} new, ${updated} updated. Sessions: ${sessions} new. Reloading…`);
       }
       setTimeout(() => window.location.reload(), 1200);
     } catch {
@@ -394,7 +399,7 @@ function Settings() {
         <DialogContent className="w-[95vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Import backup</DialogTitle>
-            <DialogDescription className="truncate pt-1">{pendingImport?.name}</DialogDescription>
+            <DialogDescription className="truncate pt-1" title={pendingImport?.name}>{pendingImport?.name}</DialogDescription>
           </DialogHeader>
           {pendingImport && (
             <table className="w-full text-sm tabular-nums">
