@@ -397,7 +397,10 @@ function Settings() {
       {/* Import: replace this device's data with the file, or merge the two (lib/backup) */}
       <Dialog open={importOpen} onOpenChange={setImportOpen}>
         <DialogContent className="w-[95vw] sm:max-w-md">
-          <DialogHeader>
+          {/* min-w-0: a grid item is as wide as its content by default, so a
+              long file name would stretch the header, table and buttons past
+              the card instead of being cut short. */}
+          <DialogHeader className="min-w-0">
             <DialogTitle>Import backup</DialogTitle>
             <DialogDescription className="truncate pt-1" title={pendingImport?.name}>{pendingImport?.name}</DialogDescription>
           </DialogHeader>
