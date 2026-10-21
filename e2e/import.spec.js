@@ -44,8 +44,10 @@ test.describe('import', () => {
     expect(axe.violations.map((v) => v.id)).toEqual([]);
 
     const reloaded = page.waitForEvent('load');
-    await dialog.getByRole('button', { name: 'Merge' }).click();
-    await expect(page.getByText('Merged: 1 new, 1 updated. Reloading…')).toBeVisible();
+    // Twice, fast: one import, one toast.
+    await dialog.getByRole('button', { name: 'Merge' }).dblclick({ force: true }).catch(() => {});
+    await expect(page.getByText('Merged. Tasks: 1 new, 1 updated. Sessions: 0 new. Reloading…')).toBeVisible();
+    await expect(page.getByText(/^Merged\./)).toHaveCount(1);
     await reloaded;
 
     const tasks = await storedTasks(page);
