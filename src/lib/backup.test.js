@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   applyBackup, backupCounts, backupFileName, collectBackupData, deleteAllData, isBackupKey, isValidBackup,
   lastBackupLabel, mergeBackup, mergeSessions, mergeTaskRecords, readBackup, requestPersistentStorage,
@@ -321,6 +321,17 @@ describe('mergeTaskRecords', () => {
     expect(merged.tasks.map((t) => t.title)).toEqual(['one', 'two']);
   });
 
+  it('keeps both, unchanged, when the second of two local tasks with one id is newer', () => {
+    const mine = {
+      tasks: [T('a', { title: 'one' }), T('a', { title: 'two', updatedAt: '2026-10-09T08:00:00.000Z' }), T('b')],
+      cleared: [],
+    };
+    const theirs = { tasks: [T('a', { title: 'theirs', updatedAt: '2026-10-10T08:00:00.000Z' })], cleared: [] };
+    const merged = mergeTaskRecords(mine, theirs);
+    expect(merged.tasks.map((t) => t.title)).toEqual(['one', 'two', 'b']);
+    expect([merged.added, merged.updated]).toEqual([0, 0]);
+  });
+
   it('weighs a cleared task by when it was cleared', () => {
     const cleared = { id: 'a', completedAt: '2026-10-04T08:00:00.000Z', clearedAt: '2026-10-05T08:00:00.000Z' };
     const olderCopy = T('a', { completed: true, completedAt: '2026-10-04T08:00:00.000Z' });
@@ -354,6 +365,12 @@ describe('mergeSessions', () => {
     expect(merged.added).toBe(1);
     expect(merged.sessions.map((s) => s.id ?? s.date)).toEqual(['s0', 's1', '2026-10-03T08:00:00.000Z']);
   });
+
+  it('matches a session with neither id nor start time by its content', () => {
+    const merged = mergeSessions([{ duration: 1500 }, null], [{ duration: 1500 }, { duration: 300 }]);
+    expect(merged.added).toBe(1);
+    expect(mergeSessions(merged.sessions, [{ duration: 300 }]).added).toBe(0);
+  });
 });
 
 describe('Replace and Merge', () => {
@@ -381,7 +398,7 @@ describe('Replace and Merge', () => {
 
   it("Merge adds and updates tasks and sessions but keeps this device's settings", () => {
     mine();
-    expect(mergeBackup(theirs)).toEqual({ added: 2, updated: 1 });
+    expect(mergeBackup(theirs)).toEqual({ added: 1, updated: 1, sessions: 1 });
     expect(stored().tasks.map((t) => [t.id, t.title])).toEqual([['a', 'theirs'], ['b', 'b'], ['c', 'c']]);
     expect(localStorageService.getFocusSessions().map((s) => s.id)).toEqual(['s1', 's2']);
     expect(localStorage.getItem('theme')).toBe('dark');
@@ -395,7 +412,7 @@ describe('Replace and Merge', () => {
     mergeBackup(theirs);
     const sessions = localStorage.getItem('zephyr_focus_sessions');
     const tasks = stored().tasks;
-    expect(mergeBackup(theirs)).toEqual({ added: 0, updated: 0 });
+    expect(mergeBackup(theirs)).toEqual({ added: 0, updated: 0, sessions: 0 });
     expect(stored().tasks).toEqual(tasks);
     expect(localStorage.getItem('zephyr_focus_sessions')).toBe(sessions);
   });
@@ -409,6 +426,32 @@ describe('Replace and Merge', () => {
     }));
     expect(localStorage.getItem('zephyr_focus_streak')).toBe('{"count":9,"lastDate":"2026-10-07"}');
     expect(localStorage.getItem('zephyr_last_focus_session')).toBe('{"completedAt":"2026-10-09T08:00:00.000Z"}');
+  });
+
+  it('Merge breaks a streak tie on the same day by the longer count', () => {
+    localStorage.setItem('zephyr_focus_streak', '{"count":3,"lastDate":"2026-10-07"}');
+    mergeBackup(file({ zephyr_focus_streak: '{"count":5,"lastDate":"2026-10-07"}' }));
+    expect(localStorage.getItem('zephyr_focus_streak')).toBe('{"count":5,"lastDate":"2026-10-07"}');
+    mergeBackup(file({ zephyr_focus_streak: '{"count":2,"lastDate":"2026-10-07"}' }));
+    expect(localStorage.getItem('zephyr_focus_streak')).toBe('{"count":5,"lastDate":"2026-10-07"}');
+  });
+
+  it('Merge writes nothing when the browser refuses one of its writes', () => {
+    mine();
+    const before = snapshot();
+    const setItem = Storage.prototype.setItem;
+    let calls = 0;
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function failing(key, value) {
+      calls += 1;
+      if (calls === 2) throw new Error('QuotaExceededError');
+      return setItem.call(this, key, value);
+    });
+    try {
+      expect(() => mergeBackup(theirs)).toThrow('QuotaExceededError');
+    } finally {
+      spy.mockRestore();
+    }
+    expect(snapshot()).toEqual(before);
   });
 
   it('Merge leaves out the keys that describe a browser, like Replace', () => {
