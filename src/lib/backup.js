@@ -109,11 +109,16 @@ export function backupCounts(data) {
 /**
  * A file name in two parts for a line that may be cut short: the end keeps
  * the extension and whatever sets one backup apart from the next, so the
- * cut lands in the middle of the name instead of at its end.
+ * cut lands in the middle of the name instead of at its end. The tail
+ * starts after a separator where one is near, so the cut never splits a
+ * word and a default name keeps its date whole.
  */
-export function splitFileName(name, keep = 12) {
+export function splitFileName(name, keep = 12, most = 20) {
   if (name.length <= keep) return { head: '', tail: name };
-  return { head: name.slice(0, -keep), tail: name.slice(-keep) };
+  let at = name.length - keep;
+  const separator = Math.max(...['-', '_', ' ', '.'].map((c) => name.lastIndexOf(c, at)));
+  if (separator > 0 && name.length - separator - 1 <= most) at = separator + 1;
+  return { head: name.slice(0, at), tail: name.slice(at) };
 }
 
 const count = (n, noun) => `${n} ${noun}${n === 1 ? '' : 's'}`;
