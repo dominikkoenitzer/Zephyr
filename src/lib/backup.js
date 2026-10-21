@@ -135,14 +135,24 @@ export function mergeTaskRecords(local, incoming) {
   incoming.tasks.forEach((task) => offer(task.id, { kind: 'task', item: task, stamp: taskStamp(task) }));
   incoming.cleared.forEach((entry) => offer(entry.id, { kind: 'cleared', item: entry, stamp: time(entry.clearedAt) }));
 
+  // Local tasks that share an id (ids were once a bare timestamp) all stay as
+  // they are, and the file cannot replace them: there is no telling which one
+  // its copy means.
+  const seen = new Set();
+  const shared = new Set();
+  local.tasks.forEach((task) => {
+    if (seen.has(task.id)) shared.add(task.id);
+    seen.add(task.id);
+  });
+
   const tasks = [];
   const placed = new Set();
   let added = 0;
   let updated = 0;
   local.tasks.forEach((task) => {
-    // Two local tasks sharing an id (ids were once a bare timestamp) both stay.
-    if (typeof task.id !== 'string' || placed.has(task.id)) {
+    if (typeof task.id !== 'string' || shared.has(task.id)) {
       tasks.push(task);
+      placed.add(task.id);
       return;
     }
     placed.add(task.id);
@@ -168,7 +178,8 @@ export function mergeTaskRecords(local, incoming) {
 
 /** Sessions from both sides, matched by id (or start time), oldest first. */
 export function mergeSessions(local, incoming) {
-  const keyOf = (s) => s.id ?? s.date;
+  // A session with neither is matched by its whole content.
+  const keyOf = (s) => s?.id ?? s?.date ?? JSON.stringify(s);
   const seen = new Set(local.map(keyOf));
   const fresh = incoming.filter((s) => {
     const key = keyOf(s);
@@ -176,7 +187,7 @@ export function mergeSessions(local, incoming) {
     seen.add(key);
     return true;
   });
-  const sessions = [...local, ...fresh].sort((a, b) => time(a.date) - time(b.date));
+  const sessions = [...local, ...fresh].sort((a, b) => time(a?.date) - time(b?.date));
   return { sessions, added: fresh.length };
 }
 
@@ -192,7 +203,8 @@ const readJson = (raw, fallback) => {
  * other key are written only where this device has none, so a merge never
  * changes a choice made here.
  *
- * @returns {{ added: number, updated: number }} tasks and sessions added, tasks updated.
+ * @returns {{ added: number, updated: number, sessions: number }} tasks added and
+ *   updated, sessions added.
  */
 export function mergeBackup(backup) {
   const data = Object.fromEntries(
@@ -201,6 +213,7 @@ export function mergeBackup(backup) {
   const writes = {};
   let added = 0;
   let updated = 0;
+  let sessions = 0;
 
   if (data[STORAGE_KEYS.TASKS] !== undefined) {
     const merged = mergeTaskRecords(
@@ -216,7 +229,7 @@ export function mergeBackup(backup) {
     const local = readJson(localStorage.getItem(STORAGE_KEYS.FOCUS_SESSIONS), []);
     const merged = mergeSessions(Array.isArray(local) ? local : [], readJson(data[STORAGE_KEYS.FOCUS_SESSIONS], []));
     writes[STORAGE_KEYS.FOCUS_SESSIONS] = JSON.stringify(merged.sessions);
-    added += merged.added;
+    sessions = merged.added;
   }
 
   const later = (key, stampOf, tieBreak = () => false) => {
@@ -235,8 +248,23 @@ export function mergeBackup(backup) {
     if (!merged.has(key) && localStorage.getItem(key) === null) writes[key] = value;
   });
 
-  Object.entries(writes).forEach(([key, value]) => localStorage.setItem(key, value));
-  return { added, updated };
+  // All or nothing: if the browser refuses a write (storage full), the keys
+  // already written go back to what they were.
+  const before = Object.keys(writes).map((key) => [key, localStorage.getItem(key)]);
+  try {
+    Object.entries(writes).forEach(([key, value]) => localStorage.setItem(key, value));
+  } catch (error) {
+    before.forEach(([key, value]) => {
+      try {
+        if (value === null) localStorage.removeItem(key);
+        else localStorage.setItem(key, value);
+      } catch {
+        // Putting back a value that was there before frees space, so this should not fail.
+      }
+    });
+    throw error;
+  }
+  return { added, updated, sessions };
 }
 
 /**
