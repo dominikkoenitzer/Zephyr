@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   applyBackup, backupCounts, backupFileName, collectBackupData, deleteAllData, isBackupKey, isValidBackup,
-  lastBackupLabel, mergeBackup, mergeSessions, mergeTaskRecords, readBackup, requestPersistentStorage,
+  lastBackupLabel, mergeBackup, mergeSessions, mergeSummary, mergeTaskRecords, readBackup, requestPersistentStorage,
   resetPersistRequest, shouldAskPersist, wipeAllData,
 } from './backup';
 import { localStorageService } from '../services/localStorage';
@@ -261,6 +261,16 @@ describe('readBackup', () => {
       { zephyr_focus_sessions: '{"not":"a list"}' },
       { zephyr_focus_sessions: '[1, 2]' },
     ].forEach((data) => expect(readBackup(JSON.stringify(file(data)))).toEqual({ ok: false, reason: 'unreadable' }));
+  });
+});
+
+describe('mergeSummary', () => {
+  it('names only what the file brought, in the singular or plural', () => {
+    expect(mergeSummary({ added: 1, updated: 1, sessions: 0 })).toBe('1 new task, 1 updated.');
+    expect(mergeSummary({ added: 2, updated: 0, sessions: 3 })).toBe('2 new tasks, 3 new sessions.');
+    expect(mergeSummary({ added: 0, updated: 1, sessions: 0 })).toBe('1 task updated.');
+    expect(mergeSummary({ added: 0, updated: 4, sessions: 1 })).toBe('4 tasks updated, 1 new session.');
+    expect(mergeSummary({ added: 0, updated: 0, sessions: 0 })).toBe('Nothing new in the file.');
   });
 });
 

@@ -13,7 +13,8 @@ import ShortcutsDialog from '../components/Shortcuts/ShortcutsDialog';
 import { notificationService } from '../services/notificationService';
 import { localStorageService } from '../services/localStorage';
 import {
-  applyBackup, backupCounts, collectBackupData, deleteAllData, downloadBackup, lastBackupLabel, mergeBackup, readBackup,
+  applyBackup, backupCounts, collectBackupData, deleteAllData, downloadBackup, lastBackupLabel, mergeBackup, mergeSummary,
+  readBackup,
 } from '../lib/backup';
 import { cn } from '../lib/utils';
 import { useSettings, useStoreValue } from '../hooks/useStore';
@@ -130,10 +131,9 @@ function Settings() {
     try {
       if (mode === 'replace') {
         const restored = applyBackup(backup);
-        toast.success(`Restored ${restored} item${restored === 1 ? '' : 's'}. Reloading…`);
+        toast.success(`Restored ${restored} item${restored === 1 ? '' : 's'}.`);
       } else {
-        const { added, updated, sessions } = mergeBackup(backup);
-        toast.success(`Merged. Tasks: ${added} new, ${updated} updated. Sessions: ${sessions} new. Reloading…`);
+        toast.success('Merged', { description: mergeSummary(mergeBackup(backup)) });
       }
       setTimeout(() => window.location.reload(), 1200);
     } catch {
@@ -163,7 +163,7 @@ function Settings() {
       deleteAllData();
 
       setNotificationSettings(notificationService.getSettings());
-      toast.success('All data deleted. Reloading.');
+      toast.success('All data deleted.');
 
       setTimeout(() => window.location.reload(), 1600);
     } catch (error) {

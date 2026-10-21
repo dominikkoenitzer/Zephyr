@@ -106,6 +106,17 @@ export function backupCounts(data) {
   return { tasks, sessions };
 }
 
+const count = (n, noun) => `${n} ${noun}${n === 1 ? '' : 's'}`;
+
+/** One line for the toast after a merge: what the file added, zeros left out. */
+export function mergeSummary({ added, updated, sessions }) {
+  const parts = [];
+  if (added) parts.push(`${count(added, 'new task')}`);
+  if (updated) parts.push(added ? `${updated} updated` : count(updated, 'task updated'));
+  if (sessions) parts.push(count(sessions, 'new session'));
+  return parts.length ? `${parts.join(', ')}.` : 'Nothing new in the file.';
+}
+
 const time = (value) => {
   const t = Date.parse(value);
   return Number.isNaN(t) ? 0 : t;
