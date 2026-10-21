@@ -14,7 +14,7 @@ import { notificationService } from '../services/notificationService';
 import { localStorageService } from '../services/localStorage';
 import {
   applyBackup, backupCounts, collectBackupData, deleteAllData, downloadBackup, lastBackupLabel, mergeBackup, mergeSummary,
-  readBackup,
+  readBackup, splitFileName,
 } from '../lib/backup';
 import { cn } from '../lib/utils';
 import { useSettings, useStoreValue } from '../hooks/useStore';
@@ -402,7 +402,13 @@ function Settings() {
               the card instead of being cut short. */}
           <DialogHeader className="min-w-0">
             <DialogTitle>Import backup</DialogTitle>
-            <DialogDescription className="truncate pt-1" title={pendingImport?.name}>{pendingImport?.name}</DialogDescription>
+            {/* The name is cut in the middle, so its end stays in view; assistive
+                technology reads the whole name once, from the hidden span. */}
+            <DialogDescription className="flex pt-1" title={pendingImport?.name}>
+              {pendingImport && <span className="sr-only">{pendingImport.name}</span>}
+              {pendingImport && <span aria-hidden className="min-w-0 truncate">{splitFileName(pendingImport.name).head}</span>}
+              {pendingImport && <span aria-hidden className="shrink-0 whitespace-pre">{splitFileName(pendingImport.name).tail}</span>}
+            </DialogDescription>
           </DialogHeader>
           {pendingImport && (
             <table className="w-full text-sm tabular-nums">

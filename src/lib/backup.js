@@ -106,6 +106,16 @@ export function backupCounts(data) {
   return { tasks, sessions };
 }
 
+/**
+ * A file name in two parts for a line that may be cut short: the end keeps
+ * the extension and whatever sets one backup apart from the next, so the
+ * cut lands in the middle of the name instead of at its end.
+ */
+export function splitFileName(name, keep = 12) {
+  if (name.length <= keep) return { head: '', tail: name };
+  return { head: name.slice(0, -keep), tail: name.slice(-keep) };
+}
+
 const count = (n, noun) => `${n} ${noun}${n === 1 ? '' : 's'}`;
 
 /** One line for the toast after a merge: what the file added, zeros left out. */

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   applyBackup, backupCounts, backupFileName, collectBackupData, deleteAllData, isBackupKey, isValidBackup,
   lastBackupLabel, mergeBackup, mergeSessions, mergeSummary, mergeTaskRecords, readBackup, requestPersistentStorage,
-  resetPersistRequest, shouldAskPersist, wipeAllData,
+  resetPersistRequest, shouldAskPersist, splitFileName, wipeAllData,
 } from './backup';
 import { localStorageService } from '../services/localStorage';
 
@@ -261,6 +261,17 @@ describe('readBackup', () => {
       { zephyr_focus_sessions: '{"not":"a list"}' },
       { zephyr_focus_sessions: '[1, 2]' },
     ].forEach((data) => expect(readBackup(JSON.stringify(file(data)))).toEqual({ ok: false, reason: 'unreadable' }));
+  });
+});
+
+describe('splitFileName', () => {
+  it('keeps the end of the name whole and hands the rest to the part that may be cut', () => {
+    expect(splitFileName('zephyr-backup-2026-10-20-from-the-old-laptop (2).json')).toEqual({
+      head: 'zephyr-backup-2026-10-20-from-the-old-la',
+      tail: 'ptop (2).json',
+    });
+    expect(splitFileName('short.json')).toEqual({ head: '', tail: 'short.json' });
+    expect(splitFileName('exactly-12ch', 12)).toEqual({ head: '', tail: 'exactly-12ch' });
   });
 });
 
