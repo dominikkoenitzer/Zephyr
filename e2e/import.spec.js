@@ -83,6 +83,26 @@ test.describe('import', () => {
     expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark');
   });
 
+  test('a long file name is cut short and leaves the rest of the dialog in place', async ({ page }) => {
+    await seed(page);
+    await page.goto('/settings');
+    const name = 'zephyr-backup-2026-10-20-from-the-old-laptop-before-the-reinstall-final-copy (2).json';
+    await pick(page, { ...otherDevice(), name });
+
+    const dialog = page.getByRole('dialog', { name: 'Import backup' });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByText(name)).toHaveAttribute('title', name);
+    // Nothing inside the card reaches past its right edge: the name is clipped, not the card.
+    const past = await dialog.evaluate((el) => {
+      const right = el.getBoundingClientRect().right;
+      return [...el.querySelectorAll('*')]
+        .filter((child) => child.getBoundingClientRect().right > right + 1)
+        .map((child) => child.tagName.toLowerCase());
+    });
+    expect(past).toEqual([]);
+    await expect(dialog.getByRole('button', { name: 'Merge' })).toBeInViewport({ ratio: 1 });
+  });
+
   test('a damaged backup is refused before the dialog and changes nothing', async ({ page }) => {
     await seed(page);
     await page.goto('/settings');
