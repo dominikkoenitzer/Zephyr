@@ -267,8 +267,8 @@ describe('readBackup', () => {
 describe('splitFileName', () => {
   it('keeps the end of the name whole and hands the rest to the part that may be cut', () => {
     expect(splitFileName('zephyr-backup-2026-10-20-from-the-old-laptop (2).json')).toEqual({
-      head: 'zephyr-backup-2026-10-20-from-the-old-la',
-      tail: 'ptop (2).json',
+      head: 'zephyr-backup-2026-10-20-from-the-old-lap',
+      tail: 'top (2).json',
     });
     expect(splitFileName('short.json')).toEqual({ head: '', tail: 'short.json' });
     expect(splitFileName('exactly-12ch', 12)).toEqual({ head: '', tail: 'exactly-12ch' });

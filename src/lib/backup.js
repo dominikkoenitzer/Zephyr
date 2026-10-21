@@ -122,7 +122,7 @@ const count = (n, noun) => `${n} ${noun}${n === 1 ? '' : 's'}`;
 export function mergeSummary({ added, updated, sessions }) {
   const parts = [];
   if (added) parts.push(`${count(added, 'new task')}`);
-  if (updated) parts.push(added ? `${updated} updated` : count(updated, 'task updated'));
+  if (updated) parts.push(added ? `${updated} updated` : `${count(updated, 'task')} updated`);
   if (sessions) parts.push(count(sessions, 'new session'));
   return parts.length ? `${parts.join(', ')}.` : 'Nothing new in the file.';
 }
