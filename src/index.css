@@ -165,6 +165,13 @@
     font-size: clamp(16px, 0.7vw, 19px);
   }
 
+  /* A dialog's scroll lock puts overflow: hidden on <body>. With the root
+     clipped, that turns <body> into a scroll container of its own and the top
+     bar scrolls off behind the dim. clip cuts the same way without one. */
+  body[data-scroll-locked] {
+    overflow: clip !important;
+  }
+
   /* No overlay can paint the reserved gutter; only the root's own background
      shows there. While a dialog dims the page, or full screen covers it, the
      root takes the same colour, so no light strip is left at the right edge. */

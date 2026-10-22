@@ -283,12 +283,13 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
             // Trigger, so Radix would drop focus on <body>. Go back to where
             // it was, if that is still on the page and a command has not
             // already put focus somewhere (New task focuses the quick add).
+            // Without scrolling, as in DialogContent.
             const el = returnFocusRef.current;
             returnFocusRef.current = null;
             const moved = document.activeElement && document.activeElement !== document.body;
             if (moved || !el?.isConnected || el === document.body) return;
             event.preventDefault();
-            el.focus();
+            el.focus({ preventScroll: true });
           }}
           className="fixed left-1/2 top-4 z-50 w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-3xl bg-card p-0 shadow-(--shadow-overlay) duration-200 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:top-[12vh]"
         >
