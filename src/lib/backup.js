@@ -106,6 +106,32 @@ export function backupCounts(data) {
   return { tasks, sessions };
 }
 
+/**
+ * A file name in two parts for a line that may be cut short: the end keeps
+ * the extension and whatever sets one backup apart from the next, so the
+ * cut lands in the middle of the name instead of at its end. The tail
+ * starts after a separator where one is near, so the cut never splits a
+ * word and a default name keeps its date whole.
+ */
+export function splitFileName(name, keep = 12, most = 20) {
+  if (name.length <= keep) return { head: '', tail: name };
+  let at = name.length - keep;
+  const separator = Math.max(...['-', '_', ' ', '.'].map((c) => name.lastIndexOf(c, at)));
+  if (separator > 0 && name.length - separator - 1 <= most) at = separator + 1;
+  return { head: name.slice(0, at), tail: name.slice(at) };
+}
+
+const count = (n, noun) => `${n} ${noun}${n === 1 ? '' : 's'}`;
+
+/** One line for the toast after a merge: what the file added, zeros left out. */
+export function mergeSummary({ added, updated, sessions }) {
+  const parts = [];
+  if (added) parts.push(`${count(added, 'new task')}`);
+  if (updated) parts.push(added ? `${updated} updated` : `${count(updated, 'task')} updated`);
+  if (sessions) parts.push(count(sessions, 'new session'));
+  return parts.length ? `${parts.join(', ')}.` : 'Nothing new in the file.';
+}
+
 const time = (value) => {
   const t = Date.parse(value);
   return Number.isNaN(t) ? 0 : t;

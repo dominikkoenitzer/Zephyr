@@ -46,8 +46,9 @@ test.describe('import', () => {
     const reloaded = page.waitForEvent('load');
     // Twice, fast: one import, one toast.
     await dialog.getByRole('button', { name: 'Merge' }).dblclick({ force: true }).catch(() => {});
-    await expect(page.getByText('Merged. Tasks: 1 new, 1 updated. Sessions: 0 new. Reloading…')).toBeVisible();
-    await expect(page.getByText(/^Merged\./)).toHaveCount(1);
+    await expect(page.getByText('Merged', { exact: true })).toBeVisible();
+    await expect(page.getByText('1 new task, 1 updated.')).toBeVisible();
+    await expect(page.getByText('Merged', { exact: true })).toHaveCount(1);
     await reloaded;
 
     const tasks = await storedTasks(page);
@@ -91,7 +92,15 @@ test.describe('import', () => {
 
     const dialog = page.getByRole('dialog', { name: 'Import backup' });
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByText(name)).toHaveAttribute('title', name);
+    // The whole name reaches assistive technology once; on screen the end of
+    // the name, extension included, stays in view and the cut sits before it.
+    await expect(dialog).toHaveAccessibleDescription(name);
+    const shown = dialog.getByTitle(name);
+    const [head, tail] = await shown.locator('span[aria-hidden]').all();
+    await expect(tail).toHaveText(/\(2\)\.json$/);
+    expect(await head.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
+    const [tailBox, lineBox] = await Promise.all([tail.boundingBox(), shown.boundingBox()]);
+    expect(tailBox.x + tailBox.width).toBeLessThanOrEqual(lineBox.x + lineBox.width + 1);
     // Nothing inside the card reaches past its right edge: the name is clipped, not the card.
     const past = await dialog.evaluate((el) => {
       const right = el.getBoundingClientRect().right;

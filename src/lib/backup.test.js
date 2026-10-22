@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   applyBackup, backupCounts, backupFileName, collectBackupData, deleteAllData, isBackupKey, isValidBackup,
-  lastBackupLabel, mergeBackup, mergeSessions, mergeTaskRecords, readBackup, requestPersistentStorage,
-  resetPersistRequest, shouldAskPersist, wipeAllData,
+  lastBackupLabel, mergeBackup, mergeSessions, mergeSummary, mergeTaskRecords, readBackup, requestPersistentStorage,
+  resetPersistRequest, shouldAskPersist, splitFileName, wipeAllData,
 } from './backup';
 import { localStorageService } from '../services/localStorage';
 
@@ -261,6 +261,29 @@ describe('readBackup', () => {
       { zephyr_focus_sessions: '{"not":"a list"}' },
       { zephyr_focus_sessions: '[1, 2]' },
     ].forEach((data) => expect(readBackup(JSON.stringify(file(data)))).toEqual({ ok: false, reason: 'unreadable' }));
+  });
+});
+
+describe('splitFileName', () => {
+  it('keeps the end of the name whole, from the nearest separator, and hands the rest to the part that may be cut', () => {
+    expect(splitFileName('zephyr-backup-2026-10-20-from-the-old-laptop (2).json')).toEqual({
+      head: 'zephyr-backup-2026-10-20-from-the-old-',
+      tail: 'laptop (2).json',
+    });
+    expect(splitFileName('zephyr-backup-2026-10-20.json')).toEqual({ head: 'zephyr-backup-', tail: '2026-10-20.json' });
+    expect(splitFileName(`a-${'b'.repeat(30)}.json`)).toEqual({ head: `a-${'b'.repeat(23)}`, tail: 'bbbbbbb.json' });
+    expect(splitFileName('short.json')).toEqual({ head: '', tail: 'short.json' });
+    expect(splitFileName('exactly-12ch', 12)).toEqual({ head: '', tail: 'exactly-12ch' });
+  });
+});
+
+describe('mergeSummary', () => {
+  it('names only what the file brought, in the singular or plural', () => {
+    expect(mergeSummary({ added: 1, updated: 1, sessions: 0 })).toBe('1 new task, 1 updated.');
+    expect(mergeSummary({ added: 2, updated: 0, sessions: 3 })).toBe('2 new tasks, 3 new sessions.');
+    expect(mergeSummary({ added: 0, updated: 1, sessions: 0 })).toBe('1 task updated.');
+    expect(mergeSummary({ added: 0, updated: 4, sessions: 1 })).toBe('4 tasks updated, 1 new session.');
+    expect(mergeSummary({ added: 0, updated: 0, sessions: 0 })).toBe('Nothing new in the file.');
   });
 });
 
