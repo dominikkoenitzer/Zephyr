@@ -172,6 +172,13 @@
     overflow: clip !important;
   }
 
+  /* The same clip keeps the lock on <body> from reaching the viewport, so
+     arrows, Page Up and Home still scrolled the page under the dim. Holding
+     the root holds the viewport; the stable gutter keeps the width. */
+  html:has(body[data-scroll-locked]) {
+    overflow: hidden;
+  }
+
   /* No overlay can paint the reserved gutter; only the root's own background
      shows there. While a dialog dims the page, or full screen covers it, the
      root takes the same colour, so no light strip is left at the right edge. */
