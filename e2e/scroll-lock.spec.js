@@ -69,18 +69,20 @@ test('the page behind an open dialog stays put for keys, wheel and touch', async
   expect(await page.evaluate(([px, py]) => Boolean(document.elementFromPoint(px, py)?.closest('[data-dim]')), [x, y])).toBe(true);
   expect(await topBar(page)).toEqual(before);
 
+  // Each input starts from the middle, so each one is measured on its own.
   const moved = {};
-  for (const key of ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'End', 'Home']) {
-    await page.keyboard.press(key);
+  const tries = [
+    ...['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'End', 'Home'].map((key) => [key, () => page.keyboard.press(key)]),
+    ['wheel', () => page.mouse.wheel(0, 120)],
+    ['touch', () => touchScroll(page, cdp, x, y)],
+  ];
+  for (const [name, input] of tries) {
+    await toMiddle(page);
+    await input();
     await page.waitForTimeout(250);
     const now = await scrollTop(page);
-    if (now !== middle) moved[key] = now - middle;
+    if (now !== middle) moved[name] = now - middle;
   }
-  await page.mouse.wheel(0, 120);
-  await page.waitForTimeout(250);
-  if ((await scrollTop(page)) !== middle) moved.wheel = (await scrollTop(page)) - middle;
-  await touchScroll(page, cdp, x, y);
-  if ((await scrollTop(page)) !== middle) moved.touch = (await scrollTop(page)) - middle;
 
   await expect(dialog).toBeVisible();
   expect(moved).toEqual({});
