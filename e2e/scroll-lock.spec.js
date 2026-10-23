@@ -60,6 +60,8 @@ test('the page behind an open dialog stays put for keys, wheel and touch', async
   await page.evaluate(() => document.activeElement?.blur());
   await page.keyboard.press('ArrowDown');
   await expect.poll(() => scrollTop(page)).not.toBe(middle);
+  // Chromium animates key scrolls; let the last one land before measuring.
+  await page.waitForTimeout(500);
 
   await toMiddle(page);
   const before = await topBar(page);
@@ -80,7 +82,8 @@ test('the page behind an open dialog stays put for keys, wheel and touch', async
   ];
   for (const [name, input] of tries) {
     const start = await toMiddle(page);
-    starts[name] = start - middle;
+    await page.waitForTimeout(100);
+    starts[name] = (await scrollTop(page)) - middle;
     await input();
     await page.waitForTimeout(250);
     const now = await scrollTop(page);
