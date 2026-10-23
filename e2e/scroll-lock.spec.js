@@ -29,7 +29,10 @@ const topBar = (page) =>
     return { top: Math.round(r.top), left: Math.round(r.left), width: Math.round(r.width) };
   });
 const touchScroll = async (page, cdp, x, y) => {
-  await cdp.send('Input.synthesizeScrollGesture', { x, y, yDistance: 240, gestureSourceType: 'touch', speed: 1200 });
+  const at = (dy) => [{ x, y: y + dy }];
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: at(0) });
+  for (let dy = 20; dy <= 240; dy += 20) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: at(dy) });
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await page.waitForTimeout(300);
 };
 
