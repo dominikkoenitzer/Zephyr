@@ -70,6 +70,13 @@ describe('localStorageService: settings', () => {
     const b = localStorageService.getSettings();
     expect(b.workDuration).toBe(DEFAULT_SETTINGS.workDuration);
   });
+
+  it('reads stored settings that are not an object as none', () => {
+    ['null', '[]', '5'].forEach((value) => {
+      localStorage.setItem('zephyr_settings', value);
+      expect(localStorageService.getSettings()).toEqual(DEFAULT_SETTINGS);
+    });
+  });
 });
 
 describe('localStorageService: view preferences', () => {

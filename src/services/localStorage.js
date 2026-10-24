@@ -452,7 +452,9 @@ class LocalStorageService {
       const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
       if (!data) return clone(DEFAULT_SETTINGS);
 
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      // Anything but an object, such as the "null" an old backup could bring in, reads as none.
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : clone(DEFAULT_SETTINGS);
     } catch (error) {
       console.error('Failed to get settings:', error);
       return clone(DEFAULT_SETTINGS);

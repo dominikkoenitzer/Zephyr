@@ -67,9 +67,9 @@ const parseJson = (value) => {
 const isObject = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
 
 /**
- * The tasks and sessions inside a backup are checked before anything is
- * written, so a damaged file is refused whole instead of replacing a working
- * list with one the app cannot read.
+ * The tasks, sessions and settings inside a backup are checked before
+ * anything is written, so a damaged file is refused whole instead of
+ * replacing a working list with one the app cannot read.
  */
 function hasReadableData(data) {
   const tasks = data[STORAGE_KEYS.TASKS];
@@ -82,6 +82,11 @@ function hasReadableData(data) {
   if (sessions !== undefined) {
     const parsed = typeof sessions === 'string' ? parseJson(sessions) : { ok: false };
     if (!parsed.ok || !Array.isArray(parsed.value) || !parsed.value.every(isObject)) return false;
+  }
+  const settings = data[STORAGE_KEYS.SETTINGS];
+  if (settings !== undefined) {
+    const parsed = typeof settings === 'string' ? parseJson(settings) : { ok: false };
+    if (!parsed.ok || !isObject(parsed.value)) return false;
   }
   return true;
 }
