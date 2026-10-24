@@ -257,6 +257,12 @@ export function usePomodoro() {
     timeLeftRef.current = timeLeft;
   }, [timeLeft]);
 
+  // Read by the tick, so a task or setting change mid-session never moves the end time.
+  const handleCompleteRef = useRef(handleComplete);
+  useEffect(() => {
+    handleCompleteRef.current = handleComplete;
+  }, [handleComplete]);
+
   useEffect(() => {
     if (!isRunning) return undefined;
 
@@ -271,7 +277,7 @@ export function usePomodoro() {
       setTimeLeft(remaining);
       if (remaining === 0) {
         completed = true;
-        handleComplete(endAt);
+        handleCompleteRef.current(endAt);
       }
     };
 
@@ -285,7 +291,7 @@ export function usePomodoro() {
       document.removeEventListener('visibilitychange', tick);
       window.removeEventListener('zephyr:tick', tick);
     };
-  }, [isRunning, handleComplete, phaseCount]);
+  }, [isRunning, phaseCount]);
 
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {

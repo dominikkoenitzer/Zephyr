@@ -109,4 +109,16 @@ describe('usePomodoro', () => {
     expect(timer.timeLeft).toBe(900);
     expect(timer.currentSessionTime).toBe(900);
   });
+
+  it('keeps the end time when the session task changes while it runs', () => {
+    mount();
+    act(() => timer.toggleTimer());
+    seconds(1);
+    act(() => vi.advanceTimersByTime(900));
+    act(() => timer.setSessionTask({ id: null, title: 'Write the report' }));
+    act(() => vi.advanceTimersByTime(1500 * 1000 - 1900));
+
+    expect(timer.isBreak).toBe(true);
+    expect(localStorageService.getFocusSessions()).toHaveLength(1);
+  });
 });
