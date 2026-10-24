@@ -185,7 +185,10 @@ class LocalStorageService {
       if (!data) return [];
 
       const parsed = JSON.parse(data);
-      return parsed.tasks || [];
+      // A due date that is not text reads as none, so no reader trips over it.
+      return (parsed.tasks || []).map((task) =>
+        task?.dueDate != null && typeof task.dueDate !== 'string' ? { ...task, dueDate: null } : task
+      );
     } catch (error) {
       console.error('Failed to get tasks:', error);
       return [];

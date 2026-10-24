@@ -41,6 +41,20 @@ describe('notificationService: task reminders', () => {
     expect(notificationService.getNotifications()).toHaveLength(1);
   });
 
+  it('passes over a task whose due date is not text', () => {
+    localStorage.setItem('zephyr_tasks', JSON.stringify({
+      tasks: [
+        { id: 'a', title: 'Odd date', completed: false, dueDate: 20261024 },
+        { id: 'b', title: 'Send the invoice', completed: false, dueDate: dayKey(0) },
+      ],
+    }));
+
+    notificationService.checkTaskDueDates();
+
+    const messages = notificationService.getNotifications().map((n) => n.message);
+    expect(messages).toEqual(['Send the invoice is due today']);
+  });
+
   it('keeps the overdue, due-today and due-soon reminders apart', () => {
     localStorageService.addTask({ title: 'Late one', dueDate: dayKey(-3) });
     localStorageService.addTask({ title: 'Today one', dueDate: dayKey(0) });
