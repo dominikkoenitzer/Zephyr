@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { localStorageService, CHANGE_EVENT, DEFAULT_SETTINGS, nextCleared, readTaskRecord } from './localStorage';
 
 beforeEach(() => {
@@ -28,6 +28,24 @@ describe('localStorageService: tasks', () => {
     const t = localStorageService.addTask({ title: 'A' });
     localStorageService.deleteTask(t.id);
     expect(localStorageService.getTasks()).toHaveLength(0);
+  });
+});
+
+describe('localStorageService: failed saves', () => {
+  it('returns null from add and update when the write fails', () => {
+    const t = localStorageService.addTask({ title: 'A' });
+    const write = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      expect(localStorageService.addTask({ title: 'B' })).toBeNull();
+      expect(localStorageService.updateTask(t.id, { title: 'A2' })).toBeNull();
+    } finally {
+      vi.restoreAllMocks();
+    }
+    expect(write).toHaveBeenCalledTimes(2);
+    expect(localStorageService.getTasks().map((task) => task.title)).toEqual(['A']);
   });
 });
 

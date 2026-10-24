@@ -214,8 +214,7 @@ class LocalStorageService {
       ...task
     };
     tasks.push(newTask);
-    this.saveTasks(tasks);
-    return newTask;
+    return this.saveTasks(tasks) ? newTask : null;
   }
 
   updateTask(taskId, updates) {
@@ -230,8 +229,7 @@ class LocalStorageService {
         updatedTask.completedAt = null;
       }
       tasks[taskIndex] = updatedTask;
-      this.saveTasks(tasks);
-      return tasks[taskIndex];
+      return this.saveTasks(tasks) ? updatedTask : null;
     }
     return null;
   }
