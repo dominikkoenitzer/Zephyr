@@ -22,13 +22,13 @@ const Harness = () => {
   return null;
 };
 
-const mount = () => {
+const mount = (path = '/focus') => {
   container = document.createElement('div');
   document.body.appendChild(container);
   root = createRoot(container);
   act(() => {
     root.render(
-      <MemoryRouter initialEntries={['/focus']}>
+      <MemoryRouter initialEntries={[path]}>
         <Harness />
       </MemoryRouter>
     );
@@ -48,6 +48,7 @@ describe('usePomodoro', () => {
     act(() => root.unmount());
     container.remove();
     vi.useRealTimers();
+    vi.unstubAllGlobals();
   });
 
   it('keeps the length a running session started with when its preset is edited', () => {
@@ -120,5 +121,25 @@ describe('usePomodoro', () => {
 
     expect(timer.isBreak).toBe(true);
     expect(localStorageService.getFocusSessions()).toHaveLength(1);
+  });
+
+  it('asks for notification permission when a session is started, not on arrival', () => {
+    const requestPermission = vi.fn(() => Promise.resolve('default'));
+    vi.stubGlobal('Notification', Object.assign(function Notification() {}, { permission: 'default', requestPermission }));
+    mount();
+    seconds(5);
+    expect(requestPermission).not.toHaveBeenCalled();
+
+    act(() => timer.toggleTimer());
+    expect(requestPermission).toHaveBeenCalledTimes(1);
+  });
+
+  it('asks for notification permission when a task starts a session', () => {
+    const requestPermission = vi.fn(() => Promise.resolve('default'));
+    vi.stubGlobal('Notification', Object.assign(function Notification() {}, { permission: 'default', requestPermission }));
+    mount('/focus?title=Write%20the%20report&start=1');
+
+    expect(timer.isRunning).toBe(true);
+    expect(requestPermission).toHaveBeenCalledTimes(1);
   });
 });

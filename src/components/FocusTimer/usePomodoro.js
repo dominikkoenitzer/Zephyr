@@ -19,6 +19,13 @@ export { formatTime };
 const readAutoStartBreaks = () => Boolean(localStorageService.getSettings()?.autoStartBreaks);
 const readAutoStartFocus = () => Boolean(localStorageService.getSettings()?.autoStartFocus);
 
+/** Asks once for system notifications, called only when a session is started, as browsers want a click or key press first. */
+function askToNotify() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
 /** How long a phase of `preset` runs: focus, the short break or the long one. */
 const lengthOf = (preset, isBreak, long) =>
   isBreak ? (long ? preset.longBreak : preset.shortBreak) : preset.workTime;
@@ -247,7 +254,9 @@ export function usePomodoro() {
 
   // The onboarding flag is a write to storage, so it waits for the commit.
   useEffect(() => {
-    if (hasAutoStarted) localStorageService.saveOnboarding({ focusStarted: true });
+    if (!hasAutoStarted) return;
+    localStorageService.saveOnboarding({ focusStarted: true });
+    askToNotify();
   }, [hasAutoStarted]);
 
   // Keep a ref of the latest timeLeft so the ticking effect can anchor to
@@ -292,12 +301,6 @@ export function usePomodoro() {
       window.removeEventListener('zephyr:tick', tick);
     };
   }, [isRunning, phaseCount]);
-
-  useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-  }, []);
 
   // Show the countdown in the browser tab while a session is running, so
   // the timer stays visible when you switch tabs to do the actual work.
@@ -348,6 +351,7 @@ export function usePomodoro() {
   const toggleTimer = () => {
     if (!isRunning) {
       localStorageService.saveOnboarding({ focusStarted: true });
+      askToNotify();
     }
     setIsRunning(!isRunning);
   };
