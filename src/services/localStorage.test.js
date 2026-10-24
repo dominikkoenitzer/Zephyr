@@ -29,6 +29,17 @@ describe('localStorageService: tasks', () => {
     localStorageService.deleteTask(t.id);
     expect(localStorageService.getTasks()).toHaveLength(0);
   });
+
+  it('reads a due date that is not text as no due date', () => {
+    const tasks = [
+      { id: 'a', title: 'A', dueDate: 20261024 },
+      { id: 'b', title: 'B', dueDate: { day: 24 } },
+      { id: 'c', title: 'C', dueDate: '2026-10-24' },
+      { id: 'd', title: 'D' },
+    ];
+    localStorage.setItem('zephyr_tasks', JSON.stringify({ tasks }));
+    expect(localStorageService.getTasks().map((t) => t.dueDate)).toEqual([null, null, '2026-10-24', undefined]);
+  });
 });
 
 describe('localStorageService: ids', () => {
@@ -69,6 +80,13 @@ describe('localStorageService: settings', () => {
     a.workDuration = a.workDuration + 99;
     const b = localStorageService.getSettings();
     expect(b.workDuration).toBe(DEFAULT_SETTINGS.workDuration);
+  });
+
+  it('reads stored settings that are not an object as none', () => {
+    ['null', '[]', '5'].forEach((value) => {
+      localStorage.setItem('zephyr_settings', value);
+      expect(localStorageService.getSettings()).toEqual(DEFAULT_SETTINGS);
+    });
   });
 });
 

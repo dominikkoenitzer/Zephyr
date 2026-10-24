@@ -262,6 +262,13 @@ describe('readBackup', () => {
       { zephyr_focus_sessions: '[1, 2]' },
     ].forEach((data) => expect(readBackup(JSON.stringify(file(data)))).toEqual({ ok: false, reason: 'unreadable' }));
   });
+
+  it('refuses a file whose settings are not an object', () => {
+    ['null', '[]', '5', '{broken', { autoStartBreaks: true }].forEach((settings) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_settings: settings })))).toEqual({ ok: false, reason: 'unreadable' })
+    );
+    expect(readBackup(JSON.stringify(file({ zephyr_settings: JSON.stringify({ autoStartBreaks: true }) }))).ok).toBe(true);
+  });
 });
 
 describe('splitFileName', () => {
