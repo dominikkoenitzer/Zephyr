@@ -19,6 +19,13 @@ export { formatTime };
 const readAutoStartBreaks = () => Boolean(localStorageService.getSettings()?.autoStartBreaks);
 const readAutoStartFocus = () => Boolean(localStorageService.getSettings()?.autoStartFocus);
 
+/** Asks once for system notifications, called only when a session is started, as browsers want a click or key press first. */
+function askToNotify() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
 /** How long a phase of `preset` runs: focus, the short break or the long one. */
 const lengthOf = (preset, isBreak, long) =>
   isBreak ? (long ? preset.longBreak : preset.shortBreak) : preset.workTime;
@@ -247,7 +254,9 @@ export function usePomodoro() {
 
   // The onboarding flag is a write to storage, so it waits for the commit.
   useEffect(() => {
-    if (hasAutoStarted) localStorageService.saveOnboarding({ focusStarted: true });
+    if (!hasAutoStarted) return;
+    localStorageService.saveOnboarding({ focusStarted: true });
+    askToNotify();
   }, [hasAutoStarted]);
 
   // Keep a ref of the latest timeLeft so the ticking effect can anchor to
@@ -256,6 +265,12 @@ export function usePomodoro() {
   useEffect(() => {
     timeLeftRef.current = timeLeft;
   }, [timeLeft]);
+
+  // Read by the tick, so a task or setting change mid-session never moves the end time.
+  const handleCompleteRef = useRef(handleComplete);
+  useEffect(() => {
+    handleCompleteRef.current = handleComplete;
+  }, [handleComplete]);
 
   useEffect(() => {
     if (!isRunning) return undefined;
@@ -271,7 +286,7 @@ export function usePomodoro() {
       setTimeLeft(remaining);
       if (remaining === 0) {
         completed = true;
-        handleComplete(endAt);
+        handleCompleteRef.current(endAt);
       }
     };
 
@@ -285,13 +300,7 @@ export function usePomodoro() {
       document.removeEventListener('visibilitychange', tick);
       window.removeEventListener('zephyr:tick', tick);
     };
-  }, [isRunning, handleComplete, phaseCount]);
-
-  useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-  }, []);
+  }, [isRunning, phaseCount]);
 
   // Show the countdown in the browser tab while a session is running, so
   // the timer stays visible when you switch tabs to do the actual work.
@@ -342,6 +351,7 @@ export function usePomodoro() {
   const toggleTimer = () => {
     if (!isRunning) {
       localStorageService.saveOnboarding({ focusStarted: true });
+      askToNotify();
     }
     setIsRunning(!isRunning);
   };
