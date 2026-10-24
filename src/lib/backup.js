@@ -274,8 +274,15 @@ export function mergeBackup(backup) {
     if (!merged.has(key) && localStorage.getItem(key) === null) writes[key] = value;
   });
 
-  // All or nothing: if the browser refuses a write (storage full), the keys
-  // already written go back to what they were.
+  writeAll(writes);
+  return { added, updated, sessions };
+}
+
+/**
+ * All or nothing: if the browser refuses a write (storage full), the keys
+ * already written go back to what they were and the error is thrown on.
+ */
+function writeAll(writes) {
   const before = Object.keys(writes).map((key) => [key, localStorage.getItem(key)]);
   try {
     Object.entries(writes).forEach(([key, value]) => localStorage.setItem(key, value));
@@ -290,22 +297,18 @@ export function mergeBackup(backup) {
     });
     throw error;
   }
-  return { added, updated, sessions };
 }
 
 /**
- * Write a validated backup back into localStorage.
+ * Write a validated backup back into localStorage, all of it or none.
  * @returns {number} how many keys were restored.
  */
 export function applyBackup(backup) {
-  let restored = 0;
-  Object.entries(backup.data).forEach(([key, value]) => {
-    if (isBackupKey(key) && typeof value === 'string') {
-      localStorage.setItem(key, value);
-      restored += 1;
-    }
-  });
-  return restored;
+  const writes = Object.fromEntries(
+    Object.entries(backup.data).filter(([key, value]) => isBackupKey(key) && typeof value === 'string')
+  );
+  writeAll(writes);
+  return Object.keys(writes).length;
 }
 
 /** Keys from long-dead versions that no longer appear in STORAGE_KEYS. */

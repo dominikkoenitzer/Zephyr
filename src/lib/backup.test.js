@@ -477,6 +477,31 @@ describe('Replace and Merge', () => {
     expect(snapshot()).toEqual(before);
   });
 
+  it('Replace writes nothing when the browser refuses one of its writes', () => {
+    mine();
+    const before = snapshot();
+    // A key this device does not have goes first, so it has to be taken out again.
+    const replacing = file({
+      focusTimerPresets: '[{"id":"custom-1"}]',
+      zephyr_tasks: record([T('c')]),
+      theme: 'light',
+      zephyr_settings: '{"workDuration":25}',
+    });
+    const setItem = Storage.prototype.setItem;
+    let calls = 0;
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function failing(key, value) {
+      calls += 1;
+      if (calls === 4) throw new Error('QuotaExceededError');
+      return setItem.call(this, key, value);
+    });
+    try {
+      expect(() => applyBackup(replacing)).toThrow('QuotaExceededError');
+    } finally {
+      spy.mockRestore();
+    }
+    expect(snapshot()).toEqual(before);
+  });
+
   it('Merge leaves out the keys that describe a browser, like Replace', () => {
     mergeBackup(file({ zephyr_timer_state: '{"isRunning":true}', zephyr_last_backup: '2026-01-01T00:00:00.000Z' }));
     expect(localStorage.getItem('zephyr_timer_state')).toBeNull();
