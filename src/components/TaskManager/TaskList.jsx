@@ -137,13 +137,14 @@ const TaskList = () => {
     e.preventDefault();
     if (!newTask.trim()) return;
 
-    localStorageService.addTask({
+    const added = localStorageService.addTask({
       title: parsed.title,
       description: '',
       priority: parsed.priority || 'medium',
       dueDate: parsed.dueDate || null,
       tags: parsed.tags,
     });
+    if (!added) return;
     localStorageService.saveOnboarding({ taskAdded: true });
 
     // Keep the input focused so you can add several tasks in a row.
