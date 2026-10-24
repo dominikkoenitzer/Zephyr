@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Pause, Play } from 'lucide-react';
 import { localStorageService } from '../../services/localStorage';
@@ -41,16 +41,29 @@ export function PipProvider({ children }) {
   const [now, setNow] = useState(() => Date.now());
   const [state] = useStoreValue(readTimer);
 
+  // Held from the click until the window closes, so a second click cannot ask for a second window.
+  const claimed = useRef(false);
+
   const close = useCallback(() => pipWindow?.close(), [pipWindow]);
 
   const open = useCallback(async () => {
-    if (!pipSupported() || pipWindow) return;
-    const pip = await window.documentPictureInPicture.requestWindow({ width: 300, height: 180 });
+    if (!pipSupported() || claimed.current) return;
+    claimed.current = true;
+    let pip;
+    try {
+      pip = await window.documentPictureInPicture.requestWindow({ width: 300, height: 180 });
+    } catch (error) {
+      claimed.current = false;
+      throw error;
+    }
     mirrorDocument(pip);
     pip.document.title = 'Zephyr';
-    pip.addEventListener('pagehide', () => setPipWindow(null));
+    pip.addEventListener('pagehide', () => {
+      claimed.current = false;
+      setPipWindow(null);
+    });
     setPipWindow(pip);
-  }, [pipWindow]);
+  }, []);
 
   useEffect(() => {
     if (!pipWindow) return undefined;
