@@ -484,6 +484,55 @@ describe('Replace and Merge', () => {
     expect(snapshot()).toEqual(before);
   });
 
+  it('Replace writes nothing when the browser refuses one of its writes', () => {
+    mine();
+    const before = snapshot();
+    // A key this device does not have goes first, so it has to be taken out again.
+    const replacing = file({
+      focusTimerPresets: '[{"id":"custom-1"}]',
+      zephyr_tasks: record([T('c')]),
+      theme: 'light',
+      zephyr_settings: '{"workDuration":25}',
+    });
+    const setItem = Storage.prototype.setItem;
+    let calls = 0;
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function failing(key, value) {
+      calls += 1;
+      if (calls === 4) throw new Error('QuotaExceededError');
+      return setItem.call(this, key, value);
+    });
+    try {
+      expect(() => applyBackup(replacing)).toThrow('QuotaExceededError');
+    } finally {
+      spy.mockRestore();
+    }
+    expect(snapshot()).toEqual(before);
+  });
+
+  it('Replace puts back a value it shrank when a later write takes the room it freed', () => {
+    localStorage.setItem('zephyr_settings', JSON.stringify({ workDuration: 50, note: 'x'.repeat(400) }));
+    const before = snapshot();
+    const size = (all) => Object.entries(all).reduce((n, [key, value]) => n + key.length + value.length, 0);
+    const quota = size(before) + 100;
+    const setItem = Storage.prototype.setItem;
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function full(key, value) {
+      if (size({ ...snapshot(), [key]: String(value) }) > quota) throw new Error('QuotaExceededError');
+      return setItem.call(this, key, value);
+    });
+    // The settings shrink, the theme fills the room they freed, and the presets do not fit.
+    const replacing = file({
+      zephyr_settings: '{"workDuration":25}',
+      theme: 'y'.repeat(380),
+      focusTimerPresets: 'z'.repeat(500),
+    });
+    try {
+      expect(() => applyBackup(replacing)).toThrow('QuotaExceededError');
+    } finally {
+      spy.mockRestore();
+    }
+    expect(snapshot()).toEqual(before);
+  });
+
   it('Merge leaves out the keys that describe a browser, like Replace', () => {
     mergeBackup(file({ zephyr_timer_state: '{"isRunning":true}', zephyr_last_backup: '2026-01-01T00:00:00.000Z' }));
     expect(localStorage.getItem('zephyr_timer_state')).toBeNull();
