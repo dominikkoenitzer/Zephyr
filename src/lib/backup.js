@@ -287,12 +287,13 @@ function writeAll(writes) {
   try {
     Object.entries(writes).forEach(([key, value]) => localStorage.setItem(key, value));
   } catch (error) {
+    // Every new value goes before any old one comes back, so the old ones fit as they did before.
+    before.forEach(([key]) => localStorage.removeItem(key));
     before.forEach(([key, value]) => {
       try {
-        if (value === null) localStorage.removeItem(key);
-        else localStorage.setItem(key, value);
+        if (value !== null) localStorage.setItem(key, value);
       } catch {
-        // Putting back a value that was there before frees space, so this should not fail.
+        // The old values all fit before the writes, so this should not fail.
       }
     });
     throw error;
