@@ -269,6 +269,13 @@ describe('readBackup', () => {
     );
     expect(readBackup(JSON.stringify(file({ zephyr_settings: JSON.stringify({ autoStartBreaks: true }) }))).ok).toBe(true);
   });
+
+  it('refuses a file whose view preferences are not an object', () => {
+    ['null', '[]', '5', '{broken', { taskView: 'today' }].forEach((prefs) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_view_prefs: prefs })))).toEqual({ ok: false, reason: 'unreadable' })
+    );
+    expect(readBackup(JSON.stringify(file({ zephyr_view_prefs: JSON.stringify({ taskView: 'today' }) }))).ok).toBe(true);
+  });
 });
 
 describe('splitFileName', () => {
