@@ -65,6 +65,14 @@ const parseJson = (value) => {
 };
 
 const isObject = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
+const isText = (value) => typeof value === 'string';
+
+// The task readers call list and text methods on the tags and the title.
+const isReadableTask = (task) =>
+  isObject(task) &&
+  isText(task.id) &&
+  (task.tags == null || (Array.isArray(task.tags) && task.tags.every(isText))) &&
+  (task.title == null || isText(task.title));
 
 /**
  * The tasks, sessions and settings inside a backup are checked before
@@ -76,7 +84,7 @@ function hasReadableData(data) {
   if (tasks !== undefined) {
     const parsed = typeof tasks === 'string' ? parseJson(tasks) : { ok: false };
     if (!parsed.ok || !isObject(parsed.value) || !Array.isArray(parsed.value.tasks)) return false;
-    if (!parsed.value.tasks.every((t) => isObject(t) && typeof t.id === 'string')) return false;
+    if (!parsed.value.tasks.every(isReadableTask)) return false;
   }
   const sessions = data[STORAGE_KEYS.FOCUS_SESSIONS];
   if (sessions !== undefined) {

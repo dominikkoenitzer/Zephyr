@@ -269,6 +269,21 @@ describe('readBackup', () => {
     );
     expect(readBackup(JSON.stringify(file({ zephyr_settings: JSON.stringify({ autoStartBreaks: true }) }))).ok).toBe(true);
   });
+
+  it('refuses a task whose tags are not a list of text or whose title is not text', () => {
+    [
+      T('a', { tags: 'work' }),
+      T('a', { tags: { work: true } }),
+      T('a', { tags: [5] }),
+      T('a', { title: { text: 'A' } }),
+      T('a', { title: 5 }),
+    ].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_tasks: record([task]) })))).toEqual({ ok: false, reason: 'unreadable' })
+    );
+    [T('a'), T('a', { tags: [] }), T('a', { tags: ['work'] }), T('a', { tags: null })].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_tasks: record([task]) }))).ok).toBe(true)
+    );
+  });
 });
 
 describe('splitFileName', () => {

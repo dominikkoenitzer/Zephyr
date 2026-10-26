@@ -40,6 +40,18 @@ describe('localStorageService: tasks', () => {
     localStorage.setItem('zephyr_tasks', JSON.stringify({ tasks }));
     expect(localStorageService.getTasks().map((t) => t.dueDate)).toEqual([null, null, '2026-10-24', undefined]);
   });
+
+  it('reads tags that are not a list as none and keeps only the text in a list', () => {
+    const tasks = [
+      { id: 'a', title: 'A', tags: 'work' },
+      { id: 'b', title: 'B', tags: { work: true } },
+      { id: 'c', title: 'C', tags: ['work', 5, null] },
+      { id: 'd', title: 'D', tags: [] },
+      { id: 'e', title: 'E' },
+    ];
+    localStorage.setItem('zephyr_tasks', JSON.stringify({ tasks }));
+    expect(localStorageService.getTasks().map((t) => t.tags)).toEqual([[], [], ['work'], [], undefined]);
+  });
 });
 
 describe('localStorageService: failed saves', () => {
