@@ -414,7 +414,9 @@ class LocalStorageService {
   getViewPrefs() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.VIEW_PREFS);
-      return data ? JSON.parse(data) : {};
+      const parsed = data ? JSON.parse(data) : {};
+      // Anything but an object, such as a "null" a backup brought in, reads as none.
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
     } catch (error) {
       console.error('Failed to get view preferences:', error);
       return {};

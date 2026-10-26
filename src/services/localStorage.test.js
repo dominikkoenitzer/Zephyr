@@ -118,6 +118,13 @@ describe('localStorageService: view preferences', () => {
   it('returns an empty object when nothing is stored', () => {
     expect(localStorageService.getViewPrefs()).toEqual({});
   });
+
+  it('reads stored preferences that are not an object as none', () => {
+    ['null', '[]', '5'].forEach((value) => {
+      localStorage.setItem('zephyr_view_prefs', value);
+      expect(localStorageService.getViewPrefs()).toEqual({});
+    });
+  });
 });
 
 describe('localStorageService: backup and storage dates', () => {
