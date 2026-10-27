@@ -293,6 +293,16 @@ describe('readBackup', () => {
       expect(readBackup(JSON.stringify(file({ zephyr_tasks: record([task]) }))).ok).toBe(true)
     );
   });
+
+  it('refuses a session whose task title is not text', () => {
+    const session = (task) => JSON.stringify([{ date: '2026-10-01T08:00:00.000Z', duration: 1500, type: 'work', task }]);
+    [{ id: 'a', title: { text: 'A' } }, { title: ['A', {}] }].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_focus_sessions: session(task) })))).toEqual({ ok: false, reason: 'unreadable' })
+    );
+    [null, undefined, 'A', { id: 'a', title: 'A' }, { id: null, title: null }].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_focus_sessions: session(task) }))).ok).toBe(true)
+    );
+  });
 });
 
 describe('splitFileName', () => {

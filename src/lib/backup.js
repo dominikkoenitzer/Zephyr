@@ -75,6 +75,9 @@ const isReadableTask = (task) =>
   (task.title == null || isText(task.title)) &&
   (task.description == null || isText(task.description));
 
+// The task a session was for is shown by its title; older sessions may hold none, or plain text.
+const hasTextTitle = (task) => !isObject(task) || task.title == null || isText(task.title);
+
 /**
  * The tasks, sessions and settings inside a backup are checked before
  * anything is written, so a damaged file is refused whole instead of
@@ -90,7 +93,8 @@ function hasReadableData(data) {
   const sessions = data[STORAGE_KEYS.FOCUS_SESSIONS];
   if (sessions !== undefined) {
     const parsed = typeof sessions === 'string' ? parseJson(sessions) : { ok: false };
-    if (!parsed.ok || !Array.isArray(parsed.value) || !parsed.value.every(isObject)) return false;
+    if (!parsed.ok || !Array.isArray(parsed.value)) return false;
+    if (!parsed.value.every((session) => isObject(session) && hasTextTitle(session.task))) return false;
   }
   const settings = data[STORAGE_KEYS.SETTINGS];
   if (settings !== undefined) {
