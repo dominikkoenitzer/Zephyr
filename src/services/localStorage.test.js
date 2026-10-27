@@ -118,6 +118,22 @@ describe('localStorageService: view preferences', () => {
   it('returns an empty object when nothing is stored', () => {
     expect(localStorageService.getViewPrefs()).toEqual({});
   });
+
+  it('reads stored preferences that are not an object as none', () => {
+    ['null', '[]', '5'].forEach((value) => {
+      localStorage.setItem('zephyr_view_prefs', value);
+      expect(localStorageService.getViewPrefs()).toEqual({});
+    });
+  });
+});
+
+describe('localStorageService: focus sessions', () => {
+  it('reads stored sessions that are not a list as none', () => {
+    ['null', '{}', '5'].forEach((value) => {
+      localStorage.setItem('zephyr_focus_sessions', value);
+      expect(localStorageService.getFocusSessions()).toEqual([]);
+    });
+  });
 });
 
 describe('localStorageService: backup and storage dates', () => {

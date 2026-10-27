@@ -3,6 +3,7 @@
 // small envelope so a foreign JSON file can be rejected before it overwrites
 // anything.
 
+import { PRESETS_KEY } from '../services/focusTimer';
 import {
   DEVICE_KEYS, EXTRA_BACKUP_KEYS, STORAGE_KEYS, isBackupKey, localStorageService, readTaskRecord,
 } from '../services/localStorage';
@@ -67,9 +68,9 @@ const parseJson = (value) => {
 const isObject = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
 
 /**
- * The tasks, sessions and settings inside a backup are checked before
- * anything is written, so a damaged file is refused whole instead of
- * replacing a working list with one the app cannot read.
+ * The tasks, sessions, settings and view preferences inside a backup are
+ * checked before anything is written, so a damaged file is refused whole
+ * instead of replacing a working list with one the app cannot read.
  */
 function hasReadableData(data) {
   const tasks = data[STORAGE_KEYS.TASKS];
@@ -87,6 +88,16 @@ function hasReadableData(data) {
   if (settings !== undefined) {
     const parsed = typeof settings === 'string' ? parseJson(settings) : { ok: false };
     if (!parsed.ok || !isObject(parsed.value)) return false;
+  }
+  const prefs = data[STORAGE_KEYS.VIEW_PREFS];
+  if (prefs !== undefined) {
+    const parsed = typeof prefs === 'string' ? parseJson(prefs) : { ok: false };
+    if (!parsed.ok || !isObject(parsed.value)) return false;
+  }
+  // The Focus page shows each preset's name.
+  const presets = parseJson(data[PRESETS_KEY]);
+  if (presets.ok && Array.isArray(presets.value)) {
+    if (presets.value.some((p) => isObject(p) && p.name != null && typeof p.name !== 'string')) return false;
   }
   return true;
 }

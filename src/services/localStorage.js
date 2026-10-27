@@ -267,7 +267,9 @@ class LocalStorageService {
       const data = localStorage.getItem(STORAGE_KEYS.FOCUS_SESSIONS);
       if (!data) return [];
 
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      // Anything but a list, such as a "null" an import brought in before backups were checked, reads as none.
+      return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
       console.error('Failed to get focus sessions:', error);
       return [];
@@ -414,7 +416,9 @@ class LocalStorageService {
   getViewPrefs() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.VIEW_PREFS);
-      return data ? JSON.parse(data) : {};
+      const parsed = data ? JSON.parse(data) : {};
+      // Anything but an object, such as a "null" a backup brought in, reads as none.
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
     } catch (error) {
       console.error('Failed to get view preferences:', error);
       return {};

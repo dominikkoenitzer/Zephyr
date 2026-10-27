@@ -269,6 +269,23 @@ describe('readBackup', () => {
     );
     expect(readBackup(JSON.stringify(file({ zephyr_settings: JSON.stringify({ autoStartBreaks: true }) }))).ok).toBe(true);
   });
+
+  it('refuses a file whose view preferences are not an object', () => {
+    ['null', '[]', '5', '{broken', { taskView: 'today' }].forEach((prefs) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_view_prefs: prefs })))).toEqual({ ok: false, reason: 'unreadable' })
+    );
+    expect(readBackup(JSON.stringify(file({ zephyr_view_prefs: JSON.stringify({ taskView: 'today' }) }))).ok).toBe(true);
+  });
+
+  it('refuses a file with a focus preset whose name is not text', () => {
+    const presets = (name) => JSON.stringify([{ id: 'custom-1', name, workTime: 30, shortBreak: 5, longBreak: 15 }]);
+    [{ text: 'Deep' }, ['Deep', {}]].forEach((name) =>
+      expect(readBackup(JSON.stringify(file({ focusTimerPresets: presets(name) })))).toEqual({ ok: false, reason: 'unreadable' })
+    );
+    [presets('Deep'), JSON.stringify([{ id: 'pomodoro', workTime: 30 }])].forEach((value) =>
+      expect(readBackup(JSON.stringify(file({ focusTimerPresets: value }))).ok).toBe(true)
+    );
+  });
 });
 
 describe('splitFileName', () => {
