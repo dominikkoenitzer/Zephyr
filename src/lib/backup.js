@@ -66,6 +66,18 @@ const parseJson = (value) => {
 };
 
 const isObject = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
+const isText = (value) => typeof value === 'string';
+
+// The task readers call list and text methods on the tags, the title and the description.
+const isReadableTask = (task) =>
+  isObject(task) &&
+  isText(task.id) &&
+  (task.tags == null || (Array.isArray(task.tags) && task.tags.every(isText))) &&
+  (task.title == null || isText(task.title)) &&
+  (task.description == null || isText(task.description));
+
+// The task a session was for is shown by its title; older sessions may hold none, or plain text.
+const hasTextTitle = (task) => !isObject(task) || task.title == null || isText(task.title);
 
 /**
  * The tasks, sessions, settings and view preferences inside a backup are
@@ -77,13 +89,17 @@ function hasReadableData(data) {
   if (tasks !== undefined) {
     const parsed = typeof tasks === 'string' ? parseJson(tasks) : { ok: false };
     if (!parsed.ok || !isObject(parsed.value) || !Array.isArray(parsed.value.tasks)) return false;
-    if (!parsed.value.tasks.every((t) => isObject(t) && typeof t.id === 'string')) return false;
+    if (!parsed.value.tasks.every(isReadableTask)) return false;
   }
   const sessions = data[STORAGE_KEYS.FOCUS_SESSIONS];
   if (sessions !== undefined) {
     const parsed = typeof sessions === 'string' ? parseJson(sessions) : { ok: false };
-    if (!parsed.ok || !Array.isArray(parsed.value) || !parsed.value.every(isObject)) return false;
+    if (!parsed.ok || !Array.isArray(parsed.value)) return false;
+    if (!parsed.value.every((session) => isObject(session) && hasTextTitle(session.task))) return false;
   }
+  // Resume hands the last session's task to the timer, whose title the sidebar and Home show.
+  const last = parseJson(data[STORAGE_KEYS.LAST_SESSION]);
+  if (last.ok && isObject(last.value) && !hasTextTitle(last.value.task)) return false;
   const settings = data[STORAGE_KEYS.SETTINGS];
   if (settings !== undefined) {
     const parsed = typeof settings === 'string' ? parseJson(settings) : { ok: false };

@@ -82,6 +82,8 @@ const makeId = (prefix) =>
 // Always hand callers a fresh copy so they can't mutate the shared defaults.
 const clone = (value) => JSON.parse(JSON.stringify(value));
 
+const isText = (value) => typeof value === 'string';
+
 /**
  * The stored task record, read leniently. `cleared` holds the finished tasks
  * that have left the list (Clear completed, or a delete), as
@@ -185,10 +187,16 @@ class LocalStorageService {
       if (!data) return [];
 
       const parsed = JSON.parse(data);
-      // A due date that is not text reads as none, so no reader trips over it.
-      return (parsed.tasks || []).map((task) =>
-        task?.dueDate != null && typeof task.dueDate !== 'string' ? { ...task, dueDate: null } : task
-      );
+      // A due date that is not text reads as none, and tags keep only the
+      // text in a list, so no reader trips over them.
+      return (parsed.tasks || []).map((task) => {
+        let read = task;
+        if (task?.dueDate != null && typeof task.dueDate !== 'string') read = { ...read, dueDate: null };
+        if (task?.tags != null && !(Array.isArray(task.tags) && task.tags.every(isText))) {
+          read = { ...read, tags: Array.isArray(task.tags) ? task.tags.filter(isText) : [] };
+        }
+        return read;
+      });
     } catch (error) {
       console.error('Failed to get tasks:', error);
       return [];

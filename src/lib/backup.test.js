@@ -286,6 +286,50 @@ describe('readBackup', () => {
       expect(readBackup(JSON.stringify(file({ focusTimerPresets: value }))).ok).toBe(true)
     );
   });
+
+  it('refuses a task whose tags are not a list of text or whose title is not text', () => {
+    [
+      T('a', { tags: 'work' }),
+      T('a', { tags: { work: true } }),
+      T('a', { tags: [5] }),
+      T('a', { title: { text: 'A' } }),
+      T('a', { title: 5 }),
+    ].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_tasks: record([task]) })))).toEqual({ ok: false, reason: 'unreadable' })
+    );
+    [T('a'), T('a', { tags: [] }), T('a', { tags: ['work'] }), T('a', { tags: null })].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_tasks: record([task]) }))).ok).toBe(true)
+    );
+  });
+
+  it('refuses a task whose description is not text', () => {
+    [T('a', { description: 5 }), T('a', { description: { text: 'B' } })].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_tasks: record([task]) })))).toEqual({ ok: false, reason: 'unreadable' })
+    );
+    [T('a', { description: '' }), T('a', { description: 'B' }), T('a', { description: null })].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_tasks: record([task]) }))).ok).toBe(true)
+    );
+  });
+
+  it('refuses a session whose task title is not text', () => {
+    const session = (task) => JSON.stringify([{ date: '2026-10-01T08:00:00.000Z', duration: 1500, type: 'work', task }]);
+    [{ id: 'a', title: { text: 'A' } }, { title: ['A', {}] }].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_focus_sessions: session(task) })))).toEqual({ ok: false, reason: 'unreadable' })
+    );
+    [null, undefined, 'A', { id: 'a', title: 'A' }, { id: null, title: null }].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_focus_sessions: session(task) }))).ok).toBe(true)
+    );
+  });
+
+  it('refuses a last session whose task title is not text', () => {
+    const last = (task) => JSON.stringify({ presetId: 'pomodoro', duration: 1500, task, completedAt: '2026-10-01T08:00:00.000Z' });
+    [{ id: 'a', title: { text: 'A' } }, { id: null, title: 5 }].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_last_focus_session: last(task) })))).toEqual({ ok: false, reason: 'unreadable' })
+    );
+    [last(null), last({ id: 'a', title: 'A' }), 'null'].forEach((value) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_last_focus_session: value }))).ok).toBe(true)
+    );
+  });
 });
 
 describe('splitFileName', () => {
