@@ -284,6 +284,15 @@ describe('readBackup', () => {
       expect(readBackup(JSON.stringify(file({ zephyr_tasks: record([task]) }))).ok).toBe(true)
     );
   });
+
+  it('refuses a task whose description is not text', () => {
+    [T('a', { description: 5 }), T('a', { description: { text: 'B' } })].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_tasks: record([task]) })))).toEqual({ ok: false, reason: 'unreadable' })
+    );
+    [T('a', { description: '' }), T('a', { description: 'B' }), T('a', { description: null })].forEach((task) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_tasks: record([task]) }))).ok).toBe(true)
+    );
+  });
 });
 
 describe('splitFileName', () => {
