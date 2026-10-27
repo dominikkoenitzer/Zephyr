@@ -96,6 +96,9 @@ function hasReadableData(data) {
     if (!parsed.ok || !Array.isArray(parsed.value)) return false;
     if (!parsed.value.every((session) => isObject(session) && hasTextTitle(session.task))) return false;
   }
+  // Resume hands the last session's task to the timer, whose title the sidebar and Home show.
+  const last = parseJson(data[STORAGE_KEYS.LAST_SESSION]);
+  if (last.ok && isObject(last.value) && !hasTextTitle(last.value.task)) return false;
   const settings = data[STORAGE_KEYS.SETTINGS];
   if (settings !== undefined) {
     const parsed = typeof settings === 'string' ? parseJson(settings) : { ok: false };
