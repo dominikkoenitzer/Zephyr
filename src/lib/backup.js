@@ -3,6 +3,7 @@
 // small envelope so a foreign JSON file can be rejected before it overwrites
 // anything.
 
+import { PRESETS_KEY } from '../services/focusTimer';
 import {
   DEVICE_KEYS, EXTRA_BACKUP_KEYS, STORAGE_KEYS, isBackupKey, localStorageService, readTaskRecord,
 } from '../services/localStorage';
@@ -92,6 +93,11 @@ function hasReadableData(data) {
   if (prefs !== undefined) {
     const parsed = typeof prefs === 'string' ? parseJson(prefs) : { ok: false };
     if (!parsed.ok || !isObject(parsed.value)) return false;
+  }
+  // The Focus page shows each preset's name.
+  const presets = parseJson(data[PRESETS_KEY]);
+  if (presets.ok && Array.isArray(presets.value)) {
+    if (presets.value.some((p) => isObject(p) && p.name != null && typeof p.name !== 'string')) return false;
   }
   return true;
 }
