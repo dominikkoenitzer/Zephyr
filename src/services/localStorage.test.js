@@ -127,6 +127,15 @@ describe('localStorageService: view preferences', () => {
   });
 });
 
+describe('localStorageService: focus sessions', () => {
+  it('reads stored sessions that are not a list as none', () => {
+    ['null', '{}', '5'].forEach((value) => {
+      localStorage.setItem('zephyr_focus_sessions', value);
+      expect(localStorageService.getFocusSessions()).toEqual([]);
+    });
+  });
+});
+
 describe('localStorageService: backup and storage dates', () => {
   it('stores the last export as an ISO date and tells the open views', () => {
     const seen = [];
