@@ -426,6 +426,19 @@ describe('Replace and Merge', () => {
     expect(localStorage.getItem('zephyr_settings')).toBe('{"workDuration":25}');
   });
 
+  it('Replace takes out what the file does not have, and keeps what describes this browser', () => {
+    mine();
+    localStorage.setItem('zephyr_timer_state', '{"isRunning":true}');
+    localStorage.setItem('zephyr_last_backup', '2026-10-01T08:00:00.000Z');
+    applyBackup(file({ zephyr_tasks: record([T('c')]) }));
+    expect(stored().tasks.map((t) => t.id)).toEqual(['c']);
+    expect(localStorage.getItem('zephyr_focus_sessions')).toBeNull();
+    expect(localStorage.getItem('zephyr_settings')).toBeNull();
+    expect(localStorage.getItem('theme')).toBeNull();
+    expect(localStorage.getItem('zephyr_timer_state')).toBe('{"isRunning":true}');
+    expect(localStorage.getItem('zephyr_last_backup')).toBe('2026-10-01T08:00:00.000Z');
+  });
+
   it("Merge adds and updates tasks and sessions but keeps this device's settings", () => {
     mine();
     expect(mergeBackup(theirs)).toEqual({ added: 1, updated: 1, sessions: 1 });

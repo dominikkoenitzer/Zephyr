@@ -286,10 +286,12 @@ export function mergeBackup(backup) {
 /**
  * All or nothing: if the browser refuses a write (storage full), the keys
  * already written go back to what they were and the error is thrown on.
+ * The keys in `removals` go first, so their room is free for the writes.
  */
-function writeAll(writes) {
-  const before = Object.keys(writes).map((key) => [key, localStorage.getItem(key)]);
+function writeAll(writes, removals = []) {
+  const before = [...removals, ...Object.keys(writes)].map((key) => [key, localStorage.getItem(key)]);
   try {
+    removals.forEach((key) => localStorage.removeItem(key));
     Object.entries(writes).forEach(([key, value]) => localStorage.setItem(key, value));
   } catch (error) {
     // Every new value goes before any old one comes back, so the old ones fit as they did before.
@@ -313,7 +315,9 @@ export function applyBackup(backup) {
   const writes = Object.fromEntries(
     Object.entries(backup.data).filter(([key, value]) => isBackupKey(key) && typeof value === 'string')
   );
-  writeAll(writes);
+  // What the file lacks goes too, or Replace would keep this device's sessions, settings and presets.
+  const removals = Object.keys(collectBackupData()).filter((key) => !(key in writes));
+  writeAll(writes, removals);
   return Object.keys(writes).length;
 }
 
