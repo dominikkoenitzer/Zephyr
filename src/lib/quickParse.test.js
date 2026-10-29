@@ -192,6 +192,15 @@ describe('parseQuickTask: a typed year', () => {
     expect(parseQuickTask('Party feb 29 2027').dueDate).toBeNull();
     expect(parseQuickTask('Party feb 29 2028').dueDate).toBe('2028-02-29');
   });
+
+  it('reads a slash date with a two- or four-digit year', () => {
+    expect(parseQuickTask('Trip 1/2/27')).toMatchObject({ title: 'Trip', dueDate: '2027-01-02' });
+    expect(parseQuickTask('Trip 1/2/2027')).toMatchObject({ title: 'Trip', dueDate: '2027-01-02' });
+  });
+
+  it('keeps a slash date with a three-digit year as text', () => {
+    expect(parseQuickTask('Trip 1/2/202')).toMatchObject({ title: 'Trip 1/2/202', dueDate: null });
+  });
 });
 
 describe('parseQuickTask: short words that look like dates', () => {

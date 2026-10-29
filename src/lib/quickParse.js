@@ -124,8 +124,9 @@ export function parseQuickTask(input) {
     { re: /(^|\s)(\d{4})-(\d{2})-(\d{2})(?=\s|$)/, run: (m) => realDate(Number(m[2]), Number(m[3]) - 1, Number(m[4])) },
     // M/D or M/D/YYYY
     {
-      // Without a year, "1/2 kg" is an amount, not the 2nd of January.
-      re: new RegExp(`(^|\\s)(\\d{1,2})\\/(\\d{1,2})(?:\\/(\\d{2,4})|(?!\\s+${UNIT}(?=\\s|$)))(?=\\s|$)`, 'i'),
+      // Without a year, "1/2 kg" is an amount, not the 2nd of January. A year
+      // has two digits or four; "1/2/202" is not a date.
+      re: new RegExp(`(^|\\s)(\\d{1,2})\\/(\\d{1,2})(?:\\/(\\d{4}|\\d{2})|(?!\\s+${UNIT}(?=\\s|$)))(?=\\s|$)`, 'i'),
       run: (m) => {
         const month = Number(m[2]) - 1;
         const day = Number(m[3]);
