@@ -176,7 +176,7 @@ src/
 
 ## Architecture
 
-Zephyr has no Redux, Zustand, or Context store. Application state lives in **singleton service classes** under `src/services/`, each persisting to `localStorage` (all keys prefixed `zephyr_`):
+Zephyr has no Redux, Zustand, or Context store. Application state lives in **singleton service classes** under `src/services/`, each persisting to `localStorage` (keys prefixed `zephyr_`, apart from `theme`, `focusTimerPresets` and `selectedFocusPreset`):
 
 - **`localStorage.js`** is the canonical data store for tasks, focus sessions, the streak and settings. It owns the schema and the add/update/delete helpers.
 - **`searchService.js`** does task search by title, description and `#tag`, wired into the <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> + <kbd>K</kbd> palette.
