@@ -5,7 +5,7 @@ import {
   Check, Plus, Trash2, Edit2, ArrowRight,
   Timer as TimerIcon, Sparkles,
 } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn, isComposing } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { CalendarPicker } from '../ui/calendar-picker';
 import { Input } from '../ui/input';
@@ -444,7 +444,7 @@ const TaskList = () => {
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key !== 'Escape') return;
+              if (e.key !== 'Escape' || isComposing(e)) return;
               // Escape clears the draft; a second Escape steps out of the
               // field, which is what makes the single-key shortcuts reachable
               // on the one page that autofocuses an input.
@@ -705,6 +705,7 @@ const TaskList = () => {
               className="space-y-5 py-2"
               onKeyDown={(e) => {
                 // Enter in a text field (or Ctrl/Cmd+Enter anywhere) saves.
+                if (isComposing(e)) return;
                 if (e.key === 'Enter' && (e.ctrlKey || e.metaKey || e.target.tagName === 'INPUT')) {
                   e.preventDefault();
                   saveEdit();

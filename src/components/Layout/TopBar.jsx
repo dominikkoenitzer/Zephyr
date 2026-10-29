@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Bell, Monitor, Moon, Search, Sun } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn, isComposing } from '../../lib/utils';
 import NotificationCenter from '../Notifications/NotificationCenter';
 import { notificationService } from '../../services/notificationService';
 import { CHANGE_EVENT } from '../../services/localStorage';
@@ -75,7 +75,7 @@ function TopBar({ onSearchClick }) {
     // Escape closes the panel from anywhere and puts focus back on the bell,
     // so a keyboard user lands where they opened it.
     const handleEscape = (event) => {
-      if (event.key !== 'Escape') return;
+      if (event.key !== 'Escape' || isComposing(event)) return;
       setShowNotifications(false);
       bellRef.current?.focus();
     };
