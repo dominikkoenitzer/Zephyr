@@ -232,13 +232,14 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
   const handleTriggerKeyDown = (event) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault()
-      setIsOpen((prev) => !prev)
+      openPicker()
     }
     if (event.key === "Escape") {
       setIsOpen(false)
     }
   }
 
+  // Keyboard and click open alike, on the month whose day takes the focus.
   const openPicker = () => {
     if (!isOpen) {
       const base = selectedDate || new Date()
