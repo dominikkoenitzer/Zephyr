@@ -303,9 +303,9 @@ const TaskList = () => {
             aria-label={`Mark "${task.title}" complete`}
             data-task-check={task.id}
             onClick={(e) => { e.stopPropagation(); moveFocusFrom(task.id, e.currentTarget); toggleTask(task.id); }}
-            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[9px] bg-accent text-transparent shadow-[inset_0_0_0_1.5px_hsl(var(--foreground)/0.12)] transition-[background-color,box-shadow,color,transform] active:scale-90 hover:bg-primary hover:text-primary-foreground hover:shadow-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+            className="group/check flex h-6 w-6 shrink-0 items-center justify-center rounded-[9px] bg-accent text-primary-foreground shadow-[inset_0_0_0_1.5px_hsl(var(--foreground)/0.12)] transition-[background-color,box-shadow,transform] active:scale-90 hover:bg-primary hover:shadow-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
           >
-            <Check className="h-3 w-3" strokeWidth={3.5} />
+            <Check className="h-3 w-3 opacity-0 transition-opacity group-hover/check:opacity-100" strokeWidth={3.5} />
           </button>
 
           <div className="min-w-0 flex-1">

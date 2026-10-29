@@ -37,6 +37,13 @@ describe('focus in forced colours', () => {
     expect(bare).toEqual([]);
   });
 
+  it('keeps the text colour of a control with a focus ring, since Firefox draws the forced outline in it', () => {
+    const clear = classStrings
+      .filter(({ classes }) => /(?:^|\s)focus-visible:ring-\d/.test(classes) && has(classes, 'text-transparent'))
+      .map(({ where }) => where);
+    expect(clear).toEqual([]);
+  });
+
   it('outlines a highlighted select option', () => {
     const item = classStrings.find((s) => s.where.startsWith('components/ui/select.jsx') && has(s.classes, 'focus:bg-accent'));
     expect(item.classes).toMatch(/(?:^|\s)focus:outline-hidden(?:\s|$)/);
