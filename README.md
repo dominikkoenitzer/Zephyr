@@ -183,7 +183,7 @@ Zephyr has no Redux, Zustand, or Context store. Application state lives in **sin
 - **`notificationService.js`** polls for task due dates and plays a Web Audio chime.
 - **`themeService.js`** handles light/dark/system via a class on `<html>`, applied before React renders to avoid a flash, and kept in step with the OS media query while the preference is "system".
 
-Every write broadcasts a `zephyr:change` event. Reactive hooks in **`src/hooks/useStore.js`** (`useTasks`, `useSettings`) subscribe to it, along with the native `storage` event for cross-tab sync, so views update live without a global store. Routes are defined in `src/routes/routes.jsx`, lazy-loaded, and wrapped in a Suspense loader.
+Writes to tasks, sessions and settings broadcast a `zephyr:change` event. Reactive hooks in **`src/hooks/useStore.js`** (`useTasks`, `useSettings`) subscribe to it, along with the native `storage` event for cross-tab sync, so views update live without a global store. Routes are defined in `src/routes/routes.jsx`, lazy-loaded, and wrapped in a Suspense loader.
 
 ## Privacy
 

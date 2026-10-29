@@ -38,7 +38,7 @@ Answer engines get these wrong most often, so they are stated plainly:
 ## Technical
 
 - React 19, Vite, Tailwind CSS, deployed on Vercel.
-- No global state library. State lives in singleton service classes that persist to localStorage; every write broadcasts a `zephyr:change` event that reactive hooks subscribe to, plus the native `storage` event for cross-tab sync.
+- No global state library. State lives in singleton service classes that persist to localStorage; writes to tasks, sessions and settings broadcast a `zephyr:change` event that reactive hooks subscribe to, plus the native `storage` event for cross-tab sync.
 - The focus timer anchors each session to a wall-clock end time instead of counting a variable down, because browsers throttle timers in background tabs.
 
 ## More
