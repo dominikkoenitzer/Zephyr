@@ -17,6 +17,8 @@ class SearchService {
     }
 
     const searchTerm = query.toLowerCase().trim();
+    // Tags are stored without the # they are shown and typed with.
+    const tagTerm = searchTerm.replace(/^#/, '');
     const results = {
       tasks: []
     };
@@ -26,7 +28,7 @@ class SearchService {
     tasks.forEach(task => {
       const matchesTitle = task.title?.toLowerCase().includes(searchTerm);
       const matchesDescription = task.description?.toLowerCase().includes(searchTerm);
-      const matchesTags = task.tags?.some(tag => tag.toLowerCase().includes(searchTerm));
+      const matchesTags = tagTerm !== '' && task.tags?.some(tag => tag.toLowerCase().includes(tagTerm));
 
       if (matchesTitle || matchesDescription || matchesTags) {
         results.tasks.push({

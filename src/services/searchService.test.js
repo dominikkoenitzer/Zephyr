@@ -52,4 +52,19 @@ describe('searchService', () => {
     expect(searchService.searchAll('(basics').tasks).toHaveLength(1);
     expect(searchService.searchAll('[').tasks).toHaveLength(0);
   });
+
+  it('finds a tag typed with its #, as the app shows it', () => {
+    localStorageService.addTask({ title: 'Weekly review', tags: ['work'] });
+    localStorageService.addTask({ title: 'Issue #12 follow-up' });
+
+    for (const query of ['#work', '#Work', ' #work ', 'work']) {
+      const res = searchService.searchAll(query);
+      expect(res.tasks.map((t) => [t.title, t.matchType])).toEqual([['Weekly review', 'tag']]);
+    }
+
+    // A bare # still matches only text that holds one, and an unknown tag matches nothing.
+    expect(searchService.searchAll('#').tasks.map((t) => t.title)).toEqual(['Issue #12 follow-up']);
+    expect(searchService.searchAll('#nothere').tasks).toHaveLength(0);
+    expect(searchService.searchAll('#12').tasks.map((t) => t.matchType)).toEqual(['title']);
+  });
 });
