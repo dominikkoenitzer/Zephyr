@@ -245,6 +245,21 @@ const snapshot = () => {
 };
 
 describe('readBackup', () => {
+  it('refuses a file whose notifications are not a list of records', () => {
+    ['{broken', '{}', '"text"', '[null]', '[1, 2]', '[{"id":"n1"}, "x"]', ['n1']].forEach((notifications) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_notifications: notifications })))).toEqual({
+        ok: false,
+        reason: 'unreadable',
+      })
+    );
+  });
+
+  it('accepts a file whose notifications are a list of records', () => {
+    ['[]', '[{"id":"n1","title":"Task due today"}]'].forEach((notifications) =>
+      expect(readBackup(JSON.stringify(file({ zephyr_notifications: notifications }))).ok).toBe(true)
+    );
+  });
+
   it('accepts an export of this app', () => {
     const text = JSON.stringify(file({ zephyr_tasks: record([T('a')]), zephyr_focus_sessions: '[]' }));
     expect(readBackup(text)).toEqual({ ok: true, backup: JSON.parse(text) });
