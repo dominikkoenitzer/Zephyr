@@ -139,6 +139,27 @@ describe('a write that fails', () => {
     expect(pressUndo(onUndo)).toBe(false);
     expect(ids()).toEqual(['a', 'b', 'c']);
   });
+
+  it('keeps the clear toast open when Undo put back only some of the tasks', () => {
+    localStorageService.saveTasks([task('a', true), task('b'), task('c', true)]);
+    clearCompletedWithUndo();
+    const onUndo = undo();
+
+    const setItem = Storage.prototype.setItem;
+    let writes = 0;
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (key, value) {
+      writes += 1;
+      if (writes === 2) throw new Error('QuotaExceededError');
+      return setItem.call(this, key, value);
+    });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(pressUndo(onUndo)).toBe(true);
+    vi.restoreAllMocks();
+    expect(ids()).toEqual(['a', 'b']);
+
+    expect(pressUndo(onUndo)).toBe(false);
+    expect(ids()).toEqual(['a', 'b', 'c']);
+  });
 });
 
 describe('the Done count around Clear completed', () => {
