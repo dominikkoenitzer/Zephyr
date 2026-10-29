@@ -142,4 +142,36 @@ describe('usePomodoro', () => {
     expect(timer.isRunning).toBe(true);
     expect(requestPermission).toHaveBeenCalledTimes(1);
   });
+
+  it('finishes a break that ran out while closed before start=1 starts a focus session', () => {
+    localStorageService.saveTimerState({
+      timeLeft: 60, isRunning: true, isBreak: true, longBreak: false, pomodorosCompleted: 1,
+      workTime: 1500, breakTime: 300, longBreakTime: 900, sessionTotal: 300, focusTask: null,
+    });
+    vi.setSystemTime(new Date(2026, 8, 30, 9, 10));
+    mount('/focus?start=1');
+
+    expect(localStorageService.getFocusSessions()).toHaveLength(0);
+    expect(localStorageService.getFocusStreak().count).toBe(0);
+    expect(timer.isBreak).toBe(false);
+    expect(timer.isRunning).toBe(true);
+    expect(timer.timeLeft).toBe(1500);
+    seconds(10);
+    expect(timer.timeLeft).toBe(1490);
+    expect(localStorageService.getFocusSessions()).toHaveLength(0);
+  });
+
+  it('logs a focus session that ran out while closed once when opened with start=1', () => {
+    localStorageService.saveTimerState({
+      timeLeft: 60, isRunning: true, isBreak: false, pomodorosCompleted: 0,
+      workTime: 1500, breakTime: 300, longBreakTime: 900, sessionTotal: 1500, focusTask: null,
+    });
+    vi.setSystemTime(new Date(2026, 8, 30, 9, 10));
+    mount('/focus?start=1');
+
+    expect(localStorageService.getFocusSessions()).toHaveLength(1);
+    expect(timer.sessionsCompleted).toBe(1);
+    seconds(120);
+    expect(localStorageService.getFocusSessions()).toHaveLength(1);
+  });
 });

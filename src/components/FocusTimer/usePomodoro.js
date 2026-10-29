@@ -213,7 +213,9 @@ export function usePomodoro() {
   // this render answered so it runs once per arrival.
   const intent = searchParams.toString();
   const [handledIntent, setHandledIntent] = useState(null);
-  if (intent !== handledIntent) {
+  // A phase that ran out while the tab was closed is finished first, or `start=1` read an expired break as a waiting one.
+  const expiryPending = Boolean(restored.expiredAt) && phaseCount === 0;
+  if (intent !== handledIntent && !expiryPending) {
     setHandledIntent(intent);
 
     const titleParam = searchParams.get('title');
@@ -249,8 +251,8 @@ export function usePomodoro() {
   // Once answered, the intent leaves the address bar. Left there, `?start=1`
   // started the timer again on every reload.
   useEffect(() => {
-    if (intent) setSearchParams({}, { replace: true });
-  }, [intent, setSearchParams]);
+    if (intent && !expiryPending) setSearchParams({}, { replace: true });
+  }, [intent, expiryPending, setSearchParams]);
 
   // The onboarding flag is a write to storage, so it waits for the commit.
   useEffect(() => {
