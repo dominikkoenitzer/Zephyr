@@ -490,6 +490,7 @@ const TaskList = () => {
               className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full"
               role="group"
               aria-label="Filter tasks"
+              tabIndex={-1}
             >
               {TASK_VIEWS.map((v) =>
                 filterButton(v.label, view === v.id, () => chooseView(v.id), counts[v.id], v.id)
@@ -503,6 +504,7 @@ const TaskList = () => {
                 className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full"
                 role="group"
                 aria-label="Filter by tag"
+                tabIndex={-1}
               >
                 {allTags.map((tag) =>
                   filterButton(

@@ -62,6 +62,13 @@ describe('TaskList by keyboard', () => {
     for (const row of rows) expect(row.className).not.toMatch(/(?:^|\s)p[xlr]?-\d/);
   });
 
+  it('keeps the scrolling filter rows out of the Tab order, so Tab goes from pill to pill', () => {
+    const rows = [...new Set(filterButtons().map((button) => button.closest('.overflow-x-auto')))];
+    expect(rows.length).toBe(2);
+    // Firefox stops on a scroller of its own accord, and here its outline is clipped and masked away.
+    for (const row of rows) expect(row.getAttribute('tabindex')).toBe('-1');
+  });
+
   it('keeps the counts on the filters that are not chosen at full strength', () => {
     const counts = filterButtons()
       .filter((button) => button.getAttribute('aria-pressed') === 'false')
