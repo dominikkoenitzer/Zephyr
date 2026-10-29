@@ -163,6 +163,15 @@
     overflow-x: clip;
     scrollbar-gutter: stable;
     font-size: clamp(16px, 0.7vw, 19px);
+    /* A control reached by Tab scrolls into view below the sticky top bar. */
+    scroll-padding-top: calc(var(--header-height) + 0.75rem);
+  }
+
+  /* Below the desktop width it also stops above the floating nav. */
+  @media (width < 1024px) {
+    html {
+      scroll-padding-bottom: calc(5.25rem + env(safe-area-inset-bottom));
+    }
   }
 
   /* A dialog's scroll lock puts overflow: hidden on <body>. With the root
