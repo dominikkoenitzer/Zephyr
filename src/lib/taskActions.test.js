@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { toast } from 'sonner';
 import { clearCompletedWithUndo, deleteTaskWithUndo } from './taskActions';
 import { dashboardStats } from './dashboard';
@@ -75,6 +75,69 @@ describe('clearCompletedWithUndo', () => {
     onUndo();
     onUndo();
     expect(ids()).toEqual(['a', 'b', 'new']);
+  });
+});
+
+describe('a write that fails', () => {
+  const failWrites = () => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+  };
+  /** Press Undo the way the toast does, and report whether the toast stays open. */
+  const pressUndo = (onClick) => {
+    const event = { defaultPrevented: false, preventDefault() { this.defaultPrevented = true; } };
+    onClick(event);
+    return event.defaultPrevented;
+  };
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it('shows no delete toast when the task could not be removed', () => {
+    localStorageService.saveTasks([task('a'), task('b')]);
+    failWrites();
+    expect(deleteTaskWithUndo('a')).toBeNull();
+    expect(toast).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
+    expect(ids()).toEqual(['a', 'b']);
+  });
+
+  it('shows no clear toast when the completed tasks could not be removed', () => {
+    localStorageService.saveTasks([task('a', true), task('b'), task('c', true)]);
+    failWrites();
+    expect(clearCompletedWithUndo()).toBe(0);
+    expect(toast).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
+    expect(ids()).toEqual(['a', 'b', 'c']);
+  });
+
+  it('keeps the delete toast open when Undo could not put the task back', () => {
+    localStorageService.saveTasks([task('a'), task('b')]);
+    deleteTaskWithUndo('a');
+    const onUndo = undo();
+
+    failWrites();
+    expect(pressUndo(onUndo)).toBe(true);
+    vi.restoreAllMocks();
+    expect(ids()).toEqual(['b']);
+
+    expect(pressUndo(onUndo)).toBe(false);
+    expect(ids()).toEqual(['a', 'b']);
+  });
+
+  it('keeps the clear toast open when Undo could not put the tasks back', () => {
+    localStorageService.saveTasks([task('a', true), task('b'), task('c', true)]);
+    clearCompletedWithUndo();
+    const onUndo = undo();
+
+    failWrites();
+    expect(pressUndo(onUndo)).toBe(true);
+    vi.restoreAllMocks();
+    expect(ids()).toEqual(['b']);
+
+    expect(pressUndo(onUndo)).toBe(false);
+    expect(ids()).toEqual(['a', 'b', 'c']);
   });
 });
 

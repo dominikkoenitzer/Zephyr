@@ -6,12 +6,17 @@
 import { toast } from 'sonner';
 import { localStorageService } from '../services/localStorage';
 
-/** Put a task back where it was, not at the end of the list. */
+/** Put a task back where it was, not at the end of the list. False if the write failed. */
 const restoreAt = (task, index) => {
   const tasks = localStorageService.getTasks();
-  if (tasks.some((t) => t.id === task.id)) return;
+  if (tasks.some((t) => t.id === task.id)) return true;
   tasks.splice(Math.min(index, tasks.length), 0, task);
-  localStorageService.saveTasks(tasks);
+  return localStorageService.saveTasks(tasks);
+};
+
+/** An Undo that was not saved keeps its toast open, so it can be pressed again. */
+const keepToastUnless = (saved, event) => {
+  if (!saved) event?.preventDefault();
 };
 
 /** Delete one task, with an Undo that restores its original position. */
@@ -20,11 +25,11 @@ export function deleteTaskWithUndo(taskId) {
   const index = tasks.findIndex((t) => t.id === taskId);
   if (index === -1) return null;
   const [removed] = tasks.splice(index, 1);
-  localStorageService.saveTasks(tasks);
+  if (!localStorageService.saveTasks(tasks)) return null;
 
   toast('Task deleted', {
     description: removed.title,
-    action: { label: 'Undo', onClick: () => restoreAt(removed, index) },
+    action: { label: 'Undo', onClick: (event) => keepToastUnless(restoreAt(removed, index), event) },
   });
   return removed;
 }
@@ -41,13 +46,14 @@ export function clearCompletedWithUndo() {
     return 0;
   }
 
-  localStorageService.saveTasks(tasks.filter((t) => !t.completed));
+  if (!localStorageService.saveTasks(tasks.filter((t) => !t.completed))) return 0;
   toast(`Cleared ${removed.length} completed task${removed.length === 1 ? '' : 's'}`, {
     action: {
       label: 'Undo',
-      onClick: () => {
+      onClick: (event) => {
         // Re-insert in original order so earlier indices are valid again.
-        removed.forEach(({ task, index }) => restoreAt(task, index));
+        const saved = removed.map(({ task, index }) => restoreAt(task, index));
+        keepToastUnless(saved.every(Boolean), event);
       },
     },
   });
