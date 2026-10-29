@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogOverlay, DialogPortal } from '../ui/dialog';
-import { cn } from '../../lib/utils';
+import { cn, isComposing } from '../../lib/utils';
 import { downloadBackup } from '../../lib/backup';
 import { clearCompletedWithUndo } from '../../lib/taskActions';
 import { localStorageService } from '../../services/localStorage';
@@ -238,7 +238,8 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
   }, [selected, items.length]);
 
   const onKeyDown = (event) => {
-    if (items.length === 0) return;
+    // While an input method composes, its keys pick and confirm its own text.
+    if (items.length === 0 || isComposing(event)) return;
     if (event.key === 'ArrowDown') {
       event.preventDefault();
       setActiveIndex((selected + 1) % items.length);
@@ -271,6 +272,10 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
         <DialogOverlay />
         <DialogPrimitive.Content
           aria-describedby={undefined}
+          onEscapeKeyDown={(event) => {
+            // The Escape that drops an input method's composition keeps the palette open.
+            if (isComposing(event)) event.preventDefault();
+          }}
           onOpenAutoFocus={(event) => {
             // Remember what had focus, then focus the field, never the first
             // option.

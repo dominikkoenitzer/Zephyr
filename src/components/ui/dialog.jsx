@@ -1,7 +1,7 @@
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
-import { cn } from "../../lib/utils"
+import { cn, isComposing } from "../../lib/utils"
 
 const Dialog = DialogPrimitive.Root
 
@@ -31,13 +31,18 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 // that element has left the page. The return never scrolls: the page could not
 // move while the dialog was open, and WebKit, which can leave a clicked button
 // unfocused, hands back <main> instead, which it would scroll to.
-const DialogContent = React.forwardRef(({ className, children, onOpenAutoFocus, onCloseAutoFocus, ...props }, ref) => {
+const DialogContent = React.forwardRef(({ className, children, onOpenAutoFocus, onCloseAutoFocus, onEscapeKeyDown, ...props }, ref) => {
   const returnTo = React.useRef(null)
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
+        onEscapeKeyDown={(event) => {
+          // The Escape that drops an input method's composition keeps the dialog open.
+          if (isComposing(event)) event.preventDefault()
+          else onEscapeKeyDown?.(event)
+        }}
         onOpenAutoFocus={(event) => {
           returnTo.current = document.activeElement
           onOpenAutoFocus?.(event)
