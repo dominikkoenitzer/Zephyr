@@ -154,7 +154,7 @@ const PomodoroTimer = () => {
                 <Select value={sessionTask?.id || NO_TASK} onValueChange={chooseTask}>
                   <SelectTrigger
                     aria-label="Task for this session"
-                    className="h-9 w-[min(22rem,62vw)] rounded-full border-0 bg-hero-foreground/10 px-4 text-left text-[15px] font-semibold text-hero-foreground [&>span]:truncate hover:bg-hero-foreground/15 focus:ring-2 focus:ring-sun focus:ring-offset-0 [&>svg]:text-hero-foreground/70"
+                    className="h-9 w-[min(22rem,62vw)] rounded-full border-0 bg-hero-foreground/10 px-4 text-left text-[15px] font-semibold text-hero-foreground [&>span]:truncate hover:bg-hero-foreground/15 focus-visible:ring-2 focus-visible:ring-sun [&>svg]:text-hero-foreground/70"
                   >
                     <SelectValue placeholder="Focus on…" />
                   </SelectTrigger>
@@ -322,7 +322,7 @@ const PomodoroTimer = () => {
                       <button
                         type="button"
                         aria-label={`Edit ${preset.name}`}
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm)"
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         onClick={(e) => {
                           e.stopPropagation();
                           setEditingPreset(preset);
@@ -336,7 +336,7 @@ const PomodoroTimer = () => {
                         <button
                           type="button"
                           aria-label={`Delete ${preset.name}`}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm)"
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeletePreset(preset.id);
