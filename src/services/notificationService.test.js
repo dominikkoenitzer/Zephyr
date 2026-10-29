@@ -206,3 +206,32 @@ describe('notificationService: polling', () => {
     spy.mockRestore();
   });
 });
+
+describe('notificationService: stored settings', () => {
+  // The settings travel in backups, so an import can bring in any shape.
+  const store = (settings) => localStorage.setItem('zephyr_notification_settings', JSON.stringify(settings));
+
+  it('still reminds when the stored tasks section is not an object', () => {
+    localStorageService.addTask({ title: 'Send the invoice', dueDate: dayKey(0) });
+    store({ enabled: true, tasks: null });
+
+    expect(() => notificationService.checkTaskDueDates()).not.toThrow();
+    expect(notificationService.getNotifications().map((n) => n.message)).toEqual(['Send the invoice is due today']);
+  });
+
+  it('reads a section that is not an object as its default', () => {
+    const defaults = notificationService.getSettings();
+    for (const bad of [null, 5, 'on', [true]]) {
+      store({ enabled: false, tasks: bad, timer: bad });
+      const settings = notificationService.getSettings();
+      expect(settings.enabled).toBe(false);
+      expect(settings.tasks).toEqual(defaults.tasks);
+      expect(settings.timer).toEqual(defaults.timer);
+    }
+  });
+
+  it('keeps a stored section that is an object', () => {
+    store({ tasks: { enabled: false, dueDateReminder: 3, overdue: false } });
+    expect(notificationService.getSettings().tasks).toEqual({ enabled: false, dueDateReminder: 3, overdue: false });
+  });
+});
