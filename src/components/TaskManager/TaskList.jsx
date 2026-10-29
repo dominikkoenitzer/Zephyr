@@ -403,7 +403,7 @@ const TaskList = () => {
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'relative isolate flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        'relative isolate flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring',
         // The sliding pill paints the active state; the button's own fill is
         // the same night underneath, so the text never sits on white.
         active ? 'bg-hero-to text-hero-foreground' : 'text-muted-foreground hover:text-foreground'
@@ -484,10 +484,10 @@ const TaskList = () => {
       {/* Filters: one segmented pill for the views, one for the tags */}
       {activeTotal > 0 && (
         <div className="mt-5 flex flex-wrap items-center gap-2">
-          <div className={cn(card, 'max-w-full overflow-hidden rounded-full')}>
+          <div className={cn(card, 'max-w-full overflow-hidden rounded-full p-1')}>
             <div
               ref={viewsRef}
-              className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full p-1"
+              className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full"
               role="group"
               aria-label="Filter tasks"
             >
@@ -497,10 +497,10 @@ const TaskList = () => {
             </div>
           </div>
           {allTags.length > 0 && (
-            <div className={cn(card, 'max-w-full overflow-hidden rounded-full')}>
+            <div className={cn(card, 'max-w-full overflow-hidden rounded-full p-1')}>
               <div
                 ref={tagsRef}
-                className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full p-1"
+                className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full"
                 role="group"
                 aria-label="Filter by tag"
               >

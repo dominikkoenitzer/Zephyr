@@ -44,14 +44,22 @@ describe('TaskList by keyboard', () => {
     expect(pill.className).toMatch(/(?:^|\s)focus-within:ring-ring(?:\s|$)/);
   });
 
-  it('leaves room inside the scrolling filter rows for the focus ring', () => {
+  it('draws the filter focus ring inside the pill, where the scrolling row cannot clip it', () => {
     const buttons = filterButtons();
     expect(buttons.length).toBeGreaterThan(5);
     for (const button of buttons) {
       // A row that scrolls sideways clips anything drawn past its padding box.
-      const row = button.closest('.overflow-x-auto');
-      expect(row.className).toMatch(/(?:^|\s)p-1(?:\s|$)/);
+      expect(button.className).not.toMatch(/(?:^|\s)focus-visible:ring-\d/);
+      expect(button.className).toMatch(/(?:^|\s)focus-visible:outline-2(?:\s|$)/);
+      expect(button.className).toMatch(/(?:^|\s)focus-visible:-outline-offset-2(?:\s|$)/);
+      expect(button.className).toMatch(/(?:^|\s)focus-visible:outline-ring(?:\s|$)/);
     }
+  });
+
+  it('keeps the filter rows free of side padding, so Firefox scrolls a focused end pill into view', () => {
+    const rows = [...new Set(filterButtons().map((button) => button.closest('.overflow-x-auto')))];
+    expect(rows.length).toBe(2);
+    for (const row of rows) expect(row.className).not.toMatch(/(?:^|\s)p[xlr]?-\d/);
   });
 
   it('keeps the counts on the filters that are not chosen at full strength', () => {
