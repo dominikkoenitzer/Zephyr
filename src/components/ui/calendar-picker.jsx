@@ -283,7 +283,7 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
         aria-expanded={isOpen}
         className={cn(
           "flex h-11 w-full items-center gap-2 rounded-2xl bg-accent px-4 py-2 text-sm font-medium",
-          "transition-colors hover:bg-accent/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+          "transition-colors hover:bg-accent/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           // Room for the clear button, which overlays the trigger rather than
           // sitting inside it.
           selectedDate && "pr-11",
