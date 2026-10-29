@@ -14,7 +14,7 @@ const withPageLoader = (Component) => (
 export const routes = [
   {
     element: <AppLayout />,
-    errorElement: <ErrorFallback error={{ message: 'Page not found or an unexpected error occurred.' }} />,
+    errorElement: <ErrorFallback />,
     children: [
       {
         index: true,
