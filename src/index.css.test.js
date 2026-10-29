@@ -34,4 +34,9 @@ describe('the stylesheet', () => {
     const narrow = blocks('@media (width < 1024px)').join('\n');
     expect(narrow).toMatch(/scroll-padding-bottom:\s*calc\(\s*5\.25rem \+ env\(safe-area-inset-bottom\)/);
   });
+
+  it('stops smooth scrolling when reduced motion is asked for', () => {
+    const reduce = blocks('@media (prefers-reduced-motion: reduce)').join('\n');
+    expect(reduce).toMatch(/scroll-behavior:\s*auto\s*!important/);
+  });
 });
