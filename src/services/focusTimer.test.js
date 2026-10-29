@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn() } }));
 vi.mock('./notificationService', () => ({
@@ -49,6 +49,38 @@ describe('finishPhase', () => {
     run(endedAt);
     run(endedAt + 300_000);
     expect(localStorageService.getFocusSessions()).toHaveLength(2);
+  });
+});
+
+describe('the focus streak', () => {
+  const at = (day, hour) => new Date(2026, 8, day, hour).getTime();
+  const streakFrom = (lastDate, endedAt) => {
+    localStorage.clear();
+    localStorageService.saveFocusStreak({ count: 4, lastDate: lastDate.toDateString() });
+    run(endedAt);
+    return localStorageService.getFocusStreak();
+  };
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 8, 30, 9, 30));
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  it("reads a last day after today as today, so today's session keeps the count", () => {
+    const today = new Date(2026, 8, 30).toDateString();
+    expect(streakFrom(new Date(2026, 9, 1), at(30, 9))).toEqual({ count: 4, lastDate: today });
+    expect(streakFrom(new Date(2027, 8, 30), at(30, 9))).toEqual({ count: 4, lastDate: today });
+    expect(streakFrom(new Date(2026, 8, 30), at(30, 9))).toEqual({ count: 4, lastDate: today });
+    expect(streakFrom(new Date(2026, 8, 29), at(30, 9))).toEqual({ count: 5, lastDate: today });
+  });
+
+  it('never moves the streak back for a session that ended before the stored day', () => {
+    const ahead = new Date(2026, 9, 1);
+    expect(streakFrom(ahead, at(29, 22))).toEqual({ count: 4, lastDate: ahead.toDateString() });
+    const today = new Date(2026, 8, 30);
+    expect(streakFrom(today, at(29, 22))).toEqual({ count: 4, lastDate: today.toDateString() });
   });
 });
 

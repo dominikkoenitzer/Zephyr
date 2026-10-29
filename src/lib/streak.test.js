@@ -38,6 +38,12 @@ describe('activeStreak', () => {
     expect(activeStreak({ count: 2, lastDate: day(0) }, lateNight)).toBe(2);
     expect(activeStreak({ count: 2, lastDate: day(0) }, earlyMorning)).toBe(2);
   });
+
+  it('reads a last day after today as today, as a clock that ran ahead leaves it', () => {
+    expect(activeStreak({ count: 5, lastDate: day(1) }, TODAY)).toBe(5);
+    expect(activeStreak({ count: 5, lastDate: day(365) }, TODAY)).toBe(5);
+    expect(streakAtRisk({ count: 5, lastDate: day(1) }, TODAY)).toBe(false);
+  });
 });
 
 describe('streakAtRisk', () => {
