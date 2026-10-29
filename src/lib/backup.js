@@ -7,6 +7,7 @@ import { PRESETS_KEY } from '../services/focusTimer';
 import {
   DEVICE_KEYS, EXTRA_BACKUP_KEYS, STORAGE_KEYS, isBackupKey, localStorageService, readTaskRecord,
 } from '../services/localStorage';
+import { NOTIFICATIONS_KEY, isNotificationList } from '../services/notificationService';
 
 // Which keys a backup carries is decided next to STORAGE_KEYS, because the
 // storage size in Settings counts the same keys and localStorage.js cannot
@@ -80,9 +81,10 @@ const isReadableTask = (task) =>
 const hasTextTitle = (task) => !isObject(task) || task.title == null || isText(task.title);
 
 /**
- * The tasks, sessions, settings and view preferences inside a backup are
- * checked before anything is written, so a damaged file is refused whole
- * instead of replacing a working list with one the app cannot read.
+ * The tasks, notifications, sessions, settings and view preferences inside
+ * a backup are checked before anything is written, so a damaged file is
+ * refused whole instead of replacing a working list with one the app cannot
+ * read.
  */
 function hasReadableData(data) {
   const tasks = data[STORAGE_KEYS.TASKS];
@@ -90,6 +92,11 @@ function hasReadableData(data) {
     const parsed = typeof tasks === 'string' ? parseJson(tasks) : { ok: false };
     if (!parsed.ok || !isObject(parsed.value) || !Array.isArray(parsed.value.tasks)) return false;
     if (!parsed.value.tasks.every(isReadableTask)) return false;
+  }
+  const notifications = data[NOTIFICATIONS_KEY];
+  if (notifications !== undefined) {
+    const parsed = typeof notifications === 'string' ? parseJson(notifications) : { ok: false };
+    if (!parsed.ok || !isNotificationList(parsed.value)) return false;
   }
   const sessions = data[STORAGE_KEYS.FOCUS_SESSIONS];
   if (sessions !== undefined) {

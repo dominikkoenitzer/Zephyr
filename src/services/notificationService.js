@@ -25,6 +25,12 @@ const pad = (n) => String(n).padStart(2, '0');
 const dayKey = (date = new Date()) =>
   `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
+export const NOTIFICATIONS_KEY = STORAGE_KEYS.NOTIFICATIONS;
+
+/** The stored list must be records; a backup can bring in any shape. */
+export const isNotificationList = (value) =>
+  Array.isArray(value) && value.every((n) => n !== null && typeof n === 'object' && !Array.isArray(n));
+
 class NotificationService {
   constructor() {
     this.checkInterval = null;
@@ -75,7 +81,8 @@ class NotificationService {
   readStored() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
-      return data ? JSON.parse(data) : [];
+      const parsed = data ? JSON.parse(data) : [];
+      return isNotificationList(parsed) ? parsed : [];
     } catch (error) {
       console.error('Failed to get notifications:', error);
       return [];
