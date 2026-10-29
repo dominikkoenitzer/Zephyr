@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { useStoreValue, useTasks } from '../../hooks/useStore';
 import { localStorageService } from '../../services/localStorage';
 import { activeStreak, streakAtRisk } from '../../lib/streak';
-import { focusToday } from '../../lib/dashboard';
+import { focusToday, startOfDay } from '../../lib/dashboard';
+import { useToday } from '../../hooks/useToday';
 import { sortByUrgency } from '../../lib/taskFilters';
 import { DEFAULT_PRESETS } from './presets';
 import FullScreenMode from './FullScreenMode';
@@ -57,10 +58,14 @@ const PomodoroTimer = () => {
     setIsFullScreen,
   } = usePomodoro();
 
+  // The day comes from a hook that re-renders at midnight, so an idle page left open overnight moves to the new day.
+  const day = useToday();
+  const now = useMemo(() => startOfDay(day), [day]);
+
   // The streak has been counted since the timer shipped and shown nowhere.
   const [streak] = useStoreValue(readStreak);
-  const streakDays = activeStreak(streak);
-  const atRisk = streakAtRisk(streak);
+  const streakDays = activeStreak(streak, now);
+  const atRisk = streakAtRisk(streak, now);
 
   // While Focus is open, the mini timer's button starts and pauses this timer.
   // A ref, so the controller is handed over once, not on every tick.
@@ -78,7 +83,7 @@ const PomodoroTimer = () => {
   // Today's figures come from the session log, like the dashboard's. The
   // timer's own counter is its place in the long-break rhythm and never resets.
   const [sessions] = useStoreValue(readSessions);
-  const today = focusToday(sessions);
+  const today = focusToday(sessions, now);
 
   // What you can point this session at. A task picked earlier stays listed
   // even after it is completed, so the picker never blanks out mid-session.

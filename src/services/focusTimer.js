@@ -37,7 +37,10 @@ export function readPresets() {
 const updateStreak = (endedAt) => {
   const day = new Date(endedAt);
   const existing = localStorageService.getFocusStreak();
-  const last = existing.lastDate ? new Date(existing.lastDate) : null;
+  let last = existing.lastDate ? new Date(existing.lastDate) : null;
+  // A last day after today, left by a clock that ran ahead, reads as today, as in activeStreak.
+  const now = new Date();
+  if (last && new Date(last).setHours(0, 0, 0, 0) > new Date(now).setHours(0, 0, 0, 0)) last = now;
   let count = 1;
 
   if (last) {

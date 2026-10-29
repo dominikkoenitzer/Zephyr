@@ -26,8 +26,9 @@ export function activeStreak(streak, today = new Date()) {
 
   const days = Math.round((startOfDay(today) - last) / 86400000);
   // Today keeps it, yesterday keeps it alive until midnight, anything older
-  // has already been missed.
-  return days === 0 || days === 1 ? count : 0;
+  // has already been missed. A day after today, left by a clock that ran
+  // ahead, reads as today.
+  return days <= 1 ? count : 0;
 }
 
 /** True while today's session has not been logged but the streak still stands. */
