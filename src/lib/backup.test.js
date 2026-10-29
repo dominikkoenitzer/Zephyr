@@ -37,6 +37,27 @@ describe('collectBackupData', () => {
     expect(Object.keys(data).sort()).toEqual(['theme', 'zephyr_tasks']);
     expect(data.zephyr_tasks).toBe('{"tasks":[]}');
   });
+
+  it('copies a stored list of sessions verbatim', () => {
+    localStorage.setItem('zephyr_focus_sessions', '[ {"id":"s1"} ]');
+    expect(collectBackupData().zephyr_focus_sessions).toBe('[ {"id":"s1"} ]');
+  });
+
+  it('writes stored sessions an import would refuse as the pages read them', () => {
+    const one = { id: 's1', date: '2026-10-02T08:00:00.000Z', type: 'work' };
+    const backupOf = (stored) => {
+      localStorage.setItem('zephyr_focus_sessions', stored);
+      return readBackup(JSON.stringify({ app: 'zephyr', version: 1, data: collectBackupData() }));
+    };
+    const listed = backupOf(JSON.stringify([null, one, 5, 'work', []]));
+    expect(listed.ok).toBe(true);
+    expect(JSON.parse(listed.backup.data.zephyr_focus_sessions)).toEqual([one]);
+    ['null', '{"id":"s1"}', '5'].forEach((stored) => {
+      const read = backupOf(stored);
+      expect(read.ok).toBe(true);
+      expect(read.backup.data.zephyr_focus_sessions).toBe('[]');
+    });
+  });
 });
 
 describe('isValidBackup', () => {
@@ -385,6 +406,10 @@ describe('backupCounts', () => {
       .toEqual({ tasks: 2, sessions: 3 });
     expect(backupCounts({})).toEqual({ tasks: 0, sessions: 0 });
     expect(backupCounts({ zephyr_focus_sessions: '{bad' })).toEqual({ tasks: 0, sessions: 0 });
+  });
+
+  it('counts only the stored entries that are sessions, as the pages do', () => {
+    expect(backupCounts({ zephyr_focus_sessions: '[null, {}, 5, "work", [], {}]' })).toEqual({ tasks: 0, sessions: 2 });
   });
 });
 

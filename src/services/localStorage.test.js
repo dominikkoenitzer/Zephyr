@@ -146,6 +146,18 @@ describe('localStorageService: focus sessions', () => {
       expect(localStorageService.getFocusSessions()).toEqual([]);
     });
   });
+
+  it('reads a stored object as no sessions', () => {
+    localStorage.setItem('zephyr_focus_sessions', JSON.stringify({ id: 's1', date: '2026-10-02T08:00:00.000Z' }));
+    expect(localStorageService.getFocusSessions()).toEqual([]);
+  });
+
+  it('keeps only the entries that are sessions', () => {
+    const one = { id: 's1', date: '2026-10-02T08:00:00.000Z', type: 'work' };
+    const two = { id: 's2', date: '2026-10-03T08:00:00.000Z', type: 'work' };
+    localStorage.setItem('zephyr_focus_sessions', JSON.stringify([null, one, 5, 'work', [], two]));
+    expect(localStorageService.getFocusSessions()).toEqual([one, two]);
+  });
 });
 
 describe('localStorageService: backup and storage dates', () => {

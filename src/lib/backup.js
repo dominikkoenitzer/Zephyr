@@ -5,7 +5,7 @@
 
 import { PRESETS_KEY } from '../services/focusTimer';
 import {
-  DEVICE_KEYS, EXTRA_BACKUP_KEYS, STORAGE_KEYS, isBackupKey, localStorageService, readTaskRecord,
+  DEVICE_KEYS, EXTRA_BACKUP_KEYS, STORAGE_KEYS, isBackupKey, isSession, localStorageService, readTaskRecord,
 } from '../services/localStorage';
 import { NOTIFICATIONS_KEY, isNotificationList } from '../services/notificationService';
 
@@ -22,6 +22,12 @@ export function collectBackupData() {
   for (let i = 0; i < localStorage.length; i += 1) {
     const key = localStorage.key(i);
     if (isBackupKey(key)) data[key] = localStorage.getItem(key);
+  }
+  // Stored sessions that an import would refuse whole go out as the pages read them.
+  const sessions = data[STORAGE_KEYS.FOCUS_SESSIONS];
+  const parsed = sessions === undefined ? { ok: false } : parseJson(sessions);
+  if (parsed.ok && !(Array.isArray(parsed.value) && parsed.value.every(isSession))) {
+    data[STORAGE_KEYS.FOCUS_SESSIONS] = JSON.stringify(localStorageService.getFocusSessions());
   }
   return data;
 }
@@ -141,7 +147,7 @@ export function readBackup(text) {
 export function backupCounts(data) {
   const tasks = readTaskRecord(data[STORAGE_KEYS.TASKS]).tasks.length;
   const parsed = parseJson(data[STORAGE_KEYS.FOCUS_SESSIONS] ?? '[]');
-  const sessions = parsed.ok && Array.isArray(parsed.value) ? parsed.value.length : 0;
+  const sessions = parsed.ok && Array.isArray(parsed.value) ? parsed.value.filter(isSession).length : 0;
   return { tasks, sessions };
 }
 
