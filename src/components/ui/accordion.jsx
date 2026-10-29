@@ -20,21 +20,28 @@ const Accordion = ({ children, type = "single", className, ...props }) => {
   )
 }
 
+// Each item's id, so its trigger can name the panel it opens.
+const AccordionItemContext = React.createContext(null)
+
 const AccordionItem = ({ children, value, className, ...props }) => {
+  const id = React.useId()
   return (
-    <div className={cn("border border-border/50 rounded-lg bg-background/50 overflow-hidden shadow-sm", className)} {...props}>
-      {React.Children.map(children, child => {
-        if (React.isValidElement(child)) {
-          return React.cloneElement(child, { value })
-        }
-        return child
-      })}
-    </div>
+    <AccordionItemContext.Provider value={id}>
+      <div className={cn("border border-border/50 rounded-lg bg-background/50 overflow-hidden shadow-sm", className)} {...props}>
+        {React.Children.map(children, child => {
+          if (React.isValidElement(child)) {
+            return React.cloneElement(child, { value })
+          }
+          return child
+        })}
+      </div>
+    </AccordionItemContext.Provider>
   )
 }
 
 const AccordionTrigger = React.forwardRef(({ className, children, value, ...props }, ref) => {
   const { openItems, setOpenItems, type } = React.useContext(AccordionContext)
+  const itemId = React.useContext(AccordionItemContext)
   const isOpen = openItems.includes(value)
 
   const handleClick = () => {
@@ -51,6 +58,8 @@ const AccordionTrigger = React.forwardRef(({ className, children, value, ...prop
     <button
       ref={ref}
       type="button"
+      aria-expanded={isOpen}
+      aria-controls={itemId ? `${itemId}-panel` : undefined}
       onClick={handleClick}
       className={cn(
         "flex w-full items-center justify-between p-4 font-semibold text-foreground transition-all hover:bg-background/70",
@@ -72,11 +81,15 @@ AccordionTrigger.displayName = "AccordionTrigger"
 
 const AccordionContent = React.forwardRef(({ className, children, value, ...props }, ref) => {
   const { openItems } = React.useContext(AccordionContext)
+  const itemId = React.useContext(AccordionItemContext)
   const isOpen = openItems.includes(value)
 
   return (
     <div
       ref={ref}
+      id={itemId ? `${itemId}-panel` : undefined}
+      // Closed, the panel only shrinks to nothing; inert keeps screen readers and Tab out of it as well.
+      inert={!isOpen}
       className={cn(
         "overflow-hidden text-sm text-muted-foreground transition-all duration-200",
         isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
