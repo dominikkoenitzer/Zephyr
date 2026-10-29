@@ -40,6 +40,8 @@ afterEach(() => {
 
 const render = (ui) => act(() => root.render(ui));
 const click = (el) => act(() => el.dispatchEvent(new MouseEvent('click', { bubbles: true })));
+const press = (el, key) =>
+  act(() => el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })));
 const trigger = () => container.querySelector('[role="button"]');
 const label = () => trigger().querySelector('span').textContent;
 const panel = () => document.querySelector('.fixed.z-50');
@@ -89,6 +91,35 @@ describe('CalendarPicker', () => {
     render(<Controlled initial="2026-12-03" seen={seen} />);
     click(trigger());
     expect(monthHeading()).toBe('December 2026');
+  });
+
+  it('reopens from the keyboard on the month of its value, with the focus on that day', () => {
+    const seen = [];
+    render(<Controlled initial="2026-12-03" seen={seen} />);
+    press(trigger(), 'Enter');
+    click(nav('Next month'));
+    click(nav('Next month'));
+    expect(monthHeading()).toBe('February 2027');
+    press(document.activeElement, 'Escape');
+    expect(panel()).toBeNull();
+
+    press(trigger(), 'Enter');
+    expect(monthHeading()).toBe('December 2026');
+    expect(document.activeElement).toBe(dayButton(3));
+  });
+
+  it('reopens from the keyboard on this month, with the focus on today, when it has no value', () => {
+    const seen = [];
+    const today = new Date();
+    render(<Controlled seen={seen} />);
+    press(trigger(), ' ');
+    click(nav('Previous month'));
+    click(nav('Previous month'));
+    press(document.activeElement, 'Escape');
+
+    press(trigger(), ' ');
+    expect(monthHeading()).toBe(`${today.toLocaleDateString('en-US', { month: 'long' })} ${today.getFullYear()}`);
+    expect(document.activeElement.getAttribute('aria-current')).toBe('date');
   });
 
   it('starts empty and takes a first date', () => {
