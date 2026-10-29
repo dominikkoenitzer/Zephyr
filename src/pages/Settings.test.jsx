@@ -7,6 +7,8 @@ vi.mock('sonner', () => ({ toast: Object.assign(vi.fn(), { success: vi.fn(), err
 
 const { toast } = await import('sonner');
 const { default: Settings } = await import('./Settings');
+const { collectBackupData } = await import('../lib/backup');
+const { localStorageService } = await import('../services/localStorage');
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -73,6 +75,42 @@ describe('Settings, import', () => {
     vi.useFakeTimers({ toFake: ['setTimeout'] });
     act(() => button('Replace', document.querySelector('[role="dialog"]')).click());
     expect(toast.success).toHaveBeenCalledWith('Restored', { description: '2 tasks, 1 session.' });
+  });
+
+  it('leaves only the file on a Replace from a file of tasks, and counts what it brought', async () => {
+    const own = {
+      zephyr_tasks: JSON.stringify({ tasks: [T('old')] }),
+      zephyr_focus_sessions: JSON.stringify([{ id: 's1' }, { id: 's2' }, { id: 's3' }]),
+      zephyr_focus_streak: JSON.stringify({ count: 4, lastDate: '2026-10-20' }),
+      zephyr_last_focus_session: JSON.stringify({ completedAt: '2026-10-20T09:00:00.000Z' }),
+      zephyr_settings: JSON.stringify({ focusDuration: 50 }),
+      zephyr_notes: '[]',
+      focusTimerPresets: '[]',
+      selectedFocusPreset: 'deep',
+      theme: 'dark',
+    };
+    const device = {
+      zephyr_last_backup: '2026-10-01T08:00:00.000Z',
+      zephyr_storage_persist_asked: 'true',
+      zephyr_timer_state: JSON.stringify({ isRunning: false }),
+      gardenTheme: 'moss',
+      'another-app': 'kept',
+    };
+    Object.entries({ ...own, ...device }).forEach(([key, value]) => localStorage.setItem(key, value));
+    const tasks = JSON.stringify({ tasks: [T('a'), T('b')], cleared: [{ id: 'c', clearedAt: '2026-10-02T08:00:00.000Z' }] });
+
+    open();
+    await pick(backupText({ zephyr_tasks: tasks }));
+    const fileColumn = [...document.querySelectorAll('[role="dialog"] tbody tr')].map((row) => row.lastElementChild.textContent);
+    expect(fileColumn).toEqual(['2', '0']);
+    vi.useFakeTimers({ toFake: ['setTimeout'] });
+    act(() => button('Replace', document.querySelector('[role="dialog"]')).click());
+
+    expect(toast.success).toHaveBeenCalledWith('Restored', { description: '2 tasks.' });
+    expect(collectBackupData()).toEqual({ zephyr_tasks: tasks });
+    expect(localStorageService.getTasks().map((task) => task.id)).toEqual(['a', 'b']);
+    expect(localStorageService.getFocusSessions()).toEqual([]);
+    Object.entries(device).forEach(([key, value]) => expect(localStorage.getItem(key)).toBe(value));
   });
 
   it('does not blame a good file when the browser refuses to store it', async () => {
