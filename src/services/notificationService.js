@@ -18,6 +18,8 @@ const DEFAULT_SETTINGS = {
   }
 };
 
+const isPlainObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+
 const pad = (n) => String(n).padStart(2, '0');
 /** Local day key. Reminders fire once per task per day, not once per poll. */
 const dayKey = (date = new Date()) =>
@@ -39,8 +41,12 @@ class NotificationService {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.NOTIFICATION_SETTINGS);
       if (data) {
-        const parsed = JSON.parse(data);
-        return { ...DEFAULT_SETTINGS, ...parsed };
+        const settings = { ...DEFAULT_SETTINGS, ...JSON.parse(data) };
+        // A backup can bring in any shape; a section the readers cannot index falls back to its default.
+        for (const section of ['tasks', 'timer']) {
+          if (!isPlainObject(settings[section])) settings[section] = DEFAULT_SETTINGS[section];
+        }
+        return settings;
       }
       return DEFAULT_SETTINGS;
     } catch (error) {
