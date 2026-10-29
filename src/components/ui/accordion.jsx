@@ -62,7 +62,7 @@ const AccordionTrigger = React.forwardRef(({ className, children, value, ...prop
       aria-controls={itemId ? `${itemId}-panel` : undefined}
       onClick={handleClick}
       className={cn(
-        "flex w-full items-center justify-between p-4 font-semibold text-foreground transition-all hover:bg-background/70",
+        "flex w-full items-center justify-between p-4 font-semibold text-foreground transition-all hover:bg-background/70 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring forced-colors:focus-visible:-outline-offset-2",
         className
       )}
       {...props}

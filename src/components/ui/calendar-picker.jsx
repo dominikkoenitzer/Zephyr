@@ -208,6 +208,30 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
     onChange?.({ target: { value: "" } })
   }
 
+  // Arrows move a day or a week; a step out of the month turns the page, then focuses that day.
+  const pendingFocusRef = React.useRef(null)
+  React.useLayoutEffect(() => {
+    const key = pendingFocusRef.current
+    if (!key) return
+    pendingFocusRef.current = null
+    panelRef.current?.querySelector(`[data-date="${key}"]`)?.focus()
+  }, [days])
+
+  const handleGridKeyDown = (event) => {
+    const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[event.key]
+    const from = parseDateValue(event.target.dataset?.date)
+    if (!step || !from) return
+    event.preventDefault()
+    const target = new Date(from.getFullYear(), from.getMonth(), from.getDate() + step)
+    const key = formatDateForChange(target)
+    if (target.getMonth() !== currentMonth.getMonth() || target.getFullYear() !== currentMonth.getFullYear()) {
+      pendingFocusRef.current = key
+      setCurrentMonth(new Date(target.getFullYear(), target.getMonth(), 1))
+      return
+    }
+    panelRef.current?.querySelector(`[data-date="${key}"]`)?.focus()
+  }
+
   const goToMonth = (delta) => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + delta, 1))
   }
@@ -260,7 +284,7 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
         aria-expanded={isOpen}
         className={cn(
           "flex h-11 w-full items-center gap-2 rounded-2xl bg-accent px-4 py-2 text-sm font-medium",
-          "transition-colors hover:bg-accent/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+          "transition-colors hover:bg-accent/70 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
           // Room for the clear button, which overlays the trigger rather than
           // sitting inside it.
           selectedDate && "pr-11",
@@ -347,11 +371,12 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
                 ))}
               </div>
 
-              <div className="mt-2 grid grid-cols-7 gap-1.5">
+              <div className="mt-2 grid grid-cols-7 gap-1.5" onKeyDown={handleGridKeyDown}>
                 {days.map(({ date, inCurrentMonth }) => (
                   <button
                     type="button"
                     key={date.toISOString()}
+                    data-date={formatDateForChange(date)}
                     data-start-focus={(selectedDate ? isSelected(date) : isToday(date)) || undefined}
                     onClick={() => handleDateSelect(date)}
                     aria-label={date.toLocaleDateString(undefined, { dateStyle: "full" })}

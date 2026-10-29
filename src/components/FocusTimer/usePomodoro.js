@@ -420,7 +420,8 @@ export function usePomodoro() {
       // A focused button answers Space and Enter itself; the letters are still
       // the timer's, or R, S and F died after any click on a control.
       if (tag === 'BUTTON' && (e.code === 'Space' || e.key === 'Enter')) return;
-      if (document.querySelector('[role="dialog"][data-state="open"], [role="listbox"][data-state="open"]')) return;
+      // The bell's panel is not a Radix overlay, so it carries its own mark.
+      if (document.querySelector('[role="dialog"][data-state="open"], [role="listbox"][data-state="open"], [data-notification-panel]')) return;
 
       if (e.code === 'Space') {
         e.preventDefault();

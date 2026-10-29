@@ -128,6 +128,28 @@ describe('usePomodoro', () => {
     expect(localStorageService.getFocusSessions()).toHaveLength(1);
   });
 
+  it('leaves the timer keys to the notification panel while it is open', () => {
+    mount();
+    act(() => timer.toggleTimer());
+    seconds(60);
+    const key = (k) =>
+      act(() => document.body.dispatchEvent(new KeyboardEvent('keydown', { key: k, code: k === ' ' ? 'Space' : `Key${k.toUpperCase()}`, bubbles: true, cancelable: true })));
+
+    const panel = document.createElement('div');
+    panel.setAttribute('data-notification-panel', '');
+    document.body.appendChild(panel);
+    for (const k of ['r', 's', 'f', ' ']) key(k);
+    expect(timer.isRunning).toBe(true);
+    expect(timer.timeLeft).toBe(1440);
+    expect(timer.isBreak).toBe(false);
+    expect(timer.isFullScreen).toBe(false);
+
+    panel.remove();
+    key('r');
+    expect(timer.isRunning).toBe(false);
+    expect(timer.timeLeft).toBe(1500);
+  });
+
   it('asks for notification permission when a session is started, not on arrival', () => {
     const requestPermission = vi.fn(() => Promise.resolve('default'));
     vi.stubGlobal('Notification', Object.assign(function Notification() {}, { permission: 'default', requestPermission }));

@@ -290,7 +290,7 @@ const TaskList = () => {
       </>
     );
     const roundAction =
-      'flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
+      'flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring';
 
     return (
       <m.li key={task.id} {...rowMotion} className="group/row">
@@ -303,9 +303,9 @@ const TaskList = () => {
             aria-label={`Mark "${task.title}" complete`}
             data-task-check={task.id}
             onClick={(e) => { e.stopPropagation(); moveFocusFrom(task.id, e.currentTarget); toggleTask(task.id); }}
-            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[9px] bg-accent text-transparent shadow-[inset_0_0_0_1.5px_hsl(var(--foreground)/0.12)] transition-[background-color,box-shadow,color,transform] active:scale-90 hover:bg-primary hover:text-primary-foreground hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+            className="group/check flex h-6 w-6 shrink-0 items-center justify-center rounded-[9px] bg-accent text-primary-foreground shadow-[inset_0_0_0_1.5px_hsl(var(--foreground)/0.12)] transition-[background-color,box-shadow,transform] active:scale-90 hover:bg-primary hover:shadow-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
           >
-            <Check className="h-3 w-3" strokeWidth={3.5} />
+            <Check className="h-3 w-3 opacity-0 transition-opacity group-hover/check:opacity-100" strokeWidth={3.5} />
           </button>
 
           <div className="min-w-0 flex-1">
@@ -316,7 +316,7 @@ const TaskList = () => {
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); setEditingTask(task); }}
-                className="rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="rounded-md text-left focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {task.title}
               </button>
@@ -403,7 +403,7 @@ const TaskList = () => {
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'relative isolate flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        'relative isolate flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring',
         // The sliding pill paints the active state; the button's own fill is
         // the same night underneath, so the text never sits on white.
         active ? 'bg-hero-to text-hero-foreground' : 'text-muted-foreground hover:text-foreground'
@@ -417,7 +417,7 @@ const TaskList = () => {
         />
       )}
       {label}
-      {count !== undefined && <span className="tabular-nums opacity-70">{count}</span>}
+      {count !== undefined && <span className={cn('tabular-nums', active && 'opacity-70')}>{count}</span>}
     </button>
   );
 
@@ -434,7 +434,7 @@ const TaskList = () => {
     <div className="w-full">
       {/* Quick add: a white pill to write in, with the add button inside it. */}
       <form onSubmit={addTask}>
-        <div className={cn(card, 'flex h-16 items-center gap-3 rounded-full pl-3 pr-2 transition-shadow focus-within:ring-2 focus-within:ring-primary/35')}>
+        <div className={cn(card, 'flex h-16 items-center gap-3 rounded-full pl-3 pr-2 transition-shadow focus-within:outline-hidden focus-within:ring-2 focus-within:ring-ring')}>
           <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary-strong">
             <Plus className="h-5 w-5" />
           </span>
@@ -490,6 +490,7 @@ const TaskList = () => {
               className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full"
               role="group"
               aria-label="Filter tasks"
+              tabIndex={-1}
             >
               {TASK_VIEWS.map((v) =>
                 filterButton(v.label, view === v.id, () => chooseView(v.id), counts[v.id], v.id)
@@ -503,6 +504,7 @@ const TaskList = () => {
                 className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full"
                 role="group"
                 aria-label="Filter by tag"
+                tabIndex={-1}
               >
                 {allTags.map((tag) =>
                   filterButton(
@@ -652,7 +654,7 @@ const TaskList = () => {
                               type="button"
                               aria-label={`Mark "${task.title}" not complete`}
                               onClick={() => toggleTask(task.id)}
-                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground transition-opacity hover:opacity-80 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                             >
                               <Check className="h-3 w-3" strokeWidth={3.5} />
                             </button>
@@ -663,7 +665,7 @@ const TaskList = () => {
                               type="button"
                               aria-label={`Delete "${task.title}"`}
                               onClick={() => deleteTaskWithUndo(task.id)}
-                              className="rounded-full p-1.5 text-muted-foreground transition-opacity hover:text-destructive-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:opacity-0 sm:group-hover/row:opacity-100 sm:group-focus-within/row:opacity-100"
+                              className="rounded-full p-1.5 text-muted-foreground transition-opacity hover:text-destructive-strong focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring sm:opacity-0 sm:group-hover/row:opacity-100 sm:group-focus-within/row:opacity-100"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>

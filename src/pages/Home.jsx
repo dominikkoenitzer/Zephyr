@@ -60,7 +60,7 @@ function StatCard({ to, label, value, note, lead = false }) {
     <m.div variants={rise}>
       <Link
         to={to}
-        className="group block h-full rounded-3xl transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="group block h-full rounded-3xl transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <Surface className={cn('h-full p-5 sm:p-6', !lead && panel)}>
           <div className="flex items-start justify-between gap-3">
@@ -172,7 +172,7 @@ function UpNext({ task }) {
           <div className="mt-auto pt-6">
             <Link
               to={focusHref(task)}
-              className="flex h-12 items-center justify-center gap-2 rounded-full bg-linear-to-br from-hero-from to-hero-to text-[15px] font-semibold text-hero-foreground transition-transform dark:ring-1 dark:ring-inset dark:ring-white/12 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="flex h-12 items-center justify-center gap-2 rounded-full bg-linear-to-br from-hero-from to-hero-to text-[15px] font-semibold text-hero-foreground transition-transform dark:ring-1 dark:ring-inset dark:ring-white/12 hover:scale-[1.02] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <Timer className="h-[18px] w-[18px]" />
               Focus on this
@@ -398,7 +398,7 @@ function TimerCard({ timer, defaultMinutes }) {
           <Link
             to={running || paused ? '/focus' : '/focus?start=1'}
             aria-label={running ? 'Open the running timer' : paused ? 'Open the paused timer' : 'Start the timer'}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-hero-foreground text-hero-to transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-hero-foreground text-hero-to transition-transform hover:scale-105 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-sun"
           >
             {running ? <Pause className="h-5 w-5" /> : <Play className="ml-0.5 h-5 w-5" />}
           </Link>

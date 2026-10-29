@@ -93,6 +93,35 @@ describe('CalendarPicker', () => {
     expect(monthHeading()).toBe('December 2026');
   });
 
+  it('moves between days with the arrow keys', () => {
+    const seen = [];
+    render(<Controlled initial="2026-08-10" seen={seen} />);
+    click(trigger());
+    const focused = () => document.activeElement.textContent.trim();
+    expect(focused()).toBe('10');
+    for (const [key, day] of [['ArrowRight', '11'], ['ArrowDown', '18'], ['ArrowLeft', '17'], ['ArrowUp', '10']]) {
+      press(document.activeElement, key);
+      expect(focused()).toBe(day);
+    }
+    expect(seen).toEqual([]);
+  });
+
+  it('follows the arrow keys into the next and the previous month', () => {
+    const seen = [];
+    render(<Controlled initial="2026-08-31" seen={seen} />);
+    click(trigger());
+    press(document.activeElement, 'ArrowRight');
+    expect(monthHeading()).toBe('September 2026');
+    expect(document.activeElement.getAttribute('aria-label')).toBe(
+      new Date(2026, 8, 1).toLocaleDateString(undefined, { dateStyle: 'full' })
+    );
+    press(document.activeElement, 'ArrowUp');
+    expect(monthHeading()).toBe('August 2026');
+    expect(document.activeElement.getAttribute('aria-label')).toBe(
+      new Date(2026, 7, 25).toLocaleDateString(undefined, { dateStyle: 'full' })
+    );
+  });
+
   it('reopens from the keyboard on the month of its value, with the focus on that day', () => {
     const seen = [];
     render(<Controlled initial="2026-12-03" seen={seen} />);

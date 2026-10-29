@@ -63,7 +63,7 @@ const DialogContent = React.forwardRef(({ className, children, onOpenAutoFocus, 
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-accent text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none">
+        <DialogPrimitive.Close className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-accent text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none">
           <X className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
