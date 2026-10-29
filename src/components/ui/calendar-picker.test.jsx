@@ -40,8 +40,8 @@ afterEach(() => {
 
 const render = (ui) => act(() => root.render(ui));
 const click = (el) => act(() => el.dispatchEvent(new MouseEvent('click', { bubbles: true })));
-const press = (key) =>
-  act(() => document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })));
+const press = (el, key) =>
+  act(() => el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })));
 const trigger = () => container.querySelector('[role="button"]');
 const label = () => trigger().querySelector('span').textContent;
 const panel = () => document.querySelector('.fixed.z-50');
@@ -100,7 +100,7 @@ describe('CalendarPicker', () => {
     const focused = () => document.activeElement.textContent.trim();
     expect(focused()).toBe('10');
     for (const [key, day] of [['ArrowRight', '11'], ['ArrowDown', '18'], ['ArrowLeft', '17'], ['ArrowUp', '10']]) {
-      press(key);
+      press(document.activeElement, key);
       expect(focused()).toBe(day);
     }
     expect(seen).toEqual([]);
@@ -110,12 +110,12 @@ describe('CalendarPicker', () => {
     const seen = [];
     render(<Controlled initial="2026-08-31" seen={seen} />);
     click(trigger());
-    press('ArrowRight');
+    press(document.activeElement, 'ArrowRight');
     expect(monthHeading()).toBe('September 2026');
     expect(document.activeElement.getAttribute('aria-label')).toBe(
       new Date(2026, 8, 1).toLocaleDateString(undefined, { dateStyle: 'full' })
     );
-    press('ArrowUp');
+    press(document.activeElement, 'ArrowUp');
     expect(monthHeading()).toBe('August 2026');
     expect(document.activeElement.getAttribute('aria-label')).toBe(
       new Date(2026, 7, 25).toLocaleDateString(undefined, { dateStyle: 'full' })
