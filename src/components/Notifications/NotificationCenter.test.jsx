@@ -54,4 +54,12 @@ describe('NotificationCenter', () => {
     act(() => notificationService.markAllAsRead());
     expect(container.textContent).not.toContain('Mark all read');
   });
+
+  it('names the mark-all button in full where a phone shows only "All"', () => {
+    notificationService.createNotification('task', 'Task overdue', 'Book the dentist was due 1 day ago', null, {}, 'task:3:overdue:x');
+    openPanel();
+    // jsdom applies no CSS, so the phone's visible text cannot name the button; only a label can.
+    const button = [...container.querySelectorAll('button')].find((b) => b.textContent.includes('All'));
+    expect(button.getAttribute('aria-label')).toBe('Mark all read');
+  });
 });
