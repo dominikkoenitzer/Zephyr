@@ -7,7 +7,11 @@ const day = (offset, hour = 12, minute = 0) => {
   d.setHours(hour, minute, 0, 0);
   return d.toISOString();
 };
-const ymd = (offset) => day(offset).slice(0, 10);
+// The local date of that noon, as the app keys due dates; its UTC date is a day off east of UTC+12 and at UTC-12.
+const ymd = (offset) => {
+  const d = new Date(day(offset));
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
 
 export const TASKS = [
   { title: 'Draft the quarterly review', priority: 'high', dueDate: ymd(0), tags: ['work'] },
