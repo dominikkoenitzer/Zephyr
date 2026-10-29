@@ -22,6 +22,12 @@ export function collectBackupData() {
     const key = localStorage.key(i);
     if (isBackupKey(key)) data[key] = localStorage.getItem(key);
   }
+  // Stored sessions that an import would refuse whole go out as the pages read them.
+  const sessions = data[STORAGE_KEYS.FOCUS_SESSIONS];
+  const parsed = sessions === undefined ? { ok: false } : parseJson(sessions);
+  if (parsed.ok && !(Array.isArray(parsed.value) && parsed.value.every(isSession))) {
+    data[STORAGE_KEYS.FOCUS_SESSIONS] = JSON.stringify(localStorageService.getFocusSessions());
+  }
   return data;
 }
 
