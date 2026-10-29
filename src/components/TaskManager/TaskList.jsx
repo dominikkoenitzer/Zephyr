@@ -417,7 +417,7 @@ const TaskList = () => {
         />
       )}
       {label}
-      {count !== undefined && <span className="tabular-nums opacity-70">{count}</span>}
+      {count !== undefined && <span className={cn('tabular-nums', active && 'opacity-70')}>{count}</span>}
     </button>
   );
 
@@ -434,7 +434,7 @@ const TaskList = () => {
     <div className="w-full">
       {/* Quick add: a white pill to write in, with the add button inside it. */}
       <form onSubmit={addTask}>
-        <div className={cn(card, 'flex h-16 items-center gap-3 rounded-full pl-3 pr-2 transition-shadow focus-within:ring-2 focus-within:ring-primary/35')}>
+        <div className={cn(card, 'flex h-16 items-center gap-3 rounded-full pl-3 pr-2 transition-shadow focus-within:ring-2 focus-within:ring-ring')}>
           <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary-strong">
             <Plus className="h-5 w-5" />
           </span>
@@ -484,10 +484,10 @@ const TaskList = () => {
       {/* Filters: one segmented pill for the views, one for the tags */}
       {activeTotal > 0 && (
         <div className="mt-5 flex flex-wrap items-center gap-2">
-          <div className={cn(card, 'max-w-full overflow-hidden rounded-full p-1')}>
+          <div className={cn(card, 'max-w-full overflow-hidden rounded-full')}>
             <div
               ref={viewsRef}
-              className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full"
+              className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full p-1"
               role="group"
               aria-label="Filter tasks"
             >
@@ -497,10 +497,10 @@ const TaskList = () => {
             </div>
           </div>
           {allTags.length > 0 && (
-            <div className={cn(card, 'max-w-full overflow-hidden rounded-full p-1')}>
+            <div className={cn(card, 'max-w-full overflow-hidden rounded-full')}>
               <div
                 ref={tagsRef}
-                className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full"
+                className="scroll-edges scrollbar-hide flex items-center gap-0.5 overflow-x-auto rounded-full p-1"
                 role="group"
                 aria-label="Filter by tag"
               >
