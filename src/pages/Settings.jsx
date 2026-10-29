@@ -137,7 +137,8 @@ function Settings() {
       }
       setTimeout(() => window.location.reload(), 1200);
     } catch {
-      toast.error('Could not import that backup file.');
+      // The file was read and checked already; the browser refused to store it, and writeAll put everything back.
+      toast.error('Could not save that backup here, so nothing changed.');
     }
   };
 

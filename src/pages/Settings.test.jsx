@@ -74,4 +74,15 @@ describe('Settings, import', () => {
     act(() => button('Replace', document.querySelector('[role="dialog"]')).click());
     expect(toast.success).toHaveBeenCalledWith('Restored', { description: '2 tasks, 1 session.' });
   });
+
+  it('does not blame a good file when the browser refuses to store it', async () => {
+    open();
+    await pick(backupText({ zephyr_tasks: JSON.stringify({ tasks: [T('a')] }) }));
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+    act(() => button('Merge', document.querySelector('[role="dialog"]')).click());
+    expect(toast.success).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalledWith('Could not save that backup here, so nothing changed.');
+  });
 });
