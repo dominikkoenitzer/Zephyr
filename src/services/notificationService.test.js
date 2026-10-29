@@ -178,6 +178,29 @@ describe('notificationService: unkeyed notifications', () => {
   });
 });
 
+describe('notificationService: stored list', () => {
+  // The list travels in backups, so an import can bring in any shape.
+  const bad = [{}, 'text', 5, [null], [1, 2], [{ id: 'n1', read: false }, 'x']];
+  const store = (value) => localStorage.setItem('zephyr_notifications', JSON.stringify(value));
+
+  it('reads a stored value that is not a list of records as no notifications', () => {
+    for (const value of bad) {
+      store(value);
+      expect(notificationService.getNotifications()).toEqual([]);
+      expect(notificationService.getUnreadCount()).toBe(0);
+    }
+  });
+
+  it('adds a new notification over a stored value that is not a list', () => {
+    for (const value of bad) {
+      store(value);
+      expect(notificationService.markAllAsRead()).toBe(true);
+      notificationService.createNotification('timer', 'Session Complete', 'done');
+      expect(notificationService.getNotifications().map((n) => n.message)).toEqual(['done']);
+    }
+  });
+});
+
 describe('notificationService: polling', () => {
   it('does not stack intervals when started twice', () => {
     const spy = vi.spyOn(globalThis, 'clearInterval');
