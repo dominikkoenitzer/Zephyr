@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   applyBackup, backupCounts, backupFileName, collectBackupData, deleteAllData, isBackupKey, isValidBackup,
   lastBackupLabel, mergeBackup, mergeSessions, mergeSummary, mergeTaskRecords, readBackup, requestPersistentStorage,
-  resetPersistRequest, shouldAskPersist, splitFileName, wipeAllData,
+  resetPersistRequest, restoreSummary, shouldAskPersist, splitFileName, wipeAllData,
 } from './backup';
 import { localStorageService } from '../services/localStorage';
 
@@ -291,6 +291,15 @@ describe('mergeSummary', () => {
     expect(mergeSummary({ added: 0, updated: 1, sessions: 0 })).toBe('1 task updated.');
     expect(mergeSummary({ added: 0, updated: 4, sessions: 1 })).toBe('4 tasks updated, 1 new session.');
     expect(mergeSummary({ added: 0, updated: 0, sessions: 0 })).toBe('Nothing new in the file.');
+  });
+});
+
+describe('restoreSummary', () => {
+  it('names the tasks and sessions a Replace put in place, zeros left out', () => {
+    expect(restoreSummary({ tasks: 2, sessions: 1 })).toBe('2 tasks, 1 session.');
+    expect(restoreSummary({ tasks: 1, sessions: 0 })).toBe('1 task.');
+    expect(restoreSummary({ tasks: 0, sessions: 3 })).toBe('3 sessions.');
+    expect(restoreSummary({ tasks: 0, sessions: 0 })).toBe('No tasks or sessions in the file.');
   });
 });
 

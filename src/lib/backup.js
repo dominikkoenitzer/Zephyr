@@ -137,6 +137,14 @@ export function mergeSummary({ added, updated, sessions }) {
   return parts.length ? `${parts.join(', ')}.` : 'Nothing new in the file.';
 }
 
+/** One line for the toast after a Replace: the tasks and sessions now here, zeros left out. */
+export function restoreSummary({ tasks, sessions }) {
+  const parts = [];
+  if (tasks) parts.push(count(tasks, 'task'));
+  if (sessions) parts.push(count(sessions, 'session'));
+  return parts.length ? `${parts.join(', ')}.` : 'No tasks or sessions in the file.';
+}
+
 const time = (value) => {
   const t = Date.parse(value);
   return Number.isNaN(t) ? 0 : t;

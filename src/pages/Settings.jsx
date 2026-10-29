@@ -14,7 +14,7 @@ import { notificationService } from '../services/notificationService';
 import { localStorageService } from '../services/localStorage';
 import {
   applyBackup, backupCounts, collectBackupData, deleteAllData, downloadBackup, lastBackupLabel, mergeBackup, mergeSummary,
-  readBackup, splitFileName,
+  readBackup, restoreSummary, splitFileName,
 } from '../lib/backup';
 import { cn } from '../lib/utils';
 import { useSettings, useStoreValue } from '../hooks/useStore';
@@ -126,12 +126,12 @@ function Settings() {
   const finishImport = (mode) => {
     if (importing.current) return;
     importing.current = true;
-    const { backup } = pendingImport;
+    const { backup, file } = pendingImport;
     setImportOpen(false);
     try {
       if (mode === 'replace') {
-        const restored = applyBackup(backup);
-        toast.success(`Restored ${restored} item${restored === 1 ? '' : 's'}.`);
+        applyBackup(backup);
+        toast.success('Restored', { description: restoreSummary(file) });
       } else {
         toast.success('Merged', { description: mergeSummary(mergeBackup(backup)) });
       }
