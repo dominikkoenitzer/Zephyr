@@ -112,7 +112,7 @@ function MiniTimer({ snapshot, onToggle }) {
             type="button"
             onClick={onToggle}
             aria-label={running ? 'Pause timer' : 'Start timer'}
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-hero-foreground text-hero-to transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-hero-foreground text-hero-to transition-transform hover:scale-105 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-sun"
           >
             {running ? <Pause className="h-5 w-5" /> : <Play className="ml-0.5 h-5 w-5" />}
           </button>

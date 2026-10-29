@@ -89,7 +89,7 @@ const CustomNumberInput = React.forwardRef(({
           onChange={handleInputChange}
           onBlur={handleBlur}
           className={cn(
-            "flex h-11 w-full rounded-2xl border-0 bg-accent px-3 py-2 text-center text-[15px] font-semibold tabular-nums focus-visible:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-11 w-full rounded-2xl border-0 bg-accent px-3 py-2 text-center text-[15px] font-semibold tabular-nums focus-visible:bg-card focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
             className
           )}
           {...props}

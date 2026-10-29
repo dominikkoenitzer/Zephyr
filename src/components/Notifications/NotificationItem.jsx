@@ -68,7 +68,7 @@ const NotificationItem = ({ notification, onRead, onDelete, onClick }) => {
                 open();
               }}
               className={cn(
-                "block w-full rounded-md text-left text-xs sm:text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "block w-full rounded-md text-left text-xs sm:text-sm font-medium focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
                 notification.read ? "text-foreground" : "text-foreground font-semibold"
               )}
             >

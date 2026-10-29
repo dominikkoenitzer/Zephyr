@@ -5,7 +5,7 @@ import { WindLines } from '../ui/night-surface';
 import SunDial from './SunDial';
 
 const roundControl =
-  'flex h-14 w-14 items-center justify-center rounded-full bg-hero-foreground/10 text-hero-foreground transition-colors hover:bg-hero-foreground/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun';
+  'flex h-14 w-14 items-center justify-center rounded-full bg-hero-foreground/10 text-hero-foreground transition-colors hover:bg-hero-foreground/20 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-sun';
 
 /**
  * The distraction-free view: the whole screen turns to night, with the sun
@@ -55,7 +55,7 @@ const FullScreenMode = ({
       <button
         type="button"
         onClick={onExit}
-        className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-hero-foreground/10 text-hero-foreground transition-colors hover:bg-hero-foreground/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun sm:right-6 sm:top-6"
+        className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-hero-foreground/10 text-hero-foreground transition-colors hover:bg-hero-foreground/20 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-sun sm:right-6 sm:top-6"
         aria-label="Exit fullscreen"
         title="Exit fullscreen (Esc)"
       >
@@ -88,7 +88,7 @@ const FullScreenMode = ({
             onClick={onToggle}
             aria-label={isRunning ? 'Pause timer' : 'Start timer'}
             title={isRunning ? 'Pause (Space)' : 'Start (Space)'}
-            className="flex h-20 w-20 items-center justify-center rounded-full bg-hero-foreground text-hero-to shadow-lg transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sun/60"
+            className="flex h-20 w-20 items-center justify-center rounded-full bg-hero-foreground text-hero-to shadow-lg transition-transform hover:scale-105 active:scale-95 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-sun/60"
           >
             {isRunning ? <Pause className="h-8 w-8" strokeWidth={2.5} /> : <Play className="ml-1 h-8 w-8" strokeWidth={2.5} />}
           </button>

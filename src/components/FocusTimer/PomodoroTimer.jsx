@@ -129,7 +129,7 @@ const PomodoroTimer = () => {
 
   const card = 'rounded-3xl bg-card p-6 shadow-(--shadow-card)';
   const roundControl =
-    'flex h-12 w-12 items-center justify-center rounded-full bg-hero-foreground/10 text-hero-foreground transition-colors hover:bg-hero-foreground/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun disabled:pointer-events-none disabled:opacity-40';
+    'flex h-12 w-12 items-center justify-center rounded-full bg-hero-foreground/10 text-hero-foreground transition-colors hover:bg-hero-foreground/20 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-sun disabled:pointer-events-none disabled:opacity-40';
 
   return (
     <div className="grid w-full grid-cols-1 items-start gap-(--panel-gap) xl:grid-cols-12">
@@ -154,7 +154,7 @@ const PomodoroTimer = () => {
                 <Select value={sessionTask?.id || NO_TASK} onValueChange={chooseTask}>
                   <SelectTrigger
                     aria-label="Task for this session"
-                    className="h-9 w-[min(22rem,62vw)] rounded-full border-0 bg-hero-foreground/10 px-4 text-left text-[15px] font-semibold text-hero-foreground [&>span]:truncate hover:bg-hero-foreground/15 focus-visible:ring-2 focus-visible:ring-sun [&>svg]:text-hero-foreground/70"
+                    className="h-9 w-[min(22rem,62vw)] rounded-full border-0 bg-hero-foreground/10 px-4 text-left text-[15px] font-semibold text-hero-foreground [&>span]:truncate hover:bg-hero-foreground/15 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-sun [&>svg]:text-hero-foreground/70"
                   >
                     <SelectValue placeholder="Focus on…" />
                   </SelectTrigger>
@@ -215,7 +215,7 @@ const PomodoroTimer = () => {
             onClick={toggleTimer}
             aria-label={isRunning ? 'Pause timer' : 'Start timer'}
             title={isRunning ? 'Pause (Space)' : 'Start (Space)'}
-            className="flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full bg-hero-foreground text-hero-to shadow-lg transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sun/60"
+            className="flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full bg-hero-foreground text-hero-to shadow-lg transition-transform hover:scale-105 active:scale-95 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-sun/60"
           >
             {isRunning ? <Pause className="h-7 w-7" strokeWidth={2.5} /> : <Play className="ml-1 h-7 w-7" strokeWidth={2.5} />}
           </button>
@@ -240,7 +240,7 @@ const PomodoroTimer = () => {
             <button
               type="button"
               onClick={handleCreatePreset}
-              className="flex h-8 items-center gap-1 rounded-full border border-foreground/15 px-3 text-[13px] font-semibold transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex h-8 items-center gap-1 rounded-full border border-foreground/15 px-3 text-[13px] font-semibold transition-colors hover:bg-accent focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Plus className="h-3.5 w-3.5" aria-hidden="true" />
               New
@@ -276,7 +276,7 @@ const PomodoroTimer = () => {
                         handlePresetChange(preset.id);
                       }}
                       className={cn(
-                        'min-w-0 flex-1 truncate rounded-md text-left text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                        'min-w-0 flex-1 truncate rounded-md text-left text-[15px] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring',
                         isSelected ? 'font-semibold text-foreground' : 'font-medium text-muted-foreground group-hover/preset:text-foreground'
                       )}
                     >
@@ -291,7 +291,7 @@ const PomodoroTimer = () => {
                         <button
                           type="button"
                           aria-label={`Edit ${preset.name}`}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) transition-colors hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                           onClick={(e) => {
                             e.stopPropagation();
                             setEditingPreset(preset);
@@ -305,7 +305,7 @@ const PomodoroTimer = () => {
                           <button
                             type="button"
                             aria-label={`Delete ${preset.name}`}
-                            className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) transition-colors hover:text-destructive-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) transition-colors hover:text-destructive-strong focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeletePreset(preset.id);
@@ -322,7 +322,7 @@ const PomodoroTimer = () => {
                       <button
                         type="button"
                         aria-label={`Edit ${preset.name}`}
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                         onClick={(e) => {
                           e.stopPropagation();
                           setEditingPreset(preset);
@@ -336,7 +336,7 @@ const PomodoroTimer = () => {
                         <button
                           type="button"
                           aria-label={`Delete ${preset.name}`}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-card text-muted-foreground shadow-(--shadow-sm) focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeletePreset(preset.id);

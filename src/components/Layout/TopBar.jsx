@@ -12,7 +12,7 @@ import ZephyrMark from './ZephyrMark';
 const THEME_ICON = { light: Sun, dark: Moon, system: Monitor };
 
 const roundButton =
-  'relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-foreground shadow-(--shadow-sm) transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
+  'relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-foreground shadow-(--shadow-sm) transition-colors hover:bg-accent focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring';
 
 /**
  * The bar above every page, inside the content column: the search pill on the
@@ -89,7 +89,7 @@ function TopBar({ onSearchClick }) {
         <Link
           to="/"
           aria-label="Zephyr, go to the dashboard"
-          className="flex items-center gap-2.5 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
+          className="flex items-center gap-2.5 rounded-2xl focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
         >
           <ZephyrMark size={34} />
           <span className="text-[19px] font-semibold tracking-[-0.03em]">Zephyr</span>
@@ -98,7 +98,7 @@ function TopBar({ onSearchClick }) {
         <button
           type="button"
           onClick={onSearchClick}
-          className="hidden h-12 w-full max-w-md items-center gap-3 rounded-full bg-card pl-5 pr-2 text-left text-[15px] text-muted-foreground shadow-(--shadow-sm) transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:flex"
+          className="hidden h-12 w-full max-w-md items-center gap-3 rounded-full bg-card pl-5 pr-2 text-left text-[15px] text-muted-foreground shadow-(--shadow-sm) transition-colors hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring lg:flex"
         >
           <Search className="h-[18px] w-[18px] shrink-0" />
           <span className="flex-1 truncate">Search tasks or run a command</span>

@@ -15,7 +15,7 @@ function NavItem({ item, active, badge }) {
       to={item.href}
       aria-current={active ? 'page' : undefined}
       className={cn(
-        'group relative isolate flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        'group relative isolate flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-[15px] transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring',
         active ? 'font-semibold text-foreground' : 'font-medium text-muted-foreground hover:text-foreground'
       )}
     >
@@ -65,7 +65,7 @@ function FocusCard() {
       {/* Paused, `start=1` picks the session up where it stopped, so Resume resumes. */}
       <Link
         to={running ? '/focus' : '/focus?start=1'}
-        className="mt-5 flex h-10 items-center justify-center rounded-full bg-hero-foreground text-sm font-semibold text-hero-to transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun"
+        className="mt-5 flex h-10 items-center justify-center rounded-full bg-hero-foreground text-sm font-semibold text-hero-to transition-transform hover:scale-[1.02] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-sun"
       >
         {running ? 'Open' : paused ? 'Resume' : 'Start'}
       </Link>
@@ -87,7 +87,7 @@ function Sidebar() {
         <Link
           to="/"
           aria-label="Zephyr, go to the dashboard"
-          className="mx-2 flex items-center gap-3 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="mx-2 flex items-center gap-3 rounded-2xl focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
         >
           <ZephyrMark size={36} />
           <span className="text-[22px] font-semibold tracking-[-0.03em] text-foreground">Zephyr</span>
