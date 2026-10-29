@@ -142,4 +142,45 @@ describe('usePomodoro', () => {
     expect(timer.isRunning).toBe(true);
     expect(requestPermission).toHaveBeenCalledTimes(1);
   });
+
+  const focused = (role) => {
+    const button = document.createElement('button');
+    if (role) button.setAttribute('role', role);
+    container.appendChild(button);
+    button.focus();
+    return button;
+  };
+
+  const press = (target, key) =>
+    act(() => {
+      target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+    });
+
+  it.each(['r', 's', 'f', 'R', 'S', 'F'])('leaves %s to a focused select, which jumps to the option typed', (key) => {
+    mount();
+    act(() => timer.toggleTimer());
+    seconds(60);
+
+    press(focused('combobox'), key);
+
+    expect(timer.isRunning).toBe(true);
+    expect(timer.isBreak).toBe(false);
+    expect(timer.timeLeft).toBe(1440);
+    expect(timer.isFullScreen).toBe(false);
+  });
+
+  it('still takes R, S and F on a plain focused button', () => {
+    mount();
+    act(() => timer.toggleTimer());
+    seconds(60);
+    const button = focused();
+
+    press(button, 'f');
+    expect(timer.isFullScreen).toBe(true);
+    press(button, 's');
+    expect(timer.isBreak).toBe(true);
+    press(button, 'r');
+    expect(timer.isRunning).toBe(false);
+    expect(timer.timeLeft).toBe(timer.currentSessionTime);
+  });
 });

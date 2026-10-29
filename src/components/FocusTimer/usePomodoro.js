@@ -414,6 +414,8 @@ export function usePomodoro() {
       }
       const tag = e.target.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable) return;
+      // A closed select is a button that jumps to the option whose name is typed.
+      if (e.target.getAttribute?.('role') === 'combobox') return;
       // A focused button answers Space and Enter itself; the letters are still
       // the timer's, or R, S and F died after any click on a control.
       if (tag === 'BUTTON' && (e.code === 'Space' || e.key === 'Enter')) return;
