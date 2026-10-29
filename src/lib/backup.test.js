@@ -362,6 +362,10 @@ describe('backupCounts', () => {
     expect(backupCounts({})).toEqual({ tasks: 0, sessions: 0 });
     expect(backupCounts({ zephyr_focus_sessions: '{bad' })).toEqual({ tasks: 0, sessions: 0 });
   });
+
+  it('counts only the stored entries that are sessions, as the pages do', () => {
+    expect(backupCounts({ zephyr_focus_sessions: '[null, {}, 5, "work", [], {}]' })).toEqual({ tasks: 0, sessions: 2 });
+  });
 });
 
 describe('mergeTaskRecords', () => {

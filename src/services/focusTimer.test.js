@@ -50,6 +50,19 @@ describe('finishPhase', () => {
     run(endedAt + 300_000);
     expect(localStorageService.getFocusSessions()).toHaveLength(2);
   });
+
+  it('logs a session once when the stored list holds entries that are not sessions', () => {
+    const earlier = { id: 's1', date: '2026-09-01T08:00:00.000Z', duration: 1500, type: 'work' };
+    localStorage.setItem('zephyr_focus_sessions', JSON.stringify([null, earlier, 5, 'work']));
+    const endedAt = Date.now() - 1000;
+    run(endedAt);
+    run(endedAt + 800);
+    const sessions = localStorageService.getFocusSessions();
+    expect(sessions).toHaveLength(2);
+    expect(sessions[0]).toEqual(earlier);
+    expect(new Date(sessions[1].date).getTime()).toBe(endedAt);
+    expect(notificationService.createNotification).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('finishExpiredPhase', () => {

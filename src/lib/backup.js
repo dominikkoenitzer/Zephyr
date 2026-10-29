@@ -5,7 +5,7 @@
 
 import { PRESETS_KEY } from '../services/focusTimer';
 import {
-  DEVICE_KEYS, EXTRA_BACKUP_KEYS, STORAGE_KEYS, isBackupKey, localStorageService, readTaskRecord,
+  DEVICE_KEYS, EXTRA_BACKUP_KEYS, STORAGE_KEYS, isBackupKey, isSession, localStorageService, readTaskRecord,
 } from '../services/localStorage';
 
 // Which keys a backup carries is decided next to STORAGE_KEYS, because the
@@ -134,7 +134,7 @@ export function readBackup(text) {
 export function backupCounts(data) {
   const tasks = readTaskRecord(data[STORAGE_KEYS.TASKS]).tasks.length;
   const parsed = parseJson(data[STORAGE_KEYS.FOCUS_SESSIONS] ?? '[]');
-  const sessions = parsed.ok && Array.isArray(parsed.value) ? parsed.value.length : 0;
+  const sessions = parsed.ok && Array.isArray(parsed.value) ? parsed.value.filter(isSession).length : 0;
   return { tasks, sessions };
 }
 

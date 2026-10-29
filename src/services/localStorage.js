@@ -104,6 +104,9 @@ export function readTaskRecord(raw) {
   return { tasks, cleared };
 }
 
+// A stored session entry that is not an object, which an import before backups were checked could leave, is skipped.
+export const isSession = (entry) => !!entry && typeof entry === 'object' && !Array.isArray(entry);
+
 /**
  * The cleared list after a save: finished tasks that left the list are added,
  * and any task that is back in the list (an Undo) is taken out again, so one
@@ -277,7 +280,7 @@ class LocalStorageService {
 
       const parsed = JSON.parse(data);
       // Anything but a list, such as a "null" an import brought in before backups were checked, reads as none.
-      return Array.isArray(parsed) ? parsed : [];
+      return Array.isArray(parsed) ? parsed.filter(isSession) : [];
     } catch (error) {
       console.error('Failed to get focus sessions:', error);
       return [];
