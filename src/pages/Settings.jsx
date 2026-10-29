@@ -169,7 +169,7 @@ function Settings() {
       setTimeout(() => window.location.reload(), 1600);
     } catch (error) {
       console.error('Failed to clear local storage:', error);
-      toast.error('Failed to clear local storage. Please try again.');
+      toast.error('Could not delete all the data. Try again.');
     }
   };
 

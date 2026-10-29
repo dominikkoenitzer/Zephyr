@@ -86,3 +86,18 @@ describe('Settings, import', () => {
     expect(toast.error).toHaveBeenCalledWith('Could not save that backup here, so nothing changed.');
   });
 });
+
+describe('Settings, delete all data', () => {
+  it('says in plain words when the data could not be deleted', () => {
+    localStorage.setItem('zephyr_tasks', JSON.stringify({ tasks: [T('a')] }));
+    open();
+    act(() => button('Delete', container).click());
+    vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+      throw new Error('SecurityError');
+    });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    act(() => button('Delete', document.querySelector('[role="dialog"]')).click());
+    expect(toast.success).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalledWith('Could not delete all the data. Try again.');
+  });
+});
