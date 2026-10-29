@@ -201,6 +201,16 @@ describe('parseQuickTask: a typed year', () => {
   it('keeps a slash date with a three-digit year as text', () => {
     expect(parseQuickTask('Trip 1/2/202')).toMatchObject({ title: 'Trip 1/2/202', dueDate: null });
   });
+
+  it('saves every typed year as a YYYY-MM-DD due date or not at all', () => {
+    const years = ['5', '27', '202', '2027', '0999', '20271'];
+    const typed = years.flatMap((y) => [`Trip 1/2/${y}`, `Trip ${y.padStart(4, '0')}-01-02`, `Trip jan 2 ${y}`, `Trip 2 jan ${y}`]);
+    for (const text of typed) {
+      const { dueDate } = parseQuickTask(text);
+      if (dueDate !== null) expect(dueDate, text).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+    expect(parseQuickTask('Trip 0999-01-02').dueDate).toBe('0999-01-02');
+  });
 });
 
 describe('parseQuickTask: short words that look like dates', () => {

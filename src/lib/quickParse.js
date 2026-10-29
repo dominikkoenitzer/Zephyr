@@ -29,7 +29,8 @@ const PRIORITY_MAP = {
 };
 
 const pad = (n) => String(n).padStart(2, '0');
-const toISODate = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+// A year before 1000 still gets four digits, so the key sorts with the others.
+const toISODate = (date) => `${String(date.getFullYear()).padStart(4, '0')}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
 const startOfToday = () => {
   const d = new Date();
