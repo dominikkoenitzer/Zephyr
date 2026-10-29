@@ -4,9 +4,14 @@ import { createRoot } from 'react-dom/client';
 import { MemoryRouter } from 'react-router-dom';
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn() } }));
-vi.mock('../../services/notificationService', () => ({
-  notificationService: { createNotification: vi.fn(), playChime: vi.fn(), showOsNotification: vi.fn() },
-}));
+vi.mock('../../services/notificationService', async (importOriginal) => {
+  const { notificationService: real } = await importOriginal();
+  return {
+    notificationService: {
+      allows: real.allows.bind(real), createNotification: vi.fn(), playChime: vi.fn(), showOsNotification: vi.fn(),
+    },
+  };
+});
 
 const { usePomodoro } = await import('./usePomodoro');
 const { localStorageService } = await import('../../services/localStorage');
@@ -141,5 +146,20 @@ describe('usePomodoro', () => {
 
     expect(timer.isRunning).toBe(true);
     expect(requestPermission).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not ask for notification permission when notifications are switched off', () => {
+    const requestPermission = vi.fn(() => Promise.resolve('default'));
+    vi.stubGlobal('Notification', Object.assign(function Notification() {}, { permission: 'default', requestPermission }));
+    localStorage.setItem('zephyr_notification_settings', JSON.stringify({ enabled: false }));
+    mount();
+    act(() => timer.toggleTimer());
+    act(() => timer.toggleTimer());
+
+    localStorage.setItem('zephyr_notification_settings', JSON.stringify({ enabled: true, timer: { enabled: false } }));
+    act(() => timer.toggleTimer());
+
+    expect(timer.isRunning).toBe(true);
+    expect(requestPermission).not.toHaveBeenCalled();
   });
 });

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   applyBackup, backupCounts, backupFileName, collectBackupData, deleteAllData, isBackupKey, isValidBackup,
   lastBackupLabel, mergeBackup, mergeSessions, mergeSummary, mergeTaskRecords, readBackup, requestPersistentStorage,
-  resetPersistRequest, shouldAskPersist, splitFileName, wipeAllData,
+  resetPersistRequest, restoreSummary, shouldAskPersist, splitFileName, wipeAllData,
 } from './backup';
 import { localStorageService } from '../services/localStorage';
 
@@ -370,6 +370,15 @@ describe('mergeSummary', () => {
   });
 });
 
+describe('restoreSummary', () => {
+  it('names the tasks and sessions a Replace put in place, zeros left out', () => {
+    expect(restoreSummary({ tasks: 2, sessions: 1 })).toBe('2 tasks, 1 session.');
+    expect(restoreSummary({ tasks: 1, sessions: 0 })).toBe('1 task.');
+    expect(restoreSummary({ tasks: 0, sessions: 3 })).toBe('3 sessions.');
+    expect(restoreSummary({ tasks: 0, sessions: 0 })).toBe('No tasks or sessions in the file.');
+  });
+});
+
 describe('backupCounts', () => {
   it('counts tasks and sessions, and reads missing or damaged values as none', () => {
     expect(backupCounts({ zephyr_tasks: record([T('a'), T('b')]), zephyr_focus_sessions: '[{},{},{}]' }))
@@ -500,6 +509,19 @@ describe('Replace and Merge', () => {
     expect(stored().tasks.map((t) => t.id)).toEqual(['a', 'c']);
     expect(localStorage.getItem('theme')).toBe('light');
     expect(localStorage.getItem('zephyr_settings')).toBe('{"workDuration":25}');
+  });
+
+  it('Replace takes out what the file does not have, and keeps what describes this browser', () => {
+    mine();
+    localStorage.setItem('zephyr_timer_state', '{"isRunning":true}');
+    localStorage.setItem('zephyr_last_backup', '2026-10-01T08:00:00.000Z');
+    applyBackup(file({ zephyr_tasks: record([T('c')]) }));
+    expect(stored().tasks.map((t) => t.id)).toEqual(['c']);
+    expect(localStorage.getItem('zephyr_focus_sessions')).toBeNull();
+    expect(localStorage.getItem('zephyr_settings')).toBeNull();
+    expect(localStorage.getItem('theme')).toBeNull();
+    expect(localStorage.getItem('zephyr_timer_state')).toBe('{"isRunning":true}');
+    expect(localStorage.getItem('zephyr_last_backup')).toBe('2026-10-01T08:00:00.000Z');
   });
 
   it("Merge adds and updates tasks and sessions but keeps this device's settings", () => {

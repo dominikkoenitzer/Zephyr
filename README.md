@@ -176,14 +176,14 @@ src/
 
 ## Architecture
 
-Zephyr has no Redux, Zustand, or Context store. Application state lives in **singleton service classes** under `src/services/`, each persisting to `localStorage` (all keys prefixed `zephyr_`):
+Zephyr has no Redux, Zustand, or Context store. Application state lives in **singleton service classes** under `src/services/`, each persisting to `localStorage` (keys prefixed `zephyr_`, apart from `theme`, `focusTimerPresets` and `selectedFocusPreset`):
 
 - **`localStorage.js`** is the canonical data store for tasks, focus sessions, the streak and settings. It owns the schema and the add/update/delete helpers.
 - **`searchService.js`** does task search by title, description and `#tag`, wired into the <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> + <kbd>K</kbd> palette.
 - **`notificationService.js`** polls for task due dates and plays a Web Audio chime.
 - **`themeService.js`** handles light/dark/system via a class on `<html>`, applied before React renders to avoid a flash, and kept in step with the OS media query while the preference is "system".
 
-Every write broadcasts a `zephyr:change` event. Reactive hooks in **`src/hooks/useStore.js`** (`useTasks`, `useSettings`) subscribe to it, along with the native `storage` event for cross-tab sync, so views update live without a global store. Routes are defined in `src/routes/routes.jsx`, lazy-loaded, and wrapped in a Suspense loader.
+Writes to tasks, sessions and settings broadcast a `zephyr:change` event. Reactive hooks in **`src/hooks/useStore.js`** (`useTasks`, `useSettings`) subscribe to it, along with the native `storage` event for cross-tab sync, so views update live without a global store. Routes are defined in `src/routes/routes.jsx`, lazy-loaded, and wrapped in a Suspense loader.
 
 ## Privacy
 

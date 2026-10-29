@@ -14,7 +14,7 @@ import { notificationService } from '../services/notificationService';
 import { localStorageService } from '../services/localStorage';
 import {
   applyBackup, backupCounts, collectBackupData, deleteAllData, downloadBackup, lastBackupLabel, mergeBackup, mergeSummary,
-  readBackup, splitFileName,
+  readBackup, restoreSummary, splitFileName,
 } from '../lib/backup';
 import { cn } from '../lib/utils';
 import { useSettings, useStoreValue } from '../hooks/useStore';
@@ -126,18 +126,19 @@ function Settings() {
   const finishImport = (mode) => {
     if (importing.current) return;
     importing.current = true;
-    const { backup } = pendingImport;
+    const { backup, file } = pendingImport;
     setImportOpen(false);
     try {
       if (mode === 'replace') {
-        const restored = applyBackup(backup);
-        toast.success(`Restored ${restored} item${restored === 1 ? '' : 's'}.`);
+        applyBackup(backup);
+        toast.success('Restored', { description: restoreSummary(file) });
       } else {
         toast.success('Merged', { description: mergeSummary(mergeBackup(backup)) });
       }
       setTimeout(() => window.location.reload(), 1200);
     } catch {
-      toast.error('Could not import that backup file.');
+      // The file was read and checked already; the browser refused to store it, and writeAll put everything back.
+      toast.error('Could not save that backup here, so nothing changed.');
     }
   };
 
@@ -168,7 +169,7 @@ function Settings() {
       setTimeout(() => window.location.reload(), 1600);
     } catch (error) {
       console.error('Failed to clear local storage:', error);
-      toast.error('Failed to clear local storage. Please try again.');
+      toast.error('Could not delete all the data. Try again.');
     }
   };
 

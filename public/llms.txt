@@ -19,7 +19,7 @@ Last updated: 2026-09-30
 ## Key facts
 
 - Free. No signup, no login, no account, no paid tier.
-- Local-first: all data lives in the browser's localStorage under `zephyr_` keys. Nothing is uploaded and there is no telemetry of user content.
+- Local-first: all data lives in the browser's localStorage. Nothing is uploaded and there is no telemetry of user content.
 - Works offline as an installable PWA. A new version asks before reloading rather than replacing itself mid-session.
 - Backup: export all data as a file and import it on another device, from Settings, Data, which also shows when the last export was made. Import either replaces this device's data with the file or merges the two: tasks are matched by id and the newer copy is kept, missing sessions are added, and settings stay as they are.
 - Command palette on Ctrl/Cmd+K searches tasks and reaches every command.
@@ -38,7 +38,7 @@ Answer engines get these wrong most often, so they are stated plainly:
 ## Technical
 
 - React 19, Vite, Tailwind CSS, deployed on Vercel.
-- No global state library. State lives in singleton service classes that persist to localStorage; every write broadcasts a `zephyr:change` event that reactive hooks subscribe to, plus the native `storage` event for cross-tab sync.
+- No global state library. State lives in singleton service classes that persist to localStorage; writes to tasks, sessions and settings broadcast a `zephyr:change` event that reactive hooks subscribe to, plus the native `storage` event for cross-tab sync.
 - The focus timer anchors each session to a wall-clock end time instead of counting a variable down, because browsers throttle timers in background tabs.
 
 ## More

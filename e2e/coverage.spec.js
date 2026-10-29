@@ -80,7 +80,7 @@ test.describe('backup', () => {
     const restored = page.waitForEvent('load');
     await page.getByLabel('Import a Zephyr backup file').setInputFiles(file);
     await page.getByRole('dialog', { name: 'Import backup' }).getByRole('button', { name: 'Replace' }).click();
-    await expect(page.getByText(/^Restored \d+ items?\./)).toBeVisible();
+    await expect(page.getByText('Restored', { exact: true })).toBeVisible();
     await restored;
     expect(await storedTasks(page)).toEqual(before);
   });

@@ -57,6 +57,7 @@ const NotificationCenter = ({ id, onClose }) => {
               variant="ghost"
               size="sm"
               onClick={handleMarkAllRead}
+              aria-label="Mark all read"
               className="h-7 sm:h-8 px-1.5 sm:px-2 text-[10px] sm:text-xs"
             >
               <CheckCheck className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" />

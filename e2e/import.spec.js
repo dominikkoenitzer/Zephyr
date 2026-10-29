@@ -78,7 +78,8 @@ test.describe('import', () => {
     const reloaded = page.waitForEvent('load');
     await pick(page, otherDevice());
     await dialog.getByRole('button', { name: 'Replace' }).click();
-    await expect(page.getByText(/^Restored \d+ items?\./)).toBeVisible();
+    await expect(page.getByText('Restored', { exact: true })).toBeVisible();
+    await expect(page.getByText('2 tasks.', { exact: true })).toBeVisible();
     await reloaded;
     expect((await storedTasks(page)).map((t) => t.id)).toEqual(['task-2', 'task-other']);
     expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark');

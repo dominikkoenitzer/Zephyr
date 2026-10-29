@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Clock, Target, Timer as TimerIcon } from 'lucide-react';
 import { localStorageService } from '../../services/localStorage';
+import { notificationService } from '../../services/notificationService';
 import { DEFAULT_PRESETS, THEME_COLOR_OPTIONS, toHexColor } from './presets';
 import { ROUTE_META } from '../../routes/meta';
 
@@ -21,6 +22,8 @@ const readAutoStartFocus = () => Boolean(localStorageService.getSettings()?.auto
 
 /** Asks once for system notifications, called only when a session is started, as browsers want a click or key press first. */
 function askToNotify() {
+  // Only the timer shows system notifications, so it asks only while Settings has them on.
+  if (!notificationService.allows('timer')) return;
   if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission();
   }
