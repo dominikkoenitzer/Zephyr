@@ -83,9 +83,11 @@ describe('collectBackupData', () => {
   });
 
   it('writes other stored values an import would refuse as the app reads them', () => {
+    const entry = { id: 't1', completedAt: '2026-10-02T08:00:00.000Z', clearedAt: '2026-10-03T08:00:00.000Z' };
     const cases = [
       ['zephyr_tasks', 'null', { tasks: [], cleared: [] }],
       ['zephyr_tasks', '{oops', { tasks: [], cleared: [] }],
+      ['zephyr_tasks', JSON.stringify({ tasks: null, cleared: [entry] }), { tasks: [], cleared: [entry] }],
       ['zephyr_notifications', '[null]', []],
       ['zephyr_settings', '[]', localStorageService.getSettings()],
       ['zephyr_view_prefs', 'null', {}],
@@ -104,6 +106,13 @@ describe('collectBackupData', () => {
     const stored = '{"tasks":[{"id":"t1","title":5}],"cleared":[],"lastUpdated":1}';
     localStorage.setItem('zephyr_tasks', stored);
     expect(collectBackupData().zephyr_tasks).toBe(stored);
+  });
+
+  it('copies a readable value verbatim when another one is refused', () => {
+    const tasks = '{"tasks":[{"id":"t1","title":"Write"}],"cleared":[],"lastUpdated":1}';
+    localStorage.setItem('zephyr_tasks', tasks);
+    localStorage.setItem('zephyr_settings', '[]');
+    expect(collectBackupData().zephyr_tasks).toBe(tasks);
   });
 });
 
