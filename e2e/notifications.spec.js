@@ -50,6 +50,7 @@ test.describe('the notification panel', () => {
   test("the timer's own keys stand down too while it is open", async ({ page }) => {
     await seed(page);
     await page.goto('/focus');
+    await expect(page.getByRole('button', { name: 'Start timer' })).toBeVisible();
     await bell(page).click();
     await expect(panel(page)).toBeVisible();
     await page.keyboard.press('f');

@@ -58,6 +58,29 @@ describe('collectBackupData', () => {
       expect(read.backup.data.zephyr_focus_sessions).toBe('[]');
     });
   });
+
+  const one = { id: 'n1', title: 'Task due today', read: false, createdAt: '2026-10-02T08:00:00.000Z' };
+  const two = { id: 'n2', title: 'Task overdue', read: true, createdAt: '2026-10-03T08:00:00.000Z' };
+  const notificationsBackupOf = (stored) => {
+    localStorage.setItem('zephyr_notifications', stored);
+    return readBackup(JSON.stringify({ app: 'zephyr', version: 1, data: collectBackupData() }));
+  };
+
+  it.each([
+    ['[null, record]', [null, one], [one]],
+    ['[record, 5, record]', [one, 5, two], [one, two]],
+    ['a non-list', { id: 'n1' }, []],
+  ])('writes stored notifications %s as the app reads them', (_, stored, read) => {
+    const backup = notificationsBackupOf(JSON.stringify(stored));
+    expect(backup.ok).toBe(true);
+    expect(JSON.parse(backup.backup.data.zephyr_notifications)).toEqual(read);
+  });
+
+  it('copies a stored list of notifications verbatim', () => {
+    expect(notificationsBackupOf('[]').backup.data.zephyr_notifications).toBe('[]');
+    const clean = JSON.stringify([one, two], null, 1);
+    expect(notificationsBackupOf(clean).backup.data.zephyr_notifications).toBe(clean);
+  });
 });
 
 describe('isValidBackup', () => {
