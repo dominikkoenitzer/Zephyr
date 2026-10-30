@@ -28,8 +28,9 @@ const dayKey = (date = new Date()) =>
 export const NOTIFICATIONS_KEY = STORAGE_KEYS.NOTIFICATIONS;
 
 /** The stored list must be records; a backup can bring in any shape. */
-export const isNotificationList = (value) =>
-  Array.isArray(value) && value.every((n) => n !== null && typeof n === 'object' && !Array.isArray(n));
+const isNotification = (n) => n !== null && typeof n === 'object' && !Array.isArray(n);
+
+export const isNotificationList = (value) => Array.isArray(value) && value.every(isNotification);
 
 class NotificationService {
   constructor() {
@@ -82,7 +83,8 @@ class NotificationService {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
       const parsed = data ? JSON.parse(data) : [];
-      return isNotificationList(parsed) ? parsed : [];
+      // One bad entry drops only itself, not the records around it.
+      return Array.isArray(parsed) ? parsed.filter(isNotification) : [];
     } catch (error) {
       console.error('Failed to get notifications:', error);
       return [];

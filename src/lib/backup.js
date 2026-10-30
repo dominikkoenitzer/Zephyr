@@ -7,7 +7,7 @@ import { PRESETS_KEY } from '../services/focusTimer';
 import {
   DEVICE_KEYS, EXTRA_BACKUP_KEYS, STORAGE_KEYS, isBackupKey, isSession, localStorageService, readTaskRecord,
 } from '../services/localStorage';
-import { NOTIFICATIONS_KEY, isNotificationList } from '../services/notificationService';
+import { NOTIFICATIONS_KEY, isNotificationList, notificationService } from '../services/notificationService';
 
 // Which keys a backup carries is decided next to STORAGE_KEYS, because the
 // storage size in Settings counts the same keys and localStorage.js cannot
@@ -28,6 +28,11 @@ export function collectBackupData() {
   const parsed = sessions === undefined ? { ok: false } : parseJson(sessions);
   if (parsed.ok && !(Array.isArray(parsed.value) && parsed.value.every(isSession))) {
     data[STORAGE_KEYS.FOCUS_SESSIONS] = JSON.stringify(localStorageService.getFocusSessions());
+  }
+  // Stored notifications an import would refuse go out as the bell reads them.
+  const notifications = data[NOTIFICATIONS_KEY];
+  if (notifications !== undefined && !hasReadableData({ [NOTIFICATIONS_KEY]: notifications })) {
+    data[NOTIFICATIONS_KEY] = JSON.stringify(notificationService.readStored());
   }
   return data;
 }

@@ -194,8 +194,29 @@ describe('notificationService: unkeyed notifications', () => {
 
 describe('notificationService: stored list', () => {
   // The list travels in backups, so an import can bring in any shape.
-  const bad = [{}, 'text', 5, [null], [1, 2], [{ id: 'n1', read: false }, 'x']];
+  const bad = [{}, 'text', 5, [null], [1, 2]];
   const store = (value) => localStorage.setItem('zephyr_notifications', JSON.stringify(value));
+  const record = (id) => ({ id, type: 'timer', title: id, read: false, createdAt: new Date().toISOString() });
+
+  const one = record('n1');
+  const two = record('n2');
+
+  it.each([
+    ['[null, record]', [null, one], [one]],
+    ['[record, 5, record]', [one, 5, two], [one, two]],
+    ['[]', [], []],
+    ['a non-list', { id: 'n1' }, []],
+  ])('reads %s entry by entry', (_, stored, read) => {
+    store(stored);
+    expect(notificationService.getNotifications()).toEqual(read);
+    expect(notificationService.getUnreadCount()).toBe(read.length);
+  });
+
+  it('keeps the records of a stored list with a bad entry when it saves', () => {
+    store([null, one]);
+    notificationService.markAllAsRead();
+    expect(JSON.parse(localStorage.getItem('zephyr_notifications'))).toEqual([{ ...one, read: true }]);
+  });
 
   it('reads a stored value that is not a list of records as no notifications', () => {
     for (const value of bad) {
