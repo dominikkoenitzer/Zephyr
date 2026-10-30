@@ -52,6 +52,15 @@ describe('localStorageService: tasks', () => {
     localStorage.setItem('zephyr_tasks', JSON.stringify({ tasks }));
     expect(localStorageService.getTasks().map((t) => t.tags)).toEqual([[], [], ['work'], [], undefined]);
   });
+
+  it('passes over a stored task that is not an object', () => {
+    const tasks = [null, { id: 'a', title: 'A' }, 5, 'b', [], { id: 'c', title: 'C' }];
+    localStorage.setItem('zephyr_tasks', JSON.stringify({ tasks, cleared: [] }));
+    expect(localStorageService.getTasks().map((t) => t.id)).toEqual(['a', 'c']);
+    expect(localStorageService.updateTask('a', { title: 'A2' }).title).toBe('A2');
+    localStorageService.deleteTask('c');
+    expect(localStorageService.getTasks().map((t) => t.title)).toEqual(['A2']);
+  });
 });
 
 describe('localStorageService: failed saves', () => {

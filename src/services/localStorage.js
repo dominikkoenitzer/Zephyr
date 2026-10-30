@@ -104,8 +104,9 @@ export function readTaskRecord(raw) {
   return { tasks, cleared };
 }
 
-// A stored session entry that is not an object, which an import before backups were checked could leave, is skipped.
-export const isSession = (entry) => !!entry && typeof entry === 'object' && !Array.isArray(entry);
+// A stored task or session entry that is not an object, which an import before backups were checked could leave, is skipped.
+const isRecord = (entry) => !!entry && typeof entry === 'object' && !Array.isArray(entry);
+export const isSession = isRecord;
 
 /**
  * The cleared list after a save: finished tasks that left the list are added,
@@ -190,9 +191,10 @@ class LocalStorageService {
       if (!data) return [];
 
       const parsed = JSON.parse(data);
-      // A due date that is not text reads as none, and tags keep only the
-      // text in a list, so no reader trips over them.
-      return (parsed.tasks || []).map((task) => {
+      // An entry that is not an object is skipped, a due date that is not
+      // text reads as none, and tags keep only the text in a list, so no
+      // reader trips over them.
+      return (parsed.tasks || []).filter(isRecord).map((task) => {
         let read = task;
         if (task?.dueDate != null && typeof task.dueDate !== 'string') read = { ...read, dueDate: null };
         if (task?.tags != null && !(Array.isArray(task.tags) && task.tags.every(isText))) {
