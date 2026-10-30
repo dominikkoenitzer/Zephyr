@@ -2,9 +2,15 @@ import { useEffect, useRef } from 'react';
 
 const TYPING_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT']);
 
-/** Is the keystroke aimed at a field the user is writing in? */
+/**
+ * Is the keystroke aimed at a field the user is writing in? A closed Radix
+ * select is a `button role="combobox"` whose typeahead takes letters as well.
+ */
 const isTyping = (target) =>
-  !!target && (TYPING_TAGS.has(target.tagName) || target.isContentEditable);
+  !!target &&
+  (TYPING_TAGS.has(target.tagName) ||
+    target.isContentEditable ||
+    target.getAttribute?.('role') === 'combobox');
 
 /**
  * A Radix dialog, popover or select is open. Single-letter shortcuts stand
