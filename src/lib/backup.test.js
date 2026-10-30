@@ -81,6 +81,30 @@ describe('collectBackupData', () => {
     const clean = JSON.stringify([one, two], null, 1);
     expect(notificationsBackupOf(clean).backup.data.zephyr_notifications).toBe(clean);
   });
+
+  it('writes other stored values an import would refuse as the app reads them', () => {
+    const cases = [
+      ['zephyr_tasks', 'null', { tasks: [], cleared: [] }],
+      ['zephyr_tasks', '{oops', { tasks: [], cleared: [] }],
+      ['zephyr_notifications', '[null]', []],
+      ['zephyr_settings', '[]', localStorageService.getSettings()],
+      ['zephyr_view_prefs', 'null', {}],
+      ['zephyr_focus_sessions', '{oops', []],
+    ];
+    cases.forEach(([key, stored, expected]) => {
+      localStorage.clear();
+      localStorage.setItem(key, stored);
+      const read = readBackup(JSON.stringify({ app: 'zephyr', version: 1, data: collectBackupData() }));
+      expect(read.ok, `${key} ${stored}`).toBe(true);
+      expect(JSON.parse(read.backup.data[key])).toEqual(expected);
+    });
+  });
+
+  it('keeps a stored value it cannot make readable as it is', () => {
+    const stored = '{"tasks":[{"id":"t1","title":5}],"cleared":[],"lastUpdated":1}';
+    localStorage.setItem('zephyr_tasks', stored);
+    expect(collectBackupData().zephyr_tasks).toBe(stored);
+  });
 });
 
 describe('isValidBackup', () => {

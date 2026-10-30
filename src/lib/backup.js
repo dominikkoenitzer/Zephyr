@@ -16,6 +16,15 @@ export { EXTRA_BACKUP_KEYS, DEVICE_KEYS, isBackupKey };
 
 export const BACKUP_VERSION = 1;
 
+// How the app reads each value the import checks whole.
+const appReaders = {
+  [STORAGE_KEYS.TASKS]: () => readTaskRecord(localStorage.getItem(STORAGE_KEYS.TASKS)),
+  [NOTIFICATIONS_KEY]: () => notificationService.readStored(),
+  [STORAGE_KEYS.FOCUS_SESSIONS]: () => localStorageService.getFocusSessions(),
+  [STORAGE_KEYS.SETTINGS]: () => localStorageService.getSettings(),
+  [STORAGE_KEYS.VIEW_PREFS]: () => localStorageService.getViewPrefs(),
+};
+
 /** Every backup-worthy key and its raw stored string. */
 export function collectBackupData() {
   const data = {};
@@ -23,17 +32,12 @@ export function collectBackupData() {
     const key = localStorage.key(i);
     if (isBackupKey(key)) data[key] = localStorage.getItem(key);
   }
-  // Stored sessions that an import would refuse whole go out as the pages read them.
-  const sessions = data[STORAGE_KEYS.FOCUS_SESSIONS];
-  const parsed = sessions === undefined ? { ok: false } : parseJson(sessions);
-  if (parsed.ok && !(Array.isArray(parsed.value) && parsed.value.every(isSession))) {
-    data[STORAGE_KEYS.FOCUS_SESSIONS] = JSON.stringify(localStorageService.getFocusSessions());
-  }
-  // Stored notifications an import would refuse go out as the bell reads them.
-  const notifications = data[NOTIFICATIONS_KEY];
-  if (notifications !== undefined && !hasReadableData({ [NOTIFICATIONS_KEY]: notifications })) {
-    data[NOTIFICATIONS_KEY] = JSON.stringify(notificationService.readStored());
-  }
+  // A stored value an import would refuse goes out as the app reads it, when the import takes that reading.
+  Object.entries(appReaders).forEach(([key, read]) => {
+    if (data[key] === undefined || hasReadableData({ [key]: data[key] })) return;
+    const value = JSON.stringify(read());
+    if (hasReadableData({ [key]: value })) data[key] = value;
+  });
   return data;
 }
 
