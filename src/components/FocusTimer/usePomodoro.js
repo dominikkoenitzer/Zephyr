@@ -378,6 +378,8 @@ export function usePomodoro() {
   // A skipped session is not counted, so the long break it could fall on is
   // the one already taken: the break after it is always the short one.
   const skipSession = () => {
+    // A focus session that has not started has nothing to skip, from any button or key.
+    if (!isBreak && timeLeft === phaseTotal) return;
     setIsRunning(false);
     setLongBreak(false);
     if (isBreak) {

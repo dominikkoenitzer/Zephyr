@@ -83,6 +83,16 @@ describe('usePomodoro', () => {
     expect(timer.currentSessionTime).toBe(3000);
   });
 
+  it('does not skip a focus session that has not started', () => {
+    mount();
+    const length = timer.currentSessionTime;
+    act(() => timer.skipSession());
+
+    expect(timer.isBreak).toBe(false);
+    expect(timer.timeLeft).toBe(length);
+    expect(timer.currentSessionTime).toBe(length);
+  });
+
   it('gives a short break for a session skipped right after the long break', () => {
     localStorageService.saveTimerState({
       timeLeft: 1500, isRunning: false, isBreak: false, pomodorosCompleted: 4,
