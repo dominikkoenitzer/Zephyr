@@ -218,7 +218,7 @@ export function mergeTaskRecords(local, incoming) {
     const current = best.get(id);
     if (!current || candidate.stamp > current.stamp) best.set(id, candidate);
   };
-  local.tasks.forEach((task) => offer(task.id, { kind: 'task', item: task, stamp: taskStamp(task) }));
+  local.tasks.forEach((task) => offer(task?.id, { kind: 'task', item: task, stamp: taskStamp(task) }));
   local.cleared.forEach((entry) => offer(entry.id, { kind: 'cleared', item: entry, stamp: time(entry.clearedAt) }));
   incoming.tasks.forEach((task) => offer(task.id, { kind: 'task', item: task, stamp: taskStamp(task) }));
   incoming.cleared.forEach((entry) => offer(entry.id, { kind: 'cleared', item: entry, stamp: time(entry.clearedAt) }));
@@ -229,8 +229,8 @@ export function mergeTaskRecords(local, incoming) {
   const seen = new Set();
   const shared = new Set();
   local.tasks.forEach((task) => {
-    if (seen.has(task.id)) shared.add(task.id);
-    seen.add(task.id);
+    if (seen.has(task?.id)) shared.add(task?.id);
+    seen.add(task?.id);
   });
 
   const tasks = [];
@@ -238,9 +238,9 @@ export function mergeTaskRecords(local, incoming) {
   let added = 0;
   let updated = 0;
   local.tasks.forEach((task) => {
-    if (typeof task.id !== 'string' || shared.has(task.id)) {
+    if (typeof task?.id !== 'string' || shared.has(task.id)) {
       tasks.push(task);
-      placed.add(task.id);
+      placed.add(task?.id);
       return;
     }
     placed.add(task.id);
@@ -257,7 +257,7 @@ export function mergeTaskRecords(local, incoming) {
     added += 1;
   });
 
-  const listed = new Set(tasks.map((task) => task.id));
+  const listed = new Set(tasks.map((task) => task?.id));
   const cleared = [...best.entries()]
     .filter(([id, winner]) => winner.kind === 'cleared' && !listed.has(id))
     .map(([, winner]) => winner.item);

@@ -528,6 +528,12 @@ describe('mergeTaskRecords', () => {
     expect([merged.added, merged.updated]).toEqual([0, 0]);
   });
 
+  it('leaves a stored task that is null in place', () => {
+    const merged = mergeTaskRecords({ tasks: [null, T('a')], cleared: [] }, none);
+    expect(merged.tasks).toEqual([null, T('a')]);
+    expect([merged.added, merged.updated]).toEqual([0, 0]);
+  });
+
   it('weighs a cleared task by when it was cleared', () => {
     const cleared = { id: 'a', completedAt: '2026-10-04T08:00:00.000Z', clearedAt: '2026-10-05T08:00:00.000Z' };
     const olderCopy = T('a', { completed: true, completedAt: '2026-10-04T08:00:00.000Z' });
