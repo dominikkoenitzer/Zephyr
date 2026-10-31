@@ -112,13 +112,20 @@ export function parseQuickTask(input) {
 
   // 3) Due date. First match wins, so patterns run most to least specific.
   const today = startOfToday();
+  // The next such day from today on. 29 February can be up to eight years off.
+  const nextSuchDay = (month, day) => {
+    for (let year = today.getFullYear(); year <= today.getFullYear() + 8; year += 1) {
+      const d = realDate(year, month, day);
+      if (d && d >= today) return d;
+    }
+    return null;
+  };
   // A typed year is taken as it stands; without one it is the next such day.
   const monthDay = (monthWord, dayText, yearText) => {
     const month = MONTHS.indexOf(monthWord.slice(0, 3).toLowerCase());
     const day = Number(dayText);
     if (yearText) return realDate(Number(yearText), month, day);
-    const d = realDate(today.getFullYear(), month, day);
-    return d && d < today ? realDate(today.getFullYear() + 1, month, day) : d;
+    return nextSuchDay(month, day);
   };
   const dateRules = [
     // ISO date: 2026-08-05
@@ -133,8 +140,7 @@ export function parseQuickTask(input) {
         const day = Number(m[3]);
         if (m[4]) return realDate(Number(m[4].length === 2 ? `20${m[4]}` : m[4]), month, day);
         // Without a year it is the next such day, as with a month name.
-        const d = realDate(today.getFullYear(), month, day);
-        return d && d < today ? realDate(today.getFullYear() + 1, month, day) : d;
+        return nextSuchDay(month, day);
       },
     },
     // Month name + day: "aug 5", "august 5th", "dec 5 2027", "october 5, 2027"

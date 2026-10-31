@@ -235,3 +235,28 @@ describe('parseQuickTask: short words that look like dates', () => {
     expect(parseQuickTask('Trip 12/25').dueDate).toMatch(/-12-25$/);
   });
 });
+
+describe('parseQuickTask: 29 February without a year', () => {
+  const on = (year, monthIndex, day) => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(year, monthIndex, day, 10));
+  };
+
+  afterEach(() => vi.useRealTimers());
+
+  it('waits for the next leap year', () => {
+    on(2026, 9, 30);
+    for (const text of ['Party feb 29', 'Party 29 feb', 'Party 2/29']) {
+      expect(parseQuickTask(text)).toMatchObject({ title: 'Party', dueDate: '2028-02-29' });
+    }
+    on(2028, 2, 1);
+    expect(parseQuickTask('Party feb 29')).toMatchObject({ title: 'Party', dueDate: '2032-02-29' });
+  });
+
+  it('still takes a typed year as it stands and refuses a day no month has', () => {
+    on(2026, 9, 30);
+    expect(parseQuickTask('Party feb 29 2027').dueDate).toBeNull();
+    expect(parseQuickTask('Party feb 30').dueDate).toBeNull();
+    expect(parseQuickTask('Party 2/30').dueDate).toBeNull();
+  });
+});
