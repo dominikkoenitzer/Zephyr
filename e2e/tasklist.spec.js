@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-import { seed } from './helpers';
+import { expect } from '@playwright/test';
+import { seed, test } from './helpers';
 
 test.describe('the task list', () => {
   test('a saved tag filter whose tag is gone does not hide every task', async ({ page }) => {

@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-import { seed } from './helpers';
+import { expect } from '@playwright/test';
+import { seed, test } from './helpers';
 
 // An open dialog holds the page behind it still. The wheel and touch were
 // held already, the keyboard was not: with the root clipping overflow, the

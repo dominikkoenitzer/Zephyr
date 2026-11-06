@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-import { seed } from './helpers';
+import { expect } from '@playwright/test';
+import { seed, test } from './helpers';
 
 const read = (page, key, fallback) =>
   page.evaluate(([k, f]) => JSON.parse(localStorage.getItem(k) || f), [key, fallback]);
