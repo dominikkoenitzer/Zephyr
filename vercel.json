@@ -2,6 +2,17 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/:path((?!sw\\.js$|move$|move\\.js$).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "zephyr.old-home.invalid"
+        }
+      ],
+      "destination": "https://zephyr.new-home.invalid/:path*",
+      "permanent": true
+    },
+    {
       "source": "/notes",
       "destination": "/tasks",
       "permanent": true
@@ -23,6 +34,10 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/move",
+      "destination": "/move.html"
+    },
     {
       "source": "/tasks",
       "destination": "/tasks.html"
@@ -90,6 +105,15 @@
     },
     {
       "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store"
+        }
+      ]
+    },
+    {
+      "source": "/(worker\\.js|move|move\\.js|move\\.html)",
       "headers": [
         {
           "key": "Cache-Control",

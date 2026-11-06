@@ -165,14 +165,16 @@ export default defineConfig({
       registerType: 'prompt',
       injectRegister: null,
       manifest: false,
+      // public/sw.js retires the old worker on the old host, so this one needs another name.
+      filename: 'worker.js',
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,txt,xml}'],
         // The 1024px install icon and the manifest screenshots are only ever
         // fetched by the browser's install flow. Precaching them would bloat
         // the precache with files the running app never asks for.
-        globIgnores: ['**/icon-1024.png', '**/screenshot-*.png'],
+        globIgnores: ['**/icon-1024.png', '**/screenshot-*.png', 'sw.js', 'move.js', 'move.html'],
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/_vercel/],
+        navigateFallbackDenylist: [/^\/_vercel/, /^\/move$/],
         runtimeCaching: [
           {
             // The self-hosted fonts. Not precached: the packages ship every
