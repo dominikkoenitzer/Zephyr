@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-import { greenPaint, seed } from './helpers';
+import { expect } from '@playwright/test';
+import { greenPaint, seed, test } from './helpers';
 
 const sessionsLogged = (page) =>
   page.evaluate(() => JSON.parse(localStorage.getItem('zephyr_focus_sessions') || '[]').length);

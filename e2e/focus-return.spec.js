@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-import { seed } from './helpers';
+import { expect } from '@playwright/test';
+import { seed, test } from './helpers';
 
 // Closing a dialog or the full-screen timer must hand the keyboard back to
 // where it was. Dropped on <body>, the next Tab starts again from the top of

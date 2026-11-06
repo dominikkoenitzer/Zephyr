@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-import { SESSIONS, TASKS, seed } from './helpers';
+import { expect } from '@playwright/test';
+import { SESSIONS, TASKS, seed, test } from './helpers';
 
 const palette = (page) => page.getByRole('dialog', { name: 'Command palette' });
 const shortcutsSheet = (page) => page.getByRole('dialog', { name: 'Keyboard shortcuts' });

@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
-import { TASKS, seed, settle, watchErrors } from './helpers';
+import { expect } from '@playwright/test';
+import { TASKS, seed, settle, watchErrors, test } from './helpers';
 
 const storedTasks = (page) =>
   page.evaluate(() => JSON.parse(localStorage.getItem('zephyr_tasks') || '{"tasks":[]}').tasks);

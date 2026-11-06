@@ -1,6 +1,6 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { seed, settle } from './helpers';
+import { seed, settle, test } from './helpers';
 
 const fullDate = (offset = 0) => {
   const d = new Date();

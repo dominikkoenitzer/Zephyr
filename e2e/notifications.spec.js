@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-import { seed } from './helpers';
+import { expect } from '@playwright/test';
+import { seed, test } from './helpers';
 
 const bell = (page) => page.getByRole('button', { name: /^Notifications/ });
 const panel = (page) => page.locator('header').getByRole('heading', { name: 'Notifications' });

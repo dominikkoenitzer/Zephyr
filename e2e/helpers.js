@@ -1,5 +1,20 @@
 // Shared set-up for the browser tests: a believable week of data, and the
 // checks that run on every page.
+import { test as base } from '@playwright/test';
+
+// page.goto can return before the app listens for keys, and a key pressed then is lost.
+export const test = base.extend({
+  page: async ({ page }, provide) => {
+    for (const method of ['press', 'type', 'down']) {
+      const send = page.keyboard[method].bind(page.keyboard);
+      page.keyboard[method] = async (...args) => {
+        await page.locator('html[data-shortcuts="ready"]').waitFor({ state: 'attached' });
+        return send(...args);
+      };
+    }
+    await provide(page);
+  },
+});
 
 const day = (offset, hour = 12, minute = 0) => {
   const d = new Date();
