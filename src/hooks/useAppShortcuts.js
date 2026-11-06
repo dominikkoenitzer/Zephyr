@@ -150,9 +150,12 @@ export function useAppShortcuts(handlers) {
     };
 
     document.addEventListener('keydown', onKeyDown);
+    // Says the shortcuts can be pressed now; page load alone does not, because this runs after the first render.
+    document.documentElement.dataset.shortcuts = 'ready';
     return () => {
       clearChord();
       document.removeEventListener('keydown', onKeyDown);
+      delete document.documentElement.dataset.shortcuts;
     };
   }, []);
 }

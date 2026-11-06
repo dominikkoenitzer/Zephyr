@@ -39,6 +39,14 @@ describe('useAppShortcuts', () => {
     container.remove();
   });
 
+  it('says it is ready only while it listens', () => {
+    expect(document.documentElement.dataset.shortcuts).toBe('ready');
+    act(() => root.unmount());
+    expect(document.documentElement.dataset.shortcuts).toBeUndefined();
+    root = createRoot(container);
+    act(() => root.render(<Harness />));
+  });
+
   it('leaves letters to a closed select that has focus', () => {
     const trigger = document.createElement('button');
     trigger.setAttribute('role', 'combobox');
