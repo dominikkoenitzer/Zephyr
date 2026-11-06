@@ -11,19 +11,27 @@ import { routes } from './routes/routes';
 import '@fontsource-variable/manrope/wght.css';
 import './index.css';
 import { themeService } from './services/themeService';
+import { receiveMovedData, takeMovedData } from './lib/move';
 
-// Paint the stored theme before React renders, so there is no flash of the
-// wrong scheme. This also starts following the OS while the preference is
-// "system".
-themeService.initialize();
+const movedData = takeMovedData();
 
-// v7_startTransition was a v6 opt-in; it is the behaviour in v7 and passing
-// the flag now only earns a deprecation warning.
-const router = createBrowserRouter(routes);
+if (movedData) {
+  // The stores read storage once at start, so the data shows after a reload, as after an import.
+  receiveMovedData(movedData).finally(() => window.location.reload());
+} else {
+  // Paint the stored theme before React renders, so there is no flash of the
+  // wrong scheme. This also starts following the OS while the preference is
+  // "system".
+  themeService.initialize();
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-    <VercelAnalytics />
-  </React.StrictMode>
-);
+  // v7_startTransition was a v6 opt-in; it is the behaviour in v7 and passing
+  // the flag now only earns a deprecation warning.
+  const router = createBrowserRouter(routes);
+
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+      <RouterProvider router={router} />
+      <VercelAnalytics />
+    </React.StrictMode>
+  );
+}
