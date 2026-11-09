@@ -35,8 +35,8 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^9",
-    "@playwright/test": "1.64.1",
-    "@tailwindcss/postcss": "^4.3.3",
+    "@playwright/test": "1.65.0",
+    "@tailwindcss/postcss": "^4.3.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react-swc": "^4",
@@ -44,12 +44,12 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7",
     "eslint-plugin-react-refresh": "^0.5.4",
-    "globals": "^17.11.0",
+    "globals": "^17.14.0",
     "jsdom": "^30.0.1",
-    "postcss": "^8.5.31",
-    "tailwindcss": "^4.3.3",
+    "postcss": "^8.5.32",
+    "tailwindcss": "^4.3.4",
     "vite": "^8",
     "vite-plugin-pwa": "^2.0.0",
-    "vitest": "^5.0.1"
+    "vitest": "^5.1.0"
   }
 }
