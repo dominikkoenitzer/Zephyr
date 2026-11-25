@@ -1,4 +1,4 @@
-# robots.txt for https://zephyr.punds.ch
+# robots.txt for https://zephyr-izanagi.vercel.app
 # Search and AI crawlers are welcome. One wildcard group covers them all:
 # a named per-bot group would fully replace this one for that bot, silently
 # exempting it from any Disallow added here later.
@@ -7,5 +7,5 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://zephyr.punds.ch/sitemap.xml
-# AI/LLM guide: https://zephyr.punds.ch/llms.txt
+Sitemap: https://zephyr-izanagi.vercel.app/sitemap.xml
+# AI/LLM guide: https://zephyr-izanagi.vercel.app/llms.txt

@@ -10,14 +10,14 @@ A free, **local-first** productivity app: a to-do list and a Pomodoro focus time
 No login, no signup, no backend. Your data never leaves your browser.
 
 [![CI](https://github.com/dominikkoenitzer/Zephyr/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/dominikkoenitzer/Zephyr/actions/workflows/ci.yml)
-[![Live](https://img.shields.io/badge/live-zephyr.punds.ch-d4531f?logo=vercel&logoColor=white)](https://zephyr.punds.ch)
-[![PWA](https://img.shields.io/badge/PWA-installable-5a0fc8?logo=pwa&logoColor=white)](https://zephyr.punds.ch)
+[![Live](https://img.shields.io/badge/live-zephyr-izanagi.vercel.app-d4531f?logo=vercel&logoColor=white)](https://zephyr-izanagi.vercel.app)
+[![PWA](https://img.shields.io/badge/PWA-installable-5a0fc8?logo=pwa&logoColor=white)](https://zephyr-izanagi.vercel.app)
 ![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss&logoColor=white)
 ![Bun](https://img.shields.io/badge/Bun-1.4-fbf0df?logo=bun&logoColor=black)
 
-**[→ Try it live at zephyr.punds.ch](https://zephyr.punds.ch)**
+**[→ Try it live at zephyr-izanagi.vercel.app](https://zephyr-izanagi.vercel.app)**
 
 
 <img src="docs/screenshot.png" alt="Zephyr: a to-do list and a Pomodoro focus timer" width="880" />
@@ -194,7 +194,7 @@ Zephyr is built around a simple promise: **your data is yours and stays on your 
 
 ## Deployment & CI/CD
 
-Zephyr is a static SPA deployed on **[Vercel](https://vercel.com/)** (live at **[zephyr.punds.ch](https://zephyr.punds.ch)**). SPA rewrites and security/cache headers are configured in [`vercel.json`](vercel.json). Deploys run through Vercel's Git integration on push to `main`; there is no deploy workflow in the repo.
+Zephyr is a static SPA deployed on **[Vercel](https://vercel.com/)** (live at **[zephyr-izanagi.vercel.app](https://zephyr-izanagi.vercel.app)**). SPA rewrites and security/cache headers are configured in [`vercel.json`](vercel.json). Deploys run through Vercel's Git integration on push to `main`; there is no deploy workflow in the repo.
 
 One GitHub Actions workflow is included:
 

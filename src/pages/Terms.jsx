@@ -31,7 +31,7 @@ function Terms() {
             <p className="mb-4">
               Zephyr&apos;s source code is open source under the MIT License,
               which lets you use, copy, and modify it under that license&apos;s terms. The hosted application at
-              zephyr.punds.ch is provided free of charge for personal use.
+              zephyr-izanagi.vercel.app is provided free of charge for personal use.
             </p>
 
             <h2 className="mb-2 mt-7 text-[15px] font-semibold text-foreground first:mt-0">3. Disclaimer</h2>

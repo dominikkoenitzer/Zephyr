@@ -131,14 +131,14 @@ function perRouteHtml() {
 
       for (const { title, description, path } of Object.values(ROUTE_META)) {
         if (path === '/') continue;
-        const url = `https://zephyr.punds.ch${path}`;
+        const url = `https://zephyr-izanagi.vercel.app${path}`;
         writeFileSync(resolve(__dirname, `dist${path}.html`), fill(title, description, url));
       }
 
       // The head has to match what the NotFound page sets once React runs.
       // No canonical: the page stands for whatever URL was asked for, and
       // pointing it at the home page is the soft 404 all over again.
-      const notFound = fill(NOT_FOUND_META.title, NOT_FOUND_META.description, 'https://zephyr.punds.ch/')
+      const notFound = fill(NOT_FOUND_META.title, NOT_FOUND_META.description, 'https://zephyr-izanagi.vercel.app/')
         .replace(/\s*<link rel="canonical" href="[^"]*" \/>/, '')
         .replace(/(<meta name="robots" content=")[^"]*(")/, `$1${NOT_FOUND_META.robots}$2`);
       writeFileSync(resolve(__dirname, 'dist/404.html'), notFound);

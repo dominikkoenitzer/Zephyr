@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const SITE = 'https://zephyr.punds.ch';
+const SITE = 'https://zephyr-izanagi.vercel.app';
 
 /** Create the tag once if the document does not already carry it. */
 function upsert(selector, create) {

@@ -385,7 +385,7 @@ export const LEGACY_KEYS = ['gardenTheme'];
  * Remove every key Zephyr owns, and nothing else.
  *
  * The Settings page used to finish its wipe with `localStorage.clear()`, which
- * empties the whole origin. It happens to be harmless on zephyr.punds.ch today,
+ * empties the whole origin. It happens to be harmless on zephyr-izanagi.vercel.app today,
  * but "delete my data" should never mean "delete everything anyone stored here".
  *
  * @returns {number} how many keys were removed.
