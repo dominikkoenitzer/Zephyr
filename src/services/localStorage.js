@@ -115,9 +115,12 @@ export const isSession = (entry) => !!entry && typeof entry === 'object' && !Arr
 export function nextCleared(previous, tasks, now = new Date()) {
   const ids = new Set(tasks.map((task) => task?.id));
   const at = new Date(now).toISOString();
+  // An unfinished task that left was deleted: it is recorded too, so a merge does not bring it back.
   const left = previous.tasks
-    .filter((task) => task?.completed && !ids.has(task.id))
-    .map((task) => ({ id: task.id, completedAt: task.completedAt || null, clearedAt: at }));
+    .filter((task) => typeof task?.id === 'string' && !ids.has(task.id))
+    .map((task) => (task.completed
+      ? { id: task.id, completedAt: task.completedAt || null, clearedAt: at }
+      : { id: task.id, deleted: true, clearedAt: at }));
   const byId = new Map();
   [...previous.cleared, ...left].forEach((entry) => {
     if (!ids.has(entry.id)) byId.set(entry.id, entry);
@@ -209,7 +212,7 @@ class LocalStorageService {
   // Finished tasks that are no longer in the list, for the Done figures.
   getClearedTasks() {
     try {
-      return readTaskRecord(localStorage.getItem(STORAGE_KEYS.TASKS)).cleared;
+      return readTaskRecord(localStorage.getItem(STORAGE_KEYS.TASKS)).cleared.filter((entry) => !entry.deleted);
     } catch {
       return [];
     }
