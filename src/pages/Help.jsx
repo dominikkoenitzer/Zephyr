@@ -127,6 +127,9 @@ function Help() {
                   value={`faq-${index}`}
                   className="rounded-2xl border-0 bg-transparent shadow-none"
                 >
+                  {/* The heading holds the button: inside a button, a heading is
+                      no heading to a screen reader. */}
+                  <h3>
                   <AccordionTrigger
                     value={`faq-${index}`}
                     className="group gap-3 rounded-2xl px-3 py-3 hover:bg-accent/60 hover:no-underline"
@@ -135,11 +138,12 @@ function Help() {
                       <span aria-hidden="true" className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${faq.bgColor}`}>
                         <Icon className={`h-4 w-4 ${faq.iconColor}`} />
                       </span>
-                      <h3 className="min-w-0 wrap-break-word text-[15px] font-semibold leading-snug text-foreground">
+                      <span className="min-w-0 wrap-break-word text-[15px] font-semibold leading-snug text-foreground">
                         {faq.question}
-                      </h3>
+                      </span>
                     </div>
                   </AccordionTrigger>
+                  </h3>
                   <AccordionContent value={`faq-${index}`} className="px-3 pb-4 sm:pl-15">
                     <p className="max-w-[70ch] wrap-break-word pt-1 text-sm leading-relaxed text-muted-foreground">
                       {faq.answer}
