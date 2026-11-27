@@ -205,7 +205,21 @@ function Settings() {
                       type="button"
                       role="radio"
                       aria-checked={active}
+                      // One stop in the tab order; the arrows move the choice, as in any radio group.
+                      tabIndex={active ? 0 : -1}
                       onClick={() => setPreference(option.value)}
+                      onKeyDown={(e) => {
+                        const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+                        if (!step) return;
+                        e.preventDefault();
+                        const at = THEME_OPTIONS.findIndex((o) => o.value === option.value);
+                        const next = THEME_OPTIONS[(at + step + THEME_OPTIONS.length) % THEME_OPTIONS.length];
+                        setPreference(next.value);
+                        e.currentTarget.parentElement
+                          ?.querySelector(`[data-theme-option="${next.value}"]`)
+                          ?.focus();
+                      }}
+                      data-theme-option={option.value}
                       className={cn(
                         'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-semibold transition-colors',
                         active
