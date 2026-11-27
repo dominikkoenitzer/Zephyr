@@ -31,7 +31,9 @@ const FullScreenMode = ({
   // the three controls and the exit button instead of walking the page.
   useEffect(() => {
     const self = rootRef.current;
-    const others = [...document.body.children].filter((el) => el !== self && !el.hasAttribute('inert'));
+    const others = [...document.body.children].filter(
+      (el) => el !== self && !el.hasAttribute('inert') && !el.hasAttribute('data-toaster-host')
+    );
     others.forEach((el) => el.setAttribute('inert', ''));
     return () => others.forEach((el) => el.removeAttribute('inert'));
   }, []);
