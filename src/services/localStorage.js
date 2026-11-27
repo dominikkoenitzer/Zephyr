@@ -128,6 +128,30 @@ export function nextCleared(previous, tasks, now = new Date()) {
   return [...byId.values()];
 }
 
+const DAMAGED_TASKS_KEY = `${STORAGE_KEYS.TASKS}_damaged`;
+
+const readsAsTaskRecord = (raw) => {
+  try {
+    return Array.isArray(JSON.parse(raw)?.tasks);
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * A stored list that does not read is set aside once, not overwritten. On its
+ * own: storage too full for the copy must not stop the save itself, or every
+ * later save would fail with it.
+ */
+const setAsideDamaged = (raw) => {
+  if (!raw || readsAsTaskRecord(raw) || localStorage.getItem(DAMAGED_TASKS_KEY) !== null) return;
+  try {
+    localStorage.setItem(DAMAGED_TASKS_KEY, raw);
+  } catch (error) {
+    console.error('Failed to set the damaged task list aside:', error);
+  }
+};
+
 class LocalStorageService {
   // Timer state management
   saveTimerState(state) {
@@ -173,7 +197,9 @@ class LocalStorageService {
   // Tasks management
   saveTasks(tasks) {
     try {
-      const previous = readTaskRecord(localStorage.getItem(STORAGE_KEYS.TASKS));
+      const raw = localStorage.getItem(STORAGE_KEYS.TASKS);
+      setAsideDamaged(raw);
+      const previous = readTaskRecord(raw);
       localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify({
         tasks,
         cleared: nextCleared(previous, tasks),
