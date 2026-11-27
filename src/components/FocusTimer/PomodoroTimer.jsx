@@ -386,7 +386,9 @@ const PomodoroTimer = () => {
 
         <PresetSettingsDialog
           open={isSettingsOpen}
-          onOpenChange={setIsSettingsOpen}
+          // Every way out (X, Escape, a click outside) cancels like Cancel does,
+          // so a preset New made and nobody saved goes again.
+          onOpenChange={(open) => (open ? setIsSettingsOpen(true) : cancelPresetEdit())}
           preset={editingPreset}
           onPresetChange={setEditingPreset}
           name={newPresetName}
