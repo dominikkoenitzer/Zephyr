@@ -253,6 +253,16 @@ const TaskList = () => {
     if (document.activeElement !== trigger) return;
     focusRow(rowAfter(taskId));
   };
+  // A completed row that goes takes focus with it: hand it to the next one or
+  // the one before; the last one takes the whole section along, so focus goes
+  // to the new-task field, as it does for the open list.
+  const moveFocusFromCompleted = (taskId, trigger) => {
+    if (document.activeElement !== trigger) return;
+    const at = completedTasks.findIndex((t) => t.id === taskId);
+    const next = completedTasks[at + 1] || completedTasks[at - 1];
+    const box = next && trigger.closest('section')?.querySelector(`[data-completed-check="${CSS.escape(next.id)}"]`);
+    (box || newTaskInputRef.current)?.focus();
+  };
 
   /**
    * One task: a row inside the list card that lights up under the cursor. The
@@ -653,7 +663,8 @@ const TaskList = () => {
                             <button
                               type="button"
                               aria-label={`Mark "${task.title}" not complete`}
-                              onClick={() => toggleTask(task.id)}
+                              data-completed-check={task.id}
+                              onClick={(e) => { moveFocusFromCompleted(task.id, e.currentTarget); toggleTask(task.id); }}
                               className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground transition-opacity hover:opacity-80 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                             >
                               <Check className="h-3 w-3" strokeWidth={3.5} />
@@ -664,7 +675,7 @@ const TaskList = () => {
                             <button
                               type="button"
                               aria-label={`Delete "${task.title}"`}
-                              onClick={() => deleteTaskWithUndo(task.id)}
+                              onClick={(e) => { moveFocusFromCompleted(task.id, e.currentTarget); deleteTaskWithUndo(task.id); }}
                               className="rounded-full p-1.5 text-muted-foreground transition-opacity hover:text-destructive-strong focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring sm:opacity-0 sm:group-hover/row:opacity-100 sm:group-focus-within/row:opacity-100"
                             >
                               <Trash2 className="h-4 w-4" />

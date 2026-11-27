@@ -72,6 +72,8 @@ const NotificationItem = ({ notification, onRead, onDelete, onClick }) => {
                 notification.read ? "text-foreground" : "text-foreground font-semibold"
               )}
             >
+              {/* The dot and the weight show unread; a screen reader hears it. */}
+              {!notification.read && <span className="sr-only">Unread: </span>}
               {notification.title}
             </button>
             <div className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">

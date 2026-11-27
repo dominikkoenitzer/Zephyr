@@ -321,6 +321,14 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
             />
           </div>
 
+          {/* What a sighted user sees at a glance: how many matched, or none. */}
+          <p role="status" aria-live="polite" className="sr-only">
+            {trimmed
+              ? items.length === 0
+                ? `No results for “${trimmed}”`
+                : `${items.length} ${items.length === 1 ? 'result' : 'results'}`
+              : ''}
+          </p>
           <div
             id="command-palette-list"
             ref={listRef}
@@ -329,7 +337,8 @@ function CommandPalette({ open, onOpenChange, onShowShortcuts, onNewTask }) {
             className="max-h-[min(60vh,26rem)] overflow-y-auto scrollbar-thin px-2 pb-2"
           >
             {items.length === 0 ? (
-              <p className="px-3 py-8 text-center text-sm text-muted-foreground">
+              // Said by the status line above; a paragraph is no option of the list.
+              <p aria-hidden="true" className="px-3 py-8 text-center text-sm text-muted-foreground">
                 Nothing matches “{trimmed}”.
               </p>
             ) : (
