@@ -221,13 +221,14 @@ describe('localStorageService: cleared tasks', () => {
       .toEqual({ tasks: [], cleared: [{ id: 'ok' }] });
   });
 
-  it('remembers only finished tasks, once each, and forgets one that comes back', () => {
+  it('remembers finished and deleted tasks, once each, and forgets one that comes back', () => {
     const previous = { tasks: [finished('a'), { id: 'b', completed: false }], cleared: [{ id: 'c', completedAt: null, clearedAt: 'x' }] };
     const now = new Date('2026-10-21T09:00:00.000Z');
     expect(nextCleared(previous, [], now)).toEqual([
       { id: 'c', completedAt: null, clearedAt: 'x' },
       { id: 'a', completedAt: '2026-10-20T08:00:00.000Z', clearedAt: '2026-10-21T09:00:00.000Z' },
+      { id: 'b', deleted: true, clearedAt: '2026-10-21T09:00:00.000Z' },
     ]);
-    expect(nextCleared(previous, [{ id: 'c' }, finished('a')], now)).toEqual([]);
+    expect(nextCleared(previous, [{ id: 'c' }, finished('a'), { id: 'b' }], now)).toEqual([]);
   });
 });
