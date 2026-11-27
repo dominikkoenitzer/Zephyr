@@ -72,9 +72,9 @@ const CustomNumberInput = React.forwardRef(({
         type="button"
         variant="outline"
         size="icon"
-        className="h-11 w-11 shrink-0"
+        className="h-11 w-11 shrink-0 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:border-foreground/15 aria-disabled:hover:bg-card"
         onClick={handleDecrement}
-        disabled={displayValue <= min}
+        aria-disabled={displayValue <= min}
         aria-label={label ? `Decrease ${label}` : "Decrease value"}
       >
         <Minus className="h-4 w-4" />
@@ -100,9 +100,9 @@ const CustomNumberInput = React.forwardRef(({
         type="button"
         variant="outline"
         size="icon"
-        className="h-11 w-11 shrink-0"
+        className="h-11 w-11 shrink-0 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:border-foreground/15 aria-disabled:hover:bg-card"
         onClick={handleIncrement}
-        disabled={displayValue >= max}
+        aria-disabled={displayValue >= max}
         aria-label={label ? `Increase ${label}` : "Increase value"}
       >
         <Plus className="h-4 w-4" />

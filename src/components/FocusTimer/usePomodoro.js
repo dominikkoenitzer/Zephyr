@@ -240,7 +240,7 @@ export function usePomodoro() {
     // under way) gives way to it. Every arrival starts the timer, not just the
     // first one on this page.
     if (searchParams.get('start') === '1') {
-      if (isBreak && !isRunning) {
+      if (isBreak && !isRunning && timeLeft === phaseTotal) {
         setIsBreak(false);
         setLongBreak(false);
         setTimeLeft(workTime);
@@ -471,6 +471,8 @@ export function usePomodoro() {
   };
 
   const handleSavePreset = () => {
+    // Saved, so a later Cancel no longer takes it back.
+    createdPresetRef.current = null;
     if (!editingPreset || !newPresetName.trim()) return;
     
     const updatedPreset = { ...editingPreset, name: newPresetName.trim() };
@@ -496,6 +498,9 @@ export function usePomodoro() {
     setIsSettingsOpen(false);
   };
 
+  // The preset "New" just added, and the choice before it, until it is saved.
+  const createdPresetRef = useRef(null);
+
   const handleCreatePreset = () => {
     const newPreset = {
       id: `custom-${Date.now()}`,
@@ -518,6 +523,7 @@ export function usePomodoro() {
       localStorage.setItem(SELECTED_PRESET_KEY, newPreset.id);
       startPhaseAt(newPreset.workTime);
     }
+    createdPresetRef.current = { id: newPreset.id, previous: selectedPreset };
     setEditingPreset(newPreset);
     setNewPresetName('New Timer');
     setIsSettingsOpen(true);
@@ -544,6 +550,21 @@ export function usePomodoro() {
 
   /** Cancel an edit: close the dialog and drop the draft without saving it. */
   const cancelPresetEdit = () => {
+    const created = createdPresetRef.current;
+    createdPresetRef.current = null;
+    if (created && created.id === editingPreset?.id) {
+      // A preset made by New and never saved goes again, and the choice
+      // before it comes back.
+      const updatedPresets = presets.filter((p) => p.id !== created.id);
+      setPresets(updatedPresets);
+      localStorage.setItem(PRESETS_KEY, JSON.stringify(presetsToStore(updatedPresets, DEFAULT_PRESETS)));
+      if (selectedPreset === created.id) {
+        const previous = updatedPresets.find((p) => p.id === created.previous) || updatedPresets[0];
+        setSelectedPreset(previous.id);
+        localStorage.setItem(SELECTED_PRESET_KEY, previous.id);
+        if (!isRunning) startPhaseAt(lengthOf(previous, isBreak, longBreak));
+      }
+    }
     setIsSettingsOpen(false);
     setEditingPreset(null);
     setNewPresetName('');

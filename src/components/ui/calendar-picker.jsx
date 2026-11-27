@@ -206,6 +206,8 @@ const CalendarPicker = React.forwardRef(({ className, value, onChange, ...props 
     setSelectedDate(null)
     setIsOpen(false)
     onChange?.({ target: { value: "" } })
+    // The clear button goes with the date; focus stays on the field it cleared.
+    triggerRef.current?.focus()
   }
 
   // Arrows move a day or a week; a step out of the month turns the page, then focuses that day.

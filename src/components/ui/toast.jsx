@@ -1,9 +1,13 @@
+import { createPortal } from "react-dom"
 import { Toaster as SonnerToaster } from "sonner"
 import { useTheme } from "../../hooks/useTheme"
 
 const Toaster = () => {
   const { colorMode } = useTheme()
-  return (
+  // Straight under <body> and marked, so the full-screen timer, which makes
+  // everything else inert, leaves the toasts (and their actions) usable.
+  return createPortal(
+    <div data-toaster-host="">
     <SonnerToaster
       // No richColors: it paints success green and error red onto the icon and
       // the close button, and green is not a colour this app has.
@@ -27,6 +31,8 @@ const Toaster = () => {
         },
       }}
     />
+    </div>,
+    document.body
   )
 }
 

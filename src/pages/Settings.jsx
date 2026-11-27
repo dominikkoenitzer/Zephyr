@@ -205,7 +205,21 @@ function Settings() {
                       type="button"
                       role="radio"
                       aria-checked={active}
+                      // One stop in the tab order; the arrows move the choice, as in any radio group.
+                      tabIndex={active ? 0 : -1}
                       onClick={() => setPreference(option.value)}
+                      onKeyDown={(e) => {
+                        const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+                        if (!step) return;
+                        e.preventDefault();
+                        const at = THEME_OPTIONS.findIndex((o) => o.value === option.value);
+                        const next = THEME_OPTIONS[(at + step + THEME_OPTIONS.length) % THEME_OPTIONS.length];
+                        setPreference(next.value);
+                        e.currentTarget.parentElement
+                          ?.querySelector(`[data-theme-option="${next.value}"]`)
+                          ?.focus();
+                      }}
+                      data-theme-option={option.value}
                       className={cn(
                         'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-semibold transition-colors',
                         active
@@ -288,21 +302,21 @@ function Settings() {
           <div className="mt-4 -mx-3 space-y-1">
             <SettingRow icon={Bell} title="On">
               <Checkbox
-                aria-label="Enable notifications"
+                aria-label="On: Enable notifications"
                 checked={notificationSettings.enabled}
                 onCheckedChange={(checked) => handleNotificationSettingsChange({ enabled: checked })}
               />
             </SettingRow>
             <SettingRow icon={Volume2} title="Sound">
               <Checkbox
-                aria-label="Notification sound"
+                aria-label="Sound: Notification sound"
                 checked={notificationSettings.soundEnabled}
                 onCheckedChange={(checked) => handleNotificationSettingsChange({ soundEnabled: checked })}
               />
             </SettingRow>
             <SettingRow icon={CheckSquare} title="Tasks">
               <Checkbox
-                aria-label="Task notifications"
+                aria-label="Tasks: Task notifications"
                 checked={notificationSettings.tasks.enabled}
                 onCheckedChange={(checked) => handleTaskSettingsChange({ enabled: checked })}
               />
@@ -314,7 +328,7 @@ function Settings() {
                     value={String(notificationSettings.tasks.dueDateReminder)}
                     onValueChange={(value) => handleTaskSettingsChange({ dueDateReminder: parseInt(value) })}
                   >
-                    <SelectTrigger aria-label="Due date reminder" className="w-32">
+                    <SelectTrigger aria-label="Remind me: Due date reminder" className="w-32">
                       <SelectValue placeholder="Select reminder" />
                     </SelectTrigger>
                     <SelectContent>
@@ -327,7 +341,7 @@ function Settings() {
                 </SettingRow>
                 <SettingRow title="When overdue" small>
                   <Checkbox
-                    aria-label="Overdue tasks"
+                    aria-label="When overdue: Overdue tasks"
                     checked={notificationSettings.tasks.overdue}
                     onCheckedChange={(checked) => handleTaskSettingsChange({ overdue: checked })}
                   />
@@ -336,7 +350,7 @@ function Settings() {
             )}
             <SettingRow icon={Timer} title="Timer">
               <Checkbox
-                aria-label="Timer notifications"
+                aria-label="Timer: Timer notifications"
                 checked={notificationSettings.timer.enabled}
                 onCheckedChange={(checked) => handleNotificationSettingsChange({
                   timer: { ...notificationSettings.timer, enabled: checked }

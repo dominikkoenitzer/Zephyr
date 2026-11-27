@@ -134,7 +134,7 @@ const PomodoroTimer = () => {
 
   const card = 'rounded-3xl bg-card p-6 shadow-(--shadow-card)';
   const roundControl =
-    'flex h-12 w-12 items-center justify-center rounded-full bg-hero-foreground/10 text-hero-foreground transition-colors hover:bg-hero-foreground/20 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-sun disabled:pointer-events-none disabled:opacity-40';
+    'flex h-12 w-12 items-center justify-center rounded-full bg-hero-foreground/10 text-hero-foreground transition-colors hover:bg-hero-foreground/20 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-sun disabled:pointer-events-none aria-disabled:cursor-not-allowed aria-disabled:opacity-40 aria-disabled:hover:bg-hero-foreground/10 disabled:opacity-40';
 
   return (
     <div className="grid w-full grid-cols-1 items-start gap-(--panel-gap) xl:grid-cols-12">
@@ -230,7 +230,7 @@ const PomodoroTimer = () => {
             aria-label="Skip session"
             title="Skip (S)"
             className={roundControl}
-            disabled={!isBreak && timeLeft === currentSessionTime}
+            aria-disabled={!isBreak && timeLeft === currentSessionTime}
           >
             <SkipForward className="h-5 w-5" />
           </button>
@@ -386,7 +386,9 @@ const PomodoroTimer = () => {
 
         <PresetSettingsDialog
           open={isSettingsOpen}
-          onOpenChange={setIsSettingsOpen}
+          // Every way out (X, Escape, a click outside) cancels like Cancel does,
+          // so a preset New made and nobody saved goes again.
+          onOpenChange={(open) => (open ? setIsSettingsOpen(true) : cancelPresetEdit())}
           preset={editingPreset}
           onPresetChange={setEditingPreset}
           name={newPresetName}

@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Settings, CheckCheck } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -12,17 +13,27 @@ const NotificationCenter = ({ id, onClose }) => {
   // so a reminder that arrives while the panel is open shows at once.
   const [notifications] = useStoreValue(readNotifications);
   const navigate = useNavigate();
+  const panelRef = useRef(null);
+  const settingsRef = useRef(null);
 
   const handleRead = (notificationId) => {
     notificationService.markAsRead(notificationId);
   };
 
+  // Both buttons go with what they act on; focus stays in the panel instead
+  // of falling to the page behind it.
   const handleDelete = (notificationId) => {
+    const from = document.activeElement;
+    const all = [...(panelRef.current?.querySelectorAll('[data-notification-delete]') ?? [])];
+    const at = all.indexOf(from);
+    const next = at >= 0 ? all[at + 1] || all[at - 1] : null;
     notificationService.deleteNotification(notificationId);
+    if (at >= 0) (next || settingsRef.current)?.focus();
   };
 
   const handleMarkAllRead = () => {
     notificationService.markAllAsRead();
+    settingsRef.current?.focus();
   };
 
   const handleNotificationClick = (notification) => {
@@ -39,6 +50,7 @@ const NotificationCenter = ({ id, onClose }) => {
   return (
     <div
       id={id}
+      ref={panelRef}
       data-notification-panel=""
       className="absolute top-full right-0 z-50 mt-3 flex max-h-[calc(100vh-6rem)] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-3xl bg-popover shadow-(--shadow-overlay) sm:max-h-[600px] sm:w-96 sm:max-w-96"
     >
@@ -72,6 +84,7 @@ const NotificationCenter = ({ id, onClose }) => {
               navigate('/settings');
               onClose();
             }}
+            ref={settingsRef}
             aria-label="Notification settings"
             className="h-7 w-7 sm:h-8 sm:w-8"
           >
